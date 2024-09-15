@@ -91,7 +91,7 @@ fun DrawerContent() {
                 context.startActivity(
                     Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse("https://github.com/raival/FileExplorer-Compose")
+                        Uri.parse("https://github.com/Raival-e/File-Explorer-Compose")
                     )
                 )
             }) {
