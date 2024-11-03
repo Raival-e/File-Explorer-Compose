@@ -17,7 +17,7 @@ class ApkFileDecoder(
     override suspend fun decode(): DecodeResult? {
         val packageManager = globalClass.packageManager
         packageManager.getPackageArchiveInfo(source.absolutePath, 0)?.let { apkInfo ->
-            apkInfo.applicationInfo.apply {
+            apkInfo.applicationInfo?.apply {
                 sourceDir = source.absolutePath
                 publicSourceDir = source.absolutePath
                 loadIcon(packageManager).drawableToBitmap()?.let { bitmap ->

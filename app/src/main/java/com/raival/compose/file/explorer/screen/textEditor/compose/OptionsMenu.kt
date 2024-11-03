@@ -57,11 +57,16 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
 
         androidx.compose.material3.DropdownMenuItem(
             text = { Text(text = stringResource(R.string.word_wrap)) },
-            onClick = { preferences.wordWrap = !preferences.wordWrap },
+            onClick = {
+                preferences.wordWrap = (!preferences.wordWrap).also { newValue ->
+                    codeEditor.isWordwrap = newValue
+                    onDismissRequest()
+                }
+            },
             leadingIcon = { Icon(Icons.AutoMirrored.Rounded.WrapText, null) },
             trailingIcon = {
                 Checkbox(preferences.wordWrap, {
-                    preferences.wordWrap = !preferences.wordWrap.also { newValue ->
+                    preferences.wordWrap = (!preferences.wordWrap).also { newValue ->
                         codeEditor.isWordwrap = newValue
                         onDismissRequest()
                     }
@@ -71,11 +76,16 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
 
         androidx.compose.material3.DropdownMenuItem(
             text = { Text(text = stringResource(R.string.read_only)) },
-            onClick = { preferences.readOnly = !preferences.readOnly },
+            onClick = {
+                preferences.readOnly = (!preferences.readOnly).also { newValue ->
+                    codeEditor.editable = !newValue
+                    onDismissRequest()
+                }
+            },
             leadingIcon = { Icon(Icons.Rounded.RemoveRedEye, null) },
             trailingIcon = {
                 Checkbox(preferences.readOnly, {
-                    preferences.readOnly = !preferences.readOnly.also { newValue ->
+                    preferences.readOnly = (!preferences.readOnly).also { newValue ->
                         codeEditor.editable = !newValue
                         onDismissRequest()
                     }
@@ -99,7 +109,10 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
                 androidx.compose.material3.DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.use_icu_selection)) },
                     onClick = {
-                        preferences.useICULibToSelectWords = !preferences.useICULibToSelectWords
+                        preferences.useICULibToSelectWords =
+                            (!preferences.useICULibToSelectWords).also { newValue ->
+                                codeEditor.props.useICULibToSelectWords = newValue
+                            }
                     },
                     leadingIcon = { Icon(Icons.Rounded.TextRotationNone, null) },
                     trailingIcon = {
@@ -117,14 +130,19 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
 
                 androidx.compose.material3.DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.pin_numbers_line)) },
-                    onClick = { preferences.pinLineNumber = !preferences.pinLineNumber },
+                    onClick = {
+                        preferences.pinLineNumber =
+                            (!preferences.pinLineNumber).also { newValue ->
+                                codeEditor.setPinLineNumber(newValue)
+                            }
+                    },
                     leadingIcon = { Icon(Icons.Rounded.Numbers, null) },
                     trailingIcon = {
                         Checkbox(
                             checked = preferences.pinLineNumber,
                             onCheckedChange = {
                                 preferences.pinLineNumber =
-                                    !preferences.pinLineNumber.also { newValue ->
+                                    (!preferences.pinLineNumber).also { newValue ->
                                         codeEditor.setPinLineNumber(newValue)
                                     }
                             }
@@ -135,7 +153,10 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
                 androidx.compose.material3.DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.auto_symbol_pair)) },
                     onClick = {
-                        preferences.symbolPairAutoCompletion = !preferences.symbolPairAutoCompletion
+                        preferences.symbolPairAutoCompletion =
+                            (!preferences.symbolPairAutoCompletion).also { newValue ->
+                                codeEditor.props.symbolPairAutoCompletion = newValue
+                            }
                     },
                     leadingIcon = { Icon(Icons.Rounded.Code, null) },
                     trailingIcon = {
@@ -143,7 +164,7 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
                             checked = preferences.symbolPairAutoCompletion,
                             onCheckedChange = {
                                 preferences.symbolPairAutoCompletion =
-                                    !preferences.symbolPairAutoCompletion.also { newValue ->
+                                    (!preferences.symbolPairAutoCompletion).also { newValue ->
                                         codeEditor.props.symbolPairAutoCompletion = newValue
                                     }
                             }
@@ -154,15 +175,17 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
                 androidx.compose.material3.DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.delete_empty_lines)) },
                     onClick = {
-                        preferences.deleteEmptyLineFast = !preferences.deleteEmptyLineFast
-                    },
+                        preferences.deleteEmptyLineFast =
+                            (!preferences.deleteEmptyLineFast).also { newValue ->
+                                codeEditor.props.deleteEmptyLineFast = newValue
+                            }                    },
                     leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Backspace, null) },
                     trailingIcon = {
                         Checkbox(
                             checked = preferences.deleteEmptyLineFast,
                             onCheckedChange = {
                                 preferences.deleteEmptyLineFast =
-                                    !preferences.deleteEmptyLineFast.also { newValue ->
+                                    (!preferences.deleteEmptyLineFast).also { newValue ->
                                         codeEditor.props.deleteEmptyLineFast = newValue
                                     }
                             }
@@ -172,14 +195,19 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
 
                 androidx.compose.material3.DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.delete_tabs)) },
-                    onClick = { preferences.deleteMultiSpaces = !preferences.deleteMultiSpaces },
+                    onClick = {
+                        preferences.deleteMultiSpaces =
+                            (!preferences.deleteMultiSpaces).also { newValue ->
+                                codeEditor.props.deleteMultiSpaces = if (newValue) -1 else 1
+                            }
+                    },
                     leadingIcon = { Icon(Icons.Rounded.SpaceBar, null) },
                     trailingIcon = {
                         Checkbox(
                             checked = preferences.deleteMultiSpaces,
                             onCheckedChange = {
                                 preferences.deleteMultiSpaces =
-                                    !preferences.deleteMultiSpaces.also { newValue ->
+                                    (!preferences.deleteMultiSpaces).also { newValue ->
                                         codeEditor.props.deleteMultiSpaces = if (newValue) -1 else 1
                                     }
                             }
@@ -189,13 +217,17 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
 
                 androidx.compose.material3.DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.auto_indentation)) },
-                    onClick = { preferences.autoIndent = !preferences.autoIndent },
+                    onClick = {
+                        preferences.autoIndent = (!preferences.autoIndent).also { newValue ->
+                            codeEditor.props.autoIndent = newValue
+                        }
+                    },
                     leadingIcon = { Icon(Icons.AutoMirrored.Rounded.FormatIndentIncrease, null) },
                     trailingIcon = {
                         Checkbox(
                             checked = preferences.autoIndent,
                             onCheckedChange = {
-                                preferences.autoIndent = !preferences.autoIndent.also { newValue ->
+                                preferences.autoIndent = (!preferences.autoIndent).also { newValue ->
                                     codeEditor.props.autoIndent = newValue
                                 }
                             }
@@ -205,14 +237,20 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
 
                 androidx.compose.material3.DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.magnifier)) },
-                    onClick = { preferences.enableMagnifier = !preferences.enableMagnifier },
+                    onClick = {
+                        preferences.enableMagnifier =
+                            (!preferences.enableMagnifier).also { newValue ->
+                                codeEditor.getComponent(Magnifier::class.java).isEnabled =
+                                    newValue
+                            }
+                    },
                     leadingIcon = { Icon(Icons.Rounded.Search, null) },
                     trailingIcon = {
                         Checkbox(
                             checked = preferences.enableMagnifier,
                             onCheckedChange = {
                                 preferences.enableMagnifier =
-                                    !preferences.enableMagnifier.also { newValue ->
+                                    (!preferences.enableMagnifier).also { newValue ->
                                         codeEditor.getComponent(Magnifier::class.java).isEnabled =
                                             newValue
                                     }

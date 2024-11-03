@@ -461,6 +461,7 @@ class TextEditorManager {
                     autoIndent = it.autoIndent
                     boldMatchingDelimiters = false
                     formatPastedText = true
+                    isWordwrap = it.wordWrap
                 }
             }
 

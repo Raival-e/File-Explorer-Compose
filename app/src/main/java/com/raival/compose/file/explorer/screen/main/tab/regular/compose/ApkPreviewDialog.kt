@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.regular.compose
 
 import android.graphics.drawable.Drawable
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -67,18 +68,20 @@ fun ApkPreviewDialog(tab: RegularTab) {
 
         LaunchedEffect(Unit) {
             apkInfo?.let {
-                it.applicationInfo.sourceDir = apkFile.getPath()
-                it.applicationInfo.publicSourceDir = apkFile.getPath()
+                it.applicationInfo?.sourceDir = apkFile.getPath()
+                it.applicationInfo?.publicSourceDir = apkFile.getPath()
 
-                icon = it.applicationInfo.loadIcon(packageManager)
-                appName = it.applicationInfo.loadLabel(packageManager).toString()
+                icon = it.applicationInfo?.loadIcon(packageManager)
+                appName = it.applicationInfo?.loadLabel(packageManager).toString()
 
                 details.add(Pair(globalClass.getString(R.string.package_name), it.packageName))
-                details.add(Pair(globalClass.getString(R.string.version_name), it.versionName))
+                it.versionName?.let {
+                    details.add(Pair(globalClass.getString(R.string.version_name), it))
+                }
                 details.add(
                     Pair(
                         globalClass.getString(R.string.version_code),
-                        it.longVersionCode.toString()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode.toString() else it.versionCode.toString()
                     )
                 )
                 details.add(

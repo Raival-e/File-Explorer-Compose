@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.raival.compose.file.explorer"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.raival.compose.file.explorer"

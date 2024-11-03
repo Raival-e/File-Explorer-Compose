@@ -8,11 +8,11 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import coil3.ImageLoader
 import coil3.PlatformContext
-import coil3.addLastModifiedToFileCacheKey
 import coil3.bitmapFactoryMaxParallelism
 import coil3.gif.GifDecoder
 import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
+import coil3.request.addLastModifiedToFileCacheKey
 import coil3.request.allowConversionToBitmap
 import coil3.request.crossfade
 import coil3.svg.SvgDecoder
