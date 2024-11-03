@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-path
-        name="external_path"
-        path="." />
-    <cache-path
-        name="cache_path"
-        path="." />
+    <external-path path="Android/data/${applicationId}/" name="package_root" />
+    <cache-path path="Android/data/${applicationId}/" name="cache" />
+    <root-path path="." name="storage_root" />
 </paths>
