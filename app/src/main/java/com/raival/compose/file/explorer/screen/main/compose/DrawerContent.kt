@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
@@ -51,7 +52,10 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerContent() {
-    val drawerWidth = LocalConfiguration.current.screenWidthDp.dp / 4 * 3
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+    val isTablet = configuration.screenWidthDp >= 600
+    val drawerWidth = if(isLandscape || isTablet) 400.dp else configuration.screenWidthDp.dp / 4 * 3
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
