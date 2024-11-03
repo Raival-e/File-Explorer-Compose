@@ -26,8 +26,6 @@ object FileProvider {
     fun getStorageDevices(context: Context): List<StorageDevice> {
         val storageDevices = mutableListOf<StorageDevice>()
 
-        storageDevices.add(getRoot(context))
-
         storageDevices.add(getPrimaryInternalStorage(context))
 
         val externalDirs = getExternalStorageDirectories(context)
@@ -52,6 +50,8 @@ object FileProvider {
                 )
             )
         }
+
+        storageDevices.add(getRoot(context))
 
         return storageDevices
     }
