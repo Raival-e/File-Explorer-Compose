@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.automirrored.rounded.ManageSearch
 import androidx.compose.material.icons.rounded.Height
+import androidx.compose.material.icons.rounded.HideSource
 import androidx.compose.material.icons.rounded.Nightlight
 import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.runtime.Composable
@@ -96,7 +97,15 @@ fun DisplayContainer() {
         )
 
         PreferenceItem(
-            label = "Show folder's content count",
+            label = stringResource(R.string.show_hidden_files),
+            supportingText = emptyString,
+            icon = Icons.Rounded.HideSource,
+            switchState = preferences.showHiddenFiles,
+            onSwitchChange = { preferences.showHiddenFiles = it }
+        )
+
+        PreferenceItem(
+            label = stringResource(R.string.show_folder_s_content_count),
             supportingText = emptyString,
             icon = Icons.Rounded.Numbers,
             switchState = preferences.showFolderContentCount,

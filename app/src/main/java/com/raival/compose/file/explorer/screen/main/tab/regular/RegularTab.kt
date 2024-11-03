@@ -268,6 +268,10 @@ class RegularTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
             ) {
                 if (it.isFile()) filesCount++
                 else foldersCount++
+            }.apply {
+                if (!globalClass.preferencesManager.displayPrefs.showHiddenFiles) {
+                    removeIf { it.getFileName().startsWith(".") }
+                }
             }
 
             withContext(Dispatchers.Main) {

@@ -91,6 +91,12 @@ class PreferencesManager {
             defaultValue = false,
             getPreferencesKey = { booleanPreferencesKey(it) }
         )
+
+        var showHiddenFiles by prefMutableState(
+            keyName = "showHiddenFiles",
+            defaultValue = false,
+            getPreferencesKey = { booleanPreferencesKey(it) }
+        )
     }
 
     object TextEditorPrefs {

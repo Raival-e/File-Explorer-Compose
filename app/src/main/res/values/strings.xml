@@ -184,4 +184,6 @@
     <string name="invalid_media_file">Invalid media file</string>
     <string name="unknown_artist">Unknown Artist</string>
     <string name="search_finished">Search finished</string>
+    <string name="show_folder_s_content_count">Show folder\'s content count</string>
+    <string name="show_hidden_files">Show hidden files</string>
 </resources>
