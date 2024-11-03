@@ -25,6 +25,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -46,10 +47,12 @@ import com.raival.compose.file.explorer.screen.main.tab.regular.modal.INTERNAL_S
 import com.raival.compose.file.explorer.screen.main.tab.regular.modal.ROOT
 import com.raival.compose.file.explorer.screen.main.tab.regular.provider.FileProvider
 import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
+import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerContent() {
     val drawerWidth = LocalConfiguration.current.screenWidthDp.dp / 4 * 3
+    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     Column(
@@ -109,6 +112,15 @@ fun DrawerContent() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable {
+                        globalClass.mainActivityManager.apply {
+                            coroutineScope.launch {
+                                drawerState.close()
+                            }
+                            addTabAndSelect(RegularTab(storageDevice.documentHolder))
+                        }
+
+                    }
                     .padding(12.dp)
                     .padding(end = 12.dp),
                 verticalAlignment = Alignment.CenterVertically
