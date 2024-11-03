@@ -23,7 +23,7 @@ fun Modifier.detectVerticalSwipe(
     onSwipeUp: () -> Unit = { },
     onSwipeDown: () -> Unit = { },
     threshold: Int = 50
-) = this.pointerInput(Unit) {
+) = this.pointerInput(onSwipeUp, onSwipeDown, threshold) {
     var handled = false
     detectVerticalDragGestures(
         onDragEnd = { handled = false },
