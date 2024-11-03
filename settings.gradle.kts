@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "File Explorer"
 include(":app")
+include(":baselineprofile")
