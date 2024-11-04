@@ -27,7 +27,7 @@ on:
 
 jobs:
   build:
-    name: Build release APK
+    name: Build debug APK
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -42,13 +42,13 @@ jobs:
       - name: Grant execute permissions for gradlew
         run: chmod +x gradlew
 
-      - name: Build release apk
+      - name: Build debug apk
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: assembleRelease
+          arguments: assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v3
         with:
-          name: apk-release
-          path: app/build/outputs/apk/release
+          name: apk-debug
+          path: app/build/outputs/apk/debug
