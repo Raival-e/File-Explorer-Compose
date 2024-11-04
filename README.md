@@ -1,11 +1,7 @@
 # File Explorer
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)  [![Release](https://img.shields.io/github/v/release/Raival-e/File-Explorer-Compose?label=Release)](https://github.com/Raival-e/File-Explorer-Compose/releases)  [![APK Downloads](https://img.shields.io/github/downloads/Raival-e/File-Explorer-Compose/total.svg?label=APK%20Downloads)](https://github.com/Raival-e/File-Explorer-Compose/releases)
+
 A full-featured and lightweight file managing app written in kotlin with Jetpack Compose UI.
-
-
-> [!NOTE]
-> This app is a rewritten version of the original [File Explorer](https://github.com/Raival-e/File-Explorer), where its entire codebase has been completely changed.
-
 
 # Screenshots
 <div style="overflow: hidden">
