@@ -33,15 +33,15 @@ import io.github.rosemoe.sora.widget.EditorSearcher
 fun SearchPanel(codeEditor: CodeEditor) {
     val textEditorManager = globalClass.textEditorManager
 
-    val searcher = textEditorManager.getFileInstance()!!.searcher
-    fun codeEditorSearcher() = codeEditor.searcher
-    fun hasQuery() = searcher.query.isNotEmpty() && codeEditorSearcher().matchedPositionCount > 0
-
     AnimatedVisibility(
         visible = textEditorManager.showSearchPanel,
         enter = expandIn(expandFrom = Alignment.TopCenter) + slideInVertically(initialOffsetY = { it }),
         exit = shrinkOut(shrinkTowards = Alignment.BottomCenter) + slideOutVertically(targetOffsetY = { it })
     ) {
+        val searcher = textEditorManager.getFileInstance()!!.searcher
+        fun codeEditorSearcher() = codeEditor.searcher
+        fun hasQuery() = searcher.query.isNotEmpty() && codeEditorSearcher().matchedPositionCount > 0
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
