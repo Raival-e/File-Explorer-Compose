@@ -3,6 +3,7 @@ package com.raival.compose.file.explorer.screen.textEditor
 import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.HorizontalDivider
@@ -15,6 +16,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
+import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.common.extension.setContent
 import com.raival.compose.file.explorer.screen.textEditor.compose.BottomBarView
 import com.raival.compose.file.explorer.screen.textEditor.compose.CodeEditorView
@@ -34,6 +36,7 @@ class TextEditorActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         checkPermissions()
     }
 
@@ -54,10 +57,7 @@ class TextEditorActivity : BaseActivity() {
 
         setContent {
             FileExplorerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorScheme.surfaceContainerLowest
-                ) {
+                SafeSurface(modifier = Modifier.fillMaxSize()) {
                     Column(
                         Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally

@@ -37,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.common.extension.dp
 import com.raival.compose.file.explorer.screen.viewer.ViewerActivity
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
@@ -59,10 +60,7 @@ class PdfViewerActivity : ViewerActivity() {
         if (instance is PdfViewerInstance) {
             setContent {
                 FileExplorerTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = colorScheme.surfaceContainerLowest
-                    ) {
+                    SafeSurface(modifier = Modifier.fillMaxSize()) {
                         Box(
                             Modifier.fillMaxSize(),
                             contentAlignment = Alignment.TopCenter

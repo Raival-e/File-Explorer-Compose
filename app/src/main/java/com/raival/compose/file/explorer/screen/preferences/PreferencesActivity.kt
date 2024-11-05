@@ -3,8 +3,11 @@ package com.raival.compose.file.explorer.screen.preferences
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +28,7 @@ import com.raival.compose.file.explorer.ui.theme.FileExplorerTheme
 class PreferencesActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         checkPermissions()
     }
 
@@ -44,7 +48,10 @@ class PreferencesActivity : BaseActivity() {
                             Modifier
                                 .fillMaxSize()
                                 .verticalScroll(rememberScrollState())
-                                .padding(top = paddingValues.calculateTopPadding())
+                                .padding(
+                                    top = paddingValues.calculateTopPadding(),
+                                    bottom = paddingValues.calculateBottomPadding()
+                                )
                         ) {
                             Space(size = 4.dp)
 

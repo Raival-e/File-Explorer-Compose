@@ -42,6 +42,7 @@ import androidx.media3.common.Player.Listener
 import androidx.media3.ui.PlayerView
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.extension.name
 import com.raival.compose.file.explorer.screen.viewer.ViewerActivity
@@ -65,10 +66,7 @@ class MediaViewerActivity : ViewerActivity() {
         if (instance is MediaViewerInstance) {
             setContent {
                 FileExplorerTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = colorScheme.background
-                    ) {
+                    SafeSurface(modifier = Modifier.fillMaxSize()) {
                         Box(
                             Modifier
                                 .fillMaxSize(),

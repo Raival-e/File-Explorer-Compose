@@ -3,8 +3,16 @@ package com.raival.compose.file.explorer.screen.main
 import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imeAnimationSource
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Surface
@@ -16,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
+import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.screen.main.compose.DrawerContent
 import com.raival.compose.file.explorer.screen.main.compose.JumpToPathDialog
 import com.raival.compose.file.explorer.screen.main.compose.NewTabDialog
@@ -34,16 +43,14 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         checkPermissions()
     }
 
     override fun onPermissionGranted() {
         setContent {
             FileExplorerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.surfaceContainerLowest
-                ) {
+                SafeSurface(modifier = Modifier.fillMaxSize()) {
                     val context = LocalContext.current
                     val coroutineScope = rememberCoroutineScope()
                     val mainActivityManager = globalClass.mainActivityManager

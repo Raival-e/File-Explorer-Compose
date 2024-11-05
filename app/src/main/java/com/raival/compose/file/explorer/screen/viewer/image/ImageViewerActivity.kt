@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.common.extension.read
 import com.raival.compose.file.explorer.screen.viewer.ViewerActivity
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
@@ -35,10 +36,7 @@ class ImageViewerActivity : ViewerActivity() {
     override fun onReady(instance: ViewerInstance) {
         setContent {
             FileExplorerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = colorScheme.surfaceContainerLowest
-                ) {
+                SafeSurface(modifier = Modifier.fillMaxSize()) {
                     Box(
                         Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center

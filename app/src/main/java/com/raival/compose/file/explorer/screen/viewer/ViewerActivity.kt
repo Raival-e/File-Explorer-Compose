@@ -2,6 +2,7 @@ package com.raival.compose.file.explorer.screen.viewer
 
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.extension.randomString
@@ -16,6 +17,8 @@ abstract class ViewerActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
 
         if (intent.data == null) {
             finish()
