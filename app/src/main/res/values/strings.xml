@@ -137,7 +137,7 @@
     <string name="plural1">s</string>
     <string name="plural2">es</string>
     <string name="match">%1$d match%2$s</string>
-    <string name="match_text">(%1$s)</string>
+    <string name="match_text" translatable="false">(%1$s)</string>
     <string name="match_text2">(%1$d of %2$s)</string>
     <string name="file_no_longer_exists">File no longer exists</string>
     <string name="move">Move</string>
