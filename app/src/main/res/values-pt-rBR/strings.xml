@@ -1,5 +1,4 @@
 <resources>
-  <string name="app_name">Explorador de Arquivos</string>
   <string name="root_dir">Raiz</string>
   <string name="internal_storage">Armazenamento Interno</string>
   <string name="storage_permission_required">É necessário permissão de acesso ao armazenamento</string>
