@@ -26,7 +26,3 @@ A full-featured and lightweight file managing app written in kotlin with Jetpack
 
 > [!NOTE]
 > There has been a change in the app signature, so you might have to uninstall the older version first before installing the latest one.
-
-
-# Support
-If you want to show your appreciation and help continuing the development, you can support me on [Patreon](https://patreon.com/Raival?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink).
