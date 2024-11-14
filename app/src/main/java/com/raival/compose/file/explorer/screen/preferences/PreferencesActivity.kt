@@ -57,9 +57,9 @@ class PreferencesActivity : BaseActivity() {
 
                             DisplayContainer()
 
-                            TextEditorContainer()
-
                             GeneralContainer()
+
+                            TextEditorContainer()
 
                             Space(size = 4.dp)
                         }
