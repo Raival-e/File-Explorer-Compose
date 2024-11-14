@@ -65,9 +65,7 @@ class RegularTabCopyTask(
         fun copyFile(from: DocumentHolder, to: DocumentHolder) {
             if (!filesToCopy.contains(from.getPath())) return
 
-            val existingFile = from.getFileName().let {
-                if (it != DocumentHolder.UNKNOWN_NAME) to.findFile(it) else null
-            }
+            val existingFile = from.getFileName().let { to.findFile(it) }
 
             taskCallback.onReport(
                 updateProgress(
@@ -80,30 +78,28 @@ class RegularTabCopyTask(
             )
 
             if (existingFile isNot null) {
-                if (existingFile!!.getParent()?.getPath() == to.getPath() || !existingFile.delete()) {
+                if (from.getPath() == existingFile?.getPath() || !existingFile!!.delete()) {
                     skipped++
                     return
                 }
             }
 
             from.getFileName().let { fileName ->
-                if (fileName != DocumentHolder.UNKNOWN_NAME) {
-                    to.createSubFile(fileName)?.let { target ->
-                        val inStream = from.openInputStream()
-                        val outStream = target.openOutputStream()
+                to.createSubFile(fileName)?.let { target ->
+                    val inStream = from.openInputStream()
+                    val outStream = target.openOutputStream()
 
-                        inStream.use { input ->
-                            outStream.use { output ->
-                                input?.copyTo(output ?: return)
-                            }
+                    inStream.use { input ->
+                        outStream.use { output ->
+                            input?.copyTo(output ?: return)
                         }
-
-                        if (existingFile isNot null) replaced++ else completed++
-
-                        taskCallback.onReport(updateProgress(emptyString))
-
-                        return
                     }
+
+                    if (existingFile isNot null) replaced++ else completed++
+
+                    taskCallback.onReport(updateProgress(emptyString))
+
+                    return
                 }
             }
 
@@ -113,9 +109,7 @@ class RegularTabCopyTask(
         fun copyFolder(from: DocumentHolder, to: DocumentHolder) {
             if (!filesToCopy.contains(from.getPath())) return
 
-            val newFolder = from.getFileName().let {
-                if (it != DocumentHolder.UNKNOWN_NAME) to.createSubFolder(it) else null
-            }
+            val newFolder = from.getFileName().let { to.createSubFolder(it) }
 
             if (newFolder isNot null) {
                 completed++

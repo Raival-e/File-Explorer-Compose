@@ -44,6 +44,7 @@ class RegularTabMoveTask(
         taskCallback.onPrepare(details)
 
         val filesToMove = arrayListOf<String>()
+        val filesSkipped = arrayListOf<String>()
 
         source.forEach {
             if (it.getStorageId() == destination.getStorageId()) {
@@ -82,9 +83,7 @@ class RegularTabMoveTask(
         fun copyFile(from: DocumentHolder, to: DocumentHolder) {
             if (!filesToMove.contains(from.getPath())) return
 
-            val existingFile = from.getFileName().let {
-                if (it != DocumentHolder.UNKNOWN_NAME) to.findFile(it) else null
-            }
+            val existingFile = from.getFileName().let { to.findFile(it) }
 
             taskCallback.onReport(
                 updateProgress(
@@ -97,45 +96,49 @@ class RegularTabMoveTask(
             )
 
             if (existingFile isNot null) {
-                if (existingFile!!.getParent()?.getPath() == to.getPath() || !existingFile.delete()) {
+                if (from.getPath() == existingFile?.getPath() || !existingFile!!.delete()) {
                     skipped++
+                    filesSkipped.add(from.getPath())
                     return
                 }
             }
 
             from.getFileName().let { fileName ->
-                if (fileName != DocumentHolder.UNKNOWN_NAME) {
-                    to.createSubFile(fileName)?.let { target ->
-                        val inStream = from.openInputStream()
-                        val outStream = target.openOutputStream()
+                to.createSubFile(fileName)?.let { target ->
+                    val inStream = from.openInputStream()
+                    val outStream = target.openOutputStream()
 
-                        inStream.use { input ->
-                            outStream.use { output ->
-                                input?.copyTo(output ?: return)
-                            }
+                    inStream.use { input ->
+                        outStream.use { output ->
+                            input?.copyTo(output ?: return)
                         }
-
-                        if (existingFile isNot null) replaced++ else completed++
-
-                        taskCallback.onReport(updateProgress(emptyString))
-
-                        return
                     }
+
+                    if (existingFile isNot null) replaced++ else completed++
+
+                    taskCallback.onReport(updateProgress(emptyString))
+
+                    return
                 }
             }
 
             skipped++
+            filesSkipped.add(from.getPath())
         }
 
         fun copyFolder(from: DocumentHolder, to: DocumentHolder) {
             if (!filesToMove.contains(from.getPath())) return
 
-            val newFolder = from.getFileName().let {
-                if (it != DocumentHolder.UNKNOWN_NAME) to.createSubFolder(it) else null
-            }
+            val newFolder = from.getFileName().let { to.createSubFolder(it) }
 
             if (newFolder isNot null) {
-                completed++
+                if (from.getPath() == newFolder?.getPath()) {
+                    skipped++
+                    filesSkipped.add(from.getPath())
+                } else {
+                    completed++
+                }
+
                 from.listContent(false).forEach { currentFile ->
                     if (currentFile.isFile()) {
                         copyFile(currentFile, newFolder!!)
@@ -145,6 +148,7 @@ class RegularTabMoveTask(
                 }
             } else {
                 skipped++
+                filesSkipped.add(from.getPath())
             }
         }
 
@@ -166,9 +170,11 @@ class RegularTabMoveTask(
         )
 
         source.forEach { currentFile ->
-            if (currentFile.exists()) {
-                if (currentFile.isFile()) currentFile.delete()
-                else currentFile.deleteRecursively()
+            if (!filesSkipped.contains(currentFile.getPath())) {
+                if (currentFile.exists()) {
+                    if (currentFile.isFile()) currentFile.delete()
+                    else currentFile.deleteRecursively()
+                }
             }
         }
 
