@@ -77,7 +77,10 @@ fun PathListRow(tab: RegularTab) {
                             .clip(CircleShape)
                             .combinedClickable(
                                 onClick = {
-                                    tab.openFolder(item)
+                                    tab.openFolder(
+                                        item = item,
+                                        rememberSelectedFiles = true,
+                                    )
                                 }
                             )
                             .padding(8.dp)
