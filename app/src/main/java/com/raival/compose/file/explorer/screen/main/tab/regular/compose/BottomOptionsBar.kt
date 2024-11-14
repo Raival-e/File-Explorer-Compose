@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddTask
+import androidx.compose.material.icons.rounded.Bookmark
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Search
@@ -60,23 +61,7 @@ fun BottomOptionsBar(tab: RegularTab) {
             }
         }
 
-        BottomOptionsBarButton(Icons.AutoMirrored.Rounded.Sort, stringResource(R.string.sort), {
-            if (tab.showSortingMenu) {
-                FileSortingMenu(
-                    tab = tab,
-                    reloadFiles = { tab.reloadFiles() }
-                ) { tab.showSortingMenu = false }
-            }
-        }) {
-            tab.showSortingMenu = true
-        }
-
-        if (tab.showMoreOptionsButton && tab.selectedFiles.isNotEmpty()) {
-            BottomOptionsBarButton(Icons.Rounded.MoreVert, stringResource(R.string.options)) {
-                tab.fileOptionsDialog.show(tab.selectedFiles[tab.selectedFiles.keys.first()]!!)
-                tab.quickReloadFiles()
-            }
-        } else {
+        if (tab.showMoreOptionsButton &&  tab.selectedFiles.isNotEmpty()) {
             BottomOptionsBarButton(Icons.Rounded.SelectAll, stringResource(R.string.select_all)) {
                 if (tab.selectedFiles.size == tab.activeFolderContent.size) {
                     tab.unselectAllFiles()
@@ -87,6 +72,26 @@ fun BottomOptionsBar(tab: RegularTab) {
                     }
                     tab.quickReloadFiles()
                 }
+            }
+
+            BottomOptionsBarButton(Icons.Rounded.MoreVert, stringResource(R.string.options)) {
+                tab.fileOptionsDialog.show(tab.selectedFiles[tab.selectedFiles.keys.first()]!!)
+                tab.quickReloadFiles()
+            }
+        } else {
+            BottomOptionsBarButton(Icons.AutoMirrored.Rounded.Sort, stringResource(R.string.sort), {
+                if (tab.showSortingMenu) {
+                    FileSortingMenu(
+                        tab = tab,
+                        reloadFiles = { tab.reloadFiles() }
+                    ) { tab.showSortingMenu = false }
+                }
+            }) {
+                tab.showSortingMenu = true
+            }
+
+            BottomOptionsBarButton(Icons.Rounded.Bookmark, stringResource(R.string.bookmarks)) {
+                tab.showBookmarkDialog = true
             }
         }
     }
