@@ -42,46 +42,23 @@ class ImageViewerActivity : ViewerActivity() {
                     ) {
                         val image = remember { mutableStateOf(ByteArray(0)) }
                         var isLoaded by remember { mutableStateOf(false) }
-                        var isError by remember { mutableStateOf(false) }
 
                         LaunchedEffect(Unit) {
                             image.value = instance.uri.read()
+                            isLoaded = true
                         }
 
                         if (!isLoaded) {
                             CircularProgressIndicator()
                         }
 
-                        if (isError) {
-                            Image(
-                                modifier = Modifier.fillMaxSize(),
-                                painter = painterResource(R.drawable.unknown_file_extension),
-                                contentDescription = null,
-                                contentScale = ContentScale.Inside
-                            )
-                        } else {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .zoomable(rememberZoomState()),
-                                model = image.value,
-                                contentDescription = null,
-                                onState = { state ->
-                                    when (state) {
-                                        is AsyncImagePainter.State.Success -> {
-                                            isLoaded = true
-                                            isError = false
-                                        }
-
-                                        is AsyncImagePainter.State.Error -> {
-                                            isError = true
-                                        }
-
-                                        else -> {}
-                                    }
-                                }
-                            )
-                        }
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .zoomable(rememberZoomState()),
+                            model = image.value,
+                            contentDescription = null
+                        )
                     }
                 }
             }
