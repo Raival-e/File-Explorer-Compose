@@ -97,7 +97,7 @@ class RegularTabMoveTask(
             )
 
             if (existingFile isNot null) {
-                if (!existingFile!!.delete()) {
+                if (existingFile!!.getParent()?.getPath() == to.getPath() || !existingFile.delete()) {
                     skipped++
                     return
                 }

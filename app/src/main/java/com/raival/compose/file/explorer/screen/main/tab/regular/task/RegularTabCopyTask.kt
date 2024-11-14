@@ -80,7 +80,7 @@ class RegularTabCopyTask(
             )
 
             if (existingFile isNot null) {
-                if (!existingFile!!.delete()) {
+                if (existingFile!!.getParent()?.getPath() == to.getPath() || !existingFile.delete()) {
                     skipped++
                     return
                 }
@@ -130,6 +130,7 @@ class RegularTabCopyTask(
                 skipped++
             }
         }
+
         source.forEach { currentFile ->
             if (currentFile.isFile()) {
                 copyFile(currentFile, destination)
