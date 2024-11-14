@@ -91,8 +91,8 @@
     <string name="search_query">键入要搜索的内容</string>
     <string name="tasks">任务清单</string>
     <string name="invalid_task">无效任务</string>
-    <string name="folders_count">%1$d 个文件夹</string>
-    <string name="files_count">%1$d 个文件</string>
+    <string name="folders_count">%1$d 个文件夹%2$s</string>
+    <string name="files_count">%1$d 个文件%2$s</string>
     <string name="no_app_can_open_file">找不到可用于打开此类文件的程序</string>
     <string name="failed_to_open_this_file">打开此文件失败</string>
     <string name="controlling_left_cursor">光标左移</string>
@@ -135,8 +135,8 @@
     <string name="line_column">"行 %1$d, 列 %2$d "</string>
     <string name="character">(共 %1$d 个字符)</string>
     <string name="no_match">没有匹配项</string>
-    <string name="plural1">s</string>
-    <string name="plural2">es</string>
+    <string name="plural1" />
+    <string name="plural2" />
     <string name="match">共 %1$d 处匹配</string>
     <string name="match_text2">(共 %2$s 项中的第 %1$d 项)</string>
     <string name="file_no_longer_exists">文件已不存在</string>
