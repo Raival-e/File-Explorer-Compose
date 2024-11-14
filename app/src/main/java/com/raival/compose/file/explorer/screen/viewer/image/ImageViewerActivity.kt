@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import coil3.compose.AsyncImagePainter
@@ -57,7 +58,8 @@ class ImageViewerActivity : ViewerActivity() {
                             Image(
                                 modifier = Modifier.fillMaxSize(),
                                 painter = painterResource(R.drawable.unknown_file_extension),
-                                contentDescription = null
+                                contentDescription = null,
+                                contentScale = ContentScale.Inside
                             )
                         } else {
                             AsyncImage(
@@ -70,6 +72,7 @@ class ImageViewerActivity : ViewerActivity() {
                                     when (state) {
                                         is AsyncImagePainter.State.Success -> {
                                             isLoaded = true
+                                            isError = false
                                         }
 
                                         is AsyncImagePainter.State.Error -> {
