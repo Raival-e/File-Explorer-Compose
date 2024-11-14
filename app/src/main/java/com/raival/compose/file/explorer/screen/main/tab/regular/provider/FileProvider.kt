@@ -3,17 +3,9 @@ package com.raival.compose.file.explorer.screen.main.tab.regular.provider
 import android.content.Context
 import android.os.Environment
 import android.os.StatFs
-import android.os.storage.StorageManager
-import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
-import com.anggrayudi.storage.SimpleStorage
-import com.anggrayudi.storage.SimpleStorageHelper
 import com.anggrayudi.storage.file.DocumentFileCompat
-import com.anggrayudi.storage.file.StorageType
-import com.anggrayudi.storage.file.getRelativePath
-import com.raival.compose.file.explorer.App
-import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.regular.modal.EXTERNAL_STORAGE

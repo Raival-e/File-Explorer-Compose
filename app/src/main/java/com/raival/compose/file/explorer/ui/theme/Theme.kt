@@ -2,7 +2,6 @@ package com.raival.compose.file.explorer.ui.theme
 
 import android.app.Activity
 import android.os.Build
-import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme

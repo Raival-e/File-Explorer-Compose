@@ -8,9 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FolderOpen
-import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.Numbers
-import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator

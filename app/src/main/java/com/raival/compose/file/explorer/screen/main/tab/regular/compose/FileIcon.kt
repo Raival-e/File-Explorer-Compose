@@ -16,9 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.common.compose.Isolate
 import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSizeMap
