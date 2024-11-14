@@ -1,7 +1,9 @@
 package com.raival.compose.file.explorer.common.extension
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.res.Configuration
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -13,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -30,6 +31,15 @@ fun <T> T.conditions(cond: T.() -> Boolean) = this.cond()
 
 @Composable
 fun Int.dp() = (this / globalClass.resources.displayMetrics.density).dp
+
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
+}
 
 val Uri.name: String?
     get() {
