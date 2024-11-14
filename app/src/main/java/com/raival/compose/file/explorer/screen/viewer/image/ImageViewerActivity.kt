@@ -2,7 +2,6 @@ package com.raival.compose.file.explorer.screen.viewer.image
 
 import android.net.Uri
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -13,11 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
-import coil3.compose.AsyncImagePainter
-import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.common.extension.read
 import com.raival.compose.file.explorer.screen.viewer.ViewerActivity
