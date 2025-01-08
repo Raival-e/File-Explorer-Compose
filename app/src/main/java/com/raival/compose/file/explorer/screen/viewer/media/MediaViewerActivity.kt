@@ -66,7 +66,7 @@ class MediaViewerActivity : ViewerActivity() {
             setContent {
                 KeepScreenOn()
                 FileExplorerTheme {
-                    SafeSurface(modifier = Modifier.fillMaxSize()) {
+                    SafeSurface {
                         Box(
                             Modifier
                                 .fillMaxSize(),
@@ -161,7 +161,9 @@ class MediaViewerActivity : ViewerActivity() {
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Box (
-                                        Modifier.weight(1f).padding(52.dp),
+                                        Modifier
+                                            .weight(1f)
+                                            .padding(52.dp),
                                     ) {
                                         RotatingDisk(
                                             modifier = Modifier

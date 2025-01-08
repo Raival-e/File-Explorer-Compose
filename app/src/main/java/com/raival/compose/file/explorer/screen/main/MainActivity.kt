@@ -41,7 +41,7 @@ class MainActivity : BaseActivity() {
     override fun onPermissionGranted() {
         setContent {
             FileExplorerTheme {
-                SafeSurface(modifier = Modifier.fillMaxSize()) {
+                SafeSurface {
                     val context = LocalContext.current
                     val coroutineScope = rememberCoroutineScope()
                     val mainActivityManager = globalClass.mainActivityManager

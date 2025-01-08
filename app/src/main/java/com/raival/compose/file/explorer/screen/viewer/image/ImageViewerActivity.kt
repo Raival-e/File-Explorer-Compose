@@ -30,7 +30,7 @@ class ImageViewerActivity : ViewerActivity() {
     override fun onReady(instance: ViewerInstance) {
         setContent {
             FileExplorerTheme {
-                SafeSurface(modifier = Modifier.fillMaxSize()) {
+                SafeSurface {
                     Box(
                         Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center

@@ -46,7 +46,7 @@ class PreferencesActivity : BaseActivity() {
     override fun onPermissionGranted() {
         setContent {
             FileExplorerTheme {
-                SafeSurface(modifier = Modifier.fillMaxSize()) {
+                SafeSurface {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

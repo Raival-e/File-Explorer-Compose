@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun SafeSurface(
-    modifier: Modifier = Modifier,
     content: @Composable () -> Unit
 ) {
     Surface(

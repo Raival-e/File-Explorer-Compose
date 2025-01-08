@@ -55,7 +55,7 @@ class TextEditorActivity : BaseActivity() {
 
         setContent {
             FileExplorerTheme {
-                SafeSurface(modifier = Modifier.fillMaxSize()) {
+                SafeSurface {
                     Column(
                         Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally

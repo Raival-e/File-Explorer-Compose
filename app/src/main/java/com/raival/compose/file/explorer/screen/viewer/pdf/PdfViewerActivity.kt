@@ -59,7 +59,7 @@ class PdfViewerActivity : ViewerActivity() {
         if (instance is PdfViewerInstance) {
             setContent {
                 FileExplorerTheme {
-                    SafeSurface(modifier = Modifier.fillMaxSize()) {
+                    SafeSurface {
                         Box(
                             Modifier.fillMaxSize(),
                             contentAlignment = Alignment.TopCenter
