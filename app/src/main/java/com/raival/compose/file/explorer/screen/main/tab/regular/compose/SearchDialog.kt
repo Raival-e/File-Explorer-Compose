@@ -79,13 +79,18 @@ fun SearchDialog(tab: RegularTab) {
                 suspend fun searchIn(doc: DocumentHolder) {
                     if (!isSearching) return
 
+                    val searchLimit = globalClass
+                        .preferencesManager
+                        .generalPrefs
+                        .searchInFilesLimit
+
+                    val isExceedingTheSearchLimit =
+                        searchLimit > 0 && tab.search.searchResults.size >= searchLimit
+
+                    if (isExceedingTheSearchLimit) return
+
                     if (doc.isFile()) {
-                        if (doc.getFileName().contains(query, true)
-                            && tab.search.searchResults.size < globalClass
-                                .preferencesManager
-                                .generalPrefs
-                                .searchInFilesLimit
-                        ) {
+                        if (doc.getFileName().contains(query, true)) {
                             if (!isSearching) return
                             tab.search.searchResults += doc
                             delay(150)
