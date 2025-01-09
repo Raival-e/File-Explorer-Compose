@@ -49,7 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.Space
@@ -79,13 +78,18 @@ fun SearchDialog(tab: RegularTab) {
                 suspend fun searchIn(doc: DocumentHolder) {
                     if (!isSearching) return
 
+                    val searchLimit = globalClass
+                        .preferencesManager
+                        .generalPrefs
+                        .searchInFilesLimit
+
+                    val isExceedingTheSearchLimit =
+                        searchLimit > 0 && tab.search.searchResults.size >= searchLimit
+
+                    if (isExceedingTheSearchLimit) return
+
                     if (doc.isFile()) {
-                        if (doc.getFileName().contains(query, true)
-                            && tab.search.searchResults.size < globalClass
-                                .preferencesManager
-                                .generalPrefs
-                                .searchInFilesLimit
-                        ) {
+                        if (doc.getFileName().contains(query, true)) {
                             if (!isSearching) return
                             tab.search.searchResults += doc
                             delay(150)
@@ -292,7 +296,7 @@ fun SearchDialog(tab: RegularTab) {
                                         onClick = {
                                             showMoreOptionsMenu = false
                                             item.getPath().copyToClipboard()
-                                            globalClass.showMsg(App.globalClass.getString(R.string.copied_to_clipboard))
+                                            globalClass.showMsg(globalClass.getString(R.string.copied_to_clipboard))
                                         }
                                     )
                                 }

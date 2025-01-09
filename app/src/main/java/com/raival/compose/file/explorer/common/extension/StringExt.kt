@@ -7,6 +7,7 @@ import com.raival.compose.file.explorer.App
 import kotlin.random.Random
 
 const val emptyString = ""
+const val whiteSpace = " "
 
 fun String.Companion.randomString(length: Int): String {
     val charPool: List<Char> = ('a'..'z') + ('A'..'Z') + ('0'..'9')

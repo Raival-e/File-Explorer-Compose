@@ -16,7 +16,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
-import com.raival.compose.file.explorer.common.extension.plural
+import com.raival.compose.file.explorer.common.extension.whiteSpace
 import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType.javaFileType
 import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType.jsonFileType
 import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType.kotlinFileType
@@ -396,45 +396,31 @@ class TextEditorManager {
 
         append(
             globalClass.getString(
-                R.string.line_column,
+                R.string.cursor_position,
                 cursor.leftLine + 1,
                 cursor.leftColumn + 1
             )
         )
+
+        append(whiteSpace)
+
         if (cursor.isSelected) {
             val selectionCount = cursor.right - cursor.left
-            append(
-                globalClass.getString(
-                    R.string.character,
-                    selectionCount,
-                    plural(selectionCount)
-                )
-            )
+            append("($selectionCount)")
         }
 
         val searcher = codeEditor.searcher
         if (searcher.hasQuery()) {
             val idx = searcher.currentMatchedPositionIndex
-            val matchText = when (val count = searcher.matchedPositionCount) {
-                0 -> {
-                    globalClass.getString(R.string.no_match)
-                }
 
-                else -> {
-                    globalClass.getString(
-                        R.string.match,
-                        count,
-                        plural(count, globalClass.getString(R.string.plural2))
-                    )
-                }
+            append(whiteSpace)
+            append(globalClass.getString(R.string.text_editor_search_result))
+
+            if (idx == -1) {
+                append("${searcher.matchedPositionCount}")
+            } else {
+                append("${idx + 1}/${searcher.matchedPositionCount}")
             }
-            append(
-                if (idx == -1) {
-                    globalClass.getString(R.string.match_text, matchText)
-                } else {
-                    globalClass.getString(R.string.match_text2, idx + 1, matchText)
-                }
-            )
         }
     }
 
