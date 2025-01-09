@@ -50,7 +50,6 @@
     <string name="dismiss">Dismiss</string>
     <string name="delete_confirmation">Delete Confirmation</string>
     <string name="move_to_recycle_bin">Move to Recycle Bin</string>
-    <string name="delete_confirmation_message">Do you really want to delete the %1$d selected file%2$s?</string>
     <string name="create_archive">Create Archive</string>
     <string name="unable_to_create_file">Unable to create file</string>
     <string name="cancel">Cancel</string>
@@ -90,8 +89,6 @@
     <string name="search_query">Search Query</string>
     <string name="tasks">Tasks</string>
     <string name="invalid_task">Invalid task</string>
-    <string name="folders_count">%1$d folder%2$s</string>
-    <string name="files_count">%1$d file%2$s</string>
     <string name="no_app_can_open_file">Could not find any app that can open this type of files</string>
     <string name="failed_to_open_this_file">Failed to open this file</string>
     <string name="controlling_left_cursor">Controlling left cursor</string>
@@ -131,17 +128,8 @@
     <string name="ignore_changes">Ignore changes</string>
     <string name="save_file_msg">This file has not been saved, do you want to save it?</string>
     <string name="file_not_found">File not found</string>
-    <string name="line_column">"Line %1$d, Column %2$d "</string>
-    <string name="character">(%1$d character%2$s)</string>
-    <string name="no_match">no match</string>
-    <string name="plural1">s</string>
-    <string name="plural2">es</string>
-    <string name="match">%1$d match%2$s</string>
-    <string name="match_text" translatable="false">(%1$s)</string>
-    <string name="match_text2">(%1$d of %2$s)</string>
     <string name="file_no_longer_exists">File no longer exists</string>
     <string name="move">Move</string>
-    <string name="files">%1$d files</string>
     <string name="preparing">Preparing…</string>
     <string name="start_moving_task">Start moving task…</string>
     <string name="progress">Progress: %1$d/%2$d</string>
@@ -186,4 +174,10 @@
     <string name="search_finished">Search finished</string>
     <string name="show_folder_s_content_count">Show folder\'s content count</string>
     <string name="show_hidden_files">Show hidden files</string>
+    <string name="delete_confirmation_message">Do you really want to delete the selected files?</string>
+    <string name="task_subtitle">Size: %1$d</string>
+    <string name="cursor_position">%1$d:%2$d</string>
+    <string name="text_editor_search_result">"search result: "</string>
+    <string name="folders_count">folders: %1$d</string>
+    <string name="files_count">files: %1$d</string>
 </resources>

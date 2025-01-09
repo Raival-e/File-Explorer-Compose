@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.CheckableText
 import com.raival.compose.file.explorer.common.compose.Space
-import com.raival.compose.file.explorer.common.extension.plural
 import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
 
 @Composable
@@ -57,11 +56,7 @@ fun DeleteConfirmationDialog(tab: RegularTab) {
             text = {
                 Column(Modifier.fillMaxWidth()) {
                     Text(
-                        text = stringResource(
-                            id = R.string.delete_confirmation_message,
-                            targetFiles.size,
-                            plural(targetFiles.size)
-                        )
+                        text = stringResource(id = R.string.delete_confirmation_message)
                     )
 
                     if (!tab.showEmptyRecycleBin) {

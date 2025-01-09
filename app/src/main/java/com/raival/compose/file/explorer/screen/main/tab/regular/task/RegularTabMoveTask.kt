@@ -22,7 +22,7 @@ class RegularTabMoveTask(
 
     override fun getSubtitle(): String = if (source.size == 1)
         source[0].getPath().trimToLastTwoSegments()
-    else globalClass.getString(R.string.files, source.size)
+    else globalClass.getString(R.string.task_subtitle, source.size)
 
     override fun execute(destination: DocumentHolder, callback: Any) {
         val taskCallback = callback as RegularTabTaskCallback

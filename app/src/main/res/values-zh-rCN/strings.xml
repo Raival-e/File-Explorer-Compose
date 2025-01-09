@@ -51,7 +51,6 @@
     <string name="dismiss">取消</string>
     <string name="delete_confirmation">确认删除</string>
     <string name="move_to_recycle_bin">移动至回收站</string>
-    <string name="delete_confirmation_message">确认删除选中的 %1$d 个项目吗?</string>
     <string name="create_archive">创建压缩包</string>
     <string name="unable_to_create_file">无法创建文件</string>
     <string name="cancel">取消</string>
@@ -91,8 +90,6 @@
     <string name="search_query">键入要搜索的内容</string>
     <string name="tasks">任务清单</string>
     <string name="invalid_task">无效任务</string>
-    <string name="folders_count">%1$d 个文件夹%2$s</string>
-    <string name="files_count">%1$d 个文件%2$s</string>
     <string name="no_app_can_open_file">找不到可用于打开此类文件的程序</string>
     <string name="failed_to_open_this_file">打开此文件失败</string>
     <string name="controlling_left_cursor">光标左移</string>
@@ -132,16 +129,8 @@
     <string name="ignore_changes">忽略</string>
     <string name="save_file_msg">文件为未保存，你想要保存它吗?</string>
     <string name="file_not_found">文件未找到</string>
-    <string name="line_column">"行 %1$d, 列 %2$d "</string>
-    <string name="character">(共 %1$d 个字符)</string>
-    <string name="no_match">没有匹配项</string>
-    <string name="plural1" />
-    <string name="plural2" />
-    <string name="match">共 %1$d 处匹配</string>
-    <string name="match_text2">(共 %2$s 项中的第 %1$d 项)</string>
     <string name="file_no_longer_exists">文件已不存在</string>
     <string name="move">移动</string>
-    <string name="files">%1$d 个文件</string>
     <string name="preparing">准备中…</string>
     <string name="start_moving_task">开始移动…</string>
     <string name="progress">进度: %1$d/%2$d</string>
@@ -186,4 +175,10 @@
     <string name="search_finished">搜索完成</string>
     <string name="show_folder_s_content_count">显示文件夹内容计数器</string>
     <string name="show_hidden_files">显示隐藏文件</string>
+    <string name="delete_confirmation_message">您确定要删除选定的文件吗？</string>
+    <string name="task_subtitle">大小：%1$d</string>
+    <string name="cursor_position">%1$d：%2$d</string>
+    <string name="text_editor_search_result">"搜索结果："</string>
+    <string name="folders_count">文件夹：%1$d</string>
+    <string name="files_count">文件：%1$d</string>
 </resources>

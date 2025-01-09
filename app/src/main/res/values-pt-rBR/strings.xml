@@ -1,4 +1,5 @@
 <resources>
+  <string name="app_name">File Explorer</string>
   <string name="root_dir">Raiz</string>
   <string name="internal_storage">Armazenamento Interno</string>
   <string name="storage_permission_required">É necessário permissão de acesso ao armazenamento</string>
@@ -49,7 +50,6 @@
   <string name="dismiss">Descartar</string>
   <string name="delete_confirmation">Confirmação de Exclusão</string>
   <string name="move_to_recycle_bin">Mover para a Lixeira</string>
-  <string name="delete_confirmation_message">Deseja realmente excluir o(s) %1$d arquivo(s) selecionado(s)?</string>
   <string name="create_archive">Criar Arquivo</string>
   <string name="unable_to_create_file">Não foi possível criar o arquivo</string>
   <string name="cancel">Cancelar</string>
@@ -89,8 +89,6 @@
   <string name="search_query">Consulta de Pesquisa</string>
   <string name="tasks">Tarefas</string>
   <string name="invalid_task">Tarefa inválida</string>
-  <string name="folders_count">%1$d pasta%2$s</string>
-  <string name="files_count">%1$d arquivo%2$s</string>
   <string name="no_app_can_open_file">Nenhum app pode abrir este tipo de arquivo</string>
   <string name="failed_to_open_this_file">Falha ao abrir este arquivo</string>
   <string name="controlling_left_cursor">Controlando cursor esquerdo</string>
@@ -130,17 +128,8 @@
   <string name="ignore_changes">Ignorar alterações</string>
   <string name="save_file_msg">Este arquivo não foi salvo, deseja salvá-lo?</string>
   <string name="file_not_found">Arquivo</string>
-  <string name="line_column">"Linha %1$d, Coluna %2$d "</string>
-  <string name="character">(%1$d caractere%2$s)</string>
-  <string name="no_match">nenhuma correspondência</string>
-  <string name="plural1">s</string>
-  <string name="plural2">es</string>
-  <string name="match">%1$d correspondência%2$s</string>
-  <string name="match_text" translatable="false">(%1$s)</string>
-  <string name="match_text2">(%1$d de %2$s)</string>
   <string name="file_no_longer_exists">O arquivo não existe mais</string>
   <string name="move">Mover</string>
-  <string name="files">%1$d arquivos</string>
   <string name="preparing">Preparando…</string>
   <string name="start_moving_task">Iniciando tarefa de movimentação…</string>
   <string name="progress">Progresso: %1$d/%2$d</string>
@@ -185,4 +174,10 @@
   <string name="search_finished">Busca finalizada</string>
   <string name="show_folder_s_content_count">Mostrar contagem de conteúdo da pasta</string>
   <string name="show_hidden_files">Mostrar arquivos ocultos</string>
+  <string name="delete_confirmation_message">Você realmente deseja excluir os arquivos selecionados?</string>
+  <string name="task_subtitle">Tamanho: %1$d</string>
+  <string name="cursor_position">%1$d:%2$d</string>
+  <string name="text_editor_search_result">"resultado da pesquisa: "</string>
+  <string name="folders_count">pastas: %1$d</string>
+  <string name="files_count">arquivos: %1$d</string>
 </resources>

@@ -14,7 +14,6 @@ import android.provider.MediaStore.MediaColumns.DISPLAY_NAME
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.R
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -85,9 +84,6 @@ fun Long.toFormattedSize(): String {
 
 fun Context.isDarkTheme() = (resources.configuration.uiMode
         and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-
-fun plural(size: Int, custom: String = globalClass.getString(R.string.plural1)) =
-    if (size == 1) emptyString else custom
 
 @Throws(IOException::class)
 fun Uri.read(): ByteArray {

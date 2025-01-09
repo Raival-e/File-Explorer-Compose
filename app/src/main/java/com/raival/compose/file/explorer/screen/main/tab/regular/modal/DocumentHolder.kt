@@ -28,7 +28,6 @@ import com.raival.compose.file.explorer.common.extension.conditions
 import com.raival.compose.file.explorer.common.extension.drawableToBitmap
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
-import com.raival.compose.file.explorer.common.extension.plural
 import com.raival.compose.file.explorer.common.extension.toFormattedDate
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType
@@ -370,8 +369,7 @@ data class DocumentHolder(
                     append(
                         globalClass.getString(
                             R.string.folders_count,
-                            foldersCount,
-                            plural(foldersCount)
+                            foldersCount
                         )
                     )
                     if (filesCount > 0) append(", ")
@@ -380,8 +378,7 @@ data class DocumentHolder(
                     append(
                         globalClass.getString(
                             R.string.files_count,
-                            filesCount,
-                            plural(filesCount)
+                            filesCount
                         )
                     )
                 }
