@@ -79,6 +79,7 @@ dependencies {
 
     implementation(libs.cascade.compose)
     implementation(libs.compose.swipebox)
+    implementation(libs.reorderable)
     implementation(libs.storage)
     implementation(libs.lazycolumnscrollbar)
     implementation(libs.zoomable)

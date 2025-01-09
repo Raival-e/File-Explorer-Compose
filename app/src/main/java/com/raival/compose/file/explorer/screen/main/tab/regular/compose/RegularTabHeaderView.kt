@@ -32,13 +32,15 @@ import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RegularTabHeaderView(
     tab: RegularTab,
     isSelected: Boolean,
-    index: Int
+    index: Int,
+    reorderableCollectionItemScope: ReorderableCollectionItemScope
 ) {
     val selectedBackgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest
     val unselectedBackgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -76,12 +78,10 @@ fun RegularTabHeaderView(
                     } else {
                         showTabHeaderMenu = true
                     }
-                },
-                onLongClick = {
-                    showTabHeaderMenu = true
                 }
             )
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp)
+            .then(with(reorderableCollectionItemScope) { Modifier.longPressDraggableHandle() }),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {

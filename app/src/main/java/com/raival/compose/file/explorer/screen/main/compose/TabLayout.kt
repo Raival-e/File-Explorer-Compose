@@ -20,11 +20,18 @@ import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
 import com.raival.compose.file.explorer.screen.main.tab.regular.compose.RegularTabHeaderView
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun TabLayout() {
     val mainActivityManager = globalClass.mainActivityManager
     val tabLayoutState = rememberLazyListState()
+    val reorderableLazyListState = rememberReorderableLazyListState(tabLayoutState) { from, to ->
+        if (from.index == mainActivityManager.selectedTabIndex) mainActivityManager.selectedTabIndex =
+            to.index
+        mainActivityManager.tabs.add(to.index, mainActivityManager.tabs.removeAt(from.index))
+    }
 
     Row(
         Modifier
@@ -46,12 +53,15 @@ fun TabLayout() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             itemsIndexed(mainActivityManager.tabs, key = { _, item -> item.id }) { index, tab ->
-                if (tab is RegularTab) {
-                    RegularTabHeaderView(
-                        tab = tab,
-                        isSelected = mainActivityManager.tabs[mainActivityManager.selectedTabIndex] == tab,
-                        index = index,
-                    )
+                ReorderableItem(reorderableLazyListState, key = tab.id) { isDragging ->
+                    if (tab is RegularTab) {
+                        RegularTabHeaderView(
+                            tab = tab,
+                            isSelected = mainActivityManager.tabs[mainActivityManager.selectedTabIndex] == tab,
+                            index = index,
+                            this
+                        )
+                    }
                 }
             }
         }
