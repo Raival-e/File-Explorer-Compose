@@ -72,8 +72,10 @@ fun RegularTabHeaderView(
                     if (mainActivityManager.selectedTabIndex isNot index) {
                         mainActivityManager.tabs[mainActivityManager.selectedTabIndex].onTabStopped()
                         mainActivityManager.selectedTabIndex = index
+                        tab.onTabClicked()
+                    } else {
+                        showTabHeaderMenu = true
                     }
-                    tab.onTabClicked()
                 },
                 onLongClick = {
                     showTabHeaderMenu = true
