@@ -30,6 +30,8 @@ fun TabLayout() {
     val reorderableLazyListState = rememberReorderableLazyListState(tabLayoutState) { from, to ->
         if (from.index == mainActivityManager.selectedTabIndex) mainActivityManager.selectedTabIndex =
             to.index
+        else if (to.index == mainActivityManager.selectedTabIndex) mainActivityManager.selectedTabIndex =
+            from.index
         mainActivityManager.tabs.add(to.index, mainActivityManager.tabs.removeAt(from.index))
     }
 

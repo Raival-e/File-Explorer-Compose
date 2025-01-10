@@ -89,7 +89,6 @@ fun ColumnScope.FilesList(tab: RegularTab) {
         }
     } else {
         val columnCount = preferencesManager.displayPrefs.fileListColumnCount
-
         Box(Modifier.weight(1f)) {
             PullToRefreshBox(
                 isRefreshing = isRefreshing,

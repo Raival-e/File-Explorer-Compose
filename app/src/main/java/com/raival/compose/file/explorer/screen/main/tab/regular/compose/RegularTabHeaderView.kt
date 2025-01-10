@@ -40,7 +40,7 @@ fun RegularTabHeaderView(
     tab: RegularTab,
     isSelected: Boolean,
     index: Int,
-    reorderableCollectionItemScope: ReorderableCollectionItemScope
+    reorderableScope: ReorderableCollectionItemScope
 ) {
     val selectedBackgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest
     val unselectedBackgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
@@ -74,14 +74,13 @@ fun RegularTabHeaderView(
                     if (mainActivityManager.selectedTabIndex isNot index) {
                         mainActivityManager.tabs[mainActivityManager.selectedTabIndex].onTabStopped()
                         mainActivityManager.selectedTabIndex = index
-                        tab.onTabClicked()
                     } else {
                         showTabHeaderMenu = true
                     }
                 }
             )
             .padding(horizontal = 20.dp)
-            .then(with(reorderableCollectionItemScope) { Modifier.longPressDraggableHandle() }),
+            .then(with(reorderableScope) { Modifier.longPressDraggableHandle() }),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
