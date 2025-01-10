@@ -88,6 +88,8 @@ class RegularTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
     var foldersCount = 0
     var filesCount = 0
 
+    var uidHolder = 0
+
     override var onTabClicked = { openFolder(item = activeFolder, rememberSelectedFiles = true) }
     override var onTabStarted = { }
     override var onTabResumed = { openFolder(item = activeFolder, rememberSelectedFiles = true) }
@@ -123,6 +125,8 @@ class RegularTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
             openFolder(homeDir)
         }
     }
+
+    fun getUID() = uidHolder++
 
     private fun createSubtitle(): String {
         var selectedFolders = 0

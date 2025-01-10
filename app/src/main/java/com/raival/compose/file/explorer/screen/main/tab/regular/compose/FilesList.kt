@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -108,13 +107,12 @@ fun ColumnScope.FilesList(tab: RegularTab) {
                     columns = if (columnCount > 0)
                         GridCells.Fixed(columnCount) else GridCells.Adaptive(300.dp),
                     modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer { alpha = if (tab.isLoading) 0.3f else 1f },
+                        .fillMaxSize(),
                     state = tab.activeListState
                 ) {
                     itemsIndexed(
                         tab.activeFolderContent,
-                        key = { index, item -> "${tab.id}:${item.getPath()}" }
+                        key = { index, item -> tab.getUID() }
                     ) { index, item ->
                         val currentItemPath = item.getPath()
                         val itemDetailsCoroutine = rememberCoroutineScope()

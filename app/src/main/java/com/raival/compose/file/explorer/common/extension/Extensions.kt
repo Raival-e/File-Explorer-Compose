@@ -31,6 +31,9 @@ fun <T> T.conditions(cond: T.() -> Boolean) = this.cond()
 @Composable
 fun Int.dp() = (this / globalClass.resources.displayMetrics.density).dp
 
+val Int.px: Int
+    get() = (this * globalClass.resources.displayMetrics.density).toInt()
+
 fun Context.findActivity(): Activity? {
     var context = this
     while (context is ContextWrapper) {
