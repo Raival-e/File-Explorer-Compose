@@ -70,7 +70,7 @@ class PreferencesManager {
 
         var fileListSize by prefMutableState(
             keyName = "fileListSize",
-            defaultValue = RegularTabFileListSize.MEDIUM.ordinal,
+            defaultValue = RegularTabFileListSize.LARGE.ordinal,
             getPreferencesKey = { intPreferencesKey(it) }
         )
 
