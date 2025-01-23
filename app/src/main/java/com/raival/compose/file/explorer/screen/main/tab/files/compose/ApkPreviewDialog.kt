@@ -32,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.BottomSheetDialog
@@ -46,7 +45,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
     val apkDialog = tab.apkDialog
 
     if (tab.apkDialog.showApkDialog && apkDialog.apkFile != null) {
-        val packageManager = App.globalClass.packageManager
+        val packageManager = globalClass.packageManager
         val context = LocalContext.current
         val apkFile = apkDialog.apkFile!!
 

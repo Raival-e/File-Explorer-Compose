@@ -7,7 +7,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.extension.isDarkTheme
 import com.raival.compose.file.explorer.screen.textEditor.language.java.JavaCodeLanguage
@@ -39,7 +38,7 @@ fun resetColorScheme(codeEditor: CodeEditor, isTextmate: Boolean) {
     codeEditor.apply {
         if (isTextmate) {
             ensureTextmateTheme(codeEditor)
-            if (App.globalClass.isDarkTheme()) {
+            if (globalClass.isDarkTheme()) {
                 ThemeRegistry.getInstance().setTheme("dark")
             } else {
                 ThemeRegistry.getInstance().setTheme("light")
@@ -50,7 +49,7 @@ fun resetColorScheme(codeEditor: CodeEditor, isTextmate: Boolean) {
             colorScheme = cs
             adaptCodeEditorScheme(colorScheme)
         } else {
-            colorScheme = if (App.globalClass.isDarkTheme()) getDarkScheme() else getLightScheme()
+            colorScheme = if (globalClass.isDarkTheme()) getDarkScheme() else getLightScheme()
             adaptCodeEditorScheme(colorScheme)
         }
     }
