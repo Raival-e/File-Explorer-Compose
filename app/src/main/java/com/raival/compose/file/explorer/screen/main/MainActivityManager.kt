@@ -14,9 +14,10 @@ import com.raival.compose.file.explorer.common.extension.conditions
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.screen.main.tab.Tab
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.StorageDevice
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageDevice
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,6 +37,10 @@ class MainActivityManager {
     val tabs = mutableStateListOf<Tab>()
 
     val drawerState = DrawerState(initialValue = DrawerValue.Closed)
+
+    fun setupTabs() {
+        storageDevices.addAll(FileProvider.getStorageDevices(globalClass))
+    }
 
     fun closeAllTabs() {
         tabs.removeIf { it.id isNot tabs[0].id }
@@ -78,7 +83,7 @@ class MainActivityManager {
 
     private fun openFile(file: DocumentHolder, context: Context) {
         if (file.exists()) {
-            addTabAndSelect(RegularTab(file, context))
+            addTabAndSelect(FilesTab(file, context))
         }
     }
 

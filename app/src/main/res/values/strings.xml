@@ -20,7 +20,7 @@
     <string name="save">Save</string>
     <string name="empty_folder">empty folder</string>
     <string name="files_selected">" (%s selected)"</string>
-    <string name="regular_tab_title">Files</string>
+    <string name="files_tab_title">Files</string>
     <string name="new_task_has_been_added">New task has been added</string>
     <string name="package_name">Package Name</string>
     <string name="version_name">Version Name</string>

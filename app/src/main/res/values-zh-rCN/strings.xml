@@ -21,7 +21,7 @@
     <string name="save">保存</string>
     <string name="empty_folder">空文件夹</string>
     <string name="files_selected">" (已选中 %s 个项目)"</string>
-    <string name="regular_tab_title">文件</string>
+    <string name="files_tab_title">文件</string>
     <string name="new_task_has_been_added">已添加至任务队列</string>
     <string name="package_name">应用包名</string>
     <string name="version_name">版本</string>

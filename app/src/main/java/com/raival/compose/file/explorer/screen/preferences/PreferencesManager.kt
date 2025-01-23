@@ -11,9 +11,9 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.fromJson
 import com.raival.compose.file.explorer.common.extension.toJson
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.SortingMethod.SORT_BY_NAME
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.FileSortingPrefs
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
 import com.raival.compose.file.explorer.screen.preferences.constant.dataStore

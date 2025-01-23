@@ -6,8 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTabContentView
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.RegularTabContentView
 
 @Composable
 fun ColumnScope.TabContentView() {
@@ -22,7 +22,7 @@ fun ColumnScope.TabContentView() {
                 currentTab.onTabStarted()
             }
 
-            if (currentTab is RegularTab) {
+            if (currentTab is FilesTab) {
                 RegularTabContentView(currentTab)
             }
         }

@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.INTERNAL_STORAGE
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.ROOT
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.StorageDevice
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.INTERNAL_STORAGE
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.ROOT
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageDevice
 
 @Composable
 fun StorageDeviceView(

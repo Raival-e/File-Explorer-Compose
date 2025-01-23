@@ -20,7 +20,7 @@
   <string name="save">Salvar</string>
   <string name="empty_folder">pasta vazia</string>
   <string name="files_selected">" (%s selecionados)"</string>
-  <string name="regular_tab_title">Arquivos</string>
+    <string name="files_tab_title">Arquivos</string>
   <string name="new_task_has_been_added">Nova tarefa foi adicionada</string>
   <string name="package_name">Nome do Pacote</string>
   <string name="version_name">Nome da Versão</string>

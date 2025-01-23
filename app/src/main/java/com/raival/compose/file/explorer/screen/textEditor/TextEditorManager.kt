@@ -17,13 +17,13 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.common.extension.whiteSpace
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType.javaFileType
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType.jsonFileType
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType.kotlinFileType
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.Language.LANGUAGE_JAVA
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.Language.LANGUAGE_JSON
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.Language.LANGUAGE_KOTLIN
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.javaFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.jsonFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.kotlinFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JAVA
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JSON
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_KOTLIN
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.textEditor.misc.setCodeEditorLanguage
 import com.raival.compose.file.explorer.screen.textEditor.model.Symbol
 import io.github.rosemoe.sora.event.ContentChangeEvent
@@ -292,7 +292,7 @@ class TextEditorManager {
     }
 
     private fun analyseFile() {
-        activityTitle = activeFile.getFileName()
+        activityTitle = activeFile.getName()
         activitySubtitle = activeFile.getBasePath()
 
         canFormatFile = activeFile.getFileExtension().lowercase(Locale.getDefault()).let {

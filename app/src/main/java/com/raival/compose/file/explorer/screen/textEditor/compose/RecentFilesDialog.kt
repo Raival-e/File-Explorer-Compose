@@ -30,7 +30,7 @@ import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.compose.SwipeToDeleteBox
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.setContent
-import com.raival.compose.file.explorer.screen.main.tab.regular.compose.FileItemRow
+import com.raival.compose.file.explorer.screen.main.tab.files.compose.FileItemRow
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 

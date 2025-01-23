@@ -11,7 +11,7 @@ import coil3.decode.DecodeResult
 import coil3.decode.Decoder
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
-import com.raival.compose.file.explorer.screen.main.tab.regular.misc.FileMimeType.pdfFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.pdfFileType
 import java.io.File
 
 class PdfFileDecoder(val source: File) : Decoder {

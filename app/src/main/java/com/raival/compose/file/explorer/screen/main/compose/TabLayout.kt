@@ -18,8 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
-import com.raival.compose.file.explorer.screen.main.tab.regular.compose.RegularTabHeaderView
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -56,8 +55,8 @@ fun TabLayout() {
         ) {
             itemsIndexed(mainActivityManager.tabs, key = { _, item -> item.id }) { index, tab ->
                 ReorderableItem(reorderableLazyListState, key = tab.id) { isDragging ->
-                    if (tab is RegularTab) {
-                        RegularTabHeaderView(
+                    if (tab is FilesTab) {
+                        TabHeaderView(
                             tab = tab,
                             isSelected = mainActivityManager.tabs[mainActivityManager.selectedTabIndex] == tab,
                             index = index,

@@ -23,9 +23,9 @@ import com.raival.compose.file.explorer.screen.main.compose.SaveTextEditorFilesD
 import com.raival.compose.file.explorer.screen.main.compose.TabContentView
 import com.raival.compose.file.explorer.screen.main.compose.TabLayout
 import com.raival.compose.file.explorer.screen.main.compose.Toolbar
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.regular.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
 import com.raival.compose.file.explorer.ui.theme.FileExplorerTheme
 import java.io.File
 
@@ -65,7 +65,7 @@ class MainActivity : BaseActivity() {
                     LaunchedEffect(mainActivityManager.selectedTabIndex) {
                         if (mainActivityManager.tabs.isEmpty()) {
                             mainActivityManager.addTabAndSelect(
-                                RegularTab(
+                                FilesTab(
                                     FileProvider.getPrimaryInternalStorage(globalClass).documentHolder,
                                     context
                                 )

@@ -23,10 +23,9 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.printFullStackTrace
 import com.raival.compose.file.explorer.common.extension.toFormattedDate
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
-import com.raival.compose.file.explorer.screen.main.tab.regular.coil.DocumentFileMapper
-import com.raival.compose.file.explorer.screen.main.tab.regular.manager.RegularTabManager
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.regular.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper
+import com.raival.compose.file.explorer.screen.main.tab.files.manager.FilesTabManager
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
 import com.raival.compose.file.explorer.screen.textEditor.TextEditorManager
 import com.raival.compose.file.explorer.screen.viewer.ViewersManager
@@ -57,7 +56,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
             }
         )
 
-    val errorLogFile: DocumentHolder
+    private val errorLogFile: DocumentHolder
         get() = "logs.txt".let {
             DocumentHolder.fromFile(File(globalClass.cacheDir, it).apply {
                 if (!exists()) createNewFile()
@@ -70,8 +69,8 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     private var uid = 0
 
     val textEditorManager: TextEditorManager by lazy { TextEditorManager().also { setupTextMate() } }
-    val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { setupTabs(it) } }
-    val regularTabManager: RegularTabManager by lazy { RegularTabManager() }
+    val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { it.setupTabs() } }
+    val filesTabManager: FilesTabManager by lazy { FilesTabManager() }
     val preferencesManager: PreferencesManager by lazy { PreferencesManager() }
     val viewersManager: ViewersManager by lazy { ViewersManager() }
 
@@ -87,10 +86,6 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
         super.onCreate()
 
         appContext = this
-    }
-
-    private fun setupTabs(mainActivityManager: MainActivityManager) {
-        mainActivityManager.storageDevices.addAll(FileProvider.getStorageDevices(this))
     }
 
     private fun setupTextMate() {

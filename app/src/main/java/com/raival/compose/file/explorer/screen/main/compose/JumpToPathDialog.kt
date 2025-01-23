@@ -29,8 +29,8 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.compose.block
 import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 
 @Composable
 fun JumpToPathDialog() {
@@ -65,7 +65,7 @@ fun JumpToPathDialog() {
                     value = jumpToPathText,
                     onValueChange = {
                         jumpToPathText = it
-                        isJumpToPathValid = RegularTab.isValidPath(it)
+                        isJumpToPathValid = FilesTab.isValidPath(it)
                     },
                     label = {
                         Text(text = stringResource(R.string.destination_path))

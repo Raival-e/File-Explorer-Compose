@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.BottomSheetDialog
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
-import com.raival.compose.file.explorer.screen.main.tab.regular.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
 
 @Composable
 fun NewTabDialog() {
@@ -40,7 +40,7 @@ fun NewTabDialog() {
 
                 FileProvider.getStorageDevices(globalClass).forEach {
                     StorageDeviceView(storageDevice = it) {
-                        globalClass.mainActivityManager.addTabAndSelect(RegularTab(it.documentHolder))
+                        globalClass.mainActivityManager.addTabAndSelect(FilesTab(it.documentHolder))
                         mainActivityManager.showNewTabDialog = false
                     }
                     HorizontalDivider()
@@ -52,7 +52,7 @@ fun NewTabDialog() {
                     title = stringResource(R.string.recycle_bin),
                     imageVector = Icons.Rounded.DeleteSweep
                 ) {
-                    globalClass.mainActivityManager.addTabAndSelect(RegularTab(globalClass.recycleBinDir))
+                    globalClass.mainActivityManager.addTabAndSelect(FilesTab(globalClass.recycleBinDir))
                     mainActivityManager.showNewTabDialog = false
                 }
 

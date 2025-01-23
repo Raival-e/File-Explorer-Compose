@@ -124,19 +124,19 @@ fun adaptCodeEditorScheme(scheme: EditorColorScheme) {
 
 fun setCodeEditorLanguage(codeEditor: CodeEditor, language: Int) {
     when (language) {
-        com.raival.compose.file.explorer.screen.main.tab.regular.misc.Language.LANGUAGE_JAVA -> {
+        com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JAVA -> {
             codeEditor.apply {
                 setEditorLanguage(javaLanguage)
             }
         }
 
-        com.raival.compose.file.explorer.screen.main.tab.regular.misc.Language.LANGUAGE_KOTLIN -> {
+        com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_KOTLIN -> {
             codeEditor.apply {
                 setEditorLanguage(kotlinLanguage)
             }
         }
 
-        com.raival.compose.file.explorer.screen.main.tab.regular.misc.Language.LANGUAGE_JSON -> {
+        com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JSON -> {
             codeEditor.apply {
                 setEditorLanguage(jsonLanguage)
             }

@@ -40,10 +40,10 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
-import com.raival.compose.file.explorer.screen.main.tab.regular.RegularTab
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.INTERNAL_STORAGE
-import com.raival.compose.file.explorer.screen.main.tab.regular.modal.ROOT
-import com.raival.compose.file.explorer.screen.main.tab.regular.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.INTERNAL_STORAGE
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.ROOT
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
 import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
 import kotlinx.coroutines.launch
 
@@ -118,7 +118,7 @@ fun DrawerContent() {
                             coroutineScope.launch {
                                 drawerState.close()
                             }
-                            addTabAndSelect(RegularTab(storageDevice.documentHolder))
+                            addTabAndSelect(FilesTab(storageDevice.documentHolder))
                         }
 
                     }
