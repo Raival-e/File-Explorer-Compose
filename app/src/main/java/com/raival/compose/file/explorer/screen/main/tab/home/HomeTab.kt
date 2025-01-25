@@ -6,7 +6,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
-import androidx.compose.material.icons.rounded.AccessTimeFilled
+import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Archive
 import androidx.compose.material.icons.rounded.AudioFile
 import androidx.compose.material.icons.rounded.Image
@@ -16,6 +16,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.Tab
+import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.home.modal.HomeCategory
@@ -112,11 +113,11 @@ class HomeTab : Tab() {
 
         add(
             HomeCategory(
-                name = globalClass.getString(R.string.recent_files),
-                icon = Icons.Rounded.AccessTimeFilled,
+                name = globalClass.getString(R.string.apps),
+                icon = Icons.Rounded.Android,
                 onClick = {
                     mainActivityManager.addTabAndSelect(
-                        FilesTab(StorageProvider.recentFiles)
+                        AppsTab()
                     )
                 }
             )

@@ -190,4 +190,9 @@
     <string name="archives">Archives</string>
     <string name="storage">Storage</string>
     <string name="can_not_run_tasks">Tasks cannot be run here</string>
+    <string name="apps_tab_title">Apps</string>
+    <string name="apps_tab_header">Apps</string>
+    <string name="apps">Apps</string>
+    <string name="user_apps">User</string>
+    <string name="system_apps">System</string>
 </resources>

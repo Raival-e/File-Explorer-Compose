@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
+import com.raival.compose.file.explorer.screen.main.tab.apps.compose.AppsTabContentView
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.compose.FilesTabContentView
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
@@ -30,6 +32,8 @@ fun ColumnScope.TabContentView() {
                 FilesTabContentView(currentTab)
             } else if (currentTab is HomeTab) {
                 MainTabContentView(currentTab)
+            } else if (currentTab is AppsTab) {
+                AppsTabContentView(currentTab)
             }
         }
     }

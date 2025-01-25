@@ -48,7 +48,10 @@ fun ItemRow(
 ) {
     val preferencesManager = globalClass.preferencesManager
 
-    Column (Modifier.fillMaxWidth()) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .then(if (onItemClick != null) Modifier.clickable { onItemClick() } else Modifier)) {
         Space(
             size = when (preferencesManager.displayPrefs.fileListSize) {
                 FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
@@ -57,10 +60,7 @@ fun ItemRow(
         )
 
         Row(
-            Modifier
-                .padding(horizontal = 12.dp)
-                .padding(vertical = 6.dp)
-                .then(if (onItemClick != null) Modifier.clickable { onItemClick() } else Modifier),
+            Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             icon()
