@@ -1,6 +1,6 @@
 package com.raival.compose.file.explorer.screen.preferences.constant
 
-object RegularTabFileListSizeMap {
+object FilesTabFileListSizeMap {
     object IconSize {
         const val SMALL = 42
         const val MEDIUM = 46

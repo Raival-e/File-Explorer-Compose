@@ -17,8 +17,8 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSize
-import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSizeMap
+import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap
 
 @Composable
 fun FileItemRow(
@@ -51,7 +51,7 @@ fun ItemRow(
     Column (Modifier.fillMaxWidth()) {
         Space(
             size = when (preferencesManager.displayPrefs.fileListSize) {
-                RegularTabFileListSize.LARGE.ordinal, RegularTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
+                FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
                 else -> 4.dp
             }
         )
@@ -71,10 +71,10 @@ fun ItemRow(
                 Modifier.weight(1f)
             ) {
                 val fontSize = when (preferencesManager.displayPrefs.fileListSize) {
-                    RegularTabFileListSize.SMALL.ordinal -> RegularTabFileListSizeMap.FontSize.SMALL
-                    RegularTabFileListSize.MEDIUM.ordinal -> RegularTabFileListSizeMap.FontSize.MEDIUM
-                    RegularTabFileListSize.LARGE.ordinal -> RegularTabFileListSizeMap.FontSize.LARGE
-                    else -> RegularTabFileListSizeMap.FontSize.EXTRA_LARGE
+                    FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.FontSize.SMALL
+                    FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.FontSize.MEDIUM
+                    FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.FontSize.LARGE
+                    else -> FilesTabFileListSizeMap.FontSize.EXTRA_LARGE
                 }
 
                 Text(
@@ -97,7 +97,7 @@ fun ItemRow(
 
         Space(
             size = when (preferencesManager.displayPrefs.fileListSize) {
-                RegularTabFileListSize.LARGE.ordinal, RegularTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
+                FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
                 else -> 4.dp
             }
         )

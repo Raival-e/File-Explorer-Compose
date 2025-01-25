@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
 
 @Composable
@@ -47,9 +47,9 @@ fun DisplayContainer() {
         PreferenceItem(
             label = stringResource(R.string.file_list_size),
             supportingText = when (preferences.fileListSize) {
-                RegularTabFileListSize.SMALL.ordinal -> stringResource(R.string.small)
-                RegularTabFileListSize.MEDIUM.ordinal -> stringResource(R.string.medium)
-                RegularTabFileListSize.LARGE.ordinal -> stringResource(R.string.large)
+                FilesTabFileListSize.SMALL.ordinal -> stringResource(R.string.small)
+                FilesTabFileListSize.MEDIUM.ordinal -> stringResource(R.string.medium)
+                FilesTabFileListSize.LARGE.ordinal -> stringResource(R.string.large)
                 else -> stringResource(R.string.extra_large)
             },
             icon = Icons.Rounded.Height,

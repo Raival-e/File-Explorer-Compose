@@ -1,6 +1,6 @@
 package com.raival.compose.file.explorer.screen.preferences.constant
 
-enum class RegularTabFileListSize {
+enum class FilesTabFileListSize {
     SMALL,
     MEDIUM,
     LARGE,

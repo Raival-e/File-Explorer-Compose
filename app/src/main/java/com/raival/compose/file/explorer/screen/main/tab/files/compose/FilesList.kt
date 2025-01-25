@@ -54,8 +54,8 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.Isolate
 import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSize
-import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSizeMap
+import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -184,7 +184,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                         ) {
                             Space(
                                 size = when (preferencesManager.displayPrefs.fileListSize) {
-                                    RegularTabFileListSize.LARGE.ordinal, RegularTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
+                                    FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
                                     else -> 4.dp
                                 }
                             )
@@ -196,10 +196,10 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                 Isolate {
                                     val iconSize =
                                         when (preferencesManager.displayPrefs.fileListSize) {
-                                            RegularTabFileListSize.SMALL.ordinal -> RegularTabFileListSizeMap.IconSize.SMALL.dp
-                                            RegularTabFileListSize.MEDIUM.ordinal -> RegularTabFileListSizeMap.IconSize.MEDIUM.dp
-                                            RegularTabFileListSize.LARGE.ordinal -> RegularTabFileListSizeMap.IconSize.LARGE.dp
-                                            else -> RegularTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
+                                            FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.IconSize.SMALL.dp
+                                            FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.IconSize.MEDIUM.dp
+                                            FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.IconSize.LARGE.dp
+                                            else -> FilesTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
                                         }
 
                                     if (item.isFile) {
@@ -240,10 +240,10 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                 Column(Modifier.weight(1f)) {
                                     val fontSize =
                                         when (preferencesManager.displayPrefs.fileListSize) {
-                                            RegularTabFileListSize.SMALL.ordinal -> RegularTabFileListSizeMap.FontSize.SMALL
-                                            RegularTabFileListSize.MEDIUM.ordinal -> RegularTabFileListSizeMap.FontSize.MEDIUM
-                                            RegularTabFileListSize.LARGE.ordinal -> RegularTabFileListSizeMap.FontSize.LARGE
-                                            else -> RegularTabFileListSizeMap.FontSize.EXTRA_LARGE
+                                            FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.FontSize.SMALL
+                                            FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.FontSize.MEDIUM
+                                            FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.FontSize.LARGE
+                                            else -> FilesTabFileListSizeMap.FontSize.EXTRA_LARGE
                                         }
 
                                     Text(
@@ -288,7 +288,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
 
                             Space(
                                 size = when (preferencesManager.displayPrefs.fileListSize) {
-                                    RegularTabFileListSize.LARGE.ordinal, RegularTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
+                                    FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
                                     else -> 4.dp
                                 }
                             )

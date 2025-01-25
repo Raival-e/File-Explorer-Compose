@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSize
-import com.raival.compose.file.explorer.screen.preferences.constant.RegularTabFileListSizeMap
+import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap
 
 @Composable
 fun FileIcon(
@@ -29,10 +29,10 @@ fun FileIcon(
     val preferencesManager = globalClass.preferencesManager
 
     val iconSize = when (preferencesManager.displayPrefs.fileListSize) {
-        RegularTabFileListSize.SMALL.ordinal -> RegularTabFileListSizeMap.IconSize.SMALL.dp
-        RegularTabFileListSize.MEDIUM.ordinal -> RegularTabFileListSizeMap.IconSize.MEDIUM.dp
-        RegularTabFileListSize.LARGE.ordinal -> RegularTabFileListSizeMap.IconSize.LARGE.dp
-        else -> RegularTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
+        FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.IconSize.SMALL.dp
+        FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.IconSize.MEDIUM.dp
+        FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.IconSize.LARGE.dp
+        else -> FilesTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
     }
 
     if (documentHolder.isFile) {
@@ -68,10 +68,10 @@ fun ItemRowIcon(
     val preferencesManager = globalClass.preferencesManager
 
     val iconSize = when (preferencesManager.displayPrefs.fileListSize) {
-        RegularTabFileListSize.SMALL.ordinal -> RegularTabFileListSizeMap.IconSize.SMALL.dp
-        RegularTabFileListSize.MEDIUM.ordinal -> RegularTabFileListSizeMap.IconSize.MEDIUM.dp
-        RegularTabFileListSize.LARGE.ordinal -> RegularTabFileListSizeMap.IconSize.LARGE.dp
-        else -> RegularTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
+        FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.IconSize.SMALL.dp
+        FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.IconSize.MEDIUM.dp
+        FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.IconSize.LARGE.dp
+        else -> FilesTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
     }
 
     val modifier = Modifier
