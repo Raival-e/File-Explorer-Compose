@@ -160,7 +160,8 @@ object FileMimeType {
         "aiff",
         "amr",
         "midi",
-        "mid"
+        "mid",
+        "opus"
     )
 
 }
