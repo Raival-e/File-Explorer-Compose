@@ -1,10 +1,13 @@
 package com.raival.compose.file.explorer.screen.main.tab.home.compose
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,8 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowOutward
 import androidx.compose.material.icons.rounded.DeleteSweep
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +47,7 @@ import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.screen.main.compose.SimpleNewTabViewItem
 import com.raival.compose.file.explorer.screen.main.compose.StorageDeviceView
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 
@@ -79,8 +80,6 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
             item { Space(6.dp) }
 
             items(tab.recentFiles, key = { it.path }) {
-                val documentHolder = DocumentHolder.fromFullPath(it.path)
-
                 Column(
                     modifier = Modifier
                         .size(110.dp, 140.dp)
@@ -91,40 +90,46 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
                         )
                         .border(
                             width = 0.5.dp,
-                            color = MaterialTheme.colorScheme.outline,
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
                             shape = RoundedCornerShape(8.dp)
                         )
                         .clip(RoundedCornerShape(8.dp))
                         .combinedClickable(
                             onClick = {
-                                documentHolder?.openFile(context, false, false)
+                                it.documentHolder.openFile(context, false, false)
                             },
                             onLongClick = {
-                                documentHolder?.let { doc ->
-                                    mainActivityManager.addTabAndSelect(
-                                        FilesTab(doc)
-                                    )
-                                }
+                                mainActivityManager.addTabAndSelect(
+                                    FilesTab(it.documentHolder)
+                                )
                             }
                         )
                 ) {
-                    AsyncImage(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(2f),
-                        model = documentHolder,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        placeholder = painterResource(
-                            id = documentHolder?.getFileIconResource()
-                                ?: R.drawable.unknown_file_extension
-                        ),
-                        error = painterResource(
-                            id = documentHolder?.getFileIconResource()
-                                ?: R.drawable.unknown_file_extension
-                        ),
-                        filterQuality = FilterQuality.Low
-                    )
+                    if (canUseCoil(it.documentHolder)) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(2f),
+                            model = it.documentHolder,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            filterQuality = FilterQuality.Low
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(2f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier.size(48.dp),
+                                painter = painterResource(id = it.documentHolder.getFileIconResource()),
+                                contentDescription = null
+                            )
+                        }
+                    }
+
                     Text(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -157,29 +162,29 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
             columns = SimpleGridCells.Fixed(3)
         ) {
             tab.getMainCategories().forEach {
-                Card(
-                    modifier = Modifier.padding(4.dp),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 1.dp
-                    ),
-                    onClick = {
-                        it.onClick()
-                    }
-                ) {
-                    Column(
-                        Modifier
-                            .fillMaxSize()
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Icon(
-                            modifier = Modifier.padding(8.dp),
-                            imageVector = it.icon,
-                            contentDescription = null
+                Column(
+                    Modifier
+                        .padding(4.dp)
+                        .background(
+                            shape = RoundedCornerShape(8.dp),
+                            color = MaterialTheme.colorScheme.surfaceContainerLow
                         )
-                        Text(text = it.name)
-                    }
+                        .border(
+                            width = 0.5.dp,
+                            color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clickable { it.onClick() }
+                        .padding(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.padding(8.dp),
+                        imageVector = it.icon,
+                        contentDescription = null
+                    )
+                    Text(text = it.name)
                 }
             }
         }

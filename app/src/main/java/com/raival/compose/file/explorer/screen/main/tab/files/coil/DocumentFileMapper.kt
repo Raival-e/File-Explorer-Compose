@@ -46,7 +46,8 @@ class DocumentFileMapper : Mapper<DocumentHolder, Any> {
             data.getFileIconType() == FILE_TYPE_CODE -> R.drawable.css_file_extension
             data.getFileIconType() == FILE_TYPE_TEXT -> R.drawable.txt_file_extension
             data.getFileIconType() == FILE_TYPE_ARCHIVE -> R.drawable.zip_file_extension
-            else -> data.uri
+            canUseCoil(data) -> data.uri
+            else -> R.drawable.unknown_file_extension
         }
     }
 }

@@ -88,9 +88,13 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
 
     val isFolder by lazy { documentFile.isDirectory }
 
-    val isArchive by lazy { isFile && archiveFileType.contains(fileExtension.lowercase()) }
+    val isArchive by lazy { isFile && archiveFileType.contains(fileExtension) }
 
     val isApk by lazy { isFile && fileExtension == apkFileType }
+
+    val isImage by lazy { isFile && imageFileType.contains(fileExtension) }
+
+    val isVideo by lazy { isFile && videoFileType.contains(fileExtension) }
 
     val basePath by lazy { documentFile.getBasePath(globalClass) }
 

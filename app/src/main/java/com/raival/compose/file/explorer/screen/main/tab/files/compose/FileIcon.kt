@@ -16,6 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
@@ -81,7 +82,7 @@ fun ItemRowIcon(
 
     AsyncImage(
         modifier = modifier,
-        model = icon,
+        model = ImageRequest.Builder(globalClass).data(icon).build(),
         filterQuality = FilterQuality.Low,
         error = painterResource(id = placeholder),
         contentScale = ContentScale.Fit,
