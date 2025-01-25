@@ -77,15 +77,35 @@ fun ColumnScope.FilesList(tab: FilesTab) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                modifier = Modifier
-                    .padding(vertical = 60.dp)
-                    .fillMaxWidth()
-                    .alpha(0.4f),
-                text = stringResource(R.string.empty),
-                fontSize = 24.sp,
-                textAlign = TextAlign.Center
-            )
+            if (!tab.isLoading) {
+                Text(
+                    modifier = Modifier
+                        .padding(vertical = 60.dp)
+                        .fillMaxWidth()
+                        .alpha(0.4f),
+                    text = stringResource(R.string.empty),
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                androidx.compose.animation.AnimatedVisibility(
+                    modifier = Modifier.fillMaxWidth(),
+                    visible = tab.isLoading
+                ) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                interactionSource = null,
+                                indication = null,
+                                onClick = { }
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                }
+            }
         }
     } else {
         val columnCount = preferencesManager.displayPrefs.fileListColumnCount
@@ -314,6 +334,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                 Box(
                     Modifier
                         .fillMaxSize()
+                        .background(colorScheme.surface.copy(alpha = 0.4f))
                         .clickable(
                             interactionSource = null,
                             indication = null,

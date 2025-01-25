@@ -291,7 +291,7 @@ class FilesTab(
     }
 
     private fun listFiles(onReady: (ArrayList<DocumentHolder>) -> Unit) {
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             isLoading = true
 
             foldersCount = 0
