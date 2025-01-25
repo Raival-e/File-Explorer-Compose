@@ -10,7 +10,6 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
@@ -41,7 +40,6 @@ class MainActivity : BaseActivity() {
         setContent {
             FileExplorerTheme {
                 SafeSurface {
-                    val context = LocalContext.current
                     val coroutineScope = rememberCoroutineScope()
                     val mainActivityManager = globalClass.mainActivityManager
 
