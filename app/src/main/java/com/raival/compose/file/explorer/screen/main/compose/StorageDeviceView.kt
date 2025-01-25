@@ -71,7 +71,7 @@ fun StorageDeviceView(
                     modifier = Modifier
                         .alpha(0.6f)
                         .weight(1f),
-                    text = "${storageDevice.usedSize.toFormattedSize()} used of ${storageDevice.totalSize.toFormattedSize()}",
+                    text = "${storageDevice.usedSize.toFormattedSize()}/${storageDevice.totalSize.toFormattedSize()}",
                     fontSize = 12.sp,
                     textAlign = TextAlign.End
                 )
