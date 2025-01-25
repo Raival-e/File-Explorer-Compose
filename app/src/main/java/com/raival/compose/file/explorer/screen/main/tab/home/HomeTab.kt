@@ -142,12 +142,8 @@ class HomeTab : Tab() {
 
         val sortOrder = "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
 
-        val uriWithLimit = uri.buildUpon()
-            .appendQueryParameter("limit", "15")
-            .build()
-
         val cursor: Cursor? = contentResolver.query(
-            uriWithLimit,
+            uri,
             projection,
             selection,
             selectionArgs,
@@ -160,7 +156,7 @@ class HomeTab : Tab() {
                 it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED)
             val columnName = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
 
-            while (it.moveToNext()) {
+            while (it.moveToNext() && recentFiles.size < 15) {
                 val filePath = it.getString(columnIndexPath)
                 val lastModified = it.getLong(columnLastModified)
                 val name = it.getString(columnName)

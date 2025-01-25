@@ -302,12 +302,8 @@ object StorageProvider {
 
         val sortOrder = "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
 
-        val uriWithLimit = uri.buildUpon()
-            .appendQueryParameter("limit", "$limit")
-            .build()
-
         val cursor: Cursor? = contentResolver.query(
-            uriWithLimit,
+            uri,
             projection,
             selection,
             selectionArgs,
@@ -317,7 +313,7 @@ object StorageProvider {
         cursor?.use {
             val columnIndexPath = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA)
 
-            while (it.moveToNext()) {
+            while (it.moveToNext() && recentFiles.size < limit) {
                 val filePath = it.getString(columnIndexPath)
                 val file = File(filePath)
                 if (file.isFile) {
