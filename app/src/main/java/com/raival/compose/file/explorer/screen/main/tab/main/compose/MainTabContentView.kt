@@ -1,8 +1,9 @@
 package com.raival.compose.file.explorer.screen.main.tab.main.compose
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -49,6 +50,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHold
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.main.MainTab
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColumnScope.MainTabContentView(tab: MainTab) {
     Column(modifier = Modifier
@@ -93,9 +95,18 @@ fun ColumnScope.MainTabContentView(tab: MainTab) {
                             shape = RoundedCornerShape(8.dp)
                         )
                         .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            documentHolder?.openFile(context, false, false)
-                        }
+                        .combinedClickable(
+                            onClick = {
+                                documentHolder?.openFile(context, false, false)
+                            },
+                            onLongClick = {
+                                documentHolder?.let { doc ->
+                                    mainActivityManager.addTabAndSelect(
+                                        FilesTab(doc)
+                                    )
+                                }
+                            }
+                        )
                 ) {
                     AsyncImage(
                         modifier = Modifier

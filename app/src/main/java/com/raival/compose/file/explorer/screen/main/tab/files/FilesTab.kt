@@ -115,19 +115,21 @@ class FilesTab(
     override fun onTabStarted() {
         super.onTabStarted()
         if (source.isFile) {
-            val parent = source.parent
-            if (parent != null && parent.exists()) {
-                openFolder(parent) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        getFileListState().scrollToItem(
-                            activeFolderContent.getIndexIf { path == source.path },
-                            0
-                        )
+            source.parent?.let { parent ->
+                if (parent.exists()) {
+                    openFolder(parent) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            getFileListState().scrollToItem(
+                                activeFolderContent.getIndexIf { path == source.path },
+                                0
+                            )
+                        }
                     }
                 }
-            } else {
+            } ?: also {
                 openFolder(homeDir)
             }
+
             highlightedFiles.apply {
                 clear()
                 add(source.path)
