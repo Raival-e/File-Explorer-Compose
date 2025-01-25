@@ -1,4 +1,4 @@
-package com.raival.compose.file.explorer.screen.main.tab.main.compose
+package com.raival.compose.file.explorer.screen.main.tab.home.compose
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -48,18 +48,18 @@ import com.raival.compose.file.explorer.screen.main.compose.StorageDeviceView
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
-import com.raival.compose.file.explorer.screen.main.tab.main.MainTab
+import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ColumnScope.MainTabContentView(tab: MainTab) {
+fun ColumnScope.MainTabContentView(tab: HomeTab) {
     Column(modifier = Modifier
         .fillMaxSize()
         .verticalScroll(rememberScrollState())) {
         val mainActivityManager = globalClass.mainActivityManager
         val context = LocalContext.current
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(tab.id) {
             tab.fetchRecentFiles()
         }
 

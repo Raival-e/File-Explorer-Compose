@@ -17,13 +17,12 @@ import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.screen.main.compose.DrawerContent
 import com.raival.compose.file.explorer.screen.main.compose.JumpToPathDialog
-import com.raival.compose.file.explorer.screen.main.compose.NewTabDialog
 import com.raival.compose.file.explorer.screen.main.compose.SaveTextEditorFilesDialog
 import com.raival.compose.file.explorer.screen.main.compose.TabContentView
 import com.raival.compose.file.explorer.screen.main.compose.TabLayout
 import com.raival.compose.file.explorer.screen.main.compose.Toolbar
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.main.MainTab
+import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.ui.theme.FileExplorerTheme
 import java.io.File
 
@@ -62,15 +61,13 @@ class MainActivity : BaseActivity() {
                     LaunchedEffect(mainActivityManager.selectedTabIndex) {
                         if (mainActivityManager.tabs.isEmpty()) {
                             mainActivityManager.addTabAndSelect(
-                                MainTab()
+                                HomeTab()
                             )
                         }
                         handleIntent()
                     }
 
                     JumpToPathDialog()
-
-                    NewTabDialog()
 
                     SaveTextEditorFilesDialog { finish() }
 

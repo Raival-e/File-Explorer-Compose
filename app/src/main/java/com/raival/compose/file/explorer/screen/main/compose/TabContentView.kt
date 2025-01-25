@@ -8,8 +8,8 @@ import androidx.compose.ui.Modifier
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.compose.FilesTabContentView
-import com.raival.compose.file.explorer.screen.main.tab.main.MainTab
-import com.raival.compose.file.explorer.screen.main.tab.main.compose.MainTabContentView
+import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
+import com.raival.compose.file.explorer.screen.main.tab.home.compose.MainTabContentView
 
 @Composable
 fun ColumnScope.TabContentView() {
@@ -28,7 +28,7 @@ fun ColumnScope.TabContentView() {
 
             if (currentTab is FilesTab) {
                 FilesTabContentView(currentTab)
-            } else if (currentTab is MainTab) {
+            } else if (currentTab is HomeTab) {
                 MainTabContentView(currentTab)
             }
         }

@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -41,7 +42,7 @@ fun TabLayout() {
     ) {
         IconButton(
             onClick = {
-                mainActivityManager.showNewTabDialog = true
+                mainActivityManager.addTabAndSelect(HomeTab())
             }
         ) {
             Icon(imageVector = Icons.Rounded.Add, contentDescription = null)

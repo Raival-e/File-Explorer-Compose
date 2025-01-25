@@ -1,4 +1,4 @@
-package com.raival.compose.file.explorer.screen.main.tab.main.modal
+package com.raival.compose.file.explorer.screen.main.tab.home.modal
 
 data class RecentFile(
     val name: String,

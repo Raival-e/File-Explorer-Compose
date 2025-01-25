@@ -1,4 +1,4 @@
-package com.raival.compose.file.explorer.screen.main.tab.main
+package com.raival.compose.file.explorer.screen.main.tab.home
 
 import android.content.ContentResolver
 import android.database.Cursor
@@ -18,14 +18,14 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
-import com.raival.compose.file.explorer.screen.main.tab.main.modal.MainCategory
-import com.raival.compose.file.explorer.screen.main.tab.main.modal.RecentFile
+import com.raival.compose.file.explorer.screen.main.tab.home.modal.HomeCategory
+import com.raival.compose.file.explorer.screen.main.tab.home.modal.RecentFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class MainTab : Tab() {
+class HomeTab : Tab() {
     override val id = globalClass.generateUid()
 
     override val title = globalClass.getString(R.string.home_tab_title)
@@ -48,10 +48,10 @@ class MainTab : Tab() {
         }
     }
 
-    fun getMainCategories() = arrayListOf<MainCategory>().apply {
+    fun getMainCategories() = arrayListOf<HomeCategory>().apply {
         val mainActivityManager = globalClass.mainActivityManager
         add(
-            MainCategory(
+            HomeCategory(
                 name = globalClass.getString(R.string.images),
                 icon = Icons.Rounded.Image,
                 onClick = {
@@ -63,7 +63,7 @@ class MainTab : Tab() {
         )
 
         add(
-            MainCategory(
+            HomeCategory(
                 name = globalClass.getString(R.string.videos),
                 icon = Icons.Rounded.VideoFile,
                 onClick = {
@@ -75,7 +75,7 @@ class MainTab : Tab() {
         )
 
         add(
-            MainCategory(
+            HomeCategory(
                 name = globalClass.getString(R.string.audios),
                 icon = Icons.Rounded.AudioFile,
                 onClick = {
@@ -87,7 +87,7 @@ class MainTab : Tab() {
         )
 
         add(
-            MainCategory(
+            HomeCategory(
                 name = globalClass.getString(R.string.documents),
                 icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
                 onClick = {
@@ -99,7 +99,7 @@ class MainTab : Tab() {
         )
 
         add(
-            MainCategory(
+            HomeCategory(
                 name = globalClass.getString(R.string.archives),
                 icon = Icons.Rounded.Archive,
                 onClick = {
@@ -111,7 +111,7 @@ class MainTab : Tab() {
         )
 
         add(
-            MainCategory(
+            HomeCategory(
                 name = globalClass.getString(R.string.recent_files),
                 icon = Icons.Rounded.AccessTimeFilled,
                 onClick = {
