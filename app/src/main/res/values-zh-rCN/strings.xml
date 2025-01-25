@@ -196,4 +196,5 @@
     <string name="apps">Apps</string>
     <string name="user_apps">User</string>
     <string name="system_apps">System</string>
+    <string name="more">More</string>
 </resources>

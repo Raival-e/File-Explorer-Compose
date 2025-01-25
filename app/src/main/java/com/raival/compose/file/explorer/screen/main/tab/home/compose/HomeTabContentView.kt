@@ -27,6 +27,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -75,7 +76,8 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(140.dp)
+                .height(140.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             item { Space(6.dp) }
 
@@ -138,6 +140,20 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
                         text = it.name,
                         style = MaterialTheme.typography.labelSmall,
                         maxLines = 2
+                    )
+                }
+            }
+
+            item {
+                TextButton(
+                    onClick = {
+                        mainActivityManager.addTabAndSelect(
+                            FilesTab(StorageProvider.recentFiles)
+                        )
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.more)
                     )
                 }
             }
