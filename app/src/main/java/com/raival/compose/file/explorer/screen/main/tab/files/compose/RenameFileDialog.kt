@@ -39,7 +39,7 @@ fun RenameFileDialog(tab: FilesTab) {
                             with(tab) {
                                 highlightedFiles.apply {
                                     clear()
-                                    add(targetFile.getPath())
+                                    add(targetFile.path)
                                 }
                                 unselectAllFiles(false)
                                 reloadFiles()

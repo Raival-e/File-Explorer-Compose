@@ -26,7 +26,7 @@ class CompressTask(
     override fun getTitle(): String = globalClass.getString(R.string.compress)
 
     override fun getSubtitle(): String = if (source.size == 1)
-        source[0].getPath().trimToLastTwoSegments()
+        source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
 
     override fun execute(destination: DocumentHolder, callback: Any) {
@@ -52,9 +52,9 @@ class CompressTask(
         val filesToCompress = arrayListOf<String>()
 
         source.forEach {
-            filesToCompress.add(it.getPath())
-            if (!it.isFile()) {
-                filesToCompress.addAll(it.walk(true).map { f -> f.getPath() })
+            filesToCompress.add(it.path)
+            if (!it.isFile) {
+                filesToCompress.addAll(it.walk(true).map { f -> f.path })
             }
         }
 
@@ -74,7 +74,7 @@ class CompressTask(
             buffer: ByteArray,
             parentPath: String
         ) {
-            if (!filesToCompress.contains(documentHolder.getPath())) return
+            if (!filesToCompress.contains(documentHolder.path)) return
 
             val entryName = if (parentPath.isEmpty()) {
                 documentHolder.getName()
@@ -82,7 +82,7 @@ class CompressTask(
                 "$parentPath/${documentHolder.getName()}"
             }
 
-            if (documentHolder.isFolder()) {
+            if (documentHolder.isFolder) {
                 val children = documentHolder.listContent(false)
                 if (children.isNotEmpty()) {
                     children.forEach { child ->
@@ -106,7 +106,7 @@ class CompressTask(
                 )
 
                 val inputStream =
-                    globalClass.contentResolver.openInputStream(documentHolder.getUri())
+                    globalClass.contentResolver.openInputStream(documentHolder.uri)
 
                 if (inputStream == null) {
                     skipped++

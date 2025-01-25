@@ -20,7 +20,7 @@ class CopyTask(
     override fun getTitle(): String = globalClass.getString(R.string.copy)
 
     override fun getSubtitle(): String = if (source.size == 1)
-        source[0].getPath().trimToLastTwoSegments()
+        source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
 
     override fun execute(destination: DocumentHolder, callback: Any) {
@@ -45,9 +45,9 @@ class CopyTask(
         val filesToCopy = arrayListOf<String>()
 
         source.forEach {
-            filesToCopy.add(it.getPath())
-            if (!it.isFile()) {
-                filesToCopy.addAll(it.walk(true).map { f -> f.getPath() })
+            filesToCopy.add(it.path)
+            if (!it.isFile) {
+                filesToCopy.addAll(it.walk(true).map { f -> f.path })
             }
         }
 
@@ -63,7 +63,7 @@ class CopyTask(
         }
 
         fun copyFile(from: DocumentHolder, to: DocumentHolder) {
-            if (!filesToCopy.contains(from.getPath())) return
+            if (!filesToCopy.contains(from.path)) return
 
             val existingFile = from.getName().let { to.findFile(it) }
 
@@ -78,7 +78,7 @@ class CopyTask(
             )
 
             if (existingFile isNot null) {
-                if (from.getPath() == existingFile?.getPath() || !existingFile!!.delete()) {
+                if (from.path == existingFile?.path || !existingFile!!.delete()) {
                     skipped++
                     return
                 }
@@ -107,14 +107,14 @@ class CopyTask(
         }
 
         fun copyFolder(from: DocumentHolder, to: DocumentHolder) {
-            if (!filesToCopy.contains(from.getPath())) return
+            if (!filesToCopy.contains(from.path)) return
 
             val newFolder = from.getName().let { to.createSubFolder(it) }
 
             if (newFolder isNot null) {
                 completed++
                 from.listContent(false).forEach { currentFile ->
-                    if (currentFile.isFile()) {
+                    if (currentFile.isFile) {
                         copyFile(currentFile, newFolder!!)
                     } else {
                         copyFolder(currentFile, newFolder!!)
@@ -126,7 +126,7 @@ class CopyTask(
         }
 
         source.forEach { currentFile ->
-            if (currentFile.isFile()) {
+            if (currentFile.isFile) {
                 copyFile(currentFile, destination)
             } else {
                 copyFolder(currentFile, destination)

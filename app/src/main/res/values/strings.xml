@@ -180,4 +180,14 @@
     <string name="text_editor_search_result">"search result: "</string>
     <string name="folders_count">folders: %1$d</string>
     <string name="files_count">files: %1$d</string>
+    <string name="home_tab_title">Home</string>
+    <string name="home_tab_header">Home</string>
+    <string name="categories">Categories</string>
+    <string name="images">Images</string>
+    <string name="videos">Videos</string>
+    <string name="audios">Audios</string>
+    <string name="documents">Documents</string>
+    <string name="archives">Archives</string>
+    <string name="storage">Storage</string>
+    <string name="can_not_run_tasks">Tasks cannot be run here</string>
 </resources>

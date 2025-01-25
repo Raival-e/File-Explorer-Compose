@@ -26,7 +26,7 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
             mutableStateOf(true)
         }
 
-        val targetFiles by remember(tab.id, tab.activeFolder.getPath()) {
+        val targetFiles by remember(tab.id, tab.activeFolder.path) {
             mutableStateOf(tab.selectedFiles.map { it.value }.toList())
         }
 

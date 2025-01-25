@@ -27,8 +27,24 @@ import com.raival.compose.file.explorer.common.extension.removeIf
 import com.raival.compose.file.explorer.screen.main.MainActivity
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_DATE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_SIZE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortFoldersFirst
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortLargerFirst
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortName
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortNameRev
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortNewerFirst
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortOlderFirst
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortSmallerFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider.getArchiveFiles
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider.getAudioFiles
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider.getDocumentFiles
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider.getImageFiles
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider.getRecentFiles
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider.getVideoFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.DeleteTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.FilesTabTask
@@ -39,7 +55,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
+class FilesTab(
+    val source: DocumentHolder,
+    context: Context? = null
+) : Tab() {
 
     override val id = globalClass.generateUid()
 
@@ -55,8 +74,9 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
     val fileOptionsDialog = FileOptionsDialog
     val openWithDialog = OpenWithDialog
 
-    val homeDir: DocumentHolder = if (initFile.isFolder()) initFile else initFile.getParent()
-        ?: FileProvider.getPrimaryInternalStorage(globalClass).documentHolder
+    val homeDir: DocumentHolder =
+        if (isSpecialDirectory(source) || source.isFolder) source else source.parent
+            ?: StorageProvider.getPrimaryInternalStorage(globalClass).documentHolder
     var activeFolder: DocumentHolder = homeDir
 
     val activeFolderContent = mutableStateListOf<DocumentHolder>()
@@ -80,7 +100,7 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
     var showBookmarkDialog by mutableStateOf(false)
     var showMoreOptionsButton by mutableStateOf(false)
     var showEmptyRecycleBin by mutableStateOf(false)
-    var handleBackGesture by mutableStateOf(activeFolder.canAccessParent() || selectedFiles.isNotEmpty())
+    var handleBackGesture by mutableStateOf(activeFolder.canAccessParent || selectedFiles.isNotEmpty())
     var tabViewLabel by mutableStateOf(emptyString)
 
     var isLoading by mutableStateOf(false)
@@ -88,12 +108,40 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
     var foldersCount = 0
     var filesCount = 0
 
-    var uidHolder = 0
+    override fun onTabClicked() {
+        openFolder(item = activeFolder, rememberSelectedFiles = true)
+    }
 
-    override var onTabClicked = { openFolder(item = activeFolder, rememberSelectedFiles = true) }
-    override var onTabStarted = { }
-    override var onTabResumed = { openFolder(item = activeFolder, rememberSelectedFiles = true) }
-    override var onTabStopped = { }
+    override fun onTabStarted() {
+        super.onTabStarted()
+        if (source.isFile) {
+            val parent = source.parent
+            if (parent != null && parent.exists()) {
+                openFolder(parent) {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        getFileListState().scrollToItem(
+                            activeFolderContent.getIndexIf { path == source.path },
+                            0
+                        )
+                    }
+                }
+            } else {
+                openFolder(homeDir)
+            }
+            highlightedFiles.apply {
+                clear()
+                add(source.path)
+            }
+        } else {
+            openFolder(homeDir)
+        }
+    }
+
+    override fun onTabResumed() {
+        openFolder(item = activeFolder, rememberSelectedFiles = true)
+    }
+
+    override fun onTabStopped() {}
 
     override val title: String
         get() = createTitle()
@@ -105,38 +153,17 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
         get() = tabViewLabel
 
     init {
-        if (initFile.isFile()) {
-            val parent = initFile.getParent()
-            if (parent != null && parent.exists()) {
-                openFolder(parent) {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        getFileListState().scrollToItem(
-                            activeFolderContent.getIndexIf { getPath() == initFile.getPath() },
-                            0
-                        )
-                    }
-                }
-            } else {
-                openFolder(homeDir)
-            }
-            highlightedFiles.apply {
-                clear()
-                add(initFile.getPath())
-            }
-            context?.let { openFile(context, initFile) }
-        } else {
-            openFolder(homeDir)
+        if (source.isFile) {
+            context?.let { openFile(context, source) }
         }
     }
-
-    fun getUID() = uidHolder++
 
     private fun createSubtitle(): String {
         var selectedFolders = 0
         var selectedFiles = 0
 
         this.selectedFiles.values.forEach {
-            if (it.isFolder()) selectedFolders++
+            if (it.isFolder) selectedFolders++
             else selectedFiles++
         }
 
@@ -171,9 +198,9 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
         if (!unselectAnySelectedFiles()) {
             highlightedFiles.apply {
                 clear()
-                add(activeFolder.getPath())
+                add(activeFolder.path)
             }
-            openFolder(activeFolder.getParent()!!)
+            openFolder(activeFolder.parent!!)
         }
     }
 
@@ -190,7 +217,7 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
     }
 
     fun openFile(context: Context, item: DocumentHolder) {
-        if (item.isApk()) {
+        if (item.isApk) {
             ApkDialog.show(item)
         } else {
             item.openFile(context, anonymous = false, skipSupportedExtensions = false)
@@ -216,9 +243,9 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
         activeFolder = item
 
         showEmptyRecycleBin = activeFolder.hasParent(globalClass.recycleBinDir)
-                || activeFolder.getPath() == globalClass.recycleBinDir.getPath()
+                || activeFolder.path == globalClass.recycleBinDir.path
 
-        handleBackGesture = activeFolder.canAccessParent() || selectedFiles.isNotEmpty()
+        handleBackGesture = activeFolder.canAccessParent || selectedFiles.isNotEmpty()
 
         updatePathList()
 
@@ -229,11 +256,11 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
             activeFolderContent.addAll(newContent)
 
             if (!rememberListState) {
-                contentListStates[item.getPath()] = LazyGridState(0, 0)
+                contentListStates[item.path] = LazyGridState(0, 0)
             }
 
-            activeListState = contentListStates[item.getPath()] ?: LazyGridState()
-                .also { contentListStates[item.getPath()] = it }
+            activeListState = contentListStates[item.path] ?: LazyGridState()
+                .also { contentListStates[item.path] = it }
 
             postEvent()
         }
@@ -247,14 +274,14 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
         activeFolderContent.clear()
         activeFolderContent.addAll(temp)
 
-        handleBackGesture = activeFolder.canAccessParent() || selectedFiles.isNotEmpty()
+        handleBackGesture = activeFolder.canAccessParent || selectedFiles.isNotEmpty()
 
         requestHomeToolbarUpdate()
 
         showMoreOptionsButton = selectedFiles.size > 0
 
         showEmptyRecycleBin = activeFolder.hasParent(globalClass.recycleBinDir)
-                || activeFolder.getPath() == globalClass.recycleBinDir.getPath()
+                || activeFolder.path == globalClass.recycleBinDir.path
     }
 
     fun reloadFiles(postEvent: () -> Unit = {}) {
@@ -268,16 +295,51 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
             foldersCount = 0
             filesCount = 0
 
-            val result = activeFolder.listContent(
-                sortingPrefs = globalClass.preferencesManager.filesSortingPrefs.getSortingPrefsFor(
-                    activeFolder
-                )
-            ) {
-                if (it.isFile()) filesCount++
-                else foldersCount++
-            }.apply {
-                if (!globalClass.preferencesManager.displayPrefs.showHiddenFiles) {
-                    removeIf { it.isHidden() }
+            val result = if (isSpecialDirectory()) {
+                when (activeFolder) {
+                    StorageProvider.audios -> getAudioFiles()
+                    StorageProvider.videos -> getVideoFiles()
+                    StorageProvider.images -> getImageFiles()
+                    StorageProvider.archives -> getArchiveFiles()
+                    StorageProvider.documents -> getDocumentFiles()
+                    else -> getRecentFiles()
+                }.apply {
+                    if (activeFolder != StorageProvider.recentFiles) {
+                        val sortingPrefs =
+                            globalClass.preferencesManager.filesSortingPrefs.getSortingPrefsFor(
+                                activeFolder
+                            )
+                        when (sortingPrefs.sortMethod) {
+                            SORT_BY_NAME -> {
+                                sortWith(if (sortingPrefs.reverseSorting) sortNameRev else sortName)
+                            }
+
+                            SORT_BY_DATE -> {
+                                sortWith(if (sortingPrefs.reverseSorting) sortOlderFirst else sortNewerFirst)
+                            }
+
+                            SORT_BY_SIZE -> {
+                                sortWith(if (sortingPrefs.reverseSorting) sortLargerFirst else sortSmallerFirst)
+                            }
+                        }
+
+                        if (sortingPrefs.showFoldersFirst) sortWith(sortFoldersFirst)
+                    }
+                }.also {
+                    filesCount = it.size
+                }
+            } else {
+                activeFolder.listContent(
+                    sortingPrefs = globalClass.preferencesManager.filesSortingPrefs.getSortingPrefsFor(
+                        activeFolder
+                    )
+                ) {
+                    if (it.isFile) filesCount++
+                    else foldersCount++
+                }.apply {
+                    if (!globalClass.preferencesManager.displayPrefs.showHiddenFiles) {
+                        removeIf { it.isHidden }
+                    }
                 }
             }
 
@@ -300,13 +362,13 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
         newFile?.let {
             highlightedFiles.apply {
                 clear()
-                add(it.getPath())
+                add(it.path)
             }
 
             reloadFiles {
                 CoroutineScope(Dispatchers.Main).launch {
                     val newItemIndex =
-                        activeFolderContent.getIndexIf { getPath() == newFile.getPath() }
+                        activeFolderContent.getIndexIf { path == newFile.path }
                     if (newItemIndex > -1) {
                         getFileListState().scrollToItem(newItemIndex, 0)
                     }
@@ -319,14 +381,14 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
         }
     }
 
-    fun getFileListState() = contentListStates[activeFolder.getPath()] ?: LazyGridState().also {
-        contentListStates[activeFolder.getPath()] = it
+    fun getFileListState() = contentListStates[activeFolder.path] ?: LazyGridState().also {
+        contentListStates[activeFolder.path] = it
     }
 
     private fun updateTabViewLabel() {
         val fullName =
             activeFolder.getName().orIf(globalClass.getString(R.string.internal_storage)) {
-                activeFolder.getPath() == Environment.getExternalStorageDirectory().absolutePath
+                activeFolder.path == Environment.getExternalStorageDirectory().absolutePath
             }
         tabViewLabel = if (fullName.length > 18) fullName.substring(0, 15) + "..." else fullName
     }
@@ -335,11 +397,11 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
         currentPathSegments.apply {
             clear()
             add(activeFolder)
-            if (activeFolder.canAccessParent()) {
-                var parentDir = activeFolder.getParent()!!
+            if (activeFolder.canAccessParent) {
+                var parentDir = activeFolder.parent!!
                 add(parentDir)
-                while (parentDir.canAccessParent()) {
-                    parentDir = parentDir.getParent()!!
+                while (parentDir.canAccessParent) {
+                    parentDir = parentDir.parent!!
                     add(parentDir)
                 }
             }
@@ -386,12 +448,12 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
                     )
                 )
             } else {
-                uris.add(it.component2().getUri())
+                uris.add(it.component2().uri)
             }
         }
 
         val builder = ShareCompat.IntentBuilder(globalClass)
-            .setType(if (uris.size == 1) targetDocumentHolder.getMimeType() else anyFileType)
+            .setType(if (uris.size == 1) targetDocumentHolder.mimeType else anyFileType)
         uris.forEach {
             builder.addStream(it)
         }
@@ -411,18 +473,18 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
     fun addToHomeScreen(context: Context, file: DocumentHolder) {
         val shortcutManager = context.getSystemService(ShortcutManager::class.java)
         val pinShortcutInfo = ShortcutInfo
-            .Builder(context, file.getPath())
+            .Builder(context, file.path)
             .setIntent(
                 Intent(context, MainActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
-                    putExtra("filePath", file.getPath())
+                    putExtra("filePath", file.path)
                     flags = Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT
                 }
             )
             .setIcon(
                 android.graphics.drawable.Icon.createWithResource(
                     context,
-                    if (file.isFile()) R.mipmap.default_shortcut_icon else R.mipmap.folder_shortcut_icon
+                    if (file.isFile) R.mipmap.default_shortcut_icon else R.mipmap.folder_shortcut_icon
                 )
             )
             .setShortLabel(file.getName())
@@ -439,6 +501,21 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
             ).intentSender
         )
     }
+
+    fun isSpecialDirectory(source: DocumentHolder = activeFolder) = when (source) {
+        StorageProvider.archives,
+        StorageProvider.recentFiles,
+        StorageProvider.images,
+        StorageProvider.videos,
+        StorageProvider.audios,
+        StorageProvider.documents -> true
+
+        else -> false
+    }
+
+    fun canCreateNewFile() = !isSpecialDirectory()
+
+    fun canRunTasks() = !isSpecialDirectory()
 
     object TaskDialog {
         var showTaskDialog by mutableStateOf(false)
@@ -565,7 +642,7 @@ class FilesTab(initFile: DocumentHolder, context: Context? = null) : Tab() {
 
             details.task.getSourceFiles().forEach {
                 activeFolder.findFile(it.getName())?.let { file ->
-                    highlightedFiles.addIfAbsent(file.getPath())
+                    highlightedFiles.addIfAbsent(file.path)
                 }
             }
 

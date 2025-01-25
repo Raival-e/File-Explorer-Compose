@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.compose.swipebox)
     implementation(libs.reorderable)
     implementation(libs.storage)
+    implementation(libs.grid)
     implementation(libs.lazycolumnscrollbar)
     implementation(libs.zoomable)
     implementation(libs.androidx.media3.exoplayer)

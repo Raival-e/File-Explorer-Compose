@@ -111,9 +111,9 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                 ) {
                     itemsIndexed(
                         tab.activeFolderContent,
-                        key = { index, item -> tab.getUID() }
+                        key = { index, item -> item.uid }
                     ) { index, item ->
-                        val currentItemPath = item.getPath()
+                        val currentItemPath = item.path
                         val itemDetailsCoroutine = rememberCoroutineScope()
                         val isAlreadySelected = tab.selectedFiles.containsKey(currentItemPath)
 
@@ -145,7 +145,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                             toggleSelection()
                                             tab.quickReloadFiles()
                                         } else {
-                                            if (item.isFile()) {
+                                            if (item.isFile) {
                                                 tab.openFile(context, item)
                                             } else {
                                                 tab.openFolder(item, false)
@@ -165,12 +165,12 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                             if (tab.lastSelectedFileIndex >= 0) {
                                                 if (tab.lastSelectedFileIndex > index) {
                                                     for (i in tab.lastSelectedFileIndex downTo index) {
-                                                        tab.selectedFiles[tab.activeFolderContent[i].getPath()] =
+                                                        tab.selectedFiles[tab.activeFolderContent[i].path] =
                                                             tab.activeFolderContent[i]
                                                     }
                                                 } else {
                                                     for (i in tab.lastSelectedFileIndex..index) {
-                                                        tab.selectedFiles[tab.activeFolderContent[i].getPath()] =
+                                                        tab.selectedFiles[tab.activeFolderContent[i].path] =
                                                             tab.activeFolderContent[i]
                                                     }
                                                 }
@@ -202,7 +202,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                             else -> RegularTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
                                         }
 
-                                    if (item.isFile()) {
+                                    if (item.isFile) {
                                         AsyncImage(
                                             modifier = Modifier
                                                 .size(iconSize)
@@ -216,7 +216,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                             filterQuality = FilterQuality.Low,
                                             error = painterResource(id = item.getFileIconResource()),
                                             contentScale = ContentScale.Fit,
-                                            alpha = if (item.isHidden()) 0.4f else 1f,
+                                            alpha = if (item.isHidden) 0.4f else 1f,
                                             contentDescription = null
                                         )
                                     } else {
@@ -228,7 +228,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                                     toggleSelection()
                                                     tab.quickReloadFiles()
                                                 }
-                                                .alpha(if (item.isHidden()) 0.4f else 1f),
+                                                .alpha(if (item.isHidden) 0.4f else 1f),
                                             imageVector = Icons.Rounded.Folder,
                                             contentDescription = null
                                         )
@@ -256,12 +256,12 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                     Isolate {
                                         var details by remember(
                                             key1 = currentItemPath,
-                                            key2 = item.getLastModified()
+                                            key2 = item.lastModified
                                         ) { mutableStateOf(item.formattedDetailsCache) }
 
                                         LaunchedEffect(
                                             key1 = currentItemPath,
-                                            key2 = item.getLastModified()
+                                            key2 = item.lastModified
                                         ) {
                                             if (details.isEmpty()) {
                                                 itemDetailsCoroutine.launch(Dispatchers.IO) {

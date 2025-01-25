@@ -4,9 +4,9 @@ import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHold
 import java.util.Locale
 
 val sortFoldersFirst = Comparator { file1: DocumentHolder, file2: DocumentHolder ->
-    if (file1.isFolder() && !file2.isFolder()) {
+    if (file1.isFolder && !file2.isFolder) {
         return@Comparator -1
-    } else if (!file1.isFolder() && file2.isFolder()) {
+    } else if (!file1.isFolder && file2.isFolder) {
         return@Comparator 1
     } else {
         return@Comparator 0
@@ -14,19 +14,19 @@ val sortFoldersFirst = Comparator { file1: DocumentHolder, file2: DocumentHolder
 }
 
 val sortFilesFirst = Comparator { file2: DocumentHolder, file1: DocumentHolder ->
-    if (file1.isFolder() && !file2.isFolder()) {
+    if (file1.isFolder && !file2.isFolder) {
         return@Comparator -1
-    } else if (!file1.isFolder() && file2.isFolder()) {
+    } else if (!file1.isFolder && file2.isFolder) {
         return@Comparator 1
     } else {
         return@Comparator 0
     }
 }
 
-val sortOlderFirst = Comparator.comparingLong { obj: DocumentHolder -> obj.getLastModified() }
+val sortOlderFirst = Comparator.comparingLong { obj: DocumentHolder -> obj.lastModified }
 
 val sortNewerFirst = Comparator { file1: DocumentHolder, file2: DocumentHolder ->
-    file2.getLastModified().compareTo(file1.getLastModified())
+    file2.lastModified.compareTo(file1.lastModified)
 }
 
 val sortName = Comparator.comparing { file: DocumentHolder ->
@@ -41,8 +41,8 @@ val sortNameRev = Comparator { file1: DocumentHolder, file2: DocumentHolder ->
     )
 }
 
-val sortSmallerFirst = Comparator.comparingLong { obj: DocumentHolder -> obj.getFileSize() }
+val sortSmallerFirst = Comparator.comparingLong { obj: DocumentHolder -> obj.fileSize }
 
 val sortLargerFirst = Comparator { file1: DocumentHolder, file2: DocumentHolder ->
-    file2.getFileSize().compareTo(file1.getFileSize())
+    file2.fileSize.compareTo(file1.fileSize)
 }

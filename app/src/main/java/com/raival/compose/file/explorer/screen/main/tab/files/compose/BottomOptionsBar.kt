@@ -40,7 +40,7 @@ fun BottomOptionsBar(tab: FilesTab) {
             BottomOptionsBarButton(Icons.Rounded.DeleteSweep, stringResource(R.string.empty)) {
                 tab.unselectAllFiles(false)
                 tab.activeFolderContent.forEach {
-                    tab.selectedFiles[it.getPath()] = it
+                    tab.selectedFiles[it.path] = it
                 }
                 tab.quickReloadFiles()
                 tab.showConfirmDeleteDialog = true
@@ -55,7 +55,7 @@ fun BottomOptionsBar(tab: FilesTab) {
             tab.showSearchPenal = true
         }
 
-        if (!tab.showEmptyRecycleBin) {
+        if (!tab.showEmptyRecycleBin && tab.canCreateNewFile()) {
             BottomOptionsBarButton(Icons.Rounded.Add, stringResource(R.string.create)) {
                 tab.showCreateNewFileDialog = true
             }
@@ -68,7 +68,7 @@ fun BottomOptionsBar(tab: FilesTab) {
                 } else {
                     tab.unselectAllFiles(false)
                     tab.activeFolderContent.forEach {
-                        tab.selectedFiles[it.getPath()] = it
+                        tab.selectedFiles[it.path] = it
                     }
                     tab.quickReloadFiles()
                 }

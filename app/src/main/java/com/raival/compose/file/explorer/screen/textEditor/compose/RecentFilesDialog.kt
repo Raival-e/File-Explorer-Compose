@@ -116,7 +116,7 @@ fun RecentFilesDialog(codeEditor: CodeEditor) {
                                     )
                                     FileItemRow(
                                         item = it.file,
-                                        fileDetails = it.file.getBasePath(),
+                                        fileDetails = it.file.basePath,
                                         namePrefix = if (it.requireSave) "* " else emptyString
                                     )
                                 }

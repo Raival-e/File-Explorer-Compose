@@ -41,16 +41,16 @@ fun FileSortingMenu(
     val prefs = globalClass.preferencesManager.filesSortingPrefs
     val specificOptions = prefs.getSortingPrefsFor(tab.activeFolder)
 
-    var applyForThisFileOnly by remember(tab.activeFolder.getPath()) {
+    var applyForThisFileOnly by remember(tab.activeFolder.path) {
         mutableStateOf(specificOptions.applyForThisFileOnly)
     }
-    var sortingMethod by remember(tab.activeFolder.getPath()) {
+    var sortingMethod by remember(tab.activeFolder.path) {
         mutableIntStateOf(specificOptions.sortMethod)
     }
-    var showFoldersFirst by remember(tab.activeFolder.getPath()) {
+    var showFoldersFirst by remember(tab.activeFolder.path) {
         mutableStateOf(specificOptions.showFoldersFirst)
     }
-    var reverseOrder by remember(tab.activeFolder.getPath()) {
+    var reverseOrder by remember(tab.activeFolder.path) {
         mutableStateOf(specificOptions.reverseSorting)
     }
 

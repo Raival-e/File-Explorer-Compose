@@ -47,12 +47,12 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
 
         val selectedFilesCount = targetFiles.size
         val isMultipleSelection = selectedFilesCount > 1
-        val isSingleFile = !isMultipleSelection && targetDocumentHolder.isFile()
-        val isSingleFolder = !isMultipleSelection && targetDocumentHolder.isFolder()
+        val isSingleFile = !isMultipleSelection && targetDocumentHolder.isFile
+        val isSingleFolder = !isMultipleSelection && targetDocumentHolder.isFolder
 
         var hasFolders = false
         tab.selectedFiles.forEach {
-            if (it.component2().isFolder()) {
+            if (it.component2().isFolder) {
                 hasFolders = true
                 return@forEach
             }
@@ -139,7 +139,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         tab.hideDocumentOptionsMenu()
-                        globalClass.filesTabManager.bookmarks += targetFiles.map { it.getPath() }
+                        globalClass.filesTabManager.bookmarks += targetFiles.map { it.path }
                             .distinct()
                         globalClass.showMsg(R.string.added_to_bookmarks)
                         tab.unselectAllFiles()
@@ -207,7 +207,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 tab.unselectAllFiles()
             }
 
-            if (isSingleFile && !hasFolders && targetFiles[0].isArchive()) {
+            if (isSingleFile && !hasFolders && targetFiles[0].isArchive) {
                 FileOption(
                     Icons.AutoMirrored.Rounded.ExitToApp,
                     stringResource(R.string.decompress)

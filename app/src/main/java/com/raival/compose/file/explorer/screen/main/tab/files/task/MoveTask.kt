@@ -21,7 +21,7 @@ class MoveTask(
     override fun getTitle(): String = globalClass.getString(R.string.move)
 
     override fun getSubtitle(): String = if (source.size == 1)
-        source[0].getPath().trimToLastTwoSegments()
+        source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
 
     override fun execute(destination: DocumentHolder, callback: Any) {
@@ -47,9 +47,9 @@ class MoveTask(
         val filesSkipped = arrayListOf<String>()
 
         source.forEach {
-            if (it.getStorageId() == destination.getStorageId()) {
-                val tempFile = File(it.getPath())
-                val dest = File(destination.getPath())
+            if (it.storageId == destination.storageId) {
+                val tempFile = File(it.path)
+                val dest = File(destination.path)
                 val newFile = File(dest, tempFile.name)
                 val isReplace = newFile.exists()
 
@@ -60,10 +60,10 @@ class MoveTask(
                 }
             }
 
-            filesToMove.add(it.getPath())
+            filesToMove.add(it.path)
 
-            if (!it.isFile()) {
-                filesToMove.addAll(it.walk(true).map { f -> f.getPath() })
+            if (!it.isFile) {
+                filesToMove.addAll(it.walk(true).map { f -> f.path })
             }
         }
 
@@ -81,7 +81,7 @@ class MoveTask(
         }
 
         fun copyFile(from: DocumentHolder, to: DocumentHolder) {
-            if (!filesToMove.contains(from.getPath())) return
+            if (!filesToMove.contains(from.path)) return
 
             val existingFile = from.getName().let { to.findFile(it) }
 
@@ -96,9 +96,9 @@ class MoveTask(
             )
 
             if (existingFile isNot null) {
-                if (from.getPath() == existingFile?.getPath() || !existingFile!!.delete()) {
+                if (from.path == existingFile?.path || !existingFile!!.delete()) {
                     skipped++
-                    filesSkipped.add(from.getPath())
+                    filesSkipped.add(from.path)
                     return
                 }
             }
@@ -123,24 +123,24 @@ class MoveTask(
             }
 
             skipped++
-            filesSkipped.add(from.getPath())
+            filesSkipped.add(from.path)
         }
 
         fun copyFolder(from: DocumentHolder, to: DocumentHolder) {
-            if (!filesToMove.contains(from.getPath())) return
+            if (!filesToMove.contains(from.path)) return
 
             val newFolder = from.getName().let { to.createSubFolder(it) }
 
             if (newFolder isNot null) {
-                if (from.getPath() == newFolder?.getPath()) {
+                if (from.path == newFolder?.path) {
                     skipped++
-                    filesSkipped.add(from.getPath())
+                    filesSkipped.add(from.path)
                 } else {
                     completed++
                 }
 
                 from.listContent(false).forEach { currentFile ->
-                    if (currentFile.isFile()) {
+                    if (currentFile.isFile) {
                         copyFile(currentFile, newFolder!!)
                     } else {
                         copyFolder(currentFile, newFolder!!)
@@ -148,13 +148,13 @@ class MoveTask(
                 }
             } else {
                 skipped++
-                filesSkipped.add(from.getPath())
+                filesSkipped.add(from.path)
             }
         }
 
         source.forEach { currentFile ->
             if (currentFile.exists()) {
-                if (currentFile.isFile()) {
+                if (currentFile.isFile) {
                     copyFile(currentFile, destination)
                 } else {
                     copyFolder(currentFile, destination)
@@ -170,9 +170,9 @@ class MoveTask(
         )
 
         source.forEach { currentFile ->
-            if (!filesSkipped.contains(currentFile.getPath())) {
+            if (!filesSkipped.contains(currentFile.path)) {
                 if (currentFile.exists()) {
-                    if (currentFile.isFile()) currentFile.delete()
+                    if (currentFile.isFile) currentFile.delete()
                     else currentFile.deleteRecursively()
                 }
             }

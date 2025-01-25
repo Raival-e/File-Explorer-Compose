@@ -50,7 +50,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
         val apkFile = apkDialog.apkFile!!
 
         val apkInfo by remember {
-            mutableStateOf(packageManager.getPackageArchiveInfo(apkFile.getPath(), 0))
+            mutableStateOf(packageManager.getPackageArchiveInfo(apkFile.path, 0))
         }
 
         var icon by remember {
@@ -67,8 +67,8 @@ fun ApkPreviewDialog(tab: FilesTab) {
 
         LaunchedEffect(Unit) {
             apkInfo?.let {
-                it.applicationInfo?.sourceDir = apkFile.getPath()
-                it.applicationInfo?.publicSourceDir = apkFile.getPath()
+                it.applicationInfo?.sourceDir = apkFile.path
+                it.applicationInfo?.publicSourceDir = apkFile.path
 
                 icon = it.applicationInfo?.loadIcon(packageManager)
                 appName = it.applicationInfo?.loadLabel(packageManager).toString()
@@ -86,7 +86,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
                 details.add(
                     Pair(
                         globalClass.getString(R.string.size),
-                        apkFile.getFileSize().toFormattedSize()
+                        apkFile.fileSize.toFormattedSize()
                     )
                 )
             }

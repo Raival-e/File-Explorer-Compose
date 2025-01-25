@@ -7,7 +7,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.RegularTabContentView
+import com.raival.compose.file.explorer.screen.main.tab.files.compose.FilesTabContentView
+import com.raival.compose.file.explorer.screen.main.tab.main.MainTab
+import com.raival.compose.file.explorer.screen.main.tab.main.compose.MainTabContentView
 
 @Composable
 fun ColumnScope.TabContentView() {
@@ -19,11 +21,15 @@ fun ColumnScope.TabContentView() {
             val currentTab = mainActivityManager.tabs[currentTabIndex]
 
             LaunchedEffect(key1 = currentTab.id) {
-                currentTab.onTabStarted()
+                currentTab.apply {
+                    if (!isCreated) onTabStarted() else onTabResumed()
+                }
             }
 
             if (currentTab is FilesTab) {
-                RegularTabContentView(currentTab)
+                FilesTabContentView(currentTab)
+            } else if (currentTab is MainTab) {
+                MainTabContentView(currentTab)
             }
         }
     }

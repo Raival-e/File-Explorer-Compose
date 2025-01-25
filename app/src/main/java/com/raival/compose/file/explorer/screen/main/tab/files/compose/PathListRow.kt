@@ -60,7 +60,7 @@ fun PathListRow(tab: FilesTab) {
             Modifier.weight(1f),
             tab.currentPathSegmentsListState,
         ) {
-            itemsIndexed(tab.currentPathSegments, key = { _, it -> it.getPath() }) { index, item ->
+            itemsIndexed(tab.currentPathSegments, key = { _, it -> it.path }) { index, item ->
                 val isHighlighted = index == tab.currentPathSegments.size - 1
 
                 Row(
@@ -87,7 +87,7 @@ fun PathListRow(tab: FilesTab) {
                             .alpha(0.8f),
                         text = item.getName()
                             .orIf(stringResource(id = R.string.internal_storage)) {
-                                item.getPath() == Environment.getExternalStorageDirectory().absolutePath
+                                item.path == Environment.getExternalStorageDirectory().absolutePath
                             },
                         fontSize = 14.sp,
                         fontWeight = if (isHighlighted) FontWeight.Medium else FontWeight.Normal,

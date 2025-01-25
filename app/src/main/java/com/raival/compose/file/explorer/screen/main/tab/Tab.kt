@@ -6,14 +6,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 abstract class Tab {
+    var isCreated = false
+
     abstract val id: Int
     abstract val title: String
     abstract val subtitle: String
     abstract val header: String
-    abstract var onTabClicked: () -> Unit
-    abstract var onTabResumed: () -> Unit
-    abstract var onTabStopped: () -> Unit
-    abstract var onTabStarted: () -> Unit
+
+    open fun onTabStopped() {}
+    open fun onTabResumed() {}
+    open fun onTabClicked() {}
+    open fun onTabStarted() {
+        isCreated = true
+    }
 
     fun requestHomeToolbarUpdate() {
         CoroutineScope(Dispatchers.Main).launch {

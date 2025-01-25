@@ -35,10 +35,10 @@ fun FileIcon(
         else -> RegularTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
     }
 
-    if (documentHolder.isFile()) {
+    if (documentHolder.isFile) {
         ItemRowIcon(
             icon = documentHolder,
-            alpha = if (documentHolder.isHidden()) 0.4f else 1f,
+            alpha = if (documentHolder.isHidden) 0.4f else 1f,
             onClickListener = onClickListener,
             placeholder = documentHolder.getFileIconResource()
         )
@@ -50,7 +50,7 @@ fun FileIcon(
                 .clickable {
                     onClickListener?.invoke()
                 }
-                .alpha(if (documentHolder.isHidden()) 0.4f else 1f),
+                .alpha(if (documentHolder.isHidden) 0.4f else 1f),
             imageVector = Icons.Rounded.Folder,
             contentDescription = null
         )

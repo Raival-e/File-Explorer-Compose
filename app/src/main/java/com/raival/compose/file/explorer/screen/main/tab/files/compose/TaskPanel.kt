@@ -83,6 +83,11 @@ fun TaskPanel(tab: FilesTab) {
                                 .fillMaxWidth()
                                 .combinedClickable(
                                     onClick = {
+                                        if (!tab.canRunTasks()) {
+                                            globalClass.showMsg(globalClass.getString(R.string.can_not_run_tasks))
+                                            return@combinedClickable
+                                        }
+
                                         if (!task.isValidSourceFiles()) {
                                             globalClass.showMsg(R.string.invalid_task)
                                             return@combinedClickable
@@ -93,7 +98,7 @@ fun TaskPanel(tab: FilesTab) {
                                         if (task is CompressTask) {
                                             if (tab.selectedFiles.size == 1) {
                                                 val selectedFile = tab.selectedFiles.values.first()
-                                                if (selectedFile.isArchive()) {
+                                                if (selectedFile.isArchive) {
                                                     CoroutineScope(Dispatchers.IO).launch {
                                                         task.execute(
                                                             selectedFile,

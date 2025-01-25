@@ -17,7 +17,7 @@ import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageDevice
-import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -39,7 +39,7 @@ class MainActivityManager {
     val drawerState = DrawerState(initialValue = DrawerValue.Closed)
 
     fun setupTabs() {
-        storageDevices.addAll(FileProvider.getStorageDevices(globalClass))
+        storageDevices.addAll(StorageProvider.getStorageDevices(globalClass))
     }
 
     fun closeAllTabs() {

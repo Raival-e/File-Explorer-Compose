@@ -1,21 +1,22 @@
 [versions]
 agp = "8.6.1"
 desugar_jdk_libs = "2.1.4"
+grid = "2.2.0"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 appcompat = "1.7.0"
 lazycolumnscrollbar = "2.2.0"
 material = "1.12.0"
-androidxComposeBom = "2024.12.01"
+androidxComposeBom = "2025.01.00"
 media3Exoplayer = "1.5.1"
 soraEditor = "0.23.5"
 gson = "2.11.0"
-dataStore = "1.1.1"
+dataStore = "1.1.2"
 storage = "2.0.0"
 cascade_compose = "2.3.0"
 compose_swipebox = "1.4.0"
 lifecycle_runtime_compose_android = "2.8.7"
-activity_compose = "1.9.3"
+activity_compose = "1.10.0"
 lifecycle_runtime_ktx = "2.8.7"
 coilCompose = "3.0.4"
 zoomable = "2.0.0"
@@ -25,7 +26,7 @@ uiautomator = "2.3.0"
 benchmarkMacroJunit4 = "1.3.3"
 baselineprofile = "1.3.3"
 profileinstaller = "1.4.1"
-reorderable = "2.4.2"
+reorderable = "2.4.3"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coilCompose" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilCompose" }
 coil-video = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilCompose" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+grid = { module = "com.cheonjaeung.compose.grid:grid", version.ref = "grid" }
 lazycolumnscrollbar = { module = "com.github.nanihadesuka:LazyColumnScrollbar", version.ref = "lazycolumnscrollbar" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }

@@ -145,9 +145,9 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
 
     fun log(msg: String, header: String = emptyString) {
         if (!errorLogFile.exists()) return
-        if (errorLogFile.isFolder()) return
+        if (errorLogFile.isFolder) return
 
-        if (errorLogFile.getFileSize() > 1024 * 100) {
+        if (errorLogFile.fileSize > 1024 * 100) {
             errorLogFile.writeText(emptyString)
         }
 

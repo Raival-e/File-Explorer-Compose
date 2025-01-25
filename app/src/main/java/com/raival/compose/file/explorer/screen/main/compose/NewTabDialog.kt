@@ -19,7 +19,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.compose.BottomSheetDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
 
 @Composable
 fun NewTabDialog() {
@@ -38,7 +38,7 @@ fun NewTabDialog() {
                     textAlign = TextAlign.Center
                 )
 
-                FileProvider.getStorageDevices(globalClass).forEach {
+                StorageProvider.getStorageDevices(globalClass).forEach {
                     StorageDeviceView(storageDevice = it) {
                         globalClass.mainActivityManager.addTabAndSelect(FilesTab(it.documentHolder))
                         mainActivityManager.showNewTabDialog = false

@@ -70,42 +70,66 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
     var formattedDetailsCache = emptyString
 
     override fun getName() = documentFile.name ?: UNKNOWN_NAME
-    override fun getData() = documentFile
+    override fun getContent() = documentFile
+
+    val fileExtension by lazy { documentFile.extension.lowercase() }
+
+    val fileSize by lazy { documentFile.length() }
+
+    val lastModified by lazy { documentFile.lastModified() }
+
+    val isHidden by lazy { getName().startsWith(".") }
+
+    val uri by lazy { documentFile.uri }
+
+    val path by lazy { documentFile.getAbsolutePath(globalClass) }
+
+    val isFile by lazy { documentFile.isFile }
+
+    val isFolder by lazy { documentFile.isDirectory }
+
+    val isArchive by lazy { isFile && archiveFileType.contains(fileExtension.lowercase()) }
+
+    val isApk by lazy { isFile && fileExtension == apkFileType }
+
+    val basePath by lazy { documentFile.getBasePath(globalClass) }
+
+    val storageId by lazy { documentFile.getStorageId(globalClass) }
+
+    val mimeType by lazy { documentFile.mimeType ?: getMimeType(uri) ?: anyFileType }
+
+    val canAccessParent by lazy { documentFile.parentFile != null || parentAlt != null }
+
+    val parent: DocumentHolder? by lazy {
+        documentFile.parentFile?.let { DocumentHolder(it) } ?: parentAlt
+    }
+
+    private val parentAlt: DocumentHolder? by lazy {
+        val file = File(path)
+        if (file.exists() && file.canRead()) {
+            file.parentFile?.takeIf { it.exists() && it.canRead() }?.let {
+                DocumentHolder(DocumentFile.fromFile(it))
+            }
+        } else null
+    }
 
     fun exists() = documentFile.exists()
 
-    fun getFileExtension() = documentFile.extension.lowercase()
-
-    fun getFileSize() = documentFile.length()
-
-    fun getLastModified() = documentFile.lastModified()
-
-    fun isHidden() = getName().startsWith(".")
-
-    fun getUri() = documentFile.uri
-
-    fun getPath() = documentFile.getAbsolutePath(globalClass)
-
-    fun isFile() = documentFile.isFile
-
-    fun isFolder() = documentFile.isDirectory
-
     fun isEmpty() = documentFile.isEmpty(globalClass)
 
-    fun isArchive() = isFile() && archiveFileType.contains(getFileExtension().lowercase())
+    fun hasParent(parent: DocumentHolder): Boolean =
+        documentFile.hasParent(globalClass, parent.documentFile)
 
-    fun isApk() = isFile() && getFileExtension() == apkFileType
+    private fun getMimeType(uri: Uri): String? = MimeTypeMap
+        .getSingleton()
+        .getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(uri.toString()))
 
     fun findFile(name: String): DocumentHolder? =
         documentFile.findFile(name)?.let { DocumentHolder(it) }
 
-    fun getBasePath() = documentFile.getBasePath(globalClass)
-
     fun delete() = documentFile.delete()
 
     fun deleteRecursively() = documentFile.deleteRecursively(globalClass)
-
-    fun getStorageId() = documentFile.getStorageId(globalClass)
 
     fun openInputStream() = documentFile.openInputStream(globalClass)
 
@@ -128,43 +152,13 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
             toFile()!!
         )
     } else {
-        getUri()
+        uri
     }
-
-    private fun getMimeType(uri: Uri) = MimeTypeMap
-        .getSingleton()
-        .getMimeTypeFromExtension(MimeTypeMap.getFileExtensionFromUrl(uri.toString()))
-
-    fun getMimeType() = documentFile.mimeType ?: getMimeType(getUri()) ?: anyFileType
-
-    fun canAccessParent() = documentFile.parentFile != null || getParentAlt() != null
-
-    fun hasParent(parent: DocumentHolder) =
-        documentFile.hasParent(globalClass, parent.documentFile)
-
-    fun getParent(): DocumentHolder? {
-        val parent = documentFile.parentFile
-        if (parent != null) return DocumentHolder(parent)
-
-        return getParentAlt()
-    }
-
-    private fun getParentAlt(): DocumentHolder? {
-        val file = File(getPath())
-        if (file.exists() && file.canRead()) {
-            val parentFile = file.parentFile
-            if (parentFile != null && parentFile.exists() && parentFile.canRead()) {
-                return DocumentHolder(DocumentFile.fromFile(parentFile))
-            }
-        }
-        return null
-    }
-
 
     fun walk(includeNoneEmptyFolders: Boolean = false): List<DocumentHolder> {
         val fileTree = mutableListOf<DocumentHolder>()
         listContent(false) {
-            if (it.isFolder()) {
+            if (it.isFolder) {
                 if (it.isEmpty()) {
                     fileTree.add(it)
                 } else {
@@ -185,7 +179,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
     ) {
         if (documentFile.isFile) {
             onCountFile()
-            onCountSize(getFileSize())
+            onCountSize(fileSize)
         } else if (documentFile.isDirectory) {
             onCountFolder(documentFile.isEmpty(globalClass))
             listContent(false) { file ->
@@ -244,7 +238,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
                 if (!showFolderContentCount) append(separator)
                 append(documentFile.length().toFormattedSize())
                 append(separator)
-                append(getFileExtension())
+                append(fileExtension)
             } else if (showFolderContentCount) {
                 append(getFormattedFileCount())
             }
@@ -255,14 +249,14 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
 
     fun toFile(): File? {
         if (documentFile.isRawFile) {
-            return getUri().toFile()
+            return uri.toFile()
         }
         return null
     }
 
     fun writeText(text: String) {
         if (documentFile.isRawFile) {
-            File(getPath()).writeText(text)
+            File(path).writeText(text)
         } else {
             documentFile.openOutputStream(globalClass, false)?.use {
                 it.write(text.toByteArray())
@@ -290,7 +284,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
 
     fun appendText(text: String) {
         if (documentFile.isRawFile) {
-            File(getPath()).appendText(text)
+            File(path).appendText(text)
         } else {
             documentFile.openOutputStream(globalClass, true)?.use {
                 it.write(text.toByteArray())
@@ -303,7 +297,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
         var foldersCount = 0
 
         listContent(false) {
-            if (it.isFile()) filesCount++ else foldersCount++
+            if (it.isFile) filesCount++ else foldersCount++
         }
 
         return getFormattedFileCount(filesCount, foldersCount)
@@ -377,7 +371,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
     }
 
     private fun handleSupportedFiles(context: Context): Boolean {
-        val ext = getFileExtension()
+        val ext = fileExtension
 
         if (FileMimeType.conditions { codeFileType.contains(ext) || editableFileType.contains(ext) }) {
             globalClass.textEditorManager.openTextEditor(
@@ -394,7 +388,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
         val packageManager: PackageManager = globalClass.packageManager
 
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(createUri(), mimeType.ifEmpty { getMimeType() })
+            setDataAndType(createUri(), mimeType.ifEmpty { this@DocumentHolder.mimeType })
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
         }
@@ -427,7 +421,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
         val uri = createUri()
 
         val intent = Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(uri, getMimeType())
+            setDataAndType(uri, mimeType)
             addFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK
                         or Intent.FLAG_ACTIVITY_NEW_DOCUMENT
@@ -447,49 +441,49 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
     }
 
     fun getFileIconType(): Int {
-        if (isFolder()) {
+        if (isFolder) {
             return FILE_TYPE_FOLDER
-        } else if (getFileExtension() == aiFileType) {
+        } else if (fileExtension == aiFileType) {
             return FILE_TYPE_AI
-        } else if (getFileExtension() == apkFileType) {
+        } else if (fileExtension == apkFileType) {
             return FILE_TYPE_APK
-        } else if (getFileExtension() == cssFileType) {
+        } else if (fileExtension == cssFileType) {
             return FILE_TYPE_CSS
-        } else if (getFileExtension() == isoFileType) {
+        } else if (fileExtension == isoFileType) {
             return FILE_TYPE_ISO
-        } else if (getFileExtension() == jsFileType) {
+        } else if (fileExtension == jsFileType) {
             return FILE_TYPE_JS
-        } else if (getFileExtension() == psdFileType) {
+        } else if (fileExtension == psdFileType) {
             return FILE_TYPE_PSD
-        } else if (getFileExtension() == sqlFileType) {
+        } else if (fileExtension == sqlFileType) {
             return FILE_TYPE_SQL
-        } else if (getFileExtension() == svgFileType) {
+        } else if (fileExtension == svgFileType) {
             return FILE_TYPE_SVG
-        } else if (getFileExtension() == vcfFileType) {
+        } else if (fileExtension == vcfFileType) {
             return FILE_TYPE_VCF
-        } else if (getFileExtension() == pdfFileType) {
+        } else if (fileExtension == pdfFileType) {
             return FILE_TYPE_PDF
-        } else if (docFileType.contains(getFileExtension())) {
+        } else if (docFileType.contains(fileExtension)) {
             return FILE_TYPE_DOC
-        } else if (excelFileType.contains(getFileExtension())) {
+        } else if (excelFileType.contains(fileExtension)) {
             return FILE_TYPE_XLS
-        } else if (pptFileType.contains(getFileExtension())) {
+        } else if (pptFileType.contains(fileExtension)) {
             return FILE_TYPE_PPT
-        } else if (fontFileType.contains(getFileExtension())) {
+        } else if (fontFileType.contains(fileExtension)) {
             return FILE_TYPE_FONT
-        } else if (vectorFileType.contains(getFileExtension())) {
+        } else if (vectorFileType.contains(fileExtension)) {
             return FILE_TYPE_VECTOR
-        } else if (archiveFileType.contains(getFileExtension())) {
+        } else if (archiveFileType.contains(fileExtension)) {
             return FILE_TYPE_ARCHIVE
-        } else if (videoFileType.contains(getFileExtension())) {
+        } else if (videoFileType.contains(fileExtension)) {
             return FILE_TYPE_VIDEO
-        } else if (codeFileType.contains(getFileExtension())) {
+        } else if (codeFileType.contains(fileExtension)) {
             return FILE_TYPE_CODE
-        } else if (editableFileType.contains(getFileExtension())) {
+        } else if (editableFileType.contains(fileExtension)) {
             return FILE_TYPE_TEXT
-        } else if (imageFileType.contains(getFileExtension())) {
+        } else if (imageFileType.contains(fileExtension)) {
             return FILE_TYPE_IMAGE
-        } else if (audioFileType.contains(getFileExtension())) {
+        } else if (audioFileType.contains(fileExtension)) {
             return FILE_TYPE_AUDIO
         } else {
             return FILE_TYPE_UNKNOWN

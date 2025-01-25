@@ -58,7 +58,7 @@ fun BookmarksDialog(tab: FilesTab) {
                     globalClass.filesTabManager.bookmarks
                     .map { DocumentHolder.fromFullPath(it) }
                     .takeWhile { it != null } as ArrayList<DocumentHolder>,
-                    key = { index, item -> item.getPath() }
+                    key = { index, item -> item.path }
                 ) { index, item ->
                     SwipeBox(
                         modifier = Modifier.fillMaxWidth(),
@@ -73,7 +73,7 @@ fun BookmarksDialog(tab: FilesTab) {
                                 weight = 1f,
                                 iconSize = 20.dp
                             ) {
-                                globalClass.filesTabManager.bookmarks -= item.getPath()
+                                globalClass.filesTabManager.bookmarks -= item.path
                             }
                         }
                     ) { _, _, _ ->
@@ -84,7 +84,7 @@ fun BookmarksDialog(tab: FilesTab) {
                                 .animateItem()
                                 .combinedClickable(
                                     onClick = {
-                                        if (item.isFile()) {
+                                        if (item.isFile) {
                                             tab.openFile(context, item)
                                         } else {
                                             tab.requestNewTab(FilesTab(item))
@@ -97,7 +97,7 @@ fun BookmarksDialog(tab: FilesTab) {
                             Space(size = 4.dp)
                             FileItemRow(
                                 item = item,
-                                fileDetails = item.getPath().trimToLastTwoSegments()
+                                fileDetails = item.path.trimToLastTwoSegments()
                             )
                             Space(size = 4.dp)
                             HorizontalDivider(

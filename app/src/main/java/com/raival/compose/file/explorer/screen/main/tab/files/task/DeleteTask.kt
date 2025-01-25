@@ -21,7 +21,7 @@ class DeleteTask(
     override fun getTitle(): String = globalClass.getString(R.string.delete)
 
     override fun getSubtitle(): String = if (source.size == 1)
-        source[0].getPath().trimToLastTwoSegments()
+        source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
 
     override fun execute(destination: DocumentHolder, callback: Any) {
@@ -73,7 +73,7 @@ class DeleteTask(
                 }
             } else {
                 toDelete.listContent(false).forEach {
-                    if (it.isFile()) {
+                    if (it.isFile) {
                         updateProgress(globalClass.getString(R.string.deleting, it.getName()))
                         if (it.delete()) {
                             deleted++
@@ -93,7 +93,7 @@ class DeleteTask(
         }
 
         source.forEach { currentFile ->
-            if (currentFile.isFile()) {
+            if (currentFile.isFile) {
                 updateProgress(globalClass.getString(R.string.deleting, currentFile.getName()))
                 if (currentFile.delete()) {
                     deleted++

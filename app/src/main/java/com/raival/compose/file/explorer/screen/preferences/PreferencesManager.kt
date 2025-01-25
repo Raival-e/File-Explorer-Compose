@@ -197,7 +197,7 @@ class PreferencesManager {
         fun getSortingPrefsFor(doc: DocumentHolder): FileSortingPrefs {
             return runBlocking {
                 fromJson(
-                    globalClass.dataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${doc.getPath()}")]
+                    globalClass.dataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${doc.path}")]
                 ) ?: FileSortingPrefs(
                     sortMethod = filesSortingMethod,
                     showFoldersFirst = showFoldersFirst,
@@ -209,7 +209,7 @@ class PreferencesManager {
         fun setSortingPrefsFor(doc: DocumentHolder, prefs: FileSortingPrefs) {
             runBlocking {
                 globalClass.dataStore.edit {
-                    it[stringPreferencesKey("fileSortingPrefs_${doc.getPath()}")] = prefs.toJson()
+                    it[stringPreferencesKey("fileSortingPrefs_${doc.path}")] = prefs.toJson()
                 }
             }
         }

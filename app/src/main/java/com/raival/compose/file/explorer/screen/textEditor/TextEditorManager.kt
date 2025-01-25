@@ -92,7 +92,7 @@ class TextEditorManager {
     private val untitledFileName = "untitled.txt"
 
     private val textEditorDir = DocumentHolder.fromFile(
-        File(globalClass.appFiles.getPath(), "textEditor").apply { if (!exists()) mkdirs() }
+        File(globalClass.appFiles.path, "textEditor").apply { if (!exists()) mkdirs() }
     )
 
     private val customSymbolsFile =
@@ -191,7 +191,7 @@ class TextEditorManager {
                 onFileNotFound()
             }
 
-            if (activeFile.getLastModified() != getFileInstance()?.lastModified) {
+            if (activeFile.lastModified != getFileInstance()?.lastModified) {
                 CoroutineScope(Dispatchers.IO).launch {
                     val newText = activeFile.readText()
                     showSourceFileWarningDialog { onSourceReload(newText) }
@@ -209,7 +209,7 @@ class TextEditorManager {
             onDismiss = { showWarningDialog = false }
             WarningDialogProperties.onConfirm = {
                 getFileInstance()?.apply {
-                    lastModified = activeFile.getLastModified()
+                    lastModified = activeFile.lastModified
                     onConfirm()
                     requireSave = false
                 }
@@ -224,7 +224,7 @@ class TextEditorManager {
         documentHolder: DocumentHolder = activeFile,
         bringToTop: Boolean = false
     ): FileInstance? {
-        val index = fileInstanceList.indexOfFirst { it.file.getPath() == documentHolder.getPath() }
+        val index = fileInstanceList.indexOfFirst { it.file.path == documentHolder.path }
 
         if (index == -1) return null
 
@@ -269,7 +269,7 @@ class TextEditorManager {
         CoroutineScope(Dispatchers.IO).launch {
             fileInstance.apply {
                 file.writeText(fileInstance.content.toString())
-                lastModified = fileInstance.file.getLastModified()
+                lastModified = fileInstance.file.lastModified
                 requireSave = false
                 requireSaveCurrentFile = false
             }
@@ -283,7 +283,7 @@ class TextEditorManager {
         CoroutineScope(Dispatchers.IO).launch {
             getFileInstance()?.let { instance ->
                 activeFile.writeText(instance.content.toString())
-                instance.lastModified = activeFile.getLastModified()
+                instance.lastModified = activeFile.lastModified
                 instance.requireSave = false
                 requireSaveCurrentFile = false
                 withContext(Dispatchers.Main) { onSaved().also { isSaving = false } }
@@ -293,15 +293,15 @@ class TextEditorManager {
 
     private fun analyseFile() {
         activityTitle = activeFile.getName()
-        activitySubtitle = activeFile.getBasePath()
+        activitySubtitle = activeFile.basePath
 
-        canFormatFile = activeFile.getFileExtension().lowercase(Locale.getDefault()).let {
+        canFormatFile = activeFile.fileExtension.lowercase(Locale.getDefault()).let {
             it == jsonFileType || it == javaFileType || it == kotlinFileType
         }
     }
 
     private fun setLanguage(codeEditor: CodeEditor) {
-        when (activeFile.getFileExtension().lowercase(Locale.getDefault())) {
+        when (activeFile.fileExtension.lowercase(Locale.getDefault())) {
             javaFileType -> setCodeEditorLanguage(codeEditor, LANGUAGE_JAVA)
             kotlinFileType -> setCodeEditorLanguage(codeEditor, LANGUAGE_KOTLIN)
             jsonFileType -> setCodeEditorLanguage(codeEditor, LANGUAGE_JSON)
@@ -314,7 +314,7 @@ class TextEditorManager {
         codeEditor: CodeEditor,
         onContentReady: (content: Content, text: String, isSourceFileChanged: Boolean) -> Unit
     ) {
-        if (!fileInstance.file.exists() && !fileInstance.file.isFile()) {
+        if (!fileInstance.file.exists() && !fileInstance.file.isFile) {
             fileInstanceList.remove(fileInstance)
             globalClass.showMsg(R.string.file_not_found)
         }
@@ -350,7 +350,7 @@ class TextEditorManager {
             val fileInstance = getFileInstance(bringToTop = true)
 
             if (fileInstance isNot null) {
-                val isSourceChanged = fileInstance!!.lastModified != activeFile.getLastModified()
+                val isSourceChanged = fileInstance!!.lastModified != activeFile.lastModified
                 val isUnsaved = fileInstance.content.toString() != text
 
                 fileInstance.requireSave = isSourceChanged || isUnsaved
@@ -362,7 +362,7 @@ class TextEditorManager {
             } else {
                 val content = Content(text)
                 val newFileInstance =
-                    FileInstance(activeFile, content, activeFile.getLastModified())
+                    FileInstance(activeFile, content, activeFile.lastModified)
                 fileInstanceList.add(0, newFileInstance)
 
                 withContext(Dispatchers.Main) {

@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun OpenWithAppListDialog(tab: FilesTab) {
     if (tab.openWithDialog.showOpenWithDialog && tab.openWithDialog.targetFile != null) {
-        val documentHolder = tab.selectedFiles[tab.openWithDialog.targetFile!!.getPath()]!!
+        val documentHolder = tab.selectedFiles[tab.openWithDialog.targetFile!!.path]!!
         val context = LocalContext.current
 
         val appsList = remember {
@@ -90,7 +90,7 @@ fun OpenWithAppListDialog(tab: FilesTab) {
                         .fillMaxWidth(),
                     initValue = 0,
                     options = arrayListOf(
-                        Pair(documentHolder.getMimeType(), documentHolder.getMimeType()),
+                        Pair(documentHolder.mimeType, documentHolder.mimeType),
                         Pair("image", "image/*"),
                         Pair("Video", "video/*"),
                         Pair("Audio", "audio/*"),

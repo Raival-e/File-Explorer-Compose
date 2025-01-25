@@ -24,7 +24,7 @@ class DecompressTask(
     override fun getTitle(): String = globalClass.getString(R.string.decompress)
 
     override fun getSubtitle(): String = if (source.size == 1)
-        source[0].getPath().trimToLastTwoSegments()
+        source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
 
     override fun execute(destination: DocumentHolder, callback: Any) {
@@ -45,7 +45,7 @@ class DecompressTask(
 
         taskCallback.onPrepare(details)
 
-        globalClass.contentResolver.openInputStream(source[0].getUri())?.use { zipInputStream ->
+        globalClass.contentResolver.openInputStream(source[0].uri)?.use { zipInputStream ->
             ZipInputStream(zipInputStream).use { zis ->
                 var zipEntry: ZipEntry?
                 while (zis.nextEntry.also { zipEntry = it } != null) {
@@ -77,7 +77,7 @@ class DecompressTask(
             val existingFile = currentDir.findFile(pathSegments.last())
 
             if (existingFile isNot null) {
-                if (existingFile!!.isFolder()) existingFile.deleteRecursively()
+                if (existingFile!!.isFolder) existingFile.deleteRecursively()
                 else existingFile.delete()
             }
 
@@ -97,14 +97,14 @@ class DecompressTask(
         }
 
         fun writeToFile(zis: ZipInputStream, outputFile: DocumentHolder?) {
-            outputFile?.getUri()?.let { uri ->
+            outputFile?.uri?.let { uri ->
                 globalClass.contentResolver.openOutputStream(uri)?.use { outputStream ->
                     copyStream(zis, outputStream)
                 }
             }
         }
 
-        val inputStream = globalClass.contentResolver.openInputStream(source[0].getUri())
+        val inputStream = globalClass.contentResolver.openInputStream(source[0].uri)
 
         inputStream?.use { zipInputStream ->
             ZipInputStream(zipInputStream).use { zis ->

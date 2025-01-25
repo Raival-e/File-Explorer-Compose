@@ -41,11 +41,11 @@ fun FilePropertiesDialog(tab: FilesTab) {
         }
 
         val selectedFilesCount by remember {
-            mutableIntStateOf(targetFiles.count { it.isFile() })
+            mutableIntStateOf(targetFiles.count { it.isFile })
         }
 
         val selectedFoldersCount by remember {
-            mutableIntStateOf(targetFiles.count { it.isFolder() })
+            mutableIntStateOf(targetFiles.count { it.isFolder })
         }
 
         var filesCount by remember {
@@ -114,26 +114,26 @@ fun FilePropertiesDialog(tab: FilesTab) {
 
                     FilePropertiesRow(
                         title = stringResource(R.string.path),
-                        value = targetFiles[0].getPath(),
+                        value = targetFiles[0].path,
                         canCopy = true
                     )
 
                     FilePropertiesRow(
                         title = stringResource(R.string.uri),
-                        value = targetFiles[0].getUri().toString(),
+                        value = targetFiles[0].uri.toString(),
                         canCopy = true
                     )
 
                     FilePropertiesRow(
                         title = stringResource(R.string.modification_date),
-                        value = targetFiles[0].getLastModified().toFormattedDate(),
+                        value = targetFiles[0].lastModified.toFormattedDate(),
                         canCopy = true
                     )
                 }
 
                 FilePropertiesRow(
                     title = stringResource(R.string.parent),
-                    value = tab.activeFolder.getPath(),
+                    value = tab.activeFolder.path,
                     canCopy = true
                 )
 

@@ -43,7 +43,7 @@ import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.INTERNAL_STORAGE
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.ROOT
-import com.raival.compose.file.explorer.screen.main.tab.files.provider.FileProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
 import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
 import kotlinx.coroutines.launch
 
@@ -109,7 +109,7 @@ fun DrawerContent() {
             }
         }
 
-        FileProvider.getStorageDevices(globalClass).forEach { storageDevice ->
+        StorageProvider.getStorageDevices(globalClass).forEach { storageDevice ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

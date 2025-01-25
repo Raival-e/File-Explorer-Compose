@@ -88,7 +88,7 @@ fun SearchDialog(tab: FilesTab) {
 
                     if (isExceedingTheSearchLimit) return
 
-                    if (doc.isFile()) {
+                    if (doc.isFile) {
                         if (doc.getName().contains(query, true)) {
                             if (!isSearching) return
                             tab.search.searchResults += doc
@@ -96,7 +96,7 @@ fun SearchDialog(tab: FilesTab) {
                         }
                     }
 
-                    if (doc.isFolder()) {
+                    if (doc.isFolder) {
                         if (!isSearching) return
                         doc.documentFile.listFiles().forEach {
                             if (!isSearching) return
@@ -235,8 +235,8 @@ fun SearchDialog(tab: FilesTab) {
                     LazyColumn {
                         itemsIndexed(
                             tab.search.searchResults,
-                            key = { index, item -> item.getPath() }) { index, item ->
-                            var showMoreOptionsMenu by remember(item.getPath()) {
+                            key = { index, item -> item.path }) { index, item ->
+                            var showMoreOptionsMenu by remember(item.path) {
                                 mutableStateOf(false)
                             }
 
@@ -245,7 +245,7 @@ fun SearchDialog(tab: FilesTab) {
                                     .fillMaxWidth()
                                     .combinedClickable(
                                         onClick = {
-                                            if (item.isFile()) {
+                                            if (item.isFile) {
                                                 tab.openFile(context, item)
                                             } else {
                                                 tab.openFolder(item, rememberListState = false)
@@ -257,7 +257,7 @@ fun SearchDialog(tab: FilesTab) {
                                     )
                             ) {
                                 Space(size = 4.dp)
-                                FileItemRow(item = item, fileDetails = item.getBasePath())
+                                FileItemRow(item = item, fileDetails = item.basePath)
                                 Space(size = 4.dp)
                                 HorizontalDivider(
                                     modifier = Modifier.padding(start = 56.dp),
@@ -272,15 +272,15 @@ fun SearchDialog(tab: FilesTab) {
                                         },
                                         onClick = {
                                             tab.showSearchPenal = false
-                                            if (item.canAccessParent()) {
+                                            if (item.canAccessParent) {
                                                 tab.highlightedFiles.apply {
                                                     clear()
-                                                    add(item.getPath())
+                                                    add(item.path)
                                                 }
-                                                tab.openFolder(item.getParent()!!) {
+                                                tab.openFolder(item.parent!!) {
                                                     CoroutineScope(Dispatchers.Main).launch {
                                                         tab.getFileListState().scrollToItem(
-                                                            tab.activeFolderContent.getIndexIf { getPath() == item.getPath() },
+                                                            tab.activeFolderContent.getIndexIf { path == item.path },
                                                             0
                                                         )
                                                     }
@@ -295,7 +295,7 @@ fun SearchDialog(tab: FilesTab) {
                                         },
                                         onClick = {
                                             showMoreOptionsMenu = false
-                                            item.getPath().copyToClipboard()
+                                            item.path.copyToClipboard()
                                             globalClass.showMsg(globalClass.getString(R.string.copied_to_clipboard))
                                         }
                                     )
