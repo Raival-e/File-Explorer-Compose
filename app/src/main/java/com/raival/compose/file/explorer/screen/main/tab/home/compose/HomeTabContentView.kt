@@ -147,7 +147,7 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
             item {
                 TextButton(
                     onClick = {
-                        mainActivityManager.addTabAndSelect(
+                        mainActivityManager.replaceCurrentTabWith(
                             FilesTab(StorageProvider.recentFiles)
                         )
                     }
@@ -217,7 +217,7 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
 
         StorageProvider.getStorageDevices(globalClass).forEach {
             StorageDeviceView(storageDevice = it) {
-                globalClass.mainActivityManager.addTabAndSelect(FilesTab(it.documentHolder))
+                globalClass.mainActivityManager.replaceCurrentTabWith(FilesTab(it.documentHolder))
                 mainActivityManager.showNewTabDialog = false
             }
             HorizontalDivider()
@@ -229,7 +229,7 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
             title = stringResource(R.string.recycle_bin),
             imageVector = Icons.Rounded.DeleteSweep
         ) {
-            globalClass.mainActivityManager.addTabAndSelect(FilesTab(globalClass.recycleBinDir))
+            globalClass.mainActivityManager.replaceCurrentTabWith(FilesTab(globalClass.recycleBinDir))
             mainActivityManager.showNewTabDialog = false
         }
 

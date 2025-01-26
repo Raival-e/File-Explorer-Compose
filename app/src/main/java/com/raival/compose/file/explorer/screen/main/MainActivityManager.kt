@@ -77,6 +77,11 @@ class MainActivityManager {
         }
     }
 
+    fun replaceCurrentTabWith(tab: Tab) {
+        if (tabs.isNotEmpty()) tabs[selectedTabIndex].onTabStopped()
+        tabs[selectedTabIndex] = tab
+    }
+
     fun jumpToFile(file: DocumentHolder, context: Context) {
         openFile(file, context)
     }

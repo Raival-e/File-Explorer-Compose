@@ -56,7 +56,7 @@ class HomeTab : Tab() {
                 name = globalClass.getString(R.string.images),
                 icon = Icons.Rounded.Image,
                 onClick = {
-                    mainActivityManager.addTabAndSelect(
+                    mainActivityManager.replaceCurrentTabWith(
                         FilesTab(StorageProvider.images)
                     )
                 }
@@ -68,7 +68,7 @@ class HomeTab : Tab() {
                 name = globalClass.getString(R.string.videos),
                 icon = Icons.Rounded.VideoFile,
                 onClick = {
-                    mainActivityManager.addTabAndSelect(
+                    mainActivityManager.replaceCurrentTabWith(
                         FilesTab(StorageProvider.videos)
                     )
                 }
@@ -80,7 +80,7 @@ class HomeTab : Tab() {
                 name = globalClass.getString(R.string.audios),
                 icon = Icons.Rounded.AudioFile,
                 onClick = {
-                    mainActivityManager.addTabAndSelect(
+                    mainActivityManager.replaceCurrentTabWith(
                         FilesTab(StorageProvider.audios)
                     )
                 }
@@ -92,7 +92,7 @@ class HomeTab : Tab() {
                 name = globalClass.getString(R.string.documents),
                 icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
                 onClick = {
-                    mainActivityManager.addTabAndSelect(
+                    mainActivityManager.replaceCurrentTabWith(
                         FilesTab(StorageProvider.documents)
                     )
                 }
@@ -104,7 +104,7 @@ class HomeTab : Tab() {
                 name = globalClass.getString(R.string.archives),
                 icon = Icons.Rounded.Archive,
                 onClick = {
-                    mainActivityManager.addTabAndSelect(
+                    mainActivityManager.replaceCurrentTabWith(
                         FilesTab(StorageProvider.archives)
                     )
                 }
@@ -116,7 +116,7 @@ class HomeTab : Tab() {
                 name = globalClass.getString(R.string.apps),
                 icon = Icons.Rounded.Android,
                 onClick = {
-                    mainActivityManager.addTabAndSelect(
+                    mainActivityManager.replaceCurrentTabWith(
                         AppsTab()
                     )
                 }
