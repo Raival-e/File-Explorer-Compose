@@ -30,7 +30,9 @@ class AppsTab : Tab() {
 
     var selectedChoice by mutableIntStateOf(0)
     var previewAppDialog by mutableStateOf<AppHolder?>(null)
-
+    var isSearchPanelOpen by mutableStateOf(false)
+    var searchQuery by mutableStateOf(emptyString)
+    var isSearching by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
 
     override fun onTabResumed() {
