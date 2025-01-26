@@ -75,6 +75,28 @@ fun SearchDialog(tab: FilesTab) {
                 isSearching = true
                 tab.search.searchResults.clear()
 
+                suspend fun searchInList() {
+                    if (!isSearching) return
+
+                    val searchLimit = globalClass
+                        .preferencesManager
+                        .generalPrefs
+                        .searchInFilesLimit
+
+                    val isExceedingTheSearchLimit =
+                        searchLimit > 0 && tab.search.searchResults.size >= searchLimit
+
+                    if (isExceedingTheSearchLimit) return
+
+                    tab.activeFolderContent.forEach {
+                        if (!isSearching) return
+                        if (it.getName().contains(query, true)) {
+                            tab.search.searchResults += it
+                            delay(150)
+                        }
+                    }
+                }
+
                 suspend fun searchIn(doc: DocumentHolder) {
                     if (!isSearching) return
 
@@ -106,7 +128,12 @@ fun SearchDialog(tab: FilesTab) {
                 }
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    searchIn(tab.activeFolder)
+                    if (tab.isSpecialDirectory()) {
+                        searchInList()
+                    } else {
+                        searchIn(tab.activeFolder)
+                    }
+
                     isSearching = false
                 }
             } else {
