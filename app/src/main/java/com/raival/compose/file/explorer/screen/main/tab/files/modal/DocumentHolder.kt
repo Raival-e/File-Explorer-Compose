@@ -99,6 +99,8 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
 
     val isVideo by lazy { isFile && videoFileType.contains(fileExtension) }
 
+    val isPdf by lazy { isFile && fileExtension == pdfFileType }
+
     val basePath by lazy { documentFile.getBasePath(globalClass) }
 
     val storageId by lazy { documentFile.getStorageId(globalClass) }
