@@ -37,7 +37,6 @@ class MergeHandler {
             "Extracting files..." to 0.3f,
             "Merging modules..." to 0.6f,
             "Finalizing merge..." to 0.8f,
-            "Signing APK..." to 0.9f
         )
         for ((message, progress) in tasks) {
             Thread.sleep(500)
@@ -78,7 +77,7 @@ class MergeHandler {
         apkSigner.sign()
     }
 
-    fun mergeApks(tab: FilesTab, apkFile: DocumentHolder, onSuccess: () -> Unit, onError: (String) -> Unit) {
+    fun mergeApks(tab: FilesTab, apkFile: DocumentHolder, doSign: Boolean, onSuccess: () -> Unit, onError: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val fileExtension = apkFile.fileExtension
@@ -106,15 +105,23 @@ class MergeHandler {
                     return@launch
                 }
 
-                val keyFilePath = tab.assetManager.open("keystore/testkey.pk8")
-                val certFilePath = tab.assetManager.open("keystore/testkey.x509.pem")
-                val signedApkPath = outputFilePath.replace(".apk", "-signed.apk")
+                if (doSign) {
+                    // TODO: Custom KeyStore
+                    val keyFilePath = tab.assetManager.open("keystore/testkey.pk8")
+                    val certFilePath = tab.assetManager.open("keystore/testkey.x509.pem")
+                    val signedApkPath = outputFilePath.replace(".apk", "-signed.apk")
 
-                signApk(outputFilePath, signedApkPath, keyFilePath, certFilePath)
+                    tab.taskDialog.taskDialogSubtitle = "Signing APK..."
+                    tab.taskDialog.taskDialogProgress = 0.9f
+                    signApk(outputFilePath, signedApkPath, keyFilePath, certFilePath)
 
-                if (!File(signedApkPath).exists()) {
-                    withContext(Dispatchers.Main) { onError("Signing failed!") }
-                    return@launch
+                    if (!File(signedApkPath).exists()) {
+                        withContext(Dispatchers.Main) { onError("Signing failed!") }
+                        return@launch
+                    }
+                    if (File(outputFilePath).exists()) {
+                        File(outputFilePath).delete()
+                    }
                 }
 
                 withContext(Dispatchers.Main) { onSuccess() }

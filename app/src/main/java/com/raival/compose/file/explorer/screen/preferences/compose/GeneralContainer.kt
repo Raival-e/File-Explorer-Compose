@@ -2,6 +2,7 @@ package com.raival.compose.file.explorer.screen.preferences.compose
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ManageSearch
+import androidx.compose.material.icons.automirrored.rounded.Note
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.raival.compose.file.explorer.App.Companion.globalClass
@@ -35,6 +36,23 @@ fun GeneralContainer() {
                             else -> limits[it].toIntOrNull() ?: -1
                         }
                         preferences.searchInFilesLimit = limit
+                    }
+                )
+            }
+        )
+        PreferenceItem(
+            label = stringResource(R.string.sign_apk),
+            // Couldn't find a suitable ImageVector for it, please change
+            icon = Icons.AutoMirrored.Rounded.Note,
+            supportingText = if (preferences.signApk) "True" else "False",
+            onClick = {
+                manager.singleChoiceDialog.show(
+                    title = globalClass.getString(R.string.sign_apk),
+                    description = globalClass.getString(R.string.sign_apk_desc),
+                    choices = listOf("True", "False"),
+                    selectedChoice = if (preferences.signApk) 0 else 1,
+                    onSelect = {
+                        preferences.signApk = it == 0
                     }
                 )
             }

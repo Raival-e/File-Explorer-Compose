@@ -39,6 +39,7 @@ import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -69,6 +70,8 @@ fun ApkPreviewDialog(tab: FilesTab) {
         var appName by remember {
             mutableStateOf(emptyString)
         }
+
+        val doSign = PreferencesManager.GeneralPrefs.signApk
 
         LaunchedEffect(Unit) {
             apkInfo?.let { it ->
@@ -174,6 +177,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
                                 mergeHandler.mergeApks(
                                     tab,
                                     apkFile,
+                                    doSign,
                                     onSuccess = {
                                         CoroutineScope(Dispatchers.Main).launch {
                                             tab.taskDialog.taskDialogInfo = "Merge Successful!"
