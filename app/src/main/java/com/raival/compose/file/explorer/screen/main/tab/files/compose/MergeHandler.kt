@@ -7,7 +7,11 @@ import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.reandroid.apkeditor.merge.Merger
 import com.reandroid.apkeditor.merge.MergerOptions
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
@@ -18,7 +22,6 @@ import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.PKCS8EncodedKeySpec
-import java.util.*
 
 class MergeHandler {
 
@@ -78,7 +81,8 @@ class MergeHandler {
     fun mergeApks(tab: FilesTab, apkFile: DocumentHolder, onSuccess: () -> Unit, onError: (String) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val fileName = apkFile.getName()
+                val fileExtension = apkFile.fileExtension
+                val fileName = apkFile.getName().removeSuffix(".$fileExtension")
                 val filePath = apkFile.path
                 val fileDir = apkFile.parent?.path
                 val outputFilePath = "$fileDir/$fileName.apk"
