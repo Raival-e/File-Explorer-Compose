@@ -20,7 +20,7 @@
     <string name="save">Сохранить</string>
     <string name="empty_folder">пустая папка</string>
     <string name="files_selected">" (выбрано %s)"</string>
-    <string name="regular_tab_title">Файлы</string>
+    <string name="files_tab_title">Файлы</string>
     <string name="new_task_has_been_added">Добавлена новая задача</string>
     <string name="package_name">Название пакета</string>
     <string name="version_name">Название версии</string>
@@ -180,4 +180,20 @@
     <string name="text_editor_search_result">"результат поиска: "</string>
     <string name="folders_count">папок: %1$d</string>
     <string name="files_count">файлов: %1$d</string>
+    <string name="home_tab_title">Главная</string>
+    <string name="home_tab_header">Главная</string>
+    <string name="categories">Категории</string>
+    <string name="images">Изображения</string>
+    <string name="videos">Видео</string>
+    <string name="audios">Аудио</string>
+    <string name="documents">Документы</string>
+    <string name="archives">Архивы</string>
+    <string name="storage">Хранилище</string>
+    <string name="can_not_run_tasks">Задачи не могут быть выполнены здесь</string>
+    <string name="apps_tab_title">Приложения</string>
+    <string name="apps_tab_header">Приложения</string>
+    <string name="apps">Приложения</string>
+    <string name="user_apps">Пользователь</string>
+    <string name="system_apps">Система</string>
+    <string name="more">Ещё</string>
 </resources>
