@@ -5,6 +5,7 @@ import coil3.request.Options
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder.Companion.FILE_TYPE_AI
+import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder.Companion.FILE_TYPE_APK
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder.Companion.FILE_TYPE_ARCHIVE
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder.Companion.FILE_TYPE_AUDIO
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder.Companion.FILE_TYPE_CODE
@@ -46,6 +47,7 @@ class DocumentFileMapper : Mapper<DocumentHolder, Any> {
             data.getFileIconType() == FILE_TYPE_CODE -> R.drawable.css_file_extension
             data.getFileIconType() == FILE_TYPE_TEXT -> R.drawable.txt_file_extension
             data.getFileIconType() == FILE_TYPE_ARCHIVE -> R.drawable.zip_file_extension
+            data.getFileIconResource() == FILE_TYPE_APK -> R.drawable.apk_file_extension
             canUseCoil(data) -> data.uri
             else -> R.drawable.unknown_file_extension
         }

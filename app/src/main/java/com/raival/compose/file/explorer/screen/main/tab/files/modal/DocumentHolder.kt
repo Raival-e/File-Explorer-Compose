@@ -33,6 +33,7 @@ import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.aiFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkBundleFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.archiveFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.audioFileType
@@ -91,6 +92,8 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
     val isArchive by lazy { isFile && archiveFileType.contains(fileExtension) }
 
     val isApk by lazy { isFile && fileExtension == apkFileType }
+
+    val isApks by lazy { isFile && apkBundleFileType.contains(fileExtension) }
 
     val isImage by lazy { isFile && imageFileType.contains(fileExtension) }
 
@@ -477,7 +480,7 @@ data class DocumentHolder(val documentFile: DocumentFile) : ContentHolder() {
             return FILE_TYPE_FONT
         } else if (vectorFileType.contains(fileExtension)) {
             return FILE_TYPE_VECTOR
-        } else if (archiveFileType.contains(fileExtension)) {
+        } else if (archiveFileType.contains(fileExtension) || apkBundleFileType.contains(fileExtension)) {
             return FILE_TYPE_ARCHIVE
         } else if (videoFileType.contains(fileExtension)) {
             return FILE_TYPE_VIDEO

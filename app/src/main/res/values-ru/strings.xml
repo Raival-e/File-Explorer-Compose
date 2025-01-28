@@ -20,7 +20,7 @@
     <string name="save">Сохранить</string>
     <string name="empty_folder">пустая папка</string>
     <string name="files_selected">" (выбрано %s)"</string>
-    <string name="regular_tab_title">Файлы</string>
+    <string name="files_tab_title">Файлы</string>
     <string name="new_task_has_been_added">Добавлена новая задача</string>
     <string name="package_name">Название пакета</string>
     <string name="version_name">Название версии</string>
@@ -180,4 +180,5 @@
     <string name="text_editor_search_result">"результат поиска: "</string>
     <string name="folders_count">папок: %1$d</string>
     <string name="files_count">файлов: %1$d</string>
+    <string name="merge">To APK</string>
 </resources>

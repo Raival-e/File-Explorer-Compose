@@ -39,10 +39,15 @@ import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ApkPreviewDialog(tab: FilesTab) {
     val apkDialog = tab.apkDialog
+    val isApksArchive: Boolean = apkDialog.ApksArchive
 
     if (tab.apkDialog.showApkDialog && apkDialog.apkFile != null) {
         val packageManager = globalClass.packageManager
@@ -66,7 +71,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
         }
 
         LaunchedEffect(Unit) {
-            apkInfo?.let {
+            apkInfo?.let { it ->
                 it.applicationInfo?.sourceDir = apkFile.path
                 it.applicationInfo?.publicSourceDir = apkFile.path
 
@@ -161,17 +166,48 @@ fun ApkPreviewDialog(tab: FilesTab) {
                         Text(text = stringResource(R.string.explore))
                     }
 
-                    TextButton(
-                        onClick = {
-                            apkDialog.hide()
-                            apkFile.openFile(
-                                context = context,
-                                anonymous = false,
-                                skipSupportedExtensions = true
-                            )
+                    if (isApksArchive) {
+                        TextButton(
+                            onClick = {
+                                apkDialog.hide()
+                                val mergeHandler = MergeHandler()
+                                mergeHandler.mergeApks(
+                                    tab,
+                                    apkFile,
+                                    onSuccess = {
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            tab.taskDialog.taskDialogInfo = "Merge Successful!"
+                                            tab.taskDialog.taskDialogSubtitle = "Merge Completed"
+                                            tab.taskDialog.taskDialogProgress = 1f
+                                            delay(500)
+                                            tab.taskDialog.showTaskDialog = false
+                                        }
+                                    },
+                                    onError = { errorMessage ->
+                                        CoroutineScope(Dispatchers.Main).launch {
+                                            tab.taskDialog.taskDialogInfo = errorMessage
+                                            tab.taskDialog.taskDialogSubtitle = "Failed"
+                                        }
+                                    }
+                                )
+
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.merge))
                         }
-                    ) {
-                        Text(text = stringResource(R.string.install))
+                    } else{
+                        TextButton(
+                            onClick = {
+                                apkDialog.hide()
+                                apkFile.openFile(
+                                    context = context,
+                                    anonymous = false,
+                                    skipSupportedExtensions = true
+                                )
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.install))
+                        }
                     }
                 }
             }
