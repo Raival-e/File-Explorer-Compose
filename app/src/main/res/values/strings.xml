@@ -196,9 +196,9 @@
     <string name="user_apps">User</string>
     <string name="system_apps">System</string>
     <string name="more">More</string>
-    <string name="merge">To APK</string>
-    <string name="sign_apk">Sign APKS</string>
-    <string name="sign_apk_desc">Sign APK after APK Operations like Anti-Split(merge) etc.</string>
+    <string name="merge">Convert to APK</string>
+    <string name="sign_apk">Auto sign APK</string>
+    <string name="sign_apk_desc">Sign APK after APK Operations</string>
     <string name="failed">Failed</string>
     <string name="merge_successful">Merge Successful!</string>
     <string name="merge_completed">Merge Completed</string>
@@ -208,7 +208,7 @@
     <string name="finalizing_merge">Finalizing merge…</string>
     <string name="merging">Merging…</string>
     <string name="merging_apks">Merging APKs…</string>
-    <string name="merge_failed">Merge wasn\'t successful!</string>
+    <string name="merge_failed">Merge was not successful!</string>
     <string name="signing_apk">Signing APK…</string>
     <string name="signing_failed">Signing failed!</string>
     <string name="merge_failed_with_error">Merge failed: %1$s</string>
