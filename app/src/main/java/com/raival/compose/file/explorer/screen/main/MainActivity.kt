@@ -14,16 +14,16 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
-import com.raival.compose.file.explorer.common.compose.SafeSurface
-import com.raival.compose.file.explorer.screen.main.compose.DrawerContent
-import com.raival.compose.file.explorer.screen.main.compose.JumpToPathDialog
-import com.raival.compose.file.explorer.screen.main.compose.SaveTextEditorFilesDialog
-import com.raival.compose.file.explorer.screen.main.compose.TabContentView
-import com.raival.compose.file.explorer.screen.main.compose.TabLayout
-import com.raival.compose.file.explorer.screen.main.compose.Toolbar
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.common.ui.SafeSurface
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
-import com.raival.compose.file.explorer.ui.theme.FileExplorerTheme
+import com.raival.compose.file.explorer.screen.main.ui.DrawerContent
+import com.raival.compose.file.explorer.screen.main.ui.JumpToPathDialog
+import com.raival.compose.file.explorer.screen.main.ui.SaveTextEditorFilesDialog
+import com.raival.compose.file.explorer.screen.main.ui.TabContentView
+import com.raival.compose.file.explorer.screen.main.ui.TabLayout
+import com.raival.compose.file.explorer.screen.main.ui.Toolbar
+import com.raival.compose.file.explorer.theme.FileExplorerTheme
 import java.io.File
 
 class MainActivity : BaseActivity() {

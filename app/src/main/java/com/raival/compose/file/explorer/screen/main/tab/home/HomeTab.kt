@@ -18,9 +18,9 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
-import com.raival.compose.file.explorer.screen.main.tab.home.modal.HomeCategory
-import com.raival.compose.file.explorer.screen.main.tab.home.modal.RecentFile
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
+import com.raival.compose.file.explorer.screen.main.tab.home.holder.HomeCategoryHolder
+import com.raival.compose.file.explorer.screen.main.tab.home.holder.RecentFileHolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ class HomeTab : Tab() {
 
     override val header = globalClass.getString(R.string.home_tab_header)
 
-    val recentFiles = mutableStateListOf<RecentFile>()
+    val recentFileHolders = mutableStateListOf<RecentFileHolder>()
 
     override fun onTabResumed() {
         super.onTabResumed()
@@ -43,16 +43,16 @@ class HomeTab : Tab() {
     }
 
     fun fetchRecentFiles() {
-        recentFiles.clear()
+        recentFileHolders.clear()
         CoroutineScope(Dispatchers.IO).launch {
-            recentFiles.addAll(getRecentFiles())
+            recentFileHolders.addAll(getRecentFiles())
         }
     }
 
-    fun getMainCategories() = arrayListOf<HomeCategory>().apply {
+    fun getMainCategories() = arrayListOf<HomeCategoryHolder>().apply {
         val mainActivityManager = globalClass.mainActivityManager
         add(
-            HomeCategory(
+            HomeCategoryHolder(
                 name = globalClass.getString(R.string.images),
                 icon = Icons.Rounded.Image,
                 onClick = {
@@ -64,7 +64,7 @@ class HomeTab : Tab() {
         )
 
         add(
-            HomeCategory(
+            HomeCategoryHolder(
                 name = globalClass.getString(R.string.videos),
                 icon = Icons.Rounded.VideoFile,
                 onClick = {
@@ -76,7 +76,7 @@ class HomeTab : Tab() {
         )
 
         add(
-            HomeCategory(
+            HomeCategoryHolder(
                 name = globalClass.getString(R.string.audios),
                 icon = Icons.Rounded.AudioFile,
                 onClick = {
@@ -88,7 +88,7 @@ class HomeTab : Tab() {
         )
 
         add(
-            HomeCategory(
+            HomeCategoryHolder(
                 name = globalClass.getString(R.string.documents),
                 icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
                 onClick = {
@@ -100,7 +100,7 @@ class HomeTab : Tab() {
         )
 
         add(
-            HomeCategory(
+            HomeCategoryHolder(
                 name = globalClass.getString(R.string.archives),
                 icon = Icons.Rounded.Archive,
                 onClick = {
@@ -112,7 +112,7 @@ class HomeTab : Tab() {
         )
 
         add(
-            HomeCategory(
+            HomeCategoryHolder(
                 name = globalClass.getString(R.string.apps),
                 icon = Icons.Rounded.Android,
                 onClick = {
@@ -124,8 +124,8 @@ class HomeTab : Tab() {
         )
     }
 
-    private fun getRecentFiles(): ArrayList<RecentFile> {
-        val recentFiles = ArrayList<RecentFile>()
+    private fun getRecentFiles(): ArrayList<RecentFileHolder> {
+        val recentFileHolders = ArrayList<RecentFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
@@ -157,14 +157,14 @@ class HomeTab : Tab() {
                 it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED)
             val columnName = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
 
-            while (it.moveToNext() && recentFiles.size < 15) {
+            while (it.moveToNext() && recentFileHolders.size < 15) {
                 val filePath = it.getString(columnIndexPath)
                 val lastModified = it.getLong(columnLastModified)
                 val name = it.getString(columnName)
                 val file = File(filePath)
                 if (file.isFile) {
-                    recentFiles.add(
-                        RecentFile(
+                    recentFileHolders.add(
+                        RecentFileHolder(
                             name,
                             filePath,
                             lastModified
@@ -174,6 +174,6 @@ class HomeTab : Tab() {
             }
         }
 
-        return recentFiles
+        return recentFileHolders
     }
 }

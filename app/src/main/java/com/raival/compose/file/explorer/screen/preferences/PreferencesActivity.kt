@@ -27,13 +27,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
-import com.raival.compose.file.explorer.common.compose.SafeSurface
-import com.raival.compose.file.explorer.common.compose.Space
-import com.raival.compose.file.explorer.screen.preferences.compose.DisplayContainer
-import com.raival.compose.file.explorer.screen.preferences.compose.GeneralContainer
-import com.raival.compose.file.explorer.screen.preferences.compose.SingleChoiceDialog
-import com.raival.compose.file.explorer.screen.preferences.compose.TextEditorContainer
-import com.raival.compose.file.explorer.ui.theme.FileExplorerTheme
+import com.raival.compose.file.explorer.common.ui.SafeSurface
+import com.raival.compose.file.explorer.common.ui.Space
+import com.raival.compose.file.explorer.screen.preferences.ui.DisplayContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.GeneralContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.SingleChoiceDialog
+import com.raival.compose.file.explorer.screen.preferences.ui.TextEditorContainer
+import com.raival.compose.file.explorer.theme.FileExplorerTheme
 
 class PreferencesActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

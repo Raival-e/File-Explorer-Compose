@@ -9,7 +9,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.Tab
-import com.raival.compose.file.explorer.screen.main.tab.apps.modal.AppHolder
+import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
 import com.raival.compose.file.explorer.screen.main.tab.apps.provider.getInstalledApps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -14,17 +14,17 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
-import com.raival.compose.file.explorer.common.compose.SafeSurface
 import com.raival.compose.file.explorer.common.extension.setContent
-import com.raival.compose.file.explorer.screen.textEditor.compose.BottomBarView
-import com.raival.compose.file.explorer.screen.textEditor.compose.CodeEditorView
-import com.raival.compose.file.explorer.screen.textEditor.compose.InfoBar
-import com.raival.compose.file.explorer.screen.textEditor.compose.JumpToPositionDialog
-import com.raival.compose.file.explorer.screen.textEditor.compose.RecentFilesDialog
-import com.raival.compose.file.explorer.screen.textEditor.compose.SearchPanel
-import com.raival.compose.file.explorer.screen.textEditor.compose.ToolbarView
-import com.raival.compose.file.explorer.screen.textEditor.compose.WarningDialog
-import com.raival.compose.file.explorer.ui.theme.FileExplorerTheme
+import com.raival.compose.file.explorer.common.ui.SafeSurface
+import com.raival.compose.file.explorer.screen.textEditor.ui.BottomBarView
+import com.raival.compose.file.explorer.screen.textEditor.ui.CodeEditorView
+import com.raival.compose.file.explorer.screen.textEditor.ui.InfoBar
+import com.raival.compose.file.explorer.screen.textEditor.ui.JumpToPositionDialog
+import com.raival.compose.file.explorer.screen.textEditor.ui.RecentFilesDialog
+import com.raival.compose.file.explorer.screen.textEditor.ui.SearchPanel
+import com.raival.compose.file.explorer.screen.textEditor.ui.ToolbarView
+import com.raival.compose.file.explorer.screen.textEditor.ui.WarningDialog
+import com.raival.compose.file.explorer.theme.FileExplorerTheme
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.widget.CodeEditor
 

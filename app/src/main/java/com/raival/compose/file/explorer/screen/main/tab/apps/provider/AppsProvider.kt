@@ -3,7 +3,7 @@ package com.raival.compose.file.explorer.screen.main.tab.apps.provider
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import com.raival.compose.file.explorer.screen.main.tab.apps.modal.AppHolder
+import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
 import java.io.File
 
 fun getInstalledApps(context: Context): List<AppHolder> {

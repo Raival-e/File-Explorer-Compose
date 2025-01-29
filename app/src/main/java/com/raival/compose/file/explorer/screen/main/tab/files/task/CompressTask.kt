@@ -10,7 +10,7 @@ import com.raival.compose.file.explorer.common.extension.addIfAbsent
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.randomString
 import com.raival.compose.file.explorer.common.extension.trimToLastTwoSegments
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.ByteArrayOutputStream

@@ -1,6 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.misc
 
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 import java.util.Locale
 
 val sortFoldersFirst = Comparator { file1: DocumentHolder, file2: DocumentHolder ->

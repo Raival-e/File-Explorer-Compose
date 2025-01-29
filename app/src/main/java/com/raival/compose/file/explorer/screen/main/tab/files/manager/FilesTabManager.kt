@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.raival.compose.file.explorer.screen.main.tab.files.task.FilesTabTask
-import com.raival.compose.file.explorer.screen.preferences.modal.prefMutableState
+import com.raival.compose.file.explorer.screen.preferences.misc.prefMutableState
 
 class FilesTabManager {
     val filesTabTasks = mutableStateListOf<FilesTabTask>()

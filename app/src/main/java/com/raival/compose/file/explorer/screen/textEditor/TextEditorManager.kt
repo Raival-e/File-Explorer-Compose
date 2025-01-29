@@ -17,15 +17,15 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.common.extension.whiteSpace
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.javaFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.jsonFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.kotlinFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JAVA
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JSON
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_KOTLIN
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.textEditor.holder.SymbolHolder
 import com.raival.compose.file.explorer.screen.textEditor.misc.setCodeEditorLanguage
-import com.raival.compose.file.explorer.screen.textEditor.model.Symbol
 import io.github.rosemoe.sora.event.ContentChangeEvent
 import io.github.rosemoe.sora.event.PublishSearchResultEvent
 import io.github.rosemoe.sora.event.SelectionChangeEvent
@@ -115,23 +115,23 @@ class TextEditorManager {
     var requireSaveCurrentFile by mutableStateOf(false)
     val fileInstanceList = mutableStateListOf<FileInstance>()
 
-    private var defaultSymbols = arrayListOf(
-        Symbol("_"),
-        Symbol("="),
-        Symbol("{"),
-        Symbol("}"),
-        Symbol("/"),
-        Symbol("\\"),
-        Symbol("<"),
-        Symbol(">"),
-        Symbol("|"),
-        Symbol("?"),
-        Symbol("+"),
-        Symbol("-"),
-        Symbol("*")
+    private var defaultSymbolHolders = arrayListOf(
+        SymbolHolder("_"),
+        SymbolHolder("="),
+        SymbolHolder("{"),
+        SymbolHolder("}"),
+        SymbolHolder("/"),
+        SymbolHolder("\\"),
+        SymbolHolder("<"),
+        SymbolHolder(">"),
+        SymbolHolder("|"),
+        SymbolHolder("?"),
+        SymbolHolder("+"),
+        SymbolHolder("-"),
+        SymbolHolder("*")
     )
 
-    private var customSymbols = arrayListOf<Symbol>()
+    private var customSymbolHolders = arrayListOf<SymbolHolder>()
 
     val indentChar = "    "
 
@@ -151,26 +151,26 @@ class TextEditorManager {
     fun updateSymbols() {
         if (!customSymbolsFile.exists()) {
             customSymbolsFile.writeText(
-                GsonBuilder().setPrettyPrinting().create().toJson(defaultSymbols)
+                GsonBuilder().setPrettyPrinting().create().toJson(defaultSymbolHolders)
             )
         }
 
         try {
-            customSymbols = Gson().fromJson(
+            customSymbolHolders = Gson().fromJson(
                 customSymbolsFile.readText(),
-                object : TypeToken<ArrayList<Symbol>>() {}.type
+                object : TypeToken<ArrayList<SymbolHolder>>() {}.type
             )
         } catch (_: Exception) {
             globalClass.showMsg(R.string.failed_to_load_symbols_file)
         }
     }
 
-    fun getSymbols(update: Boolean = false): ArrayList<Symbol> {
-        if (customSymbols.isNotEmpty()) return customSymbols
+    fun getSymbols(update: Boolean = false): ArrayList<SymbolHolder> {
+        if (customSymbolHolders.isNotEmpty()) return customSymbolHolders
 
         if (update) updateSymbols()
 
-        return customSymbols.ifEmpty { defaultSymbols }
+        return customSymbolHolders.ifEmpty { defaultSymbolHolders }
     }
 
     fun hideSearchPanel(codeEditor: CodeEditor) {

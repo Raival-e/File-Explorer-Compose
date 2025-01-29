@@ -15,9 +15,9 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageDevice
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.StorageProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDeviceHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +26,7 @@ class MainActivityManager {
     var title by mutableStateOf(globalClass.getString(R.string.main_activity_title))
     var subtitle by mutableStateOf(emptyString)
 
-    val storageDevices = arrayListOf<StorageDevice>()
+    val storageDeviceHolders = arrayListOf<StorageDeviceHolder>()
 
     var showNewTabDialog by mutableStateOf(false)
     var showJumpToPathDialog by mutableStateOf(false)
@@ -39,7 +39,7 @@ class MainActivityManager {
     val drawerState = DrawerState(initialValue = DrawerValue.Closed)
 
     fun setupTabs() {
-        storageDevices.addAll(StorageProvider.getStorageDevices(globalClass))
+        storageDeviceHolders.addAll(StorageProvider.getStorageDevices(globalClass))
     }
 
     fun closeAllTabs() {

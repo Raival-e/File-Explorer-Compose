@@ -1,7 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.task
 
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 
 abstract class FilesTabTask {
     abstract val id: String

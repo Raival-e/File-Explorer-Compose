@@ -24,8 +24,8 @@ import com.raival.compose.file.explorer.common.extension.printFullStackTrace
 import com.raival.compose.file.explorer.common.extension.toFormattedDate
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.manager.FilesTabManager
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
 import com.raival.compose.file.explorer.screen.textEditor.TextEditorManager
 import com.raival.compose.file.explorer.screen.viewer.ViewersManager

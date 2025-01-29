@@ -6,7 +6,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
-import com.raival.compose.file.explorer.screen.viewer.media.modal.MediaSource
+import com.raival.compose.file.explorer.screen.viewer.media.misc.MediaSource
 
 class MediaViewerInstance(override val uri: Uri, override val id: String) : ViewerInstance {
     val player = ExoPlayer.Builder(globalClass).build()

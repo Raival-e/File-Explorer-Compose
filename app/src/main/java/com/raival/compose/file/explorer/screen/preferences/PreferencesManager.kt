@@ -11,13 +11,13 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.fromJson
 import com.raival.compose.file.explorer.common.extension.toJson
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.modal.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
 import com.raival.compose.file.explorer.screen.preferences.constant.dataStore
-import com.raival.compose.file.explorer.screen.preferences.modal.prefMutableState
+import com.raival.compose.file.explorer.screen.preferences.misc.prefMutableState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
