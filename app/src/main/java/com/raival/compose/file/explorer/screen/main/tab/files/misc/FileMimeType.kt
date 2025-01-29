@@ -40,7 +40,6 @@ object FileMimeType {
         "jar",
         "gz",
         "xz",
-        "xapk",
         "obb",
         "rar",
         "iso",
@@ -48,7 +47,7 @@ object FileMimeType {
         "tgz",
         "tbz2",
         "lz",
-        "lzma"
+        "lzma",
     )
 
     @JvmField
@@ -163,5 +162,8 @@ object FileMimeType {
         "mid",
         "opus"
     )
+
+    @JvmField
+    val apkBundleFileType = arrayOf("apks", "xapk", "apkm")
 
 }

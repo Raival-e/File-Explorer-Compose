@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.content.res.AssetManager
 import android.net.Uri
 import android.os.Environment
 import androidx.compose.foundation.lazy.LazyListState
@@ -85,6 +86,8 @@ class FilesTab(
 
     val currentPathSegments = mutableStateListOf<DocumentHolder>()
     val currentPathSegmentsListState = LazyListState()
+
+    val assetManager: AssetManager = globalClass.assets
 
     val selectedFiles = linkedMapOf<String, DocumentHolder>()
     var lastSelectedFileIndex = -1
@@ -219,7 +222,7 @@ class FilesTab(
     }
 
     fun openFile(context: Context, item: DocumentHolder) {
-        if (item.isApk) {
+        if (item.isApk || item.isApks) {
             ApkDialog.show(item)
         } else {
             item.openFile(context, anonymous = false, skipSupportedExtensions = false)
@@ -533,10 +536,13 @@ class FilesTab(
             private set
         var apkFile: DocumentHolder? = null
             private set
+        var ApksArchive = false
+            private  set
 
         fun show(file: DocumentHolder) {
             apkFile = file
             showApkDialog = true
+            ApksArchive = file.isApks
         }
 
         fun hide() {

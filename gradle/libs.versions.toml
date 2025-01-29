@@ -27,6 +27,7 @@ benchmarkMacroJunit4 = "1.3.3"
 baselineprofile = "1.3.3"
 profileinstaller = "1.4.1"
 reorderable = "2.4.3"
+apksig = "8.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -63,6 +64,7 @@ androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomato
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

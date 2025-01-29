@@ -39,62 +39,63 @@ import com.raival.compose.file.explorer.common.compose.Space
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ApkPreviewDialog(tab: FilesTab) {
     val apkDialog = tab.apkDialog
+    val isApksArchive: Boolean = apkDialog.ApksArchive
 
     if (tab.apkDialog.showApkDialog && apkDialog.apkFile != null) {
-        val packageManager = globalClass.packageManager
         val context = LocalContext.current
         val apkFile = apkDialog.apkFile!!
 
-        val apkInfo by remember {
-            mutableStateOf(packageManager.getPackageArchiveInfo(apkFile.path, 0))
-        }
+        var icon by remember { mutableStateOf<Drawable?>(null) }
+        val details = remember { mutableStateListOf<Pair<String, String>>() }
+        var appName by remember { mutableStateOf(emptyString) }
 
-        var icon by remember {
-            mutableStateOf<Drawable?>(null)
-        }
+        val doSign = PreferencesManager.GeneralPrefs.signApk
 
-        val details = remember {
-            mutableStateListOf<Pair<String, String>>()
-        }
+        if (!isApksArchive) {
+            val packageManager = globalClass.packageManager
+            val apkInfo =
+                remember { mutableStateOf(packageManager.getPackageArchiveInfo(apkFile.path, 0)) }
 
-        var appName by remember {
-            mutableStateOf(emptyString)
-        }
+            LaunchedEffect(Unit) {
+                apkInfo.value?.let { info ->
+                    info.applicationInfo?.sourceDir = apkFile.path
+                    info.applicationInfo?.publicSourceDir = apkFile.path
 
-        LaunchedEffect(Unit) {
-            apkInfo?.let {
-                it.applicationInfo?.sourceDir = apkFile.path
-                it.applicationInfo?.publicSourceDir = apkFile.path
+                    icon = info.applicationInfo?.loadIcon(packageManager)
+                    appName = info.applicationInfo?.loadLabel(packageManager).toString()
 
-                icon = it.applicationInfo?.loadIcon(packageManager)
-                appName = it.applicationInfo?.loadLabel(packageManager).toString()
-
-                details.add(Pair(globalClass.getString(R.string.package_name), it.packageName))
-                it.versionName?.let {
-                    details.add(Pair(globalClass.getString(R.string.version_name), it))
+                    details.add(
+                        Pair(
+                            globalClass.getString(R.string.package_name),
+                            info.packageName
+                        )
+                    )
+                    info.versionName?.let {
+                        details.add(Pair(globalClass.getString(R.string.version_name), it))
+                    }
+                    details.add(
+                        Pair(
+                            globalClass.getString(R.string.version_code),
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) info.longVersionCode.toString() else info.versionCode.toString()
+                        )
+                    )
                 }
-                details.add(
-                    Pair(
-                        globalClass.getString(R.string.version_code),
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode.toString() else it.versionCode.toString()
-                    )
-                )
-                details.add(
-                    Pair(
-                        globalClass.getString(R.string.size),
-                        apkFile.fileSize.toFormattedSize()
-                    )
-                )
             }
         }
+        details.add(
+            Pair(globalClass.getString(R.string.size), apkFile.fileSize.toFormattedSize())
+        )
 
-        BottomSheetDialog(
-            onDismissRequest = { apkDialog.hide() }
-        ) {
+        BottomSheetDialog(onDismissRequest = { apkDialog.hide() }) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -122,11 +123,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = appName,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Text(text = appName, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
 
                 Space(size = 8.dp)
@@ -138,7 +135,8 @@ fun ApkPreviewDialog(tab: FilesTab) {
                             Text(
                                 modifier = Modifier.alpha(0.5f),
                                 text = it.second,
-                                maxLines = 1
+                                softWrap = true,
+                                maxLines = 2
                             )
                         }
                     }
@@ -147,31 +145,57 @@ fun ApkPreviewDialog(tab: FilesTab) {
                 Space(size = 8.dp)
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(
-                        onClick = {
-                            apkDialog.hide()
-                            apkFile.openFile(
-                                context = context,
-                                anonymous = false,
-                                skipSupportedExtensions = true,
-                                customMimeType = "application/zip"
-                            )
-                        }
-                    ) {
+                    TextButton(onClick = {
+                        apkDialog.hide()
+                        apkFile.openFile(
+                            context = context,
+                            anonymous = false,
+                            skipSupportedExtensions = true,
+                            customMimeType = "application/zip"
+                        )
+                    }) {
                         Text(text = stringResource(R.string.explore))
                     }
 
-                    TextButton(
-                        onClick = {
+                    if (isApksArchive) {
+                        TextButton(onClick = {
+                            apkDialog.hide()
+                            val mergeHandler = MergeHandler(context)
+                            mergeHandler.mergeApks(
+                                tab, apkFile, doSign,
+                                onSuccess = {
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        tab.taskDialog.taskDialogInfo =
+                                            context.getString(R.string.merge_successful)
+                                        tab.taskDialog.taskDialogSubtitle =
+                                            context.getString(R.string.merge_completed)
+                                        tab.taskDialog.taskDialogProgress = 1f
+                                        delay(500)
+                                        tab.taskDialog.showTaskDialog = false
+                                    }
+                                },
+                                onError = { errorMessage ->
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        tab.taskDialog.taskDialogInfo = errorMessage
+                                        tab.taskDialog.taskDialogSubtitle =
+                                            context.getString(R.string.failed)
+                                    }
+                                }
+                            )
+                        }) {
+                            Text(text = stringResource(R.string.merge))
+                        }
+                    } else {
+                        TextButton(onClick = {
                             apkDialog.hide()
                             apkFile.openFile(
-                                context = context,
+                                context,
                                 anonymous = false,
                                 skipSupportedExtensions = true
                             )
+                        }) {
+                            Text(text = stringResource(R.string.install))
                         }
-                    ) {
-                        Text(text = stringResource(R.string.install))
                     }
                 }
             }
