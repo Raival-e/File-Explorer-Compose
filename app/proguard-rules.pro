@@ -23,3 +23,6 @@
 -keep class com.raival.compose.file.explorer.** { *; }
 -keep class org.eclipse.tm4e.** { *; }
 -keep class org.joni.** { *; }
+-keep class android.content.** { *; }
+
+-keepnames interface * { *; }
