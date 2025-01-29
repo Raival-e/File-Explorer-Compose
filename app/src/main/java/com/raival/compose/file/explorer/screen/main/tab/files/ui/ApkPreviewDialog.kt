@@ -173,6 +173,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
                                         tab.taskDialog.taskDialogProgress = 1f
                                         delay(500)
                                         tab.taskDialog.showTaskDialog = false
+                                        tab.reloadFiles()
                                     }
                                 },
                                 onError = { errorMessage ->
