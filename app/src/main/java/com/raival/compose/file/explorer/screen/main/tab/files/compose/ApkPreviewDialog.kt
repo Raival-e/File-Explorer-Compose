@@ -146,7 +146,8 @@ fun ApkPreviewDialog(tab: FilesTab) {
                             Text(
                                 modifier = Modifier.alpha(0.5f),
                                 text = it.second,
-                                maxLines = 1
+                                softWrap = true,
+                                maxLines = 2
                             )
                         }
                     }
