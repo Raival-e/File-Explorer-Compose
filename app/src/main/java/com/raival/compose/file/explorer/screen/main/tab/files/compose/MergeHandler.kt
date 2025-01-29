@@ -90,6 +90,7 @@ class MergeHandler(private val context: Context) {
                 val mergeHandler = MergeHandler(context)
                 withContext(Dispatchers.Main) {
                     tab.taskDialog.showTaskDialog = true
+                    tab.taskDialog.taskDialogInfo = context.getString(R.string.merging_apks)
                     tab.taskDialog.taskDialogTitle = context.getString(R.string.merging)
                     tab.taskDialog.taskDialogSubtitle = context.getString(R.string.merging_apks)
                     tab.taskDialog.showTaskDialogProgressbar = true
