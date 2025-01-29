@@ -173,15 +173,17 @@ fun ApkPreviewDialog(tab: FilesTab) {
                         TextButton(
                             onClick = {
                                 apkDialog.hide()
-                                val mergeHandler = MergeHandler()
+                                val mergeHandler = MergeHandler(context)
                                 mergeHandler.mergeApks(
                                     tab,
                                     apkFile,
                                     doSign,
                                     onSuccess = {
                                         CoroutineScope(Dispatchers.Main).launch {
-                                            tab.taskDialog.taskDialogInfo = "Merge Successful!"
-                                            tab.taskDialog.taskDialogSubtitle = "Merge Completed"
+                                            tab.taskDialog.taskDialogInfo =
+                                                context.getString(R.string.merge_successful)
+                                            tab.taskDialog.taskDialogSubtitle =
+                                                context.getString(R.string.merge_completed)
                                             tab.taskDialog.taskDialogProgress = 1f
                                             delay(500)
                                             tab.taskDialog.showTaskDialog = false
@@ -190,7 +192,8 @@ fun ApkPreviewDialog(tab: FilesTab) {
                                     onError = { errorMessage ->
                                         CoroutineScope(Dispatchers.Main).launch {
                                             tab.taskDialog.taskDialogInfo = errorMessage
-                                            tab.taskDialog.taskDialogSubtitle = "Failed"
+                                            tab.taskDialog.taskDialogSubtitle =
+                                                context.getString(R.string.failed)
                                         }
                                     }
                                 )

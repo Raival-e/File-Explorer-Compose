@@ -1,8 +1,10 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.compose
 
+import android.content.Context
 import com.android.apksig.ApkSigner
 import com.android.apksig.ApkSigner.SignerConfig
 import com.android.apksig.KeyConfig
+import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.modal.DocumentHolder
 import com.reandroid.apkeditor.merge.Merger
@@ -23,7 +25,7 @@ import java.security.cert.X509Certificate
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.PKCS8EncodedKeySpec
 
-class MergeHandler {
+class MergeHandler(private val context: Context) {
 
     @Throws(IOException::class)
     fun executeMerge(inputFilePath: String, outputFilePath: String, onProgressUpdate: (Float, String) -> Unit) {
@@ -33,10 +35,10 @@ class MergeHandler {
         }
         val merger = Merger(options)
         val tasks = listOf(
-            "Initializing merge..." to 0.1f,
-            "Extracting files..." to 0.3f,
-            "Merging modules..." to 0.6f,
-            "Finalizing merge..." to 0.8f,
+            context.getString(R.string.initializing_merge) to 0.1f,
+            context.getString(R.string.extracting_files) to 0.3f,
+            context.getString(R.string.merging_modules) to 0.6f,
+            context.getString(R.string.finalizing_merge) to 0.8f,
         )
         for ((message, progress) in tasks) {
             Thread.sleep(500)
@@ -85,11 +87,11 @@ class MergeHandler {
                 val filePath = apkFile.path
                 val fileDir = apkFile.parent?.path
                 val outputFilePath = "$fileDir/$fileName.apk"
-                val mergeHandler = MergeHandler()
+                val mergeHandler = MergeHandler(context)
                 withContext(Dispatchers.Main) {
                     tab.taskDialog.showTaskDialog = true
-                    tab.taskDialog.taskDialogTitle = "Merging..."
-                    tab.taskDialog.taskDialogSubtitle = "Merging APKs..."
+                    tab.taskDialog.taskDialogTitle = context.getString(R.string.merging)
+                    tab.taskDialog.taskDialogSubtitle = context.getString(R.string.merging_apks)
                     tab.taskDialog.showTaskDialogProgressbar = true
                     tab.taskDialog.taskDialogProgress = 0f
                 }
@@ -101,7 +103,7 @@ class MergeHandler {
                 }
                 val outputFile = File(outputFilePath)
                 if (!outputFile.exists()) {
-                    withContext(Dispatchers.Main) { onError("Merge wasn't successful!") }
+                    withContext(Dispatchers.Main) { onError(context.getString(R.string.merge_failed)) }
                     return@launch
                 }
 
@@ -111,12 +113,12 @@ class MergeHandler {
                     val certFilePath = tab.assetManager.open("keystore/testkey.x509.pem")
                     val signedApkPath = outputFilePath.replace(".apk", "-signed.apk")
 
-                    tab.taskDialog.taskDialogSubtitle = "Signing APK..."
+                    tab.taskDialog.taskDialogSubtitle = context.getString(R.string.signing_apk)
                     tab.taskDialog.taskDialogProgress = 0.9f
                     signApk(outputFilePath, signedApkPath, keyFilePath, certFilePath)
 
                     if (!File(signedApkPath).exists()) {
-                        withContext(Dispatchers.Main) { onError("Signing failed!") }
+                        withContext(Dispatchers.Main) { onError(context.getString(R.string.signing_failed)) }
                         return@launch
                     }
                     if (File(outputFilePath).exists()) {
@@ -128,7 +130,7 @@ class MergeHandler {
             } catch (e: Exception) {
                 e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    onError("Merge failed: ${e.message}")
+                    onError(context.getString(R.string.merge_failed_with_error, e.message))
                     delay(500)
                     tab.taskDialog.showTaskDialog = false
                 }
