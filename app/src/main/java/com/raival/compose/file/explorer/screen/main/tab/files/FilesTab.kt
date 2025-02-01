@@ -570,7 +570,6 @@ class FilesTab(
 
         fun hide() {
             showCompressDialog = false
-            task = null
         }
     }
 
