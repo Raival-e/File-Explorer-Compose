@@ -6,6 +6,7 @@ import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
+import com.raival.compose.file.explorer.screen.viewer.media.misc.AudioPlayerManager
 import com.raival.compose.file.explorer.screen.viewer.media.misc.MediaSource
 
 class MediaViewerInstance(override val uri: Uri, override val id: String) : ViewerInstance {
@@ -13,9 +14,15 @@ class MediaViewerInstance(override val uri: Uri, override val id: String) : View
     val mediaItem = MediaItem.fromUri(uri)
     val mediaSource = getMediaSource(globalClass, uri)
 
+    val audioManager = AudioPlayerManager(globalClass)
+
     init {
         player.setMediaItem(mediaItem)
         player.prepare()
+
+        if (mediaSource is MediaSource.AudioSource) {
+            audioManager.prepare(uri)
+        }
     }
 
     private fun getMediaSource(context: Context, uri: Uri): MediaSource {
@@ -39,5 +46,6 @@ class MediaViewerInstance(override val uri: Uri, override val id: String) : View
 
     override fun onClose() {
         player.release()
+        audioManager.release()
     }
 }
