@@ -142,9 +142,7 @@ class FilesTab(
         }
     }
 
-    override fun onTabResumed() {
-        openFolder(item = activeFolder, rememberSelectedFiles = true)
-    }
+    override fun onTabResumed() {}
 
     override fun onTabStopped() {}
 
