@@ -64,7 +64,14 @@ class DeleteTask(
         }
 
         fun deleteFolder(toDelete: DocumentHolder) {
-            updateProgress(globalClass.getString(R.string.deleting, toDelete.getName()))
+            taskCallback.onReport(
+                updateProgress(
+                    globalClass.getString(
+                        R.string.deleting,
+                        toDelete.getName()
+                    )
+                )
+            )
 
             if (toDelete.isEmpty()) {
                 if (toDelete.delete()) {
@@ -75,7 +82,14 @@ class DeleteTask(
             } else {
                 toDelete.listContent(false).forEach {
                     if (it.isFile) {
-                        updateProgress(globalClass.getString(R.string.deleting, it.getName()))
+                        taskCallback.onReport(
+                            updateProgress(
+                                globalClass.getString(
+                                    R.string.deleting,
+                                    it.getName()
+                                )
+                            )
+                        )
                         if (it.delete()) {
                             deleted++
                         } else {
@@ -95,7 +109,14 @@ class DeleteTask(
 
         source.forEach { currentFile ->
             if (currentFile.isFile) {
-                updateProgress(globalClass.getString(R.string.deleting, currentFile.getName()))
+                taskCallback.onReport(
+                    updateProgress(
+                        globalClass.getString(
+                            R.string.deleting,
+                            currentFile.getName()
+                        )
+                    )
+                )
                 if (currentFile.delete()) {
                     deleted++
                 } else {
