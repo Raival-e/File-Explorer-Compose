@@ -307,6 +307,7 @@ class FilesTab(
                     StorageProvider.images -> getImageFiles()
                     StorageProvider.archives -> getArchiveFiles()
                     StorageProvider.documents -> getDocumentFiles()
+                    StorageProvider.bookmarks -> getBookmarks()
                     else -> getRecentFiles()
                 }.apply {
                     if (activeFolder != StorageProvider.recentFiles) {
@@ -385,6 +386,10 @@ class FilesTab(
             }
         }
     }
+
+    private fun getBookmarks() = globalClass.filesTabManager.bookmarks
+        .map { DocumentHolder.fromFullPath(it) }
+        .takeWhile { it != null } as ArrayList<DocumentHolder>
 
     fun getFileListState() = contentListStates[activeFolder.path] ?: LazyGridState().also {
         contentListStates[activeFolder.path] = it
@@ -513,6 +518,7 @@ class FilesTab(
         StorageProvider.images,
         StorageProvider.videos,
         StorageProvider.audios,
+        StorageProvider.bookmarks,
         StorageProvider.documents -> true
 
         else -> false

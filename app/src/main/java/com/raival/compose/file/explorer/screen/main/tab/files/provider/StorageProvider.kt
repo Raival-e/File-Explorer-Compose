@@ -26,6 +26,7 @@ object StorageProvider {
     val audios = DocumentHolder.fromFile(File("/:Audios"))
     val documents = DocumentHolder.fromFile(File("/:Documents"))
     val archives = DocumentHolder.fromFile(File("/:Archives"))
+    val bookmarks = DocumentHolder.fromFile(File("/:Bookmarks"))
 
     fun getStorageDevices(context: Context): List<StorageDeviceHolder> {
         val storageDeviceHolders = mutableListOf<StorageDeviceHolder>()

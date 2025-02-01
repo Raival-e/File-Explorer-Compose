@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowOutward
+import androidx.compose.material.icons.rounded.Bookmarks
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -217,20 +218,30 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
 
         StorageProvider.getStorageDevices(globalClass).forEach {
             StorageDeviceView(storageDeviceHolder = it) {
-                globalClass.mainActivityManager.replaceCurrentTabWith(FilesTab(it.documentHolder))
-                mainActivityManager.showNewTabDialog = false
+                mainActivityManager.replaceCurrentTabWith(FilesTab(it.documentHolder))
             }
+
             HorizontalDivider()
         }
 
-        HorizontalDivider()
+        if (globalClass.filesTabManager.bookmarks.isNotEmpty()) {
+            SimpleNewTabViewItem(
+                title = stringResource(R.string.bookmarks),
+                imageVector = Icons.Rounded.Bookmarks
+            ) {
+                mainActivityManager.replaceCurrentTabWith(
+                    FilesTab(StorageProvider.bookmarks)
+                )
+            }
+
+            HorizontalDivider()
+        }
 
         SimpleNewTabViewItem(
             title = stringResource(R.string.recycle_bin),
             imageVector = Icons.Rounded.DeleteSweep
         ) {
-            globalClass.mainActivityManager.replaceCurrentTabWith(FilesTab(globalClass.recycleBinDir))
-            mainActivityManager.showNewTabDialog = false
+            mainActivityManager.replaceCurrentTabWith(FilesTab(globalClass.recycleBinDir))
         }
 
         HorizontalDivider()
@@ -240,7 +251,6 @@ fun ColumnScope.MainTabContentView(tab: HomeTab) {
             imageVector = Icons.Rounded.ArrowOutward
         ) {
             mainActivityManager.showJumpToPathDialog = true
-            mainActivityManager.showNewTabDialog = false
         }
     }
 }
