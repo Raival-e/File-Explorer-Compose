@@ -18,6 +18,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDeviceHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
+import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -97,6 +98,11 @@ class MainActivityManager {
             coroutineScope.launch {
                 drawerState.close()
             }
+            return false
+        }
+
+        if (tabs[selectedTabIndex] !is HomeTab) {
+            replaceCurrentTabWith(HomeTab())
             return false
         }
 
