@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -17,7 +16,7 @@ import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
-import com.raival.compose.file.explorer.screen.main.ui.DrawerContent
+import com.raival.compose.file.explorer.screen.main.ui.AppInfoDialog
 import com.raival.compose.file.explorer.screen.main.ui.JumpToPathDialog
 import com.raival.compose.file.explorer.screen.main.ui.SaveTextEditorFilesDialog
 import com.raival.compose.file.explorer.screen.main.ui.TabContentView
@@ -69,19 +68,14 @@ class MainActivity : BaseActivity() {
 
                     JumpToPathDialog()
 
+                    AppInfoDialog()
+
                     SaveTextEditorFilesDialog { finish() }
 
-                    ModalNavigationDrawer(
-                        drawerState = mainActivityManager.drawerState,
-                        drawerContent = {
-                            DrawerContent()
-                        }
-                    ) {
-                        Column(Modifier.fillMaxSize()) {
-                            Toolbar()
-                            TabLayout()
-                            TabContentView()
-                        }
+                    Column(Modifier.fillMaxSize()) {
+                        Toolbar()
+                        TabLayout()
+                        TabContentView()
                     }
                 }
             }

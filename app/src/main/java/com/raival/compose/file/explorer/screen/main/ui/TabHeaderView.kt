@@ -93,7 +93,8 @@ fun TabHeaderView(
         if (showTabHeaderMenu) {
             DropdownMenu(
                 expanded = true,
-                onDismissRequest = { showTabHeaderMenu = false }
+                onDismissRequest = { showTabHeaderMenu = false },
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ) {
                 if (index > 0) {
                     DropdownMenuItem(

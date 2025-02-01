@@ -53,7 +53,7 @@ fun Modifier.block(
     borderSize: Dp = 1.dp
 ) = composed {
     val color1 = if (color.isUnspecified) {
-        MaterialTheme.colorScheme.surfaceContainer
+        MaterialTheme.colorScheme.surfaceContainerHigh
     } else color
 
     this

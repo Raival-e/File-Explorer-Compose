@@ -30,6 +30,7 @@ class MainActivityManager {
     val storageDeviceHolders = arrayListOf<StorageDeviceHolder>()
 
     var showNewTabDialog by mutableStateOf(false)
+    var showAppInfoDialog by mutableStateOf(false)
     var showJumpToPathDialog by mutableStateOf(false)
     var showSaveTextEditorFilesBeforeCloseDialog by mutableStateOf(false)
     var isSavingTextEditorFiles by mutableStateOf(false)

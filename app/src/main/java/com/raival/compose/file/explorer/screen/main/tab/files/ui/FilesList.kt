@@ -305,7 +305,15 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                                             fontSize = (fontSize - 4).sp,
                                             maxLines = 1,
                                             lineHeight = (fontSize + 2).sp,
-                                            overflow = TextOverflow.Ellipsis
+                                            overflow = TextOverflow.Ellipsis,
+                                            color = if (tab.highlightedFiles.contains(
+                                                    currentItemPath
+                                                )
+                                            ) {
+                                                colorScheme.primary
+                                            } else {
+                                                Color.Unspecified
+                                            }
                                         )
                                     }
                                 }
