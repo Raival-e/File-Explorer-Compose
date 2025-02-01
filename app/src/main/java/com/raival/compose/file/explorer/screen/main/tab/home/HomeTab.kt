@@ -37,6 +37,11 @@ class HomeTab : Tab() {
 
     val recentFileHolders = mutableStateListOf<RecentFileHolder>()
 
+    override fun onTabStarted() {
+        super.onTabStarted()
+        requestHomeToolbarUpdate()
+    }
+
     override fun onTabResumed() {
         super.onTabResumed()
         requestHomeToolbarUpdate()

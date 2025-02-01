@@ -142,7 +142,9 @@ class FilesTab(
         }
     }
 
-    override fun onTabResumed() {}
+    override fun onTabResumed() {
+        requestHomeToolbarUpdate()
+    }
 
     override fun onTabStopped() {}
 

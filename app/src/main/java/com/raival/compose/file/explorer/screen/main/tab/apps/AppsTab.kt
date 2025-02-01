@@ -40,6 +40,11 @@ class AppsTab : Tab() {
         requestHomeToolbarUpdate()
     }
 
+    override fun onTabStarted() {
+        super.onTabStarted()
+        requestHomeToolbarUpdate()
+    }
+
     fun fetchInstalledApps() {
         isLoading = true
         CoroutineScope(Dispatchers.IO).launch {
