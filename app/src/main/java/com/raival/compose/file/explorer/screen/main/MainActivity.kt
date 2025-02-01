@@ -89,7 +89,7 @@ class MainActivity : BaseActivity() {
                     DocumentHolder.fromFile(File(it.getStringExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)!!)),
                     this
                 )
-                it.removeExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)
+                intent = null
             }
         }
     }
