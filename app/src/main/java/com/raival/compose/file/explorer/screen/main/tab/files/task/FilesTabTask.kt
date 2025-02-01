@@ -7,7 +7,7 @@ abstract class FilesTabTask {
     abstract val id: String
     abstract fun getTitle(): String
     abstract fun getSubtitle(): String
-    abstract fun execute(destination: DocumentHolder, callback: Any)
+    abstract suspend fun execute(destination: DocumentHolder, callback: Any)
     abstract fun getIcon(): ImageVector
     abstract fun getSourceFiles(): List<DocumentHolder>
 

@@ -27,7 +27,7 @@ class DecompressTask(
         source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
 
-    override fun execute(destination: DocumentHolder, callback: Any) {
+    override suspend fun execute(destination: DocumentHolder, callback: Any) {
         val taskCallback = callback as FilesTabTaskCallback
 
         var total = 0

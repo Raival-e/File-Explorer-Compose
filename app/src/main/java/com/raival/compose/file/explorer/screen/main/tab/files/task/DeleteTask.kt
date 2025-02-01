@@ -24,7 +24,7 @@ class DeleteTask(
         source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
 
-    override fun execute(destination: DocumentHolder, callback: Any) {
+    override suspend fun execute(destination: DocumentHolder, callback: Any) {
         if (moveToRecycleBin && !destination.hasParent(globalClass.recycleBinDir)) {
             MoveTask(source).execute(
                 DocumentHolder.fromFile(
@@ -53,6 +53,7 @@ class DeleteTask(
             emptyString,
             -1f
         )
+
         taskCallback.onPrepare(details)
 
         fun updateProgress(info: String = emptyString): FilesTabTaskDetails {
