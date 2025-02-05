@@ -1,6 +1,5 @@
 package com.raival.compose.file.explorer.screen.main.tab.apps.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,27 +78,6 @@ fun ColumnScope.AppsTabContentView(tab: AppsTab) {
     }
 
     LaunchedEffect(tab.selectedChoice) {
-        tab.appsList.clear()
-
-        when (tab.selectedChoice) {
-            0 -> tab.appsList.addAll(tab.userApps)
-            1 -> tab.appsList.addAll(tab.systemApps)
-            2 -> {
-                tab.appsList.addAll(tab.userApps)
-                tab.appsList.addAll(tab.systemApps)
-            }
-        }
-    }
-
-    BackHandler(tab.isSearchPanelOpen || tab.isSearching || tab.isLoading) {
-        if (tab.isSearching) {
-            tab.isSearching = false
-        }
-
-        if (tab.isSearchPanelOpen) {
-            tab.isSearchPanelOpen = false
-        }
-
         tab.appsList.clear()
 
         when (tab.selectedChoice) {

@@ -48,7 +48,8 @@ class HomeTab : Tab() {
     }
 
     fun fetchRecentFiles() {
-        recentFileHolders.clear()
+        if (recentFileHolders.isNotEmpty()) return
+
         CoroutineScope(Dispatchers.IO).launch {
             recentFileHolders.addAll(getRecentFiles())
         }

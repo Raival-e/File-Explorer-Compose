@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.conditions
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.screen.main.tab.Tab
@@ -22,6 +21,7 @@ import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 class MainActivityManager {
     var title by mutableStateOf(globalClass.getString(R.string.main_activity_title))
@@ -45,43 +45,66 @@ class MainActivityManager {
     }
 
     fun closeAllTabs() {
-        tabs.removeIf { it.id isNot tabs[0].id }
-        selectedTabIndex = 0
+        tabs.removeIf {
+            (it.id isNot tabs[0].id).also { toClose ->
+                if (toClose) it.onTabRemoved()
+            }
+        }
+        selectTabAt(0)
     }
 
-    fun removeOtherTabs(currentTabIndex: Int) {
-        if (currentTabIndex isNot selectedTabIndex) {
-            selectedTabIndex = currentTabIndex
+    fun removeOtherTabs(tabIndex: Int) {
+        if (tabIndex isNot selectedTabIndex) {
+            selectTabAt(tabIndex)
+            removeOtherTabs(tabIndex)
+            return
         }
 
-        tabs.removeIf { it.id.conditions { isNot(tabs[0].id) && isNot(tabs[currentTabIndex].id) } }
+        val tabToKeep = tabs[tabIndex].id
+        tabs.removeIf { it.id.isNot(tabToKeep).also { toClose -> if (toClose) it.onTabRemoved() } }
 
-        selectedTabIndex = if (currentTabIndex > 0) 1 else 0
+        selectTabAt(0)
     }
 
     fun removeTabAt(index: Int) {
-        tabs.removeAt(index)
-        if (selectedTabIndex == index && tabs.size <= selectedTabIndex) selectedTabIndex--
+        if (tabs.size <= 1) return
+
+        tabs.removeAt(index).apply {
+            if (selectedTabIndex == index) onTabStopped()
+            onTabRemoved()
+        }
+
+        if (selectedTabIndex == index) selectTabAt(max(0, index - 1))
     }
 
     fun addTabAndSelect(tab: Tab, index: Int = selectedTabIndex + 1) {
-        if (tabs.isNotEmpty()) tabs[selectedTabIndex].onTabStopped()
+        selectTabAt(
+            if (tabs.isEmpty()) {
+                tabs.add(tab)
+                0
+            } else if (index < 0) {
+                tabs.add(tab)
+                tabs.size - 1
+            } else {
+                tabs.add(index, tab)
+                index
+            }
+        )
+    }
 
-        selectedTabIndex = if (tabs.isEmpty()) {
-            tabs.add(tab)
-            0
-        } else if (index < 0) {
-            tabs.add(tab)
-            tabs.size - 1
-        } else {
-            tabs.add(index, tab)
-            index
+    fun selectTabAt(index: Int) {
+        if (tabs.isNotEmpty() && selectedTabIndex isNot index && selectedTabIndex < tabs.size) tabs[selectedTabIndex].onTabStopped()
+        selectedTabIndex = index
+
+        tabs[selectedTabIndex].apply {
+            if (!isCreated) onTabStarted() else onTabResumed()
         }
     }
 
     fun replaceCurrentTabWith(tab: Tab) {
         if (tabs.isNotEmpty()) tabs[selectedTabIndex].onTabStopped()
         tabs[selectedTabIndex] = tab
+        selectTabAt(selectedTabIndex)
     }
 
     fun jumpToFile(file: DocumentHolder, context: Context) {
@@ -102,14 +125,17 @@ class MainActivityManager {
             return false
         }
 
+        if (tabs[selectedTabIndex].onBackPressed()) {
+            return false
+        }
+
         if (tabs[selectedTabIndex] !is HomeTab) {
             replaceCurrentTabWith(HomeTab())
             return false
         }
 
         if (tabs.size > 1 && selectedTabIndex isNot 0) {
-            tabs.removeAt(selectedTabIndex)
-            selectedTabIndex--
+            removeTabAt(selectedTabIndex)
             return false
         }
 

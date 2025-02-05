@@ -13,12 +13,14 @@ abstract class Tab {
     abstract val subtitle: String
     abstract val header: String
 
+    open fun onTabRemoved() {}
     open fun onTabStopped() {}
     open fun onTabResumed() {}
-    open fun onTabClicked() {}
     open fun onTabStarted() {
         isCreated = true
     }
+
+    open fun onBackPressed(): Boolean = false
 
     fun requestHomeToolbarUpdate() {
         CoroutineScope(Dispatchers.Main).launch {

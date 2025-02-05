@@ -6,8 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -40,6 +43,10 @@ class MainActivity : BaseActivity() {
                 SafeSurface {
                     val coroutineScope = rememberCoroutineScope()
                     val mainActivityManager = globalClass.mainActivityManager
+                    val pagerState =
+                        rememberPagerState(initialPage = mainActivityManager.selectedTabIndex) {
+                            mainActivityManager.tabs.size
+                        }
 
                     BackHandler {
                         if (mainActivityManager.canExit(coroutineScope)) {
@@ -64,6 +71,18 @@ class MainActivity : BaseActivity() {
                             )
                         }
                         handleIntent()
+
+                        if (pagerState.currentPage != mainActivityManager.selectedTabIndex) {
+                            pagerState.scrollToPage(mainActivityManager.selectedTabIndex)
+                        }
+                    }
+
+                    LaunchedEffect(pagerState) {
+                        snapshotFlow { pagerState.currentPage }.collect { page ->
+                            if (page != mainActivityManager.selectedTabIndex) {
+                                mainActivityManager.selectTabAt(page)
+                            }
+                        }
                     }
 
                     JumpToPathDialog()
@@ -75,7 +94,13 @@ class MainActivity : BaseActivity() {
                     Column(Modifier.fillMaxSize()) {
                         Toolbar()
                         TabLayout()
-                        TabContentView()
+                        HorizontalPager(
+                            state = pagerState,
+                            modifier = Modifier.weight(1f),
+                            key = { mainActivityManager.tabs[it].id }
+                        ) { index ->
+                            TabContentView(index)
+                        }
                     }
                 }
             }

@@ -111,10 +111,6 @@ class FilesTab(
     var foldersCount = 0
     var filesCount = 0
 
-    override fun onTabClicked() {
-        openFolder(item = activeFolder, rememberSelectedFiles = true)
-    }
-
     override fun onTabStarted() {
         super.onTabStarted()
         if (source.isFile) {
@@ -146,7 +142,9 @@ class FilesTab(
         requestHomeToolbarUpdate()
     }
 
-    override fun onTabStopped() {}
+    override fun onTabStopped() {
+        super.onTabStopped()
+    }
 
     override val title: String
         get() = createTitle()
@@ -199,14 +197,20 @@ class FilesTab(
     private fun createTitle() = globalClass.getString(R.string.files_tab_title)
 
 
-    fun onBackPressed() {
-        if (!unselectAnySelectedFiles()) {
+    override fun onBackPressed(): Boolean {
+        if (unselectAnySelectedFiles()) {
+            return true
+        } else if (handleBackGesture) {
             highlightedFiles.apply {
                 clear()
                 add(activeFolder.path)
             }
             openFolder(activeFolder.parent!!)
+
+            return true
         }
+
+        return false
     }
 
     /**

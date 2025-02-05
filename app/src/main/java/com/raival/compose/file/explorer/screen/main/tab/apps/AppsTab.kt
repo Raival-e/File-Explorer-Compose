@@ -45,6 +45,31 @@ class AppsTab : Tab() {
         requestHomeToolbarUpdate()
     }
 
+    override fun onBackPressed(): Boolean {
+        if (isSearchPanelOpen || isSearching || isLoading) {
+            if (isSearching) {
+                isSearching = false
+            }
+
+            if (isSearchPanelOpen) {
+                isSearchPanelOpen = false
+            }
+
+            appsList.clear()
+
+            when (selectedChoice) {
+                0 -> appsList.addAll(userApps)
+                1 -> appsList.addAll(systemApps)
+                2 -> {
+                    appsList.addAll(userApps)
+                    appsList.addAll(systemApps)
+                }
+            }
+            return true
+        }
+        return false
+    }
+
     fun fetchInstalledApps() {
         isLoading = true
         CoroutineScope(Dispatchers.IO).launch {

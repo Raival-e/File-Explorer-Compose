@@ -1,6 +1,5 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -10,7 +9,6 @@ import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 
 @Composable
 fun ColumnScope.FilesTabContentView(tab: FilesTab) {
-    BackHandler(enabled = tab.handleBackGesture) { tab.onBackPressed() }
     ApkPreviewDialog(tab)
     OpenWithAppListDialog(tab)
     BookmarksDialog(tab)

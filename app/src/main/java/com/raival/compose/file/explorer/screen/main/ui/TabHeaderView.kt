@@ -72,8 +72,7 @@ fun TabHeaderView(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
                     if (mainActivityManager.selectedTabIndex isNot index) {
-                        mainActivityManager.tabs[mainActivityManager.selectedTabIndex].onTabStopped()
-                        mainActivityManager.selectedTabIndex = index
+                        mainActivityManager.selectTabAt(index)
                     } else {
                         showTabHeaderMenu = true
                     }
@@ -102,28 +101,17 @@ fun TabHeaderView(
                         onClick = {
                             App.globalClass.mainActivityManager.removeTabAt(index)
                             showTabHeaderMenu = false
-                            tab.requestHomeToolbarUpdate()
                         }
                     )
                 }
+
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.close_others)) },
                     onClick = {
                         App.globalClass.mainActivityManager.removeOtherTabs(index)
                         showTabHeaderMenu = false
-                        tab.requestHomeToolbarUpdate()
                     }
                 )
-                if (index > 0) {
-                    DropdownMenuItem(
-                        text = { Text(text = stringResource(R.string.close_all)) },
-                        onClick = {
-                            App.globalClass.mainActivityManager.closeAllTabs()
-                            showTabHeaderMenu = false
-                            tab.requestHomeToolbarUpdate()
-                        }
-                    )
-                }
             }
         }
     }
