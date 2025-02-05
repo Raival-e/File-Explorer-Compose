@@ -213,4 +213,5 @@
     <string name="signing_failed">Ошибка подписания!</string>
     <string name="merge_failed_with_error">Ошибка объединения: %1$s</string>
     <string name="github">Github</string>
+    <string name="apply">Apply</string>
 </resources>

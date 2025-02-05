@@ -214,4 +214,5 @@
     <string name="signing_failed">签名失败！</string>
     <string name="merge_failed_with_error">合并失败: %1$s</string>
     <string name="github">Github</string>
+    <string name="apply">Apply</string>
 </resources>

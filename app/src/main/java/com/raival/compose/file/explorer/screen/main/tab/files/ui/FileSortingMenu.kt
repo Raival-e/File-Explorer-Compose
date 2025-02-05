@@ -9,6 +9,7 @@ import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.DateRange
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.SortByAlpha
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,7 +55,7 @@ fun FileSortingMenu(
         mutableStateOf(specificOptions.reverseSorting)
     }
 
-    fun updateFileSortingPrefs() {
+    fun updateForThisFolder() {
         prefs.setSortingPrefsFor(
             tab.activeFolder,
             FileSortingPrefs(
@@ -87,16 +88,6 @@ fun FileSortingMenu(
             icon = Icons.Rounded.ArrowDownward,
             onClick = {
                 applyForThisFileOnly = !applyForThisFileOnly
-
-                if (applyForThisFileOnly) {
-                    updateFileSortingPrefs()
-                } else {
-                    prefs.showFoldersFirst = showFoldersFirst
-                    prefs.reverseFilesSortingMethod = reverseOrder
-                    prefs.filesSortingMethod = sortingMethod
-                }
-
-                reloadFiles()
             }
         )
 
@@ -108,15 +99,6 @@ fun FileSortingMenu(
             icon = Icons.Rounded.SortByAlpha,
             onClick = {
                 sortingMethod = SortingMethod.SORT_BY_NAME
-
-                if (applyForThisFileOnly) {
-                    updateFileSortingPrefs()
-                } else {
-                    prefs.filesSortingMethod = sortingMethod
-                }
-
-
-                reloadFiles()
             }
         )
 
@@ -126,14 +108,6 @@ fun FileSortingMenu(
             icon = Icons.Rounded.DateRange,
             onClick = {
                 sortingMethod = SortingMethod.SORT_BY_DATE
-
-                if (applyForThisFileOnly) {
-                    updateFileSortingPrefs()
-                } else {
-                    prefs.filesSortingMethod = sortingMethod
-                }
-
-                reloadFiles()
             }
         )
 
@@ -143,14 +117,6 @@ fun FileSortingMenu(
             icon = Icons.AutoMirrored.Rounded.Sort,
             onClick = {
                 sortingMethod = SortingMethod.SORT_BY_SIZE
-
-                if (applyForThisFileOnly) {
-                    updateFileSortingPrefs()
-                } else {
-                    prefs.filesSortingMethod = sortingMethod
-                }
-
-                reloadFiles()
             }
         )
 
@@ -162,14 +128,6 @@ fun FileSortingMenu(
             icon = Icons.Rounded.Folder,
             onClick = {
                 showFoldersFirst = !showFoldersFirst
-
-                if (applyForThisFileOnly) {
-                    updateFileSortingPrefs()
-                } else {
-                    prefs.showFoldersFirst = showFoldersFirst
-                }
-
-                reloadFiles()
             }
         )
 
@@ -179,16 +137,31 @@ fun FileSortingMenu(
             icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
             onClick = {
                 reverseOrder = !reverseOrder
+            }
+        )
 
+        Space(8.dp)
+
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            onClick = {
                 if (applyForThisFileOnly) {
-                    updateFileSortingPrefs()
+                    updateForThisFolder()
                 } else {
+                    prefs.showFoldersFirst = showFoldersFirst
                     prefs.reverseFilesSortingMethod = reverseOrder
+                    prefs.filesSortingMethod = sortingMethod
                 }
 
                 reloadFiles()
+
+                onDismissRequest()
             }
-        )
+        ) {
+            Text(text = stringResource(R.string.apply))
+        }
 
         Space(size = 16.dp)
     }

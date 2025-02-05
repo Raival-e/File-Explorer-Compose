@@ -213,4 +213,5 @@
   <string name="signing_failed">Falha ao assinar!</string>
   <string name="merge_failed_with_error">Falha na mesclagem: %1$s</string>
     <string name="github">Github</string>
+  <string name="apply">Apply</string>
 </resources>
