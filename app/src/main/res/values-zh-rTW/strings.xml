@@ -84,7 +84,7 @@
     <string name="close_all">關閉全部分頁</string>
     <string name="rename">重新命名</string>
     <string name="copy_path">複製路徑</string>
-    <string name="locate">定位至此檔案</string>
+    <string name="locate">前往所在位置</string>
     <string name="results">搜尋結果</string>
     <string name="search_query">搜尋字詞</string>
     <string name="tasks">任務清單</string>
