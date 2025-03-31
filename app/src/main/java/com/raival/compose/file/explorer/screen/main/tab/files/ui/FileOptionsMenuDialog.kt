@@ -42,7 +42,9 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
     if (tab.fileOptionsDialog.showFileOptionsDialog && tab.fileOptionsDialog.targetFile != null) {
         val context = LocalContext.current
 
-        val targetFiles by remember { mutableStateOf(tab.selectedFiles.map { it.value }.toList()) }
+        val targetFiles by remember(tab.id) {
+            mutableStateOf(tab.selectedFiles.map { it.value }.toList())
+        }
         val targetDocumentHolder = tab.fileOptionsDialog.targetFile!!
 
         val selectedFilesCount = targetFiles.size
@@ -188,7 +190,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
             if (isRequestPinShortcutSupported(context) && (isSingleFile || isSingleFolder)) {
                 FileOption(Icons.Rounded.Home, stringResource(R.string.add_to_home_screen)) {
                     tab.hideDocumentOptionsMenu()
-                    tab.addToHomeScreen(context, targetFiles[0])
+                    tab.addToHomeScreen(context, targetDocumentHolder)
                     tab.unselectAllFiles()
                 }
             }
@@ -196,7 +198,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
             if (isSingleFile) {
                 FileOption(Icons.Rounded.EditNote, stringResource(R.string.edit_with_text_editor)) {
                     tab.hideDocumentOptionsMenu()
-                    globalClass.textEditorManager.openTextEditor(targetFiles[0], context)
+                    globalClass.textEditorManager.openTextEditor(targetDocumentHolder, context)
                     tab.unselectAllFiles()
                 }
             }
@@ -207,7 +209,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 tab.unselectAllFiles()
             }
 
-            if (isSingleFile && !hasFolders && targetFiles[0].isArchive) {
+            if (isSingleFile && !hasFolders && targetDocumentHolder.isArchive) {
                 FileOption(
                     Icons.AutoMirrored.Rounded.ExitToApp,
                     stringResource(R.string.decompress)
