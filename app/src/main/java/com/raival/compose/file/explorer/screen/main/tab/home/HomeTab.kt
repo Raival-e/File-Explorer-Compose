@@ -168,7 +168,7 @@ class HomeTab : Tab() {
                 val lastModified = it.getLong(columnLastModified)
                 val name = it.getString(columnName)
                 val file = File(filePath)
-                if (file.isFile) {
+                if (file.isFile && filePath != null && name != null) {
                     recentFileHolders.add(
                         RecentFileHolder(
                             name,
