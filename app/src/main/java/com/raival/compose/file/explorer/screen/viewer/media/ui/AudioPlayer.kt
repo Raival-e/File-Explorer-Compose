@@ -206,6 +206,8 @@ fun AudioPlayer(instance: MediaViewerInstance) {
                     } else {
                         playerManager.pause()
                     }
+
+                    duration = instance.player.duration
                 }
             ) {
                 Icon(
