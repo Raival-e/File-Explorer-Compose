@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -172,9 +171,9 @@ fun SearchDialog(tab: FilesTab) {
                         modifier = Modifier
                             .fillMaxWidth(),
                         colors = TextFieldDefaults.colors(
-                            focusedContainerColor = AlertDialogDefaults.containerColor,
-                            unfocusedContainerColor = AlertDialogDefaults.containerColor,
-                            disabledContainerColor = AlertDialogDefaults.containerColor,
+                            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                            disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                         ),
