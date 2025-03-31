@@ -11,6 +11,7 @@ import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.common.extension.randomString
 import com.raival.compose.file.explorer.common.extension.trimToLastTwoSegments
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.Action
 import java.io.File
 
 class MoveTask(
@@ -23,6 +24,8 @@ class MoveTask(
     override fun getSubtitle(): String = if (source.size == 1)
         source[0].path.trimToLastTwoSegments()
     else globalClass.getString(R.string.task_subtitle, source.size)
+
+    val postActions = arrayListOf<Action>()
 
     override suspend fun execute(destination: DocumentHolder, callback: Any) {
         val taskCallback = callback as FilesTabTaskCallback
@@ -182,6 +185,10 @@ class MoveTask(
             taskCallback.onComplete(details.apply {
                 subtitle = globalClass.getString(R.string.done)
             })
+
+            postActions.forEach {
+                it.due = true
+            }
         }
     }
 

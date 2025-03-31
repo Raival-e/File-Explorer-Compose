@@ -28,10 +28,12 @@ import com.raival.compose.file.explorer.common.extension.removeIf
 import com.raival.compose.file.explorer.screen.main.MainActivity
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.Action
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_DATE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_SIZE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.UpdateAction
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortFoldersFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortLargerFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortName
@@ -79,6 +81,8 @@ class FilesTab(
         if (isSpecialDirectory(source) || source.isFolder) source else source.parent
             ?: StorageProvider.getPrimaryInternalStorage(globalClass).documentHolder
     var activeFolder: DocumentHolder = homeDir
+
+    val actions = mutableStateListOf<Action>()
 
     val activeFolderContent = mutableStateListOf<DocumentHolder>()
     val contentListStates = hashMapOf<String, LazyGridState>()
@@ -140,6 +144,18 @@ class FilesTab(
 
     override fun onTabResumed() {
         requestHomeToolbarUpdate()
+
+        actions.forEach { action ->
+            if (action is UpdateAction) {
+                reloadFiles()
+                if (action.autoDismiss) {
+                    action.due = false
+                    action.isDone = true
+                }
+            }
+
+            actions.removeIf { it.isDone }
+        }
     }
 
     override fun onTabStopped() {
@@ -196,6 +212,9 @@ class FilesTab(
 
     private fun createTitle() = globalClass.getString(R.string.files_tab_title)
 
+    fun addNewAction(action: Action): Action {
+        return action.apply { actions.add(this) }
+    }
 
     override fun onBackPressed(): Boolean {
         if (unselectAnySelectedFiles()) {

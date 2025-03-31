@@ -32,6 +32,7 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.Action
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.DecompressTask
@@ -104,7 +105,11 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         tab.hideDocumentOptionsMenu()
-                        tab.addNewTask(MoveTask(targetFiles))
+                        tab.addNewTask(MoveTask(targetFiles).apply {
+                            postActions.add(
+                                tab.addNewAction(Action(due = false))
+                            )
+                        })
                         tab.unselectAllFiles()
                     }
                 ) {
