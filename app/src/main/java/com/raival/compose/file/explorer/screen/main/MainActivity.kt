@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
@@ -99,7 +100,9 @@ class MainActivity : BaseActivity() {
                             modifier = Modifier.weight(1f),
                             key = { mainActivityManager.tabs[it].id }
                         ) { index ->
-                            TabContentView(index)
+                            key(index) {
+                                TabContentView(index)
+                            }
                         }
                     }
                 }

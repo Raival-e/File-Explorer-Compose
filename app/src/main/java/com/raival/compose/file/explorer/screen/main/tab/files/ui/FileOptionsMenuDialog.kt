@@ -40,7 +40,11 @@ import com.raival.compose.file.explorer.screen.main.tab.files.task.MoveTask
 
 @Composable
 fun FileOptionsMenuDialog(tab: FilesTab) {
-    if (tab.fileOptionsDialog.showFileOptionsDialog && tab.fileOptionsDialog.targetFile != null) {
+    if (tab.fileOptionsDialog.showFileOptionsDialog
+        && tab.fileOptionsDialog.targetFile != null
+        && tab.id == globalClass.mainActivityManager.tabs[globalClass.mainActivityManager.selectedTabIndex].id
+    ) {
+
         val context = LocalContext.current
 
         val targetFiles by remember {
