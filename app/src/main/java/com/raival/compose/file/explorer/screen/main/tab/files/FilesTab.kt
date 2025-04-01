@@ -82,7 +82,7 @@ class FilesTab(
             ?: StorageProvider.getPrimaryInternalStorage(globalClass).documentHolder
     var activeFolder: DocumentHolder = homeDir
 
-    val actions = mutableStateListOf<Action>()
+    val actions = arrayListOf<Action>()
 
     val activeFolderContent = mutableStateListOf<DocumentHolder>()
     val contentListStates = hashMapOf<String, LazyGridState>()

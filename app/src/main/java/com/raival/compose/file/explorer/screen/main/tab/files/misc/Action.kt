@@ -7,4 +7,4 @@ open class Action(
     var action: () -> Unit = {}
 )
 
-class UpdateAction() : Action()
+class UpdateAction(due: Boolean) : Action(due)

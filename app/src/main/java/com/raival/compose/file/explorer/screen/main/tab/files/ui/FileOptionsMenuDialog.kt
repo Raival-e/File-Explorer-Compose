@@ -32,7 +32,7 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.Action
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.UpdateAction
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.DecompressTask
@@ -43,7 +43,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
     if (tab.fileOptionsDialog.showFileOptionsDialog && tab.fileOptionsDialog.targetFile != null) {
         val context = LocalContext.current
 
-        val targetFiles by remember(tab.id) {
+        val targetFiles by remember {
             mutableStateOf(tab.selectedFiles.map { it.value }.toList())
         }
         val targetDocumentHolder = tab.fileOptionsDialog.targetFile!!
@@ -107,7 +107,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                         tab.hideDocumentOptionsMenu()
                         tab.addNewTask(MoveTask(targetFiles).apply {
                             postActions.add(
-                                tab.addNewAction(Action(due = false))
+                                tab.addNewAction(UpdateAction(due = false))
                             )
                         })
                         tab.unselectAllFiles()
