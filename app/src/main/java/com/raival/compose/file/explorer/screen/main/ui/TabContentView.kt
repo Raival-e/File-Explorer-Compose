@@ -10,7 +10,7 @@ import com.raival.compose.file.explorer.screen.main.tab.apps.ui.AppsTabContentVi
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.FilesTabContentView
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
-import com.raival.compose.file.explorer.screen.main.tab.home.ui.MainTabContentView
+import com.raival.compose.file.explorer.screen.main.tab.home.ui.HomeTabContentView
 
 @Composable
 fun ColumnScope.TabContentView(tabIndex: Int) {
@@ -23,7 +23,7 @@ fun ColumnScope.TabContentView(tabIndex: Int) {
             if (currentTab is FilesTab) {
                 FilesTabContentView(currentTab)
             } else if (currentTab is HomeTab) {
-                MainTabContentView(currentTab)
+                HomeTabContentView(currentTab)
             } else if (currentTab is AppsTab) {
                 AppsTabContentView(currentTab)
             }

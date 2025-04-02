@@ -56,7 +56,7 @@ import com.raival.compose.file.explorer.screen.main.ui.StorageDeviceView
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ColumnScope.MainTabContentView(tab: HomeTab) {
+fun ColumnScope.HomeTabContentView(tab: HomeTab) {
     Column(modifier = Modifier
         .fillMaxSize()
         .verticalScroll(rememberScrollState())) {
