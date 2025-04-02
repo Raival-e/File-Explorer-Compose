@@ -214,5 +214,5 @@
   <string name="merge_failed_with_error">Falha na mesclagem: %1$s</string>
   <string name="github">Github</string>
   <string name="apply">Aplicar</string>
-  <string name="no_recent_files">No Recent Files</string>
+  <string name="no_recent_files">Nenhum Arquivo Recente</string>
 </resources>
