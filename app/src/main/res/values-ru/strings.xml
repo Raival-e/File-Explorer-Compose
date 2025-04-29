@@ -215,4 +215,5 @@
     <string name="github">Github</string>
     <string name="apply">Применить</string>
     <string name="no_recent_files">Нет недавних файлов</string>
+    <string name="remember_this_choice">Запомни этот выбор</string>
 </resources>

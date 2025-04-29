@@ -215,4 +215,5 @@
     <string name="github">لوب</string>
     <string name="apply">درخواست کردن</string>
     <string name="no_recent_files">هیچ پرونده اخیر وجود ندارد</string>
+    <string name="remember_this_choice">این انتخاب را به خاطر بسپار</string>
 </resources>
