@@ -293,6 +293,7 @@ object StorageProvider {
     ): ArrayList<DocumentHolder> {
         val recentFiles = ArrayList<DocumentHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
+        val showHiddenFiles = globalClass.preferencesManager.displayPrefs.showHiddenFiles
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
 
@@ -322,7 +323,7 @@ object StorageProvider {
             while (it.moveToNext() && recentFiles.size < limit) {
                 val filePath = it.getString(columnIndexPath)
                 val file = File(filePath)
-                if (file.isFile) {
+                if (file.isFile && (showHiddenFiles || !file.name.startsWith("."))) {
                     recentFiles.add(DocumentHolder.fromFile(file))
                 }
             }
