@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.CheckableText
 import com.raival.compose.file.explorer.common.ui.Space
@@ -22,8 +23,15 @@ import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 @Composable
 fun DeleteConfirmationDialog(tab: FilesTab) {
     if (tab.showConfirmDeleteDialog) {
+        val preferencesManager = globalClass.preferencesManager
         var moveToRecycleBin by remember {
-            mutableStateOf(true)
+            mutableStateOf(preferencesManager.generalPrefs.moveToRecycleBin)
+        }
+        var showRememberChoice by remember {
+            mutableStateOf(false)
+        }
+        var rememberChoice by remember {
+            mutableStateOf(false)
         }
 
         val targetFiles by remember(tab.id, tab.activeFolder.path) {
@@ -41,6 +49,9 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
                     onClick = {
                         onDismissRequest()
                         tab.unselectAllFiles()
+                        if (showRememberChoice && rememberChoice) {
+                            preferencesManager.generalPrefs.moveToRecycleBin = moveToRecycleBin
+                        }
                         tab.deleteFiles(targetFiles, tab.taskCallback, moveToRecycleBin)
                     }
                 ) { Text(stringResource(R.string.confirm)) }
@@ -65,7 +76,10 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
                         CheckableText(
                             modifier = Modifier.fillMaxWidth(),
                             checked = moveToRecycleBin,
-                            onCheckedChange = { moveToRecycleBin = it },
+                            onCheckedChange = {
+                                moveToRecycleBin = it
+                                showRememberChoice = true
+                            },
                             text = {
                                 Text(
                                     modifier = Modifier.alpha(0.7f),
@@ -73,6 +87,21 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
                                 )
                             }
                         )
+
+                        if (showRememberChoice) {
+                            Space(size = 4.dp)
+                            CheckableText(
+                                modifier = Modifier.fillMaxWidth(),
+                                checked = rememberChoice,
+                                onCheckedChange = { rememberChoice = it },
+                                text = {
+                                    Text(
+                                        modifier = Modifier.alpha(0.6f),
+                                        text = stringResource(R.string.remember_this_choice)
+                                    )
+                                }
+                            )
+                        }
                     }
                 }
             }

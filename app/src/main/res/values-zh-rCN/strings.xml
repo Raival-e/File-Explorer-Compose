@@ -216,4 +216,5 @@
     <string name="github">Github</string>
     <string name="apply">应用</string>
     <string name="no_recent_files">没有最近文件</string>
+    <string name="remember_this_choice">记住这个选择</string>
 </resources>

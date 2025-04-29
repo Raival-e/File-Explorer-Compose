@@ -173,6 +173,13 @@ class PreferencesManager {
             defaultValue = true,
             getPreferencesKey = { booleanPreferencesKey(it) }
         )
+
+        var moveToRecycleBin by prefMutableState(
+            keyName = "moveToRecycleBin",
+            defaultValue = true,
+            getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+
         var signApk by prefMutableState(
             keyName = "signApk",
             defaultValue = false,

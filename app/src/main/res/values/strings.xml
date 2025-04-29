@@ -215,4 +215,5 @@
     <string name="github">Github</string>
     <string name="apply">Apply</string>
     <string name="no_recent_files">No Recent Files</string>
+    <string name="remember_this_choice">Remember this choice</string>
 </resources>
