@@ -33,6 +33,7 @@ import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.UpdateAction
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.DecompressTask
@@ -145,18 +146,19 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                         )
                     }
                 }
-
-                IconButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        tab.hideDocumentOptionsMenu()
-                        globalClass.filesTabManager.bookmarks += targetFiles.map { it.path }
-                            .distinct()
-                        globalClass.showMsg(R.string.added_to_bookmarks)
-                        tab.unselectAllFiles()
+                if (tab.activeFolder != StorageProvider.bookmarks) {
+                    IconButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            tab.hideDocumentOptionsMenu()
+                            globalClass.filesTabManager.bookmarks += targetFiles.map { it.path }
+                                .distinct()
+                            globalClass.showMsg(R.string.added_to_bookmarks)
+                            tab.unselectAllFiles()
+                        }
+                    ) {
+                        Icon(imageVector = Icons.Rounded.BookmarkAdd, contentDescription = null)
                     }
-                ) {
-                    Icon(imageVector = Icons.Rounded.BookmarkAdd, contentDescription = null)
                 }
 
                 if (!hasFolders) {
