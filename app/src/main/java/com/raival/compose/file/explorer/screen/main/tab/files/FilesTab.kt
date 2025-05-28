@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
-import android.content.res.AssetManager
 import android.net.Uri
 import android.os.Environment
 import androidx.compose.foundation.lazy.LazyListState
@@ -80,8 +79,6 @@ class FilesTab(
 
     val currentPathSegments = mutableStateListOf<DocumentHolder>()
     val currentPathSegmentsListState = LazyListState()
-
-    val assetManager: AssetManager = globalClass.assets
 
     val selectedFiles = linkedMapOf<String, DocumentHolder>()
     var lastSelectedFileIndex = -1
