@@ -2,7 +2,6 @@ package com.raival.compose.file.explorer.screen.preferences.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ManageSearch
-import androidx.compose.material.icons.rounded.Android
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.raival.compose.file.explorer.App.Companion.globalClass
@@ -39,14 +38,6 @@ fun GeneralContainer() {
                     }
                 )
             }
-        )
-
-        PreferenceItem(
-            label = stringResource(R.string.sign_apk),
-            supportingText = globalClass.getString(R.string.sign_apk_desc),
-            icon = Icons.Rounded.Android,
-            switchState = preferences.signApk,
-            onSwitchChange = { preferences.signApk = it }
         )
     }
 }

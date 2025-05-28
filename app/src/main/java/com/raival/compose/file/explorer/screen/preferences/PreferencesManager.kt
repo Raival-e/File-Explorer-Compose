@@ -179,12 +179,6 @@ class PreferencesManager {
             defaultValue = true,
             getPreferencesKey = { booleanPreferencesKey(it) }
         )
-
-        var signApk by prefMutableState(
-            keyName = "signApk",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
     }
 
     object FilesSortingPrefs {

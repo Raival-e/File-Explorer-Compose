@@ -39,7 +39,6 @@ import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
 
 @Composable
 fun ApkPreviewDialog(tab: FilesTab) {
@@ -52,8 +51,6 @@ fun ApkPreviewDialog(tab: FilesTab) {
         var icon by remember { mutableStateOf<Drawable?>(null) }
         val details = remember { mutableStateListOf<Pair<String, String>>() }
         var appName by remember { mutableStateOf(emptyString) }
-
-        val doSign = PreferencesManager.GeneralPrefs.signApk
 
         val packageManager = globalClass.packageManager
         val apkInfo =
