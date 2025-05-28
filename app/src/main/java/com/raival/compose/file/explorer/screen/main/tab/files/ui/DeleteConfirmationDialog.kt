@@ -24,6 +24,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 fun DeleteConfirmationDialog(tab: FilesTab) {
     if (tab.showConfirmDeleteDialog) {
         val preferencesManager = globalClass.preferencesManager
+
         var moveToRecycleBin by remember {
             mutableStateOf(preferencesManager.generalPrefs.moveToRecycleBin)
         }
@@ -52,7 +53,6 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
                         if (showRememberChoice && rememberChoice) {
                             preferencesManager.generalPrefs.moveToRecycleBin = moveToRecycleBin
                         }
-                        tab.deleteFiles(targetFiles, tab.taskCallback, moveToRecycleBin)
                     }
                 ) { Text(stringResource(R.string.confirm)) }
             },

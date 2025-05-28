@@ -14,8 +14,6 @@ fun ColumnScope.FilesTabContentView(tab: FilesTab) {
     BookmarksDialog(tab)
     SearchDialog(tab)
     TaskPanel(tab)
-    TaskDialog(tab)
-    RenameFileDialog(tab)
     DeleteConfirmationDialog(tab)
     CreateNewFileDialog(tab)
     FileCompressionDialog(tab)

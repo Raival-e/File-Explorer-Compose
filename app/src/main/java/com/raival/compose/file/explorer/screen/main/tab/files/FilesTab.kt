@@ -11,7 +11,6 @@ import android.os.Environment
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,7 +18,6 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider.getUriForFile
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.addIfAbsent
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.getIndexIf
 import com.raival.compose.file.explorer.common.extension.isNot
@@ -48,11 +46,6 @@ import com.raival.compose.file.explorer.screen.main.tab.files.provider.StoragePr
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getImageFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getRecentFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getVideoFiles
-import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
-import com.raival.compose.file.explorer.screen.main.tab.files.task.DeleteTask
-import com.raival.compose.file.explorer.screen.main.tab.files.task.FilesTabTask
-import com.raival.compose.file.explorer.screen.main.tab.files.task.FilesTabTaskCallback
-import com.raival.compose.file.explorer.screen.main.tab.files.task.FilesTabTaskDetails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,10 +63,7 @@ class FilesTab(
     }
 
     val search = Search
-    val taskDialog = TaskDialog
     val apkDialog = ApkDialog
-    val compressDialog = CompressDialog
-    val renameDialog = RenameDialog
     val fileOptionsDialog = FileOptionsDialog
     val openWithDialog = OpenWithDialog
 
@@ -448,23 +438,8 @@ class FilesTab(
         globalClass.mainActivityManager.addTabAndSelect(tab)
     }
 
-    fun addNewTask(task: FilesTabTask) {
-        globalClass.filesTabManager.filesTabTasks.add(task)
-        globalClass.showMsg(R.string.new_task_has_been_added)
-    }
-
     fun hideDocumentOptionsMenu() {
         FileOptionsDialog.hide()
-    }
-
-    fun deleteFiles(
-        targetFiles: List<DocumentHolder>,
-        taskCallback: FilesTabTaskCallback,
-        moveToRecycleBin: Boolean = true
-    ) {
-        CoroutineScope(Dispatchers.IO).launch {
-            DeleteTask(targetFiles, moveToRecycleBin).execute(activeFolder, taskCallback)
-        }
     }
 
     fun share(
@@ -553,65 +528,20 @@ class FilesTab(
 
     fun canRunTasks() = !isSpecialDirectory()
 
-    object TaskDialog {
-        var showTaskDialog by mutableStateOf(false)
-        var taskDialogTitle by mutableStateOf(emptyString)
-        var taskDialogSubtitle by mutableStateOf(emptyString)
-        var taskDialogInfo by mutableStateOf(emptyString)
-        var showTaskDialogProgressbar by mutableStateOf(true)
-        var taskDialogProgress by mutableFloatStateOf(-1f)
-    }
-
     object ApkDialog {
         var showApkDialog by mutableStateOf(false)
             private set
         var apkFile: DocumentHolder? = null
             private set
-        var ApksArchive = false
-            private  set
 
         fun show(file: DocumentHolder) {
             apkFile = file
             showApkDialog = true
-            ApksArchive = file.isApks
         }
 
         fun hide() {
             showApkDialog = false
             apkFile = null
-        }
-    }
-
-    object CompressDialog {
-        var showCompressDialog by mutableStateOf(false)
-            private set
-        var task: CompressTask? = null
-            private set
-
-        fun show(task: CompressTask) {
-            CompressDialog.task = task
-            showCompressDialog = true
-        }
-
-        fun hide() {
-            showCompressDialog = false
-        }
-    }
-
-    object RenameDialog {
-        var showRenameFileDialog by mutableStateOf(false)
-            private set
-        var targetFile: DocumentHolder? = null
-            private set
-
-        fun show(file: DocumentHolder) {
-            targetFile = file
-            showRenameFileDialog = true
-        }
-
-        fun hide() {
-            showRenameFileDialog = false
-            targetFile = null
         }
     }
 
@@ -652,55 +582,5 @@ class FilesTab(
     object Search {
         var searchQuery by mutableStateOf(emptyString)
         var searchResults = mutableStateListOf<DocumentHolder>()
-    }
-
-    val taskCallback = object : FilesTabTaskCallback(CoroutineScope(Dispatchers.IO)) {
-        override fun onPrepare(details: FilesTabTaskDetails) {
-            taskDialog.apply {
-                showTaskDialog = true
-                taskDialogTitle = details.title
-                taskDialogSubtitle = details.subtitle
-                showTaskDialogProgressbar = true
-                taskDialogProgress = details.progress
-                taskDialogInfo = details.info
-            }
-        }
-
-        override fun onReport(details: FilesTabTaskDetails) {
-            taskDialog.apply {
-                taskDialogTitle = details.title
-                taskDialogSubtitle = details.subtitle
-                taskDialogProgress = details.progress
-                taskDialogInfo = details.info
-            }
-        }
-
-        override fun onComplete(details: FilesTabTaskDetails) {
-            highlightedFiles.clear()
-
-            details.task.getSourceFiles().forEach {
-                activeFolder.findFile(it.getName())?.let { file ->
-                    highlightedFiles.addIfAbsent(file.path)
-                }
-            }
-
-            globalClass.showMsg(buildString {
-                append(details.subtitle)
-            })
-
-            TaskDialog.showTaskDialog = false
-            showTasksPanel = false
-
-            reloadFiles()
-
-            globalClass.filesTabManager.filesTabTasks.removeIf { it.id == details.task.id }
-        }
-
-        override fun onFailed(details: FilesTabTaskDetails) {
-            globalClass.showMsg(details.subtitle)
-            TaskDialog.showTaskDialog = false
-            showTasksPanel = false
-            reloadFiles()
-        }
     }
 }

@@ -59,15 +59,12 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.common.ui.block
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRow
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRowIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
 fun ColumnScope.AppsTabContentView(tab: AppsTab) {
@@ -160,13 +157,11 @@ fun ColumnScope.AppsTabContentView(tab: AppsTab) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(
                         onClick = {
-                            globalClass.filesTabManager.filesTabTasks.add(
-                                CopyTask(arrayListOf(DocumentHolder.fromFile(File(selectedApp.path))))
-                            )
                             tab.previewAppDialog = null
                             globalClass.showMsg(R.string.new_task_has_been_added)
                         }
                     ) {
+                        //TODO: change to `save` or `extract`
                         Text(text = stringResource(R.string.copy))
                     }
                 }

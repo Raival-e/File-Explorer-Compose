@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.rounded.Task
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,9 +34,6 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -57,7 +55,7 @@ fun TaskPanel(tab: FilesTab) {
 
             val coroutineScope = rememberCoroutineScope()
             LazyColumn(Modifier.animateContentSize()) {
-                items(globalClass.filesTabManager.filesTabTasks, key = { it.id }) { task ->
+                items(emptyList<Int>(), key = { it }) { task ->
                     SwipeBox(
                         modifier = Modifier.fillMaxWidth(),
                         swipeDirection = SwipeDirection.EndToStart,
@@ -71,7 +69,6 @@ fun TaskPanel(tab: FilesTab) {
                                 weight = 1f,
                                 iconSize = 20.dp
                             ) {
-                                globalClass.filesTabManager.filesTabTasks.removeIf { it.id == task.id }
                                 coroutineScope.launch {
                                     swipeableState.animateTo(0)
                                 }
@@ -87,38 +84,6 @@ fun TaskPanel(tab: FilesTab) {
                                             globalClass.showMsg(globalClass.getString(R.string.can_not_run_tasks))
                                             return@combinedClickable
                                         }
-
-                                        if (!task.isValidSourceFiles()) {
-                                            globalClass.showMsg(R.string.invalid_task)
-                                            return@combinedClickable
-                                        }
-
-                                        var copyToExistingZipFile = false
-
-                                        if (task is CompressTask) {
-                                            if (tab.selectedFiles.size == 1) {
-                                                val selectedFile = tab.selectedFiles.values.first()
-                                                if (selectedFile.isArchive) {
-                                                    CoroutineScope(Dispatchers.IO).launch {
-                                                        task.execute(
-                                                            selectedFile,
-                                                            tab.taskCallback
-                                                        )
-                                                    }
-                                                    copyToExistingZipFile = true
-                                                }
-                                            }
-                                            if (!copyToExistingZipFile) {
-                                                tab.compressDialog.show(task)
-                                            }
-                                        } else {
-                                            CoroutineScope(Dispatchers.IO).launch {
-                                                task.execute(
-                                                    tab.activeFolder,
-                                                    tab.taskCallback
-                                                )
-                                            }
-                                        }
                                     }
                                 )
                                 .padding(horizontal = 12.dp),
@@ -126,7 +91,7 @@ fun TaskPanel(tab: FilesTab) {
                         ) {
                             Icon(
                                 modifier = Modifier.padding(12.dp),
-                                imageVector = task.getIcon(),
+                                imageVector = Icons.Rounded.Task,
                                 contentDescription = null
                             )
 
@@ -134,12 +99,12 @@ fun TaskPanel(tab: FilesTab) {
                                 modifier = Modifier.padding(vertical = 12.dp)
                             ) {
                                 Text(
-                                    text = task.getTitle(),
+                                    text = "",
                                     fontSize = 14.sp
                                 )
                                 Text(
                                     modifier = Modifier.alpha(0.7f),
-                                    text = task.getSubtitle(),
+                                    text = "",
                                     fontSize = 12.sp
                                 )
                             }
@@ -148,7 +113,7 @@ fun TaskPanel(tab: FilesTab) {
                 }
             }
 
-            AnimatedVisibility(visible = globalClass.filesTabManager.filesTabTasks.isEmpty()) {
+            AnimatedVisibility(visible = true) {
                 Text(
                     modifier = Modifier
                         .padding(vertical = 60.dp)

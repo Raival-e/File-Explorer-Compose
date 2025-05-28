@@ -32,12 +32,7 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.UpdateAction
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
-import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
-import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
-import com.raival.compose.file.explorer.screen.main.tab.files.task.DecompressTask
-import com.raival.compose.file.explorer.screen.main.tab.files.task.MoveTask
 
 @Composable
 fun FileOptionsMenuDialog(tab: FilesTab) {
@@ -110,11 +105,6 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         tab.hideDocumentOptionsMenu()
-                        tab.addNewTask(MoveTask(targetFiles).apply {
-                            postActions.add(
-                                tab.addNewAction(UpdateAction(due = false))
-                            )
-                        })
                         tab.unselectAllFiles()
                     }
                 ) {
@@ -125,7 +115,6 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         tab.hideDocumentOptionsMenu()
-                        tab.addNewTask(CopyTask(targetFiles))
                         tab.unselectAllFiles()
                     }
                 ) {
@@ -137,7 +126,6 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                         modifier = Modifier.weight(1f),
                         onClick = {
                             tab.hideDocumentOptionsMenu()
-                            tab.renameDialog.show(targetDocumentHolder)
                         }
                     ) {
                         Icon(
@@ -216,7 +204,6 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
 
             FileOption(Icons.Rounded.Compress, stringResource(R.string.compress)) {
                 tab.hideDocumentOptionsMenu()
-                tab.addNewTask(CompressTask(targetFiles))
                 tab.unselectAllFiles()
             }
 
@@ -226,7 +213,6 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     stringResource(R.string.decompress)
                 ) {
                     tab.hideDocumentOptionsMenu()
-                    tab.addNewTask(DecompressTask(targetFiles))
                     tab.unselectAllFiles()
                 }
             }

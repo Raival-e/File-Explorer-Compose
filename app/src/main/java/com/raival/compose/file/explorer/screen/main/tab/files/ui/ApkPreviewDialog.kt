@@ -39,17 +39,11 @@ import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.MergeHandler
 import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun ApkPreviewDialog(tab: FilesTab) {
     val apkDialog = tab.apkDialog
-    val isApksArchive: Boolean = apkDialog.ApksArchive
 
     if (tab.apkDialog.showApkDialog && apkDialog.apkFile != null) {
         val context = LocalContext.current
@@ -61,37 +55,36 @@ fun ApkPreviewDialog(tab: FilesTab) {
 
         val doSign = PreferencesManager.GeneralPrefs.signApk
 
-        if (!isApksArchive) {
-            val packageManager = globalClass.packageManager
-            val apkInfo =
-                remember { mutableStateOf(packageManager.getPackageArchiveInfo(apkFile.path, 0)) }
+        val packageManager = globalClass.packageManager
+        val apkInfo =
+            remember { mutableStateOf(packageManager.getPackageArchiveInfo(apkFile.path, 0)) }
 
-            LaunchedEffect(Unit) {
-                apkInfo.value?.let { info ->
-                    info.applicationInfo?.sourceDir = apkFile.path
-                    info.applicationInfo?.publicSourceDir = apkFile.path
+        LaunchedEffect(Unit) {
+            apkInfo.value?.let { info ->
+                info.applicationInfo?.sourceDir = apkFile.path
+                info.applicationInfo?.publicSourceDir = apkFile.path
 
-                    icon = info.applicationInfo?.loadIcon(packageManager)
-                    appName = info.applicationInfo?.loadLabel(packageManager).toString()
+                icon = info.applicationInfo?.loadIcon(packageManager)
+                appName = info.applicationInfo?.loadLabel(packageManager).toString()
 
-                    details.add(
-                        Pair(
-                            globalClass.getString(R.string.package_name),
-                            info.packageName
-                        )
+                details.add(
+                    Pair(
+                        globalClass.getString(R.string.package_name),
+                        info.packageName
                     )
-                    info.versionName?.let {
-                        details.add(Pair(globalClass.getString(R.string.version_name), it))
-                    }
-                    details.add(
-                        Pair(
-                            globalClass.getString(R.string.version_code),
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) info.longVersionCode.toString() else info.versionCode.toString()
-                        )
-                    )
+                )
+                info.versionName?.let {
+                    details.add(Pair(globalClass.getString(R.string.version_name), it))
                 }
+                details.add(
+                    Pair(
+                        globalClass.getString(R.string.version_code),
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) info.longVersionCode.toString() else info.versionCode.toString()
+                    )
+                )
             }
         }
+
         details.add(
             Pair(globalClass.getString(R.string.size), apkFile.fileSize.toFormattedSize())
         )
@@ -158,46 +151,15 @@ fun ApkPreviewDialog(tab: FilesTab) {
                         Text(text = stringResource(R.string.explore))
                     }
 
-                    if (isApksArchive) {
-                        TextButton(onClick = {
-                            apkDialog.hide()
-                            val mergeHandler = MergeHandler(context)
-                            mergeHandler.mergeApks(
-                                tab, apkFile, doSign,
-                                onSuccess = {
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        tab.taskDialog.taskDialogInfo =
-                                            context.getString(R.string.merge_successful)
-                                        tab.taskDialog.taskDialogSubtitle =
-                                            context.getString(R.string.merge_completed)
-                                        tab.taskDialog.taskDialogProgress = 1f
-                                        delay(500)
-                                        tab.taskDialog.showTaskDialog = false
-                                        tab.reloadFiles()
-                                    }
-                                },
-                                onError = { errorMessage ->
-                                    CoroutineScope(Dispatchers.Main).launch {
-                                        tab.taskDialog.taskDialogInfo = errorMessage
-                                        tab.taskDialog.taskDialogSubtitle =
-                                            context.getString(R.string.failed)
-                                    }
-                                }
-                            )
-                        }) {
-                            Text(text = stringResource(R.string.merge))
-                        }
-                    } else {
-                        TextButton(onClick = {
-                            apkDialog.hide()
-                            apkFile.openFile(
-                                context,
-                                anonymous = false,
-                                skipSupportedExtensions = true
-                            )
-                        }) {
-                            Text(text = stringResource(R.string.install))
-                        }
+                    TextButton(onClick = {
+                        apkDialog.hide()
+                        apkFile.openFile(
+                            context,
+                            anonymous = false,
+                            skipSupportedExtensions = true
+                        )
+                    }) {
+                        Text(text = stringResource(R.string.install))
                     }
                 }
             }
