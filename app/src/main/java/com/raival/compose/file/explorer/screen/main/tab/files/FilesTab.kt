@@ -268,6 +268,8 @@ class FilesTab(
             if (selectedFiles.isEmpty()) lastSelectedFileIndex = -1
         }
 
+        showMoreOptionsButton = selectedFiles.size > 0
+
         activeFolder = item
 
         showEmptyRecycleBin = activeFolder.hasParent(globalClass.recycleBinDir)
