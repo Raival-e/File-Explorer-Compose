@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -71,287 +70,268 @@ fun ColumnScope.FilesList(tab: FilesTab) {
     val coroutineScope = rememberCoroutineScope()
     var isRefreshing by remember { mutableStateOf(false) }
 
-    if (tab.activeFolderContent.isEmpty()) {
-        Column(
-            Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (!tab.isLoading) {
+    val columnCount = preferencesManager.displayPrefs.fileListColumnCount
+
+    Box(Modifier.weight(1f)) {
+        if (tab.activeFolderContent.isEmpty() && !tab.isLoading) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(colorScheme.surface.copy(alpha = 0.4f)),
+                contentAlignment = Alignment.Center
+            ) {
                 Text(
                     modifier = Modifier
-                        .padding(vertical = 60.dp)
                         .fillMaxWidth()
                         .alpha(0.4f),
                     text = stringResource(R.string.empty),
                     fontSize = 24.sp,
                     textAlign = TextAlign.Center
                 )
-            } else {
-                androidx.compose.animation.AnimatedVisibility(
-                    modifier = Modifier.fillMaxWidth(),
-                    visible = tab.isLoading
-                ) {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable(
-                                interactionSource = null,
-                                indication = null,
-                                onClick = { }
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
             }
         }
-    } else {
-        val columnCount = preferencesManager.displayPrefs.fileListColumnCount
-        Box(Modifier.weight(1f)) {
-            PullToRefreshBox(
-                isRefreshing = isRefreshing,
-                onRefresh = {
-                    isRefreshing = true
-                    tab.openFolder(tab.activeFolder, true, true)
-                    coroutineScope.launch {
-                        delay(100)
-                        isRefreshing = false
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                tab.openFolder(tab.activeFolder, true, true)
+                coroutineScope.launch {
+                    delay(100)
+                    isRefreshing = false
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LazyVerticalGrid(
+                columns = if (columnCount > 0)
+                    GridCells.Fixed(columnCount) else GridCells.Adaptive(300.dp),
+                modifier = Modifier
+                    .fillMaxSize(),
+                state = tab.activeListState
             ) {
-                LazyVerticalGrid(
-                    columns = if (columnCount > 0)
-                        GridCells.Fixed(columnCount) else GridCells.Adaptive(300.dp),
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    state = tab.activeListState
-                ) {
-                    itemsIndexed(
-                        tab.activeFolderContent,
-                        key = { index, item -> item.uid }
-                    ) { index, item ->
-                        val currentItemPath = item.path
-                        val itemDetailsCoroutine = rememberCoroutineScope()
-                        val isAlreadySelected = tab.selectedFiles.containsKey(currentItemPath)
+                itemsIndexed(
+                    tab.activeFolderContent,
+                    key = { index, item -> item.uid }
+                ) { index, item ->
+                    val currentItemPath = item.path
+                    val itemDetailsCoroutine = rememberCoroutineScope()
+                    val isAlreadySelected = tab.selectedFiles.containsKey(currentItemPath)
 
-                        fun toggleSelection() {
-                            if (tab.selectedFiles.containsKey(currentItemPath)) {
-                                tab.selectedFiles.remove(currentItemPath)
-                                tab.lastSelectedFileIndex = -1
-                            } else {
-                                tab.selectedFiles[currentItemPath] = item
-                                tab.lastSelectedFileIndex = index
-                            }
+                    fun toggleSelection() {
+                        if (tab.selectedFiles.containsKey(currentItemPath)) {
+                            tab.selectedFiles.remove(currentItemPath)
+                            tab.lastSelectedFileIndex = -1
+                        } else {
+                            tab.selectedFiles[currentItemPath] = item
+                            tab.lastSelectedFileIndex = index
                         }
+                    }
 
-                        Column(
-                            Modifier
-                                .fillMaxWidth()
-                                .background(
-                                    color = if (isAlreadySelected) {
-                                        documentHolderSelectionHighlightColor
-                                    } else if (tab.highlightedFiles.contains(currentItemPath)) {
-                                        documentHolderHighlightColor
+                    Column(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(
+                                color = if (isAlreadySelected) {
+                                    documentHolderSelectionHighlightColor
+                                } else if (tab.highlightedFiles.contains(currentItemPath)) {
+                                    documentHolderHighlightColor
+                                } else {
+                                    Color.Unspecified
+                                }
+                            )
+                            .combinedClickable(
+                                onClick = {
+                                    if (tab.selectedFiles.isNotEmpty()) {
+                                        toggleSelection()
+                                        tab.quickReloadFiles()
+                                    } else {
+                                        if (item.isFile) {
+                                            tab.openFile(context, item)
+                                        } else {
+                                            tab.openFolder(item, false)
+                                        }
+                                    }
+                                },
+                                onLongClick = {
+                                    val isFirstSelection = tab.selectedFiles.isEmpty()
+                                    val isNewSelection = !isAlreadySelected
+
+                                    tab.selectedFiles[currentItemPath] = item
+
+                                    if ((isFirstSelection && preferencesManager.generalPrefs.showFileOptionMenuOnLongClick) || !isNewSelection)
+                                        tab.fileOptionsDialog.show(item)
+
+                                    if (isNewSelection) {
+                                        if (tab.lastSelectedFileIndex >= 0) {
+                                            if (tab.lastSelectedFileIndex > index) {
+                                                for (i in tab.lastSelectedFileIndex downTo index) {
+                                                    tab.selectedFiles[tab.activeFolderContent[i].path] =
+                                                        tab.activeFolderContent[i]
+                                                }
+                                            } else {
+                                                for (i in tab.lastSelectedFileIndex..index) {
+                                                    tab.selectedFiles[tab.activeFolderContent[i].path] =
+                                                        tab.activeFolderContent[i]
+                                                }
+                                            }
+                                        }
+                                    }
+                                    tab.lastSelectedFileIndex = index
+
+                                    tab.quickReloadFiles()
+                                }
+                            )
+                    ) {
+                        Space(
+                            size = when (preferencesManager.displayPrefs.fileListSize) {
+                                FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
+                                else -> 4.dp
+                            }
+                        )
+
+                        Row(
+                            Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Isolate {
+                                val iconSize =
+                                    when (preferencesManager.displayPrefs.fileListSize) {
+                                        FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.IconSize.SMALL.dp
+                                        FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.IconSize.MEDIUM.dp
+                                        FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.IconSize.LARGE.dp
+                                        else -> FilesTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
+                                    }
+
+                                if (item.isFile) {
+                                    AsyncImage(
+                                        modifier = Modifier
+                                            .size(iconSize)
+                                            .clip(RoundedCornerShape(4.dp))
+                                            .clickable {
+                                                toggleSelection()
+                                                tab.quickReloadFiles()
+                                            },
+                                        model = ImageRequest.Builder(globalClass).data(item)
+                                            .build(),
+                                        filterQuality = FilterQuality.Low,
+                                        error = painterResource(id = item.getFileIconResource()),
+                                        contentScale = ContentScale.Fit,
+                                        alpha = if (item.isHidden) 0.4f else 1f,
+                                        contentDescription = null
+                                    )
+                                } else {
+                                    Icon(
+                                        modifier = Modifier
+                                            .size(iconSize)
+                                            .clip(RoundedCornerShape(4.dp))
+                                            .clickable {
+                                                toggleSelection()
+                                                tab.quickReloadFiles()
+                                            }
+                                            .alpha(if (item.isHidden) 0.4f else 1f),
+                                        imageVector = Icons.Rounded.Folder,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+
+                            Space(size = 8.dp)
+
+                            Column(Modifier.weight(1f)) {
+                                val fontSize =
+                                    when (preferencesManager.displayPrefs.fileListSize) {
+                                        FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.FontSize.SMALL
+                                        FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.FontSize.MEDIUM
+                                        FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.FontSize.LARGE
+                                        else -> FilesTabFileListSizeMap.FontSize.EXTRA_LARGE
+                                    }
+
+                                Text(
+                                    text = item.getName(),
+                                    fontSize = fontSize.sp,
+                                    maxLines = 1,
+                                    lineHeight = (fontSize + 2).sp,
+                                    overflow = TextOverflow.Ellipsis,
+                                    color = if (tab.highlightedFiles.contains(currentItemPath)) {
+                                        colorScheme.primary
                                     } else {
                                         Color.Unspecified
                                     }
                                 )
-                                .combinedClickable(
-                                    onClick = {
-                                        if (tab.selectedFiles.isNotEmpty()) {
-                                            toggleSelection()
-                                            tab.quickReloadFiles()
-                                        } else {
-                                            if (item.isFile) {
-                                                tab.openFile(context, item)
-                                            } else {
-                                                tab.openFolder(item, false)
-                                            }
-                                        }
-                                    },
-                                    onLongClick = {
-                                        val isFirstSelection = tab.selectedFiles.isEmpty()
-                                        val isNewSelection = !isAlreadySelected
-
-                                        tab.selectedFiles[currentItemPath] = item
-
-                                        if ((isFirstSelection && preferencesManager.generalPrefs.showFileOptionMenuOnLongClick) || !isNewSelection)
-                                            tab.fileOptionsDialog.show(item)
-
-                                        if (isNewSelection) {
-                                            if (tab.lastSelectedFileIndex >= 0) {
-                                                if (tab.lastSelectedFileIndex > index) {
-                                                    for (i in tab.lastSelectedFileIndex downTo index) {
-                                                        tab.selectedFiles[tab.activeFolderContent[i].path] =
-                                                            tab.activeFolderContent[i]
-                                                    }
-                                                } else {
-                                                    for (i in tab.lastSelectedFileIndex..index) {
-                                                        tab.selectedFiles[tab.activeFolderContent[i].path] =
-                                                            tab.activeFolderContent[i]
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        tab.lastSelectedFileIndex = index
-
-                                        tab.quickReloadFiles()
-                                    }
-                                )
-                        ) {
-                            Space(
-                                size = when (preferencesManager.displayPrefs.fileListSize) {
-                                    FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
-                                    else -> 4.dp
-                                }
-                            )
-
-                            Row(
-                                Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
                                 Isolate {
-                                    val iconSize =
-                                        when (preferencesManager.displayPrefs.fileListSize) {
-                                            FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.IconSize.SMALL.dp
-                                            FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.IconSize.MEDIUM.dp
-                                            FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.IconSize.LARGE.dp
-                                            else -> FilesTabFileListSizeMap.IconSize.EXTRA_LARGE.dp
-                                        }
+                                    var details by remember(
+                                        key1 = currentItemPath,
+                                        key2 = item.lastModified
+                                    ) { mutableStateOf(item.formattedDetailsCache) }
 
-                                    if (item.isFile) {
-                                        AsyncImage(
-                                            modifier = Modifier
-                                                .size(iconSize)
-                                                .clip(RoundedCornerShape(4.dp))
-                                                .clickable {
-                                                    toggleSelection()
-                                                    tab.quickReloadFiles()
-                                                },
-                                            model = ImageRequest.Builder(globalClass).data(item)
-                                                .build(),
-                                            filterQuality = FilterQuality.Low,
-                                            error = painterResource(id = item.getFileIconResource()),
-                                            contentScale = ContentScale.Fit,
-                                            alpha = if (item.isHidden) 0.4f else 1f,
-                                            contentDescription = null
-                                        )
-                                    } else {
-                                        Icon(
-                                            modifier = Modifier
-                                                .size(iconSize)
-                                                .clip(RoundedCornerShape(4.dp))
-                                                .clickable {
-                                                    toggleSelection()
-                                                    tab.quickReloadFiles()
-                                                }
-                                                .alpha(if (item.isHidden) 0.4f else 1f),
-                                            imageVector = Icons.Rounded.Folder,
-                                            contentDescription = null
-                                        )
+                                    LaunchedEffect(
+                                        key1 = currentItemPath,
+                                        key2 = item.lastModified
+                                    ) {
+                                        if (details.isEmpty()) {
+                                            itemDetailsCoroutine.launch(Dispatchers.IO) {
+                                                val det = item.getFormattedDetails(
+                                                    true,
+                                                    preferencesManager.displayPrefs.showFolderContentCount
+                                                )
+                                                withContext(Dispatchers.Main) { details = det }
+                                            }
+                                        }
                                     }
-                                }
-
-                                Space(size = 8.dp)
-
-                                Column(Modifier.weight(1f)) {
-                                    val fontSize =
-                                        when (preferencesManager.displayPrefs.fileListSize) {
-                                            FilesTabFileListSize.SMALL.ordinal -> FilesTabFileListSizeMap.FontSize.SMALL
-                                            FilesTabFileListSize.MEDIUM.ordinal -> FilesTabFileListSizeMap.FontSize.MEDIUM
-                                            FilesTabFileListSize.LARGE.ordinal -> FilesTabFileListSizeMap.FontSize.LARGE
-                                            else -> FilesTabFileListSizeMap.FontSize.EXTRA_LARGE
-                                        }
 
                                     Text(
-                                        text = item.getName(),
-                                        fontSize = fontSize.sp,
+                                        modifier = Modifier.alpha(0.7f),
+                                        text = details,
+                                        fontSize = (fontSize - 4).sp,
                                         maxLines = 1,
                                         lineHeight = (fontSize + 2).sp,
                                         overflow = TextOverflow.Ellipsis,
-                                        color = if (tab.highlightedFiles.contains(currentItemPath)) {
+                                        color = if (tab.highlightedFiles.contains(
+                                                currentItemPath
+                                            )
+                                        ) {
                                             colorScheme.primary
                                         } else {
                                             Color.Unspecified
                                         }
                                     )
-                                    Isolate {
-                                        var details by remember(
-                                            key1 = currentItemPath,
-                                            key2 = item.lastModified
-                                        ) { mutableStateOf(item.formattedDetailsCache) }
-
-                                        LaunchedEffect(
-                                            key1 = currentItemPath,
-                                            key2 = item.lastModified
-                                        ) {
-                                            if (details.isEmpty()) {
-                                                itemDetailsCoroutine.launch(Dispatchers.IO) {
-                                                    val det = item.getFormattedDetails(
-                                                        true,
-                                                        preferencesManager.displayPrefs.showFolderContentCount
-                                                    )
-                                                    withContext(Dispatchers.Main) { details = det }
-                                                }
-                                            }
-                                        }
-
-                                        Text(
-                                            modifier = Modifier.alpha(0.7f),
-                                            text = details,
-                                            fontSize = (fontSize - 4).sp,
-                                            maxLines = 1,
-                                            lineHeight = (fontSize + 2).sp,
-                                            overflow = TextOverflow.Ellipsis,
-                                            color = if (tab.highlightedFiles.contains(
-                                                    currentItemPath
-                                                )
-                                            ) {
-                                                colorScheme.primary
-                                            } else {
-                                                Color.Unspecified
-                                            }
-                                        )
-                                    }
                                 }
                             }
-
-                            Space(
-                                size = when (preferencesManager.displayPrefs.fileListSize) {
-                                    FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
-                                    else -> 4.dp
-                                }
-                            )
-
-                            HorizontalDivider(
-                                modifier = Modifier.padding(start = 56.dp),
-                                thickness = 0.5.dp
-                            )
                         }
+
+                        Space(
+                            size = when (preferencesManager.displayPrefs.fileListSize) {
+                                FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
+                                else -> 4.dp
+                            }
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(start = 56.dp),
+                            thickness = 0.5.dp
+                        )
                     }
                 }
             }
+        }
 
-            androidx.compose.animation.AnimatedVisibility(
-                modifier = Modifier.fillMaxSize(),
-                visible = tab.isLoading
+        androidx.compose.animation.AnimatedVisibility(
+            modifier = Modifier.fillMaxSize(),
+            visible = tab.isLoading
+        ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(colorScheme.surface.copy(alpha = 0.4f))
+                    .clickable(
+                        interactionSource = null,
+                        indication = null,
+                        onClick = { }
+                    ),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(colorScheme.surface.copy(alpha = 0.4f))
-                        .clickable(
-                            interactionSource = null,
-                            indication = null,
-                            onClick = { }
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
+                CircularProgressIndicator()
             }
         }
     }
