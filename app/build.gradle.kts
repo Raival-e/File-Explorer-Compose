@@ -86,8 +86,4 @@ dependencies {
     implementation(libs.zoomable)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
-
-    // APKEditor
-    implementation(files("libs/APKEditor.jar"))
-    implementation(libs.apksig)
 }
