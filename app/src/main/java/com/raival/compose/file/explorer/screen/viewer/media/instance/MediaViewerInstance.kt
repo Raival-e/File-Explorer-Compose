@@ -8,6 +8,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.media.misc.AudioPlayerManager
 import com.raival.compose.file.explorer.screen.viewer.media.misc.MediaSource
+import com.raival.compose.file.explorer.screen.viewer.media.misc.VideoPlayerManager
 
 class MediaViewerInstance(override val uri: Uri, override val id: String) : ViewerInstance {
     val player = ExoPlayer.Builder(globalClass).build()
@@ -15,6 +16,7 @@ class MediaViewerInstance(override val uri: Uri, override val id: String) : View
     val mediaSource = getMediaSource(globalClass, uri)
 
     val audioManager = AudioPlayerManager(globalClass)
+    val videoManager = VideoPlayerManager(globalClass)
 
     init {
         player.setMediaItem(mediaItem)
@@ -22,6 +24,8 @@ class MediaViewerInstance(override val uri: Uri, override val id: String) : View
 
         if (mediaSource is MediaSource.AudioSource) {
             audioManager.prepare(uri)
+        } else if (mediaSource is MediaSource.VideoSource) {
+            videoManager.prepare(uri)
         }
     }
 
@@ -47,5 +51,6 @@ class MediaViewerInstance(override val uri: Uri, override val id: String) : View
     override fun onClose() {
         player.release()
         audioManager.release()
+        videoManager.release()
     }
 }
