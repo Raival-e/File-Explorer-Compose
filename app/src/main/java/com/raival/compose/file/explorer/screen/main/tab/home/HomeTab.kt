@@ -18,9 +18,14 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
-import com.raival.compose.file.explorer.screen.main.tab.home.holder.HomeCategoryHolder
-import com.raival.compose.file.explorer.screen.main.tab.home.holder.RecentFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.ARCHIVE
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.AUDIO
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.DOCUMENT
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.IMAGE
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.VIDEO
+import com.raival.compose.file.explorer.screen.main.tab.home.holder.HomeCategory
+import com.raival.compose.file.explorer.screen.main.tab.home.holder.RecentFile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,7 +40,7 @@ class HomeTab : Tab() {
 
     override val header = globalClass.getString(R.string.home_tab_header)
 
-    val recentFileHolders = mutableStateListOf<RecentFileHolder>()
+    val recentFiles = mutableStateListOf<RecentFile>()
 
     override fun onTabStarted() {
         super.onTabStarted()
@@ -48,77 +53,77 @@ class HomeTab : Tab() {
     }
 
     fun fetchRecentFiles() {
-        if (recentFileHolders.isNotEmpty()) return
+        if (recentFiles.isNotEmpty()) return
 
         CoroutineScope(Dispatchers.IO).launch {
-            recentFileHolders.addAll(getRecentFiles())
+            recentFiles.addAll(getRecentFiles())
         }
     }
 
-    fun getMainCategories() = arrayListOf<HomeCategoryHolder>().apply {
+    fun getMainCategories() = arrayListOf<HomeCategory>().apply {
         val mainActivityManager = globalClass.mainActivityManager
         add(
-            HomeCategoryHolder(
+            HomeCategory(
                 name = globalClass.getString(R.string.images),
                 icon = Icons.Rounded.Image,
                 onClick = {
                     mainActivityManager.replaceCurrentTabWith(
-                        FilesTab(StorageProvider.images)
+                        FilesTab(VirtualFileHolder(IMAGE))
                     )
                 }
             )
         )
 
         add(
-            HomeCategoryHolder(
+            HomeCategory(
                 name = globalClass.getString(R.string.videos),
                 icon = Icons.Rounded.VideoFile,
                 onClick = {
                     mainActivityManager.replaceCurrentTabWith(
-                        FilesTab(StorageProvider.videos)
+                        FilesTab(VirtualFileHolder(VIDEO))
                     )
                 }
             )
         )
 
         add(
-            HomeCategoryHolder(
+            HomeCategory(
                 name = globalClass.getString(R.string.audios),
                 icon = Icons.Rounded.AudioFile,
                 onClick = {
                     mainActivityManager.replaceCurrentTabWith(
-                        FilesTab(StorageProvider.audios)
+                        FilesTab(VirtualFileHolder(AUDIO))
                     )
                 }
             )
         )
 
         add(
-            HomeCategoryHolder(
+            HomeCategory(
                 name = globalClass.getString(R.string.documents),
                 icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
                 onClick = {
                     mainActivityManager.replaceCurrentTabWith(
-                        FilesTab(StorageProvider.documents)
+                        FilesTab(VirtualFileHolder(DOCUMENT))
                     )
                 }
             )
         )
 
         add(
-            HomeCategoryHolder(
+            HomeCategory(
                 name = globalClass.getString(R.string.archives),
                 icon = Icons.Rounded.Archive,
                 onClick = {
                     mainActivityManager.replaceCurrentTabWith(
-                        FilesTab(StorageProvider.archives)
+                        FilesTab(VirtualFileHolder(ARCHIVE))
                     )
                 }
             )
         )
 
         add(
-            HomeCategoryHolder(
+            HomeCategory(
                 name = globalClass.getString(R.string.apps),
                 icon = Icons.Rounded.Android,
                 onClick = {
@@ -130,10 +135,10 @@ class HomeTab : Tab() {
         )
     }
 
-    private fun getRecentFiles(): ArrayList<RecentFileHolder> {
-        val recentFileHolders = ArrayList<RecentFileHolder>()
+    private fun getRecentFiles(): ArrayList<RecentFile> {
+        val recentFiles = ArrayList<RecentFile>()
         val contentResolver: ContentResolver = globalClass.contentResolver
-        val showHiddenFiles = globalClass.preferencesManager.displayPrefs.showHiddenFiles
+        val showHiddenFiles = globalClass.preferencesManager.fileListPrefs.showHiddenFiles
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
 
@@ -164,7 +169,7 @@ class HomeTab : Tab() {
                 it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED)
             val columnName = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
 
-            while (it.moveToNext() && recentFileHolders.size < 15) {
+            while (it.moveToNext() && recentFiles.size < 15) {
                 val filePath = it.getString(columnIndexPath)
                 val lastModified = it.getLong(columnLastModified)
                 val name = it.getString(columnName)
@@ -172,8 +177,8 @@ class HomeTab : Tab() {
                 if (file.isFile && filePath != null && name != null &&
                     (showHiddenFiles || !file.name.startsWith("."))
                 ) {
-                    recentFileHolders.add(
-                        RecentFileHolder(
+                    recentFiles.add(
+                        RecentFile(
                             name,
                             filePath,
                             lastModified
@@ -183,6 +188,6 @@ class HomeTab : Tab() {
             }
         }
 
-        return recentFileHolders
+        return recentFiles
     }
 }

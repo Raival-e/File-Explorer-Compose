@@ -23,9 +23,11 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.printFullStackTrace
 import com.raival.compose.file.explorer.common.extension.toFormattedDate
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTabManager
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.manager.FilesTabManager
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.task.TaskManager
+import com.raival.compose.file.explorer.screen.main.tab.files.zip.ZipManager
 import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
 import com.raival.compose.file.explorer.screen.textEditor.TextEditorManager
 import com.raival.compose.file.explorer.screen.viewer.ViewersManager
@@ -49,22 +51,18 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
             get() = appContext as App
     }
 
-    val appFiles: DocumentHolder
-        get() = DocumentHolder.fromFile(
-            File(globalClass.cacheDir, "files").apply {
-                if (!exists()) mkdirs()
-            }
+    val appFiles: LocalFileHolder
+        get() = LocalFileHolder(
+            File(globalClass.cacheDir, "files").apply { if (!exists()) mkdirs() }
         )
 
-    private val errorLogFile: DocumentHolder
-        get() = "logs.txt".let {
-            DocumentHolder.fromFile(File(globalClass.cacheDir, it).apply {
-                if (!exists()) createNewFile()
-            })
-        }
+    private val errorLogFile: LocalFileHolder
+        get() = LocalFileHolder(
+            File(globalClass.cacheDir, "logs.txt").apply { if (!exists()) createNewFile() }
+        )
 
-    val recycleBinDir: DocumentHolder
-        get() = DocumentHolder.fromFile(File(getExternalFilesDir(null), "bin").apply { mkdirs() })
+    val recycleBinDir: LocalFileHolder
+        get() = LocalFileHolder(File(getExternalFilesDir(null), "bin").apply { mkdirs() })
 
     private var uid = 0
 
@@ -72,7 +70,12 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { it.setupTabs() } }
     val filesTabManager: FilesTabManager by lazy { FilesTabManager() }
     val preferencesManager: PreferencesManager by lazy { PreferencesManager() }
-    val viewersManager: ViewersManager by lazy { ViewersManager() }
+    val viewersManager: ViewersManager by lazy {
+        setupTextMate()
+        ViewersManager()
+    }
+    val taskManager: TaskManager by lazy { TaskManager() }
+    val zipManager: ZipManager by lazy { ZipManager() }
 
     override fun onCreate() {
         Thread.setDefaultUncaughtExceptionHandler { _: Thread?, throwable: Throwable? ->
@@ -147,7 +150,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
         if (!errorLogFile.exists()) return
         if (errorLogFile.isFolder) return
 
-        if (errorLogFile.fileSize > 1024 * 100) {
+        if (errorLogFile.size > 1024 * 100) {
             errorLogFile.writeText(emptyString)
         }
 

@@ -45,12 +45,11 @@ fun Modifier.detectVerticalSwipe(
 }
 
 fun Modifier.block(
-    shape: Shape = RoundedCornerShape(12.dp),
+    shape: Shape = RoundedCornerShape(16.dp),
     color: Color = Color.Unspecified,
-    applyResultPadding: Boolean = false,
-    resultPadding: Dp = 4.dp,
+    padding: Dp = 0.dp,
     borderColor: Color = Color.Unspecified,
-    borderSize: Dp = 1.dp
+    borderSize: Dp = 0.dp
 ) = composed {
     val color1 = if (color.isUnspecified) {
         MaterialTheme.colorScheme.surfaceContainerHigh
@@ -67,7 +66,7 @@ fun Modifier.block(
                 shape = shape
             )
         )
-        .then(if (applyResultPadding) Modifier.padding(resultPadding) else Modifier)
+        .padding(padding)
 }
 
 fun ColorScheme.outlineVariant(

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Icon
@@ -25,7 +24,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 fun TabLayout() {
     val mainActivityManager = globalClass.mainActivityManager
-    val tabLayoutState = rememberLazyListState()
+    val tabLayoutState = globalClass.mainActivityManager.tabLayoutState
     val reorderableLazyListState = rememberReorderableLazyListState(tabLayoutState) { from, to ->
         if (from.index == mainActivityManager.selectedTabIndex) mainActivityManager.selectedTabIndex =
             to.index

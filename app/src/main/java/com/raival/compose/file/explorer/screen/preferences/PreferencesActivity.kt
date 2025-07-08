@@ -29,8 +29,10 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.common.ui.Space
-import com.raival.compose.file.explorer.screen.preferences.ui.DisplayContainer
-import com.raival.compose.file.explorer.screen.preferences.ui.GeneralContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.AppearanceContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.BehaviorContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.FileListContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.FileOperationContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.SingleChoiceDialog
 import com.raival.compose.file.explorer.screen.preferences.ui.TextEditorContainer
 import com.raival.compose.file.explorer.theme.FileExplorerTheme
@@ -79,10 +81,17 @@ class PreferencesActivity : BaseActivity() {
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState())) {
+                            .verticalScroll(rememberScrollState())
+                    ) {
                         Space(size = 4.dp)
-                        DisplayContainer()
-                        GeneralContainer()
+                        AppearanceContainer()
+                        Space(size = 4.dp)
+                        FileListContainer()
+                        Space(size = 4.dp)
+                        FileOperationContainer()
+                        Space(size = 4.dp)
+                        BehaviorContainer()
+                        Space(size = 4.dp)
                         TextEditorContainer()
                         Space(size = 4.dp)
                     }

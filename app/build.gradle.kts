@@ -50,6 +50,7 @@ composeCompiler {
 
 dependencies {
     implementation(libs.androidx.profileinstaller)
+    implementation(libs.androidx.ui.tooling.preview.android)
     "baselineProfile"(project(":baselineprofile"))
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -58,12 +59,15 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.compose.android)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.datastore)
+    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.material)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.icons.extended)
+    implementation(libs.androidx.palette.ktx)
 
     implementation(libs.sora.editor)
     implementation(libs.sora.editor.language.java)
@@ -73,9 +77,9 @@ dependencies {
     implementation(libs.coil.gif)
     implementation(libs.coil.svg)
     implementation(libs.coil.video)
-
+    implementation(libs.zip4j)
     implementation(libs.gson)
-    implementation(libs.androidx.datastore)
+    implementation(libs.commons.net)
 
     implementation(libs.cascade.compose)
     implementation(libs.compose.swipebox)

@@ -9,6 +9,8 @@
         android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -23,6 +25,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.FileExplorer"
         tools:targetApi="34" >
@@ -59,6 +62,26 @@
         </activity>
 
         <activity
+            android:name=".screen.viewer.text.TextViewerActivity"
+            android:exported="true"
+            android:label="@string/text_viewer"
+            android:theme="@style/Theme.FileExplorer"
+            android:windowSoftInputMode="adjustResize"
+            android:documentLaunchMode="intoExisting"
+            android:autoRemoveFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="text/*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".screen.viewer.image.ImageViewerActivity"
             android:exported="true"
             android:label="@string/title_activity_image_viewer"
@@ -77,9 +100,9 @@
         </activity>
 
         <activity
-            android:name=".screen.viewer.media.MediaViewerActivity"
+            android:name=".screen.viewer.audio.AudioPlayerActivity"
             android:exported="true"
-            android:label="@string/title_activity_media_viewer"
+            android:label="@string/title_activity_audio_player"
             android:theme="@style/Theme.FileExplorer"
             android:windowSoftInputMode="adjustResize"
             android:documentLaunchMode="intoExisting"
@@ -88,10 +111,29 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:mimeType="video/*"/>
                 <data android:mimeType="audio/*"/>
                 <data android:scheme="file"/>
                 <data android:scheme="content"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".screen.viewer.video.VideoPlayerActivity"
+            android:exported="true"
+            android:label="@string/title_activity_audio_player"
+            android:theme="@style/Theme.FileExplorer"
+            android:windowSoftInputMode="adjustResize"
+            android:documentLaunchMode="intoExisting"
+            android:autoRemoveFromRecents="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:mimeType="video/*" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
             </intent-filter>
         </activity>
 
@@ -102,7 +144,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

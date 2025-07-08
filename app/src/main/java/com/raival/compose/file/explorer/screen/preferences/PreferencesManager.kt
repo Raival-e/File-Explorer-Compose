@@ -11,66 +11,30 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.fromJson
 import com.raival.compose.file.explorer.common.extension.toJson
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
-import com.raival.compose.file.explorer.screen.preferences.constant.dataStore
+import com.raival.compose.file.explorer.screen.preferences.misc.dataStore
 import com.raival.compose.file.explorer.screen.preferences.misc.prefMutableState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
 class PreferencesManager {
-    object SingleChoiceDialog {
-        var show by mutableStateOf(false)
+    val singleChoiceDialog = SingleChoiceDialog()
 
-        var title = emptyString
-            private set
-        var description = emptyString
-            private set
-        var choices = mutableListOf<String>()
-            private set
-        var onSelect: (choice: Int) -> Unit = {}
-            private set
-        var selectedChoice = -1
+    val appearancePrefs = AppearancePrefs()
+    val fileListPrefs = FileListPrefs()
+    val fileOperationPrefs = FileOperationPrefs()
+    val behaviorPrefs = BehaviorPrefs()
+    val textEditorPrefs = TextEditorPrefs()
+    val filesSortingPrefs = FilesSortingPrefs()
 
-        fun dismiss() {
-            show = false
-            title = emptyString
-            description = emptyString
-            choices.clear()
-            selectedChoice = -1
-            onSelect = {}
-        }
-
-        fun show(
-            title: String,
-            description: String,
-            choices: List<String>,
-            selectedChoice: Int,
-            onSelect: (choice: Int) -> Unit
-        ) {
-            SingleChoiceDialog.title = title
-            SingleChoiceDialog.description = description
-            SingleChoiceDialog.choices.clear()
-            SingleChoiceDialog.choices.addAll(choices)
-            SingleChoiceDialog.onSelect = onSelect
-            SingleChoiceDialog.selectedChoice = selectedChoice
-            show = true
-        }
-    }
-
-    object DisplayPrefs {
+    class AppearancePrefs {
         var theme by prefMutableState(
             keyName = "theme",
             defaultValue = ThemePreference.SYSTEM.ordinal,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
-
-        var fileListSize by prefMutableState(
-            keyName = "fileListSize",
-            defaultValue = FilesTabFileListSize.LARGE.ordinal,
             getPreferencesKey = { intPreferencesKey(it) }
         )
 
@@ -79,8 +43,16 @@ class PreferencesManager {
             defaultValue = true,
             getPreferencesKey = { booleanPreferencesKey(it) }
         )
+    }
 
-        var fileListColumnCount by prefMutableState(
+    class FileListPrefs {
+        var itemSize by prefMutableState(
+            keyName = "fileListSize",
+            defaultValue = FilesTabFileListSize.MEDIUM.ordinal,
+            getPreferencesKey = { intPreferencesKey(it) }
+        )
+
+        var columnCount by prefMutableState(
             keyName = "fileListColumnCount",
             defaultValue = 1,
             getPreferencesKey = { intPreferencesKey(it) }
@@ -99,7 +71,41 @@ class PreferencesManager {
         )
     }
 
-    object TextEditorPrefs {
+    class BehaviorPrefs {
+        var showFileOptionMenuOnLongClick by prefMutableState(
+            keyName = "showFileOptionMenuOnLongClick",
+            defaultValue = true,
+            getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+
+        var disablePullDownToRefresh by prefMutableState(
+            keyName = "disablePullDownToRefresh",
+            defaultValue = true,
+            getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+
+        var skipHomeWhenTabClosed by prefMutableState(
+            keyName = "skipHomeWhenTabClosed",
+            defaultValue = false,
+            getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+    }
+
+    class FileOperationPrefs {
+        var searchInFilesLimit by prefMutableState(
+            keyName = "searchInFilesLimit",
+            defaultValue = 150,
+            getPreferencesKey = { intPreferencesKey(it) }
+        )
+
+        var moveToRecycleBin by prefMutableState(
+            keyName = "moveToRecycleBin",
+            defaultValue = true,
+            getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+    }
+
+    class TextEditorPrefs {
         var pinLineNumber by prefMutableState(
             keyName = "pinLineNumber",
             defaultValue = true,
@@ -161,28 +167,8 @@ class PreferencesManager {
         )
     }
 
-    object GeneralPrefs {
-        var searchInFilesLimit by prefMutableState(
-            keyName = "searchInFilesLimit",
-            defaultValue = 150,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
-
-        var showFileOptionMenuOnLongClick by prefMutableState(
-            keyName = "showFileOptionMenuOnLongClick",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
-
-        var moveToRecycleBin by prefMutableState(
-            keyName = "moveToRecycleBin",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
-    }
-
-    object FilesSortingPrefs {
-        var filesSortingMethod by prefMutableState(
+    class FilesSortingPrefs {
+        var defaultSortMethod by prefMutableState(
             keyName = "filesSortingMethod",
             defaultValue = SORT_BY_NAME,
             getPreferencesKey = { intPreferencesKey(it) }
@@ -194,36 +180,70 @@ class PreferencesManager {
             getPreferencesKey = { booleanPreferencesKey(it) }
         )
 
-        var reverseFilesSortingMethod by prefMutableState(
+        var reverse by prefMutableState(
             keyName = "reverseFilesSortingMethod",
             defaultValue = false,
             getPreferencesKey = { booleanPreferencesKey(it) }
         )
 
-        fun getSortingPrefsFor(doc: DocumentHolder): FileSortingPrefs {
+        fun getSortingPrefsFor(content: ContentHolder): FileSortingPrefs {
             return runBlocking {
                 fromJson(
-                    globalClass.dataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${doc.path}")]
+                    globalClass.dataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")]
                 ) ?: FileSortingPrefs(
-                    sortMethod = filesSortingMethod,
+                    sortMethod = defaultSortMethod,
                     showFoldersFirst = showFoldersFirst,
-                    reverseSorting = reverseFilesSortingMethod
+                    reverseSorting = reverse
                 )
             }
         }
 
-        fun setSortingPrefsFor(doc: DocumentHolder, prefs: FileSortingPrefs) {
+        fun setSortingPrefsFor(content: ContentHolder, prefs: FileSortingPrefs) {
             runBlocking {
                 globalClass.dataStore.edit {
-                    it[stringPreferencesKey("fileSortingPrefs_${doc.path}")] = prefs.toJson()
+                    it[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")] =
+                        prefs.toJson()
                 }
             }
         }
     }
 
-    val singleChoiceDialog = SingleChoiceDialog
-    val displayPrefs = DisplayPrefs
-    val textEditorPrefs = TextEditorPrefs
-    val generalPrefs = GeneralPrefs
-    val filesSortingPrefs = FilesSortingPrefs
+    class SingleChoiceDialog {
+        var show by mutableStateOf(false)
+
+        var title = emptyString
+            private set
+        var description = emptyString
+            private set
+        var choices = mutableListOf<String>()
+            private set
+        var onSelect: (choice: Int) -> Unit = {}
+            private set
+        var selectedChoice = -1
+
+        fun dismiss() {
+            show = false
+            title = emptyString
+            description = emptyString
+            choices.clear()
+            selectedChoice = -1
+            onSelect = {}
+        }
+
+        fun show(
+            title: String,
+            description: String,
+            choices: List<String>,
+            selectedChoice: Int,
+            onSelect: (choice: Int) -> Unit
+        ) {
+            this.title = title
+            this.description = description
+            this.choices.clear()
+            this.choices.addAll(choices)
+            this.onSelect = onSelect
+            this.selectedChoice = selectedChoice
+            show = true
+        }
+    }
 }

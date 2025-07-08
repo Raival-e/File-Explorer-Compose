@@ -18,7 +18,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.ui.SafeSurface
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.main.ui.AppInfoDialog
 import com.raival.compose.file.explorer.screen.main.ui.JumpToPathDialog
@@ -83,6 +83,9 @@ class MainActivity : BaseActivity() {
                             if (page != mainActivityManager.selectedTabIndex) {
                                 mainActivityManager.selectTabAt(page)
                             }
+                            mainActivityManager.tabLayoutState.animateScrollToItem(
+                                mainActivityManager.selectedTabIndex
+                            )
                         }
                     }
 
@@ -114,8 +117,8 @@ class MainActivity : BaseActivity() {
         intent?.let {
             if (it.hasExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)) {
                 globalClass.mainActivityManager.jumpToFile(
-                    DocumentHolder.fromFile(File(it.getStringExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)!!)),
-                    this
+                    file = LocalFileHolder(File(it.getStringExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)!!)),
+                    context = this
                 )
                 intent = null
             }

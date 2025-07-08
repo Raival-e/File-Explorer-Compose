@@ -1,8 +1,7 @@
 package com.raival.compose.file.explorer.screen.main
 
 import android.content.Context
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -14,8 +13,8 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDeviceHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import kotlinx.coroutines.CoroutineScope
@@ -27,21 +26,23 @@ class MainActivityManager {
     var title by mutableStateOf(globalClass.getString(R.string.main_activity_title))
     var subtitle by mutableStateOf(emptyString)
 
-    val storageDeviceHolders = arrayListOf<StorageDeviceHolder>()
+    val storageDevices = arrayListOf<StorageDevice>()
 
+    var showFtpServerDialog by mutableStateOf(false)
     var showNewTabDialog by mutableStateOf(false)
     var showAppInfoDialog by mutableStateOf(false)
     var showJumpToPathDialog by mutableStateOf(false)
     var showSaveTextEditorFilesBeforeCloseDialog by mutableStateOf(false)
     var isSavingTextEditorFiles by mutableStateOf(false)
 
+
     var selectedTabIndex by mutableIntStateOf(0)
     val tabs = mutableStateListOf<Tab>()
 
-    val drawerState = DrawerState(initialValue = DrawerValue.Closed)
+    val tabLayoutState = LazyListState()
 
     fun setupTabs() {
-        storageDeviceHolders.addAll(StorageProvider.getStorageDevices(globalClass))
+        storageDevices.addAll(StorageProvider.getStorageDevices(globalClass))
     }
 
     fun closeAllTabs() {
@@ -107,29 +108,30 @@ class MainActivityManager {
         selectTabAt(selectedTabIndex)
     }
 
-    fun jumpToFile(file: DocumentHolder, context: Context) {
+    fun jumpToFile(file: LocalFileHolder, context: Context) {
         openFile(file, context)
     }
 
-    private fun openFile(file: DocumentHolder, context: Context) {
+    private fun openFile(file: LocalFileHolder, context: Context) {
         if (file.exists()) {
             addTabAndSelect(FilesTab(file, context))
         }
     }
 
-    fun canExit(coroutineScope: CoroutineScope): Boolean {
-        if (drawerState.isOpen) {
-            coroutineScope.launch {
-                drawerState.close()
-            }
-            return false
-        }
+    fun resumeActiveTab() {
+        tabs[selectedTabIndex].onTabResumed()
+    }
 
+    fun getActiveTab(): Tab {
+        return tabs[selectedTabIndex]
+    }
+
+    fun canExit(coroutineScope: CoroutineScope): Boolean {
         if (tabs[selectedTabIndex].onBackPressed()) {
             return false
         }
 
-        if (tabs[selectedTabIndex] !is HomeTab) {
+        if (tabs[selectedTabIndex] !is HomeTab && !globalClass.preferencesManager.behaviorPrefs.skipHomeWhenTabClosed) {
             replaceCurrentTabWith(HomeTab())
             return false
         }

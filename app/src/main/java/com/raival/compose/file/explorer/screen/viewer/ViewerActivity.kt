@@ -5,11 +5,12 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
+import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.randomString
 
 abstract class ViewerActivity : BaseActivity() {
     private var uri: Uri? = null
-    private var uid: String = ""
+    private var uid: String = emptyString
     private var currentInstance: ViewerInstance? = null
 
     abstract fun onCreateNewInstance(uri: Uri, uid: String): ViewerInstance

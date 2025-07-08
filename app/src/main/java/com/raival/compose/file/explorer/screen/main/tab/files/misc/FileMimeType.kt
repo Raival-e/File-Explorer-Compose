@@ -14,6 +14,7 @@ object FileMimeType {
     const val javaFileType = "java"
     const val kotlinFileType = "kt"
     const val jsonFileType = "json"
+    const val zipFileType = "zip"
     const val anyFileType = "*/*"
 
     @JvmField
@@ -48,6 +49,14 @@ object FileMimeType {
         "tbz2",
         "lz",
         "lzma",
+    )
+
+    @JvmField
+    val supportedArchiveFileType = arrayOf(
+        "zip",
+        "jar",
+        "apk",
+        "apks"
     )
 
     @JvmField

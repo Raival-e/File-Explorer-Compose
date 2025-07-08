@@ -23,133 +23,52 @@ fun CodeEditor.setContent(content: Content, fileInstance: TextEditorManager.File
     }
 }
 
+private data class Position(val line: Int, val column: Int)
+
+private fun CodeEditor.calculateNewCursorPosition(
+    line: Int,
+    column: Int,
+    step: Int
+): Position {
+    if (step > 0) { // Moving forward
+        val maxColumn = text.getColumnCount(line)
+        return if (column < maxColumn) {
+            Position(line, column + step)
+        } else if (line < lineCount - 1) {
+            Position(line + 1, 0)
+        } else {
+            Position(line, column)
+        }
+    } else { // Moving backward
+        return if (column > 0) {
+            Position(line, column + step)
+        } else if (line > 0) {
+            val prevLine = line - 1
+            Position(prevLine, text.getColumnCount(prevLine))
+        } else {
+            Position(line, column)
+        }
+    }
+}
+
 fun CodeEditor.moveSelectionBy(step: Int, controlledCursor: Int) {
-    val maxLines = lineCount
+    var rightPos = Position(cursor.rightLine, cursor.rightColumn)
+    var leftPos = Position(cursor.leftLine, cursor.leftColumn)
 
-    val currentRightLine = cursor.rightLine
-    val currentRightColumn = cursor.rightColumn
-    val maxColumnInCurrentRightLine = text.getColumnCount(currentRightLine)
-    val canMoveRightCursorToRight = currentRightColumn < maxColumnInCurrentRightLine
-    val canMoveRightCursorToLeft = currentRightColumn > 0
-    val canMoveRightCursorToNextLine = currentRightLine < maxLines - 1
-    val canMoveRightCursorToPreviousLine = currentRightLine > 0
-
-    val currentLeftLine = cursor.leftLine
-    val currentLeftColumn = cursor.leftColumn
-    val maxColumnInCurrentLeftLine = text.getColumnCount(currentLeftLine)
-    val canMoveLeftCursorToLeft = currentLeftColumn > 0
-    val canMoveLeftCursorToPreviousLine = currentLeftLine > 0
-    val canMoveLeftCursorToNextLine = currentLeftLine < maxLines - 1
-    val canMoveLeftCursorToRight = currentLeftColumn < maxColumnInCurrentLeftLine
-
-    val rightCursorColumn = if (controlledCursor > 0) {
-        if (step > 0) {
-            if (canMoveRightCursorToRight) {
-                currentRightColumn + step
-            } else {
-                if (canMoveRightCursorToNextLine) {
-                    0
-                } else {
-                    currentRightColumn
-                }
-            }
-        } else {
-            if (canMoveRightCursorToLeft) {
-                currentRightColumn + step
-            } else {
-                if (canMoveRightCursorToPreviousLine) {
-                    text.getColumnCount(currentRightLine + step)
-                } else {
-                    0
-                }
-            }
+    when {
+        controlledCursor > 0 -> {
+            rightPos = calculateNewCursorPosition(rightPos.line, rightPos.column, step)
         }
-    } else {
-        currentRightColumn
-    }
 
-    val leftCursorColumn = if (controlledCursor < 0) {
-        if (step > 0) {
-            if (canMoveLeftCursorToRight) {
-                currentLeftColumn + step
-            } else {
-                if (canMoveLeftCursorToNextLine) {
-                    0
-                } else {
-                    currentLeftColumn
-                }
-            }
-        } else {
-            if (canMoveLeftCursorToLeft) {
-                currentLeftColumn + step
-            } else {
-                if (canMoveLeftCursorToPreviousLine) {
-                    text.getColumnCount(currentLeftLine + step)
-                } else {
-                    0
-                }
-            }
+        controlledCursor < 0 -> {
+            leftPos = calculateNewCursorPosition(leftPos.line, leftPos.column, step)
         }
-    } else {
-        currentLeftColumn
-    }
-
-    val rightCursorLine = if (controlledCursor > 0) {
-        if (step > 0) {
-            if (canMoveRightCursorToRight) {
-                currentRightLine
-            } else {
-                if (canMoveRightCursorToNextLine) {
-                    currentRightLine + 1
-                } else {
-                    currentRightLine
-                }
-            }
-        } else {
-            if (canMoveRightCursorToLeft) {
-                currentRightLine
-            } else {
-                if (canMoveRightCursorToPreviousLine) {
-                    currentRightLine - 1
-                } else {
-                    currentRightLine
-                }
-            }
-        }
-    } else {
-        currentRightLine
-    }
-
-    val leftCursorLine = if (controlledCursor < 0) {
-        if (step > 0) {
-            if (canMoveLeftCursorToRight) {
-                currentLeftLine
-            } else {
-                if (canMoveLeftCursorToNextLine) {
-                    currentLeftLine + 1
-                } else {
-                    currentLeftLine
-                }
-            }
-        } else {
-            if (canMoveLeftCursorToLeft) {
-                currentLeftLine
-            } else {
-                if (canMoveLeftCursorToPreviousLine) {
-                    currentLeftLine - 1
-                } else {
-                    currentLeftLine
-                }
-            }
-        }
-    } else {
-        currentLeftLine
     }
 
     setSelectionRegion(
-        rightCursorLine,
-        rightCursorColumn,
-        leftCursorLine,
-        leftCursorColumn
+        rightPos.line,
+        rightPos.column,
+        leftPos.line,
+        leftPos.column
     )
 }

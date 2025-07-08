@@ -9,8 +9,11 @@ import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SpaceBar
 import androidx.compose.material.icons.rounded.TextRotationNone
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 
@@ -47,11 +50,21 @@ fun TextEditorContainer() {
             }
         )
 
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
+        )
+
         PreferenceItem(
             label = stringResource(id = R.string.pin_numbers_line),
             icon = Icons.Rounded.Numbers,
             switchState = preferences.pinLineNumber,
             onSwitchChange = { preferences.pinLineNumber = it }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
         )
 
         PreferenceItem(
@@ -61,11 +74,21 @@ fun TextEditorContainer() {
             onSwitchChange = { preferences.symbolPairAutoCompletion = it }
         )
 
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
+        )
+
         PreferenceItem(
             label = stringResource(id = R.string.auto_indentation),
             icon = Icons.AutoMirrored.Rounded.KeyboardTab,
             switchState = preferences.autoIndent,
             onSwitchChange = { preferences.autoIndent = it }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
         )
 
         PreferenceItem(
@@ -75,6 +98,11 @@ fun TextEditorContainer() {
             onSwitchChange = { preferences.enableMagnifier = it }
         )
 
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
+        )
+
         PreferenceItem(
             label = stringResource(id = R.string.use_icu_selection),
             icon = Icons.Rounded.TextRotationNone,
@@ -82,11 +110,21 @@ fun TextEditorContainer() {
             onSwitchChange = { preferences.useICULibToSelectWords = it }
         )
 
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
+        )
+
         PreferenceItem(
             label = stringResource(id = R.string.delete_empty_lines),
             icon = Icons.Rounded.DeleteSweep,
             switchState = preferences.deleteEmptyLineFast,
             onSwitchChange = { preferences.deleteEmptyLineFast = it }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
         )
 
         PreferenceItem(

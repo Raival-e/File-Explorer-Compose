@@ -1,7 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.ui
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
@@ -66,7 +66,7 @@ fun AppInfoDialog() {
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                Uri.parse("https://github.com/Raival-e/File-Explorer-Compose")
+                                "https://github.com/Raival-e/File-Explorer-Compose".toUri()
                             )
                         )
                     }

@@ -7,15 +7,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronLeft
 import androidx.compose.material.icons.rounded.ChevronRight
-import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -29,14 +25,18 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.moveSelectionBy
 import com.raival.compose.file.explorer.common.ui.CustomIconButton
+import com.raival.compose.file.explorer.screen.textEditor.holder.SymbolHolder
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.SelectionMovement
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun BottomBarView(codeEditor: CodeEditor) {
-    val textEditorManager = globalClass.textEditorManager
-
+fun BottomBarView(
+    codeEditor: CodeEditor,
+    symbolList: List<SymbolHolder>,
+    extraButton: @Composable () -> Unit = {},
+) {
+    val indentChar = "    "
     var currentCursor by remember { mutableIntStateOf(1) }
 
     Row(
@@ -55,10 +55,7 @@ fun BottomBarView(codeEditor: CodeEditor) {
                         if (codeEditor.cursor.isSelected) {
                             codeEditor.indentSelection()
                         } else {
-                            codeEditor.insertText(
-                                textEditorManager.indentChar,
-                                textEditorManager.indentChar.length
-                            )
+                            codeEditor.insertText(indentChar, indentChar.length)
                         }
                     },
                     onLongClick = {
@@ -71,7 +68,7 @@ fun BottomBarView(codeEditor: CodeEditor) {
                 )
             }
 
-            items(textEditorManager.getSymbols(true)) { symbol ->
+            items(symbolList) { symbol ->
                 SymbolBox(
                     label = symbol.label,
                     onClick = {
@@ -155,17 +152,6 @@ fun BottomBarView(codeEditor: CodeEditor) {
                     }
                 ),
                 icon = Icons.Rounded.ChevronRight
-            )
-        }
-
-        IconButton(onClick = {
-            textEditorManager.hideSearchPanel(codeEditor)
-            textEditorManager.recentFileDialog.showRecentFileDialog = true
-        }) {
-            Icon(
-                modifier = Modifier.size(21.dp),
-                imageVector = Icons.Rounded.Folder,
-                contentDescription = null
             )
         }
     }

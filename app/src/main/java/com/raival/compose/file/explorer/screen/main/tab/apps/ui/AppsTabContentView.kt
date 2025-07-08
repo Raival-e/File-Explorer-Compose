@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,7 +66,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun ColumnScope.AppsTabContentView(tab: AppsTab) {
+fun AppsTabContentView(tab: AppsTab) {
     LaunchedEffect(tab.id) {
         if (tab.appsList.isEmpty()) {
             tab.fetchInstalledApps()
@@ -161,8 +160,7 @@ fun ColumnScope.AppsTabContentView(tab: AppsTab) {
                             globalClass.showMsg(R.string.new_task_has_been_added)
                         }
                     ) {
-                        //TODO: change to `save` or `extract`
-                        Text(text = stringResource(R.string.copy))
+                        Text(text = stringResource(R.string.save))
                     }
                 }
             }
@@ -346,7 +344,7 @@ fun ColumnScope.AppsTabContentView(tab: AppsTab) {
             }
         }
 
-        androidx.compose.animation.AnimatedVisibility(
+        AnimatedVisibility(
             modifier = Modifier.align(Alignment.Center),
             visible = tab.isLoading || tab.isSearching
         ) {

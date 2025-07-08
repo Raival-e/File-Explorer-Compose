@@ -6,9 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
@@ -82,16 +88,39 @@ class TextEditorActivity : BaseActivity() {
                             )
                         }
 
-                        WarningDialog()
-                        JumpToPositionDialog(codeEditor)
+                        if (textEditorManager.warningDialogProperties.showWarningDialog) {
+                            WarningDialog(textEditorManager.warningDialogProperties)
+                        }
+
+                        if (textEditorManager.showJumpToPositionDialog) {
+                            JumpToPositionDialog(codeEditor) {
+                                textEditorManager.showJumpToPositionDialog = false
+                            }
+                        }
+
                         RecentFilesDialog(codeEditor)
                         ToolbarView(codeEditor, onBackPressedDispatcher)
                         HorizontalDivider()
-                        InfoBar()
+                        InfoBar(textEditorManager.activitySubtitle)
                         CodeEditorView(codeEditor)
                         HorizontalDivider()
-                        BottomBarView(codeEditor)
-                        SearchPanel(codeEditor)
+                        BottomBarView(codeEditor, textEditorManager.getSymbols(true)) {
+                            IconButton(onClick = {
+                                textEditorManager.hideSearchPanel(codeEditor)
+                                textEditorManager.recentFileDialog.showRecentFileDialog = true
+                            }) {
+                                Icon(
+                                    modifier = Modifier.size(21.dp),
+                                    imageVector = Icons.Rounded.Folder,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                        SearchPanel(
+                            codeEditor,
+                            textEditorManager.getFileInstance()!!.searcher,
+                            textEditorManager.showSearchPanel
+                        )
                     }
                 }
             }

@@ -22,25 +22,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.CheckableText
 import com.raival.compose.file.explorer.common.ui.Space
+import com.raival.compose.file.explorer.screen.textEditor.model.Searcher
 import io.github.rosemoe.sora.widget.CodeEditor
 import io.github.rosemoe.sora.widget.EditorSearcher
 
 @Composable
-fun SearchPanel(codeEditor: CodeEditor) {
-    val textEditorManager = globalClass.textEditorManager
-
+fun SearchPanel(
+    codeEditor: CodeEditor,
+    searcher: Searcher,
+    show: Boolean
+) {
     AnimatedVisibility(
-        visible = textEditorManager.showSearchPanel,
+        visible = show,
         enter = expandIn(expandFrom = Alignment.TopCenter) + slideInVertically(initialOffsetY = { it }),
         exit = shrinkOut(shrinkTowards = Alignment.BottomCenter) + slideOutVertically(targetOffsetY = { it })
     ) {
-        val searcher = textEditorManager.getFileInstance()!!.searcher
         fun codeEditorSearcher() = codeEditor.searcher
-        fun hasQuery() = searcher.query.isNotEmpty() && codeEditorSearcher().matchedPositionCount > 0
+        fun hasQuery() =
+            searcher.query.isNotEmpty() && codeEditorSearcher().matchedPositionCount > 0
 
         Column(
             modifier = Modifier

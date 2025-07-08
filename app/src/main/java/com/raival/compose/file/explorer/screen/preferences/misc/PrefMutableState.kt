@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.raival.compose.file.explorer.App
-import com.raival.compose.file.explorer.screen.preferences.constant.dataStore
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 

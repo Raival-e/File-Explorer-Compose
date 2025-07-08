@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +50,9 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.BOOKMARKS
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.RECENT
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.main.ui.SimpleNewTabViewItem
@@ -57,10 +61,13 @@ import com.raival.compose.file.explorer.screen.main.ui.StorageDeviceView
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColumnScope.HomeTabContentView(tab: HomeTab) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
         val mainActivityManager = globalClass.mainActivityManager
+        rememberCoroutineScope()
         val context = LocalContext.current
 
         LaunchedEffect(tab.id) {
@@ -75,14 +82,15 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
             style = MaterialTheme.typography.titleMedium
         )
 
-        if (tab.recentFileHolders.isEmpty()) {
+        if (tab.recentFiles.isEmpty()) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(140.dp)
                     .padding(horizontal = 12.dp, vertical = 12.dp)
                     .clickable {
                         mainActivityManager.replaceCurrentTabWith(
-                            FilesTab(StorageProvider.recentFiles)
+                            FilesTab(VirtualFileHolder(RECENT))
                         )
                     },
                 text = stringResource(R.string.no_recent_files),
@@ -98,7 +106,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
             ) {
                 item { Space(6.dp) }
 
-                items(tab.recentFileHolders, key = { it.path }) {
+                items(tab.recentFiles, key = { it.path }) {
                     Column(
                         modifier = Modifier
                             .size(110.dp, 140.dp)
@@ -115,21 +123,21 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
                             .clip(RoundedCornerShape(8.dp))
                             .combinedClickable(
                                 onClick = {
-                                    it.documentHolder.openFile(context, false, false)
+                                    it.file.open(context, false, false, null)
                                 },
                                 onLongClick = {
-                                    mainActivityManager.addTabAndSelect(
-                                        FilesTab(it.documentHolder)
+                                    mainActivityManager.replaceCurrentTabWith(
+                                        FilesTab(it.file)
                                     )
                                 }
                             )
                     ) {
-                        if (canUseCoil(it.documentHolder)) {
+                        if (canUseCoil(it.file)) {
                             AsyncImage(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(2f),
-                                model = it.documentHolder,
+                                model = it.file,
                                 contentDescription = null,
                                 contentScale = ContentScale.Crop,
                                 filterQuality = FilterQuality.Low
@@ -143,7 +151,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
                             ) {
                                 Image(
                                     modifier = Modifier.size(48.dp),
-                                    painter = painterResource(id = it.documentHolder.getFileIconResource()),
+                                    painter = painterResource(id = it.file.iconPlaceholder),
                                     contentDescription = null
                                 )
                             }
@@ -165,7 +173,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
                     TextButton(
                         onClick = {
                             mainActivityManager.replaceCurrentTabWith(
-                                FilesTab(StorageProvider.recentFiles)
+                                FilesTab(VirtualFileHolder(RECENT))
                             )
                         }
                     ) {
@@ -234,8 +242,8 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
         )
 
         StorageProvider.getStorageDevices(globalClass).forEach {
-            StorageDeviceView(storageDeviceHolder = it) {
-                mainActivityManager.replaceCurrentTabWith(FilesTab(it.documentHolder))
+            StorageDeviceView(storageDevice = it) {
+                mainActivityManager.replaceCurrentTabWith(FilesTab(it.contentHolder))
             }
 
             HorizontalDivider()
@@ -247,7 +255,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
                 imageVector = Icons.Rounded.Bookmarks
             ) {
                 mainActivityManager.replaceCurrentTabWith(
-                    FilesTab(StorageProvider.bookmarks)
+                    FilesTab(VirtualFileHolder(BOOKMARKS))
                 )
             }
 
