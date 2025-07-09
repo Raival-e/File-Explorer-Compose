@@ -61,6 +61,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,6 +89,7 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.viewer.audio.AudioPlayerInstance
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioMetadata
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioPlayerColorScheme
+import kotlin.math.abs
 
 @Composable
 fun MusicPlayerScreen(
@@ -403,9 +405,16 @@ fun ProgressBar(
     onSeek: (Long) -> Unit,
     colorScheme: AudioPlayerColorScheme
 ) {
-    val progress = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f
+    var manualPosition by remember { mutableLongStateOf(0L) }
     var manualSeek by remember { mutableFloatStateOf(0f) }
     var isDragging by remember { mutableStateOf(false) }
+    val progress = if (duration > 0) {
+        if (abs(currentPosition - manualPosition) < 1000) {
+            (currentPosition.toFloat() / duration.toFloat()).also {
+                manualPosition = currentPosition
+            }
+        } else manualSeek
+    } else 0f
 
     Column {
         Slider(
@@ -415,7 +424,10 @@ fun ProgressBar(
                 manualSeek = it
             },
             onValueChangeFinished = {
-                onSeek((manualSeek * duration).toLong())
+                (manualSeek * duration).toLong().let { newPosition ->
+                    manualPosition = newPosition
+                    onSeek(newPosition)
+                }
                 isDragging = false
             },
             colors = SliderDefaults.colors(
@@ -432,7 +444,7 @@ fun ProgressBar(
         ) {
             Text(
                 text = if (isDragging) formatTime((manualSeek * duration).toLong()) else formatTime(
-                    currentPosition
+                    manualPosition
                 ),
                 color = colorScheme.tintColor.copy(alpha = 0.8f),
                 fontSize = 12.sp,
@@ -629,6 +641,8 @@ fun VolumeView(
                     tint = colorScheme.tintColor.copy(alpha = 0.7f)
                 )
 
+                Space(8.dp)
+
                 Slider(
                     value = volume,
                     onValueChange = onVolumeChange,
@@ -639,6 +653,8 @@ fun VolumeView(
                         inactiveTrackColor = colorScheme.tintColor.copy(alpha = 0.3f)
                     )
                 )
+
+                Space(8.dp)
 
                 Icon(
                     Icons.AutoMirrored.Filled.VolumeUp,

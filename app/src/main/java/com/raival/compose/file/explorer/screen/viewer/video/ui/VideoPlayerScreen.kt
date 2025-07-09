@@ -43,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -61,6 +62,7 @@ import com.raival.compose.file.explorer.screen.viewer.video.VideoPlayerInstance
 import com.raival.compose.file.explorer.screen.viewer.video.model.VideoPlayerState
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
+import kotlin.math.abs
 
 @Composable
 fun VideoPlayerScreen(
@@ -337,10 +339,16 @@ fun BottomControls(
                 .padding(16.dp)
                 .padding(bottom = 24.dp),
         ) {
-            // Progress slider
-            val progress = if (duration > 0) currentPosition.toFloat() / duration.toFloat() else 0f
+            var manualPosition by remember { mutableLongStateOf(0L) }
             var manualSeek by remember { mutableFloatStateOf(0f) }
             var isDragging by remember { mutableStateOf(false) }
+            val progress = if (duration > 0) {
+                if (abs(currentPosition - manualPosition) < 1000) {
+                    (currentPosition.toFloat() / duration.toFloat()).also {
+                        manualPosition = currentPosition
+                    }
+                } else manualSeek
+            } else 0f
 
             Slider(
                 value = if (isDragging) manualSeek else progress,
@@ -349,7 +357,10 @@ fun BottomControls(
                     manualSeek = it
                 },
                 onValueChangeFinished = {
-                    onSeek((manualSeek * duration).toLong())
+                    (manualSeek * duration).toLong().let { newPosition ->
+                        manualPosition = newPosition
+                        onSeek(newPosition)
+                    }
                     isDragging = false
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -367,7 +378,7 @@ fun BottomControls(
             ) {
                 Text(
                     text = if (isDragging) formatTime((manualSeek * duration).toLong()) else formatTime(
-                        currentPosition
+                        manualPosition
                     ),
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.onSurface

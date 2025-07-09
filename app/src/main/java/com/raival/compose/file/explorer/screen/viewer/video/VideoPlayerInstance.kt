@@ -81,7 +81,7 @@ class VideoPlayerInstance(
                         duration = player.duration.takeIf { it != TIME_UNSET } ?: 0L
                     )
                 }
-                delay(1000)
+                delay(100)
             }
         }
     }
