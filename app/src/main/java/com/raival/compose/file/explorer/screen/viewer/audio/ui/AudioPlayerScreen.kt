@@ -85,6 +85,7 @@ import androidx.core.graphics.ColorUtils
 import androidx.media3.common.Player
 import androidx.palette.graphics.Palette
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.extension.toFormattedTime
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.viewer.audio.AudioPlayerInstance
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioMetadata
@@ -443,16 +444,14 @@ fun ProgressBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = if (isDragging) formatTime((manualSeek * duration).toLong()) else formatTime(
-                    manualPosition
-                ),
+                text = (if (isDragging) (manualSeek * duration).toLong() else manualPosition).toFormattedTime(),
                 color = colorScheme.tintColor.copy(alpha = 0.8f),
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.bodySmall
             )
 
             Text(
-                text = formatTime(duration),
+                text = duration.toFormattedTime(),
                 color = colorScheme.tintColor.copy(alpha = 0.8f),
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.bodySmall

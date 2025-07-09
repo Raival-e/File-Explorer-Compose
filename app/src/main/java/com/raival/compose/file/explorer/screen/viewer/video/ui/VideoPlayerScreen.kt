@@ -57,7 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
-import com.raival.compose.file.explorer.screen.viewer.audio.ui.formatTime
+import com.raival.compose.file.explorer.common.extension.toFormattedTime
 import com.raival.compose.file.explorer.screen.viewer.video.VideoPlayerInstance
 import com.raival.compose.file.explorer.screen.viewer.video.model.VideoPlayerState
 import net.engawapg.lib.zoomable.rememberZoomState
@@ -377,26 +377,16 @@ fun BottomControls(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = if (isDragging) formatTime((manualSeek * duration).toLong()) else formatTime(
-                        manualPosition
-                    ),
+                    text = (if (isDragging) (manualSeek * duration).toLong() else manualPosition).toFormattedTime(),
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.onSurface
                 )
                 Text(
-                    text = formatTime(duration),
+                    text = duration.toFormattedTime(),
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.onSurface
                 )
             }
         }
     }
-}
-
-// Utility function
-private fun formatTime(timeMs: Long): String {
-    val totalSeconds = timeMs / 1000
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    return "%02d:%02d".format(minutes, seconds)
 }
