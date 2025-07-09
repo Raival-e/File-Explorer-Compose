@@ -25,7 +25,7 @@ class ZipManager {
             archiveList[existingTreeKey]?.let { existingTree ->
                 if (existingTree.timeStamp == archive.lastModified) {
                     globalClass.mainActivityManager.let { mainManager ->
-                        (mainManager.tabs[mainManager.selectedTabIndex] as? FilesTab)?.openFolder(
+                        (mainManager.getActiveTab() as? FilesTab)?.openFolder(
                             existingTree.createRootContentHolder()
                         ) ?: mainManager.replaceCurrentTabWith(
                             FilesTab(existingTree.createRootContentHolder())
@@ -40,7 +40,7 @@ class ZipManager {
 
         archiveList[archive] = ZipTree(archive).apply {
             globalClass.mainActivityManager.let { mainManager ->
-                (mainManager.tabs[mainManager.selectedTabIndex] as? FilesTab)?.openFolder(
+                (mainManager.getActiveTab() as? FilesTab)?.openFolder(
                     createRootContentHolder()
                 ) ?: mainManager.replaceCurrentTabWith(
                     FilesTab(createRootContentHolder())

@@ -57,12 +57,12 @@ class MainActivity : BaseActivity() {
 
                     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
                         if (mainActivityManager.tabs.isNotEmpty())
-                            mainActivityManager.tabs[mainActivityManager.selectedTabIndex].onTabResumed()
+                            mainActivityManager.getActiveTab().onTabResumed()
                     }
 
                     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
                         if (mainActivityManager.tabs.isNotEmpty())
-                            mainActivityManager.tabs[mainActivityManager.selectedTabIndex].onTabStopped()
+                            mainActivityManager.getActiveTab().onTabStopped()
                     }
 
                     LaunchedEffect(mainActivityManager.selectedTabIndex) {

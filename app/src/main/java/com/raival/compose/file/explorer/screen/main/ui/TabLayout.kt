@@ -56,7 +56,7 @@ fun TabLayout() {
                 ReorderableItem(reorderableLazyListState, key = tab.id) { isDragging ->
                     TabHeaderView(
                         tab = tab,
-                        isSelected = mainActivityManager.tabs[mainActivityManager.selectedTabIndex] == tab,
+                        isSelected = mainActivityManager.getActiveTab() == tab,
                         index = index,
                         this
                     )

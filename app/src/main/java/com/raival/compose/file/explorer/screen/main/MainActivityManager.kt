@@ -28,7 +28,6 @@ class MainActivityManager {
 
     val storageDevices = arrayListOf<StorageDevice>()
 
-    var showFtpServerDialog by mutableStateOf(false)
     var showNewTabDialog by mutableStateOf(false)
     var showAppInfoDialog by mutableStateOf(false)
     var showJumpToPathDialog by mutableStateOf(false)
@@ -94,16 +93,19 @@ class MainActivityManager {
     }
 
     fun selectTabAt(index: Int) {
-        if (tabs.isNotEmpty() && selectedTabIndex isNot index && selectedTabIndex < tabs.size) tabs[selectedTabIndex].onTabStopped()
+        if (tabs.isNotEmpty()
+            && selectedTabIndex isNot index
+            && selectedTabIndex < tabs.size
+        ) getActiveTab().onTabStopped()
         selectedTabIndex = index
 
-        tabs[selectedTabIndex].apply {
+        getActiveTab().apply {
             if (!isCreated) onTabStarted() else onTabResumed()
         }
     }
 
     fun replaceCurrentTabWith(tab: Tab) {
-        if (tabs.isNotEmpty()) tabs[selectedTabIndex].onTabStopped()
+        if (tabs.isNotEmpty()) getActiveTab().onTabStopped()
         tabs[selectedTabIndex] = tab
         selectTabAt(selectedTabIndex)
     }
@@ -119,7 +121,7 @@ class MainActivityManager {
     }
 
     fun resumeActiveTab() {
-        tabs[selectedTabIndex].onTabResumed()
+        getActiveTab().onTabResumed()
     }
 
     fun getActiveTab(): Tab {
@@ -127,11 +129,11 @@ class MainActivityManager {
     }
 
     fun canExit(coroutineScope: CoroutineScope): Boolean {
-        if (tabs[selectedTabIndex].onBackPressed()) {
+        if (getActiveTab().onBackPressed()) {
             return false
         }
 
-        if (tabs[selectedTabIndex] !is HomeTab && !globalClass.preferencesManager.behaviorPrefs.skipHomeWhenTabClosed) {
+        if (getActiveTab() !is HomeTab && !globalClass.preferencesManager.behaviorPrefs.skipHomeWhenTabClosed) {
             replaceCurrentTabWith(HomeTab())
             return false
         }
