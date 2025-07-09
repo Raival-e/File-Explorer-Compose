@@ -798,14 +798,6 @@ fun EqualizerView(
     }
 }
 
-// Utility function to format time
-fun formatTime(timeMs: Long): String {
-    val totalSeconds = timeMs / 1000
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    return "%d:%02d".format(minutes, seconds)
-}
-
 // Extract colors from bitmap
 fun extractColorsFromBitmap(
     bitmap: Bitmap,
