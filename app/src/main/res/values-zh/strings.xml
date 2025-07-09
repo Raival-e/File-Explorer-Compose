@@ -302,4 +302,13 @@
     <string name="failed_to_copy_files_to_zip">复制文件到zip失败</string>
     <string name="failed_to_extract_files_from_zip">从zip解压文件失败</string>
     <string name="failed_to_copy_zip_entries">复制zip条目失败</string>
+    <string name="convert_to_apk">转换为APK</string>
+    <string name="invalid_bundle_file">无效的APK包文件</string>
+    <string name="merging">合并中</string>
+    <string name="signing">签名中</string>
+    <string name="apk_bundle_merge_success">APK包文件成功转换为APK</string>
+    <string name="apk_bundle_merge_failed">APK包转换为APK失败</string>
+    <string name="apk_bundle_sign_failed">合并APK文件签名失败</string>
+    <string name="auto_sign_merged_apk_bundle_files">自动签名合并的APK包文件</string>
+    <string name="auto_sign_merged_apk_bundle_files_description">使用测试密钥自动签名合并的APK包文件</string>
 </resources>

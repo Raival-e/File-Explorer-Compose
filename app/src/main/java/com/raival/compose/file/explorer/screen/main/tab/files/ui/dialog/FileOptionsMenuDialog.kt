@@ -16,6 +16,7 @@ import androidx.compose.material.icons.rounded.FileCopy
 import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Merge
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -42,6 +43,9 @@ import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkBundleFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.task.ApksMergeTask
+import com.raival.compose.file.explorer.screen.main.tab.files.task.ApksMergeTaskParameters
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileIcon
@@ -234,6 +238,19 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     tab.hideDocumentOptionsMenu()
                     globalClass.textEditorManager.openTextEditor(targetContentHolder, context)
                     tab.unselectAllFiles()
+                }
+
+                if (apkBundleFileType.contains(targetContentHolder.file.extension)) {
+                    FileOption(Icons.Rounded.Merge, stringResource(R.string.convert_to_apk)) {
+                        tab.hideDocumentOptionsMenu()
+                        globalClass.taskManager.addTaskAndRun(
+                            ApksMergeTask(targetContentHolder),
+                            ApksMergeTaskParameters(
+                                globalClass.preferencesManager.fileOperationPrefs.signMergedApkBundleFiles
+                            )
+                        )
+                        tab.unselectAllFiles()
+                    }
                 }
             }
 

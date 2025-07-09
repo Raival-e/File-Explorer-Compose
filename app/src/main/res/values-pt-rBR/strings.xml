@@ -302,4 +302,13 @@
     <string name="failed_to_copy_files_to_zip">Falha ao copiar arquivos para o zip</string>
     <string name="failed_to_extract_files_from_zip">Falha ao extrair arquivos do zip</string>
     <string name="failed_to_copy_zip_entries">Falha ao copiar entradas do zip</string>
+    <string name="convert_to_apk">Converter para APK</string>
+    <string name="invalid_bundle_file">Arquivo de pacote APK inválido</string>
+    <string name="merging">Mesclando</string>
+    <string name="signing">Assinando</string>
+    <string name="apk_bundle_merge_success">Arquivo de pacote APK convertido com sucesso para APK</string>
+    <string name="apk_bundle_merge_failed">Falha ao converter pacote APK para APK</string>
+    <string name="apk_bundle_sign_failed">Falha ao assinar o arquivo APK mesclado</string>
+    <string name="auto_sign_merged_apk_bundle_files">Assinar automaticamente arquivos de pacote APK mesclados</string>
+    <string name="auto_sign_merged_apk_bundle_files_description">Assinar automaticamente arquivos de pacote APK mesclados com uma chave de teste</string>
 </resources>

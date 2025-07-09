@@ -302,4 +302,13 @@
     <string name="failed_to_copy_files_to_zip">کپی فایل‌ها به فایل زیپ ناموفق بود</string>
     <string name="failed_to_extract_files_from_zip">استخراج فایل‌ها از فایل زیپ ناموفق بود</string>
     <string name="failed_to_copy_zip_entries">کپی ورودی‌های فایل زیپ ناموفق بود</string>
+    <string name="convert_to_apk">تبدیل به APK</string>
+    <string name="invalid_bundle_file">فایل بسته APK نامعتبر</string>
+    <string name="merging">در حال ادغام</string>
+    <string name="signing">در حال امضا</string>
+    <string name="apk_bundle_merge_success">فایل بسته APK با موفقیت به APK تبدیل شد</string>
+    <string name="apk_bundle_merge_failed">تبدیل بسته APK به APK ناموفق بود</string>
+    <string name="apk_bundle_sign_failed">امضای فایل APK ادغام شده ناموفق بود</string>
+    <string name="auto_sign_merged_apk_bundle_files">امضای خودکار فایل‌های بسته APK ادغام شده</string>
+    <string name="auto_sign_merged_apk_bundle_files_description">امضای خودکار فایل‌های بسته APK ادغام شده با کلید آزمایشی</string>
 </resources>

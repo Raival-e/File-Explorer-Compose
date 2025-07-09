@@ -302,4 +302,13 @@
     <string name="failed_to_copy_files_to_zip">Не удалось скопировать файлы в zip</string>
     <string name="failed_to_extract_files_from_zip">Не удалось извлечь файлы из zip</string>
     <string name="failed_to_copy_zip_entries">Не удалось скопировать записи zip</string>
+    <string name="convert_to_apk">Конвертировать в APK</string>
+    <string name="invalid_bundle_file">Недопустимый файл пакета APK</string>
+    <string name="merging">Слияние</string>
+    <string name="signing">Подписание</string>
+    <string name="apk_bundle_merge_success">Файл пакета APK успешно конвертирован в APK</string>
+    <string name="apk_bundle_merge_failed">Не удалось конвертировать пакет APK в APK</string>
+    <string name="apk_bundle_sign_failed">Не удалось подписать объединенный APK файл</string>
+    <string name="auto_sign_merged_apk_bundle_files">Автоподпись объединенных файлов пакета APK</string>
+    <string name="auto_sign_merged_apk_bundle_files_description">Автоматически подписывать объединенные файлы пакета APK тестовым ключом</string>
 </resources>

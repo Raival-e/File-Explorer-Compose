@@ -303,4 +303,13 @@
     <string name="failed_to_copy_files_to_zip">Failed to copy files to zip</string>
     <string name="failed_to_extract_files_from_zip">Failed to extract files from zip</string>
     <string name="failed_to_copy_zip_entries">Failed to copy zip entries</string>
+    <string name="convert_to_apk">Convert to APK</string>
+    <string name="invalid_bundle_file">Invalid APK bundle file</string>
+    <string name="merging">Merging</string>
+    <string name="signing">Signing</string>
+    <string name="apk_bundle_merge_success">APK bundle file successfully converted to APK</string>
+    <string name="apk_bundle_merge_failed">Failed to convert APK bundle to APK</string>
+    <string name="apk_bundle_sign_failed">Failed to sign the merged APK file</string>
+    <string name="auto_sign_merged_apk_bundle_files">Auto sign merged APK bundle files</string>
+    <string name="auto_sign_merged_apk_bundle_files_description">Automatically sign merged APK bundle files with a test key</string>
 </resources>

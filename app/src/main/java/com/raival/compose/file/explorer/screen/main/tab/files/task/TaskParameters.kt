@@ -20,3 +20,7 @@ data class RenameTaskParameters(
     val toReplace: String,
     val useRegex: Boolean
 ) : TaskParameters
+
+data class ApksMergeTaskParameters(
+    val autoSign: Boolean
+) : TaskParameters

@@ -98,6 +98,12 @@ class PreferencesManager {
             getPreferencesKey = { intPreferencesKey(it) }
         )
 
+        var signMergedApkBundleFiles by prefMutableState(
+            keyName = "signMergedApkBundleFiles",
+            defaultValue = true,
+            getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+
         var moveToRecycleBin by prefMutableState(
             keyName = "moveToRecycleBin",
             defaultValue = true,
