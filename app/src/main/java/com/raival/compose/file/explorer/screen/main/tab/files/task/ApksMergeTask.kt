@@ -164,7 +164,7 @@ class ApksMergeTask(
                 listOf(certificate)
             ).build()
 
-            val apkSigner = ApkSigner.Builder(listOf(signerConfig))
+            ApkSigner.Builder(listOf(signerConfig))
                 .setInputApk(inputFile)
                 .setOutputApk(outputFile)
                 .setV1SigningEnabled(true)
