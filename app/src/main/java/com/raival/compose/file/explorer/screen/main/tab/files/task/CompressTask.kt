@@ -95,7 +95,7 @@ class CompressTask(
                 if (itemToCompress.status == TaskContentStatus.PENDING) {
                     progressMonitor.apply {
                         contentName = itemToCompress.content.displayName
-                        remainingContent = pendingContent.size - index + 1
+                        remainingContent = pendingContent.size - (index + 1)
                         progress = -1f
                     }
 

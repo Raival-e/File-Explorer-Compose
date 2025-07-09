@@ -297,4 +297,9 @@
     <string name="no_warnings_have_been_logged">Nenhum aviso foi registrado</string>
     <string name="no_information_logs_have_been_recorded">Nenhum log de informação foi registrado</string>
     <string name="clearing_logs">Limpando logs…</string>
+    <string name="unsupported_source_destination_combination">Combinação origem/destino não suportada</string>
+    <string name="unknown_error">Erro desconhecido</string>
+    <string name="failed_to_copy_files_to_zip">Falha ao copiar arquivos para o zip</string>
+    <string name="failed_to_extract_files_from_zip">Falha ao extrair arquivos do zip</string>
+    <string name="failed_to_copy_zip_entries">Falha ao copiar entradas do zip</string>
 </resources>

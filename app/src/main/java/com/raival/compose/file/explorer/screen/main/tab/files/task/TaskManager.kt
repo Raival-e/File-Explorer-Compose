@@ -55,7 +55,7 @@ class TaskManager {
     }
 
     fun overrideConflicts(taskId: String, resolution: TaskContentStatus) {
-        val task = tasks.find { it.id == taskId }
+        val task = pausedTasks.find { it.id == taskId }
         task?.overrideConflicts(resolution)
     }
 
@@ -114,10 +114,14 @@ class TaskManager {
                 if (task.getCurrentStatus() == TaskStatus.SUCCESS) {
                     showMsg(globalClass.getString(R.string.task_completed))
                 }
+                if (task.getCurrentStatus() == TaskStatus.CONFLICT) {
+                    pausedTasks.add(task)
+                }
 
                 task.getCurrentStatus() == TaskStatus.FAILED
                         || task.getCurrentStatus() == TaskStatus.CANCELLED
                         || task.getCurrentStatus() == TaskStatus.SUCCESS
+                        || task.getCurrentStatus() == TaskStatus.CONFLICT
             }
 
             if (runningTasks.isEmpty()) {
@@ -170,6 +174,10 @@ class TaskManager {
             task = null
         }
 
+        fun hide() {
+            reset()
+        }
+
         fun resolve(resolution: TaskContentStatus, applyToAllConflicts: Boolean = false) {
             if (taskContentItem != null) {
                 taskContentItem!!.status = resolution
@@ -216,9 +224,7 @@ class TaskManager {
             progressMonitor = null
         }
 
-        fun updateInfo(
-            progressMonitor: TaskProgressMonitor
-        ) {
+        fun updateInfo(progressMonitor: TaskProgressMonitor) {
             this.progressMonitor = TaskProgressMonitor(
                 status = progressMonitor.status,
                 taskTitle = progressMonitor.taskTitle,

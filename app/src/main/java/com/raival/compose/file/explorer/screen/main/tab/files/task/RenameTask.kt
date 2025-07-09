@@ -114,7 +114,7 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
             if (itemToRename.status == TaskContentStatus.PENDING) {
                 progressMonitor.apply {
                     contentName = itemToRename.source.displayName
-                    remainingContent = pendingContent.size - index + 1
+                    remainingContent = pendingContent.size - (index + 1)
                     progress = (index + 1f) / pendingContent.size
                 }
 

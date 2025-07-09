@@ -22,12 +22,51 @@ class CopyTask(
     val sourceFiles: List<ContentHolder>,
     val deleteSourceFiles: Boolean
 ) : Task() {
+
+    @Volatile
     private var aborted = false
     private var parameters: CopyTaskParameters? = null
-    private var pendingFiles: ArrayList<TaskContentItem> = arrayListOf()
+    private val pendingFiles: ArrayList<TaskContentItem> = arrayListOf()
 
-    override val metadata = System.currentTimeMillis().toFormattedDate().let { time ->
-        TaskMetadata(
+    override val metadata = createTaskMetadata()
+    override val progressMonitor = TaskProgressMonitor(
+        status = TaskStatus.PENDING,
+        taskTitle = metadata.title,
+    )
+
+    override fun getCurrentStatus() = progressMonitor.status
+    override fun validate() = sourceFiles.all { it.isValid() && it.canRead }
+    override fun abortTask() {
+        aborted = true
+    }
+
+    override suspend fun run(params: TaskParameters) {
+        parameters = params as? CopyTaskParameters
+
+        if (!initializeTask()) return
+
+        try {
+            executeTaskBasedOnSourceType()
+            if (deleteSourceFiles && progressMonitor.status == TaskStatus.RUNNING) {
+                performSourceDeletion()
+            }
+            finalizeTask()
+        } catch (e: Exception) {
+            handleTaskError(e)
+        }
+    }
+
+    override suspend fun continueTask() {
+        parameters?.let { run(it) } ?: run {
+            markAsFailed(globalClass.resources.getString(R.string.task_summary_missing_destination))
+        }
+    }
+
+    // Private helper methods
+
+    private fun createTaskMetadata(): TaskMetadata {
+        val time = System.currentTimeMillis().toFormattedDate()
+        return TaskMetadata(
             id = id,
             creationTime = time,
             title = globalClass.resources.getString(
@@ -36,11 +75,10 @@ class CopyTask(
             subtitle = globalClass.resources.getString(R.string.task_subtitle, sourceFiles.size),
             displayDetails = sourceFiles.joinToString(", ") { it.displayName },
             fullDetails = buildString {
-                sourceFiles.forEachIndexed { index, source ->
-                    append(source.displayName)
-                    append("\n")
+                sourceFiles.forEach { source ->
+                    appendLine(source.displayName)
                 }
-                append("\n")
+                appendLine()
                 append(time)
             },
             isCancellable = true,
@@ -48,93 +86,83 @@ class CopyTask(
         )
     }
 
-    override val progressMonitor = TaskProgressMonitor(
-        status = TaskStatus.PENDING,
-        taskTitle = metadata.title,
-    )
-
-    override fun getCurrentStatus() = progressMonitor.status
-
-    override fun validate() = sourceFiles.find { !it.isValid() || !it.canRead } == null
-
-    override fun abortTask() {
-        aborted = true
-    }
-
-    override suspend fun run(params: TaskParameters) {
-        if (parameters == null) parameters = params as CopyTaskParameters
+    private fun initializeTask(): Boolean {
         progressMonitor.status = TaskStatus.RUNNING
         aborted = false
 
         if (sourceFiles.isEmpty()) {
             markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
-            return
+            return false
         }
 
-        // Determine the source type and target type
-        sourceFiles.first().let { sample ->
-            val sourcePath = sample.getParent()?.uniquePath ?: emptyString
-            try {
-                if (sample is LocalFileHolder) {
-                    (parameters!!.destHolder as? ZipFileHolder)?.let {
-                        copyLocalFilesToZip(
-                            sourcePath,
-                            it
-                        )
-                    }
-                    (parameters!!.destHolder as? LocalFileHolder)?.let {
-                        copyLocalFiles(
-                            sourcePath,
-                            it
-                        )
-                    }
-                } else if (sample is ZipFileHolder) {
-                    (parameters!!.destHolder as? LocalFileHolder)?.let {
-                        copyZipFilesToLocal(
-                            sourcePath,
-                            it
-                        )
-                    }
-                    (parameters!!.destHolder as? ZipFileHolder)?.let {
-                        copyZipFilesToZip(
-                            sourcePath,
-                            it
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                logger.logError(e)
-                markAsFailed(
-                    globalClass.resources.getString(
-                        R.string.task_summary_failed,
-                        e.message ?: emptyString
-                    )
-                )
-                return
+        parameters?.let { params ->
+            if (!validateDestination(params.destHolder)) {
+                return false
             }
+        } ?: run {
+            markAsFailed(globalClass.resources.getString(R.string.task_summary_missing_destination))
+            return false
         }
 
-        if (deleteSourceFiles) performSourceDeletion()
-
-        if (progressMonitor.status == TaskStatus.RUNNING) {
-            progressMonitor.status = TaskStatus.SUCCESS
-            progressMonitor.summary = buildString {
-                pendingFiles.forEach { content ->
-                    append(content.content.displayName)
-                    append(" -> ")
-                    append(content.status.name)
-                }
-            }
-        }
+        return true
     }
 
-    override suspend fun continueTask() {
-        if (parameters == null) {
-            markAsFailed(globalClass.resources.getString(R.string.task_summary_missing_destination))
-            return
+    private fun validateDestination(destHolder: ContentHolder): Boolean {
+        val firstSource = sourceFiles.first()
+
+        // Prevent copying into self for local files
+        if (firstSource is LocalFileHolder && destHolder is LocalFileHolder) {
+            val sourceParent = firstSource.file.parentFile?.canonicalPath
+            val destPath = destHolder.file.canonicalPath
+            if (sourceParent == destPath) {
+                markAsFailed(globalClass.resources.getString(R.string.task_summary_invalid_dest))
+                return false
+            }
         }
 
-        run(parameters!!)
+        // Prevent copying zip directory into itself
+        if (firstSource is ZipFileHolder && destHolder is ZipFileHolder) {
+            val sourceFile = firstSource.zipTree.source.file.canonicalPath
+            val destFile = destHolder.zipTree.source.file.canonicalPath
+
+            if (sourceFile == destFile) {
+                val destPath = destHolder.node.path
+                val hasInvalidNesting = sourceFiles
+                    .filterIsInstance<ZipFileHolder>()
+                    .filter { !it.isFile() }
+                    .any { destPath.startsWith(it.node.path) }
+
+                if (hasInvalidNesting) {
+                    markAsFailed(globalClass.resources.getString(R.string.task_summary_invalid_dest))
+                    return false
+                }
+            }
+        }
+
+        return true
+    }
+
+    private fun executeTaskBasedOnSourceType() {
+        val sample = sourceFiles.first()
+        val destHolder = parameters!!.destHolder
+        val sourcePath = sample.getParent()?.uniquePath ?: emptyString
+
+        when {
+            sample is LocalFileHolder && destHolder is LocalFileHolder ->
+                copyLocalFiles(sourcePath, destHolder)
+
+            sample is LocalFileHolder && destHolder is ZipFileHolder ->
+                copyLocalFilesToZip(sourcePath, destHolder)
+
+            sample is ZipFileHolder && destHolder is LocalFileHolder ->
+                copyZipFilesToLocal(sourcePath, destHolder)
+
+            sample is ZipFileHolder && destHolder is ZipFileHolder ->
+                copyZipFilesToZip(sourcePath, destHolder)
+
+            else ->
+                throw IllegalStateException(globalClass.getString(R.string.unsupported_source_destination_combination))
+        }
     }
 
     private fun markAsFailed(info: String) {
@@ -144,469 +172,521 @@ class CopyTask(
         }
     }
 
-    private fun performSourceDeletion() {
-        if (!deleteSourceFiles) return
+    private fun handleTaskError(e: Exception) {
+        logger.logError(e)
+        markAsFailed(
+            globalClass.resources.getString(
+                R.string.task_summary_failed,
+                e.message ?: globalClass.getString(R.string.unknown_error)
+            )
+        )
+    }
 
-        sourceFiles.first().let { sample ->
-            progressMonitor.processName =
-                globalClass.resources.getString(R.string.deleting_source_files)
-            if (sample is LocalFileHolder) {
-                pendingFiles.forEachIndexed { index, it ->
-                    if (aborted) {
-                        progressMonitor.status = TaskStatus.CANCELLED
-                        return
-                    }
-
-                    if (it.status == TaskContentStatus.SUCCESS) {
-                        progressMonitor.apply {
-                            remainingContent = sourceFiles.size - index + 1
-                            progress = (index + 1f) / sourceFiles.size
-                        }
-                        (it.content as LocalFileHolder).file.deleteRecursively()
-                    }
-                }
-                sourceFiles.forEach { content ->
-                    if ((content as LocalFileHolder).file.walkTopDown().count { it.isFile } == 0) {
-                        content.file.deleteRecursively()
-                    }
-                }
-            } else if (sample is ZipFileHolder) {
-                ZipFile(sample.zipTree.source.file).use { zipFile ->
-                    zipFile.removeFiles(pendingFiles.filter { it.status == TaskContentStatus.SUCCESS }
-                        .map { (it.content as ZipFileHolder).node.path })
-                    sourceFiles.forEach { src ->
-                        (src as ZipFileHolder).let { zipSrc ->
-                            if (zipSrc.node.listFilesAndEmptyDirs()
-                                    .count { !it.isDirectory } == 0
-                            ) {
-                                zipFile.removeFile(zipSrc.node.path)
-                            }
-                        }
-                    }
+    private fun finalizeTask() {
+        if (progressMonitor.status == TaskStatus.RUNNING) {
+            progressMonitor.status = TaskStatus.SUCCESS
+            progressMonitor.summary = buildString {
+                pendingFiles.forEach { content ->
+                    append(content.content.displayName)
+                    append(" -> ")
+                    appendLine(content.status.name)
                 }
             }
         }
     }
 
-    /** `sourcePath` is the path of the folder from which the files are copied **/
-    private fun copyLocalFiles(sourcePath: String, destinationHolder: LocalFileHolder) {
-        // prevent copying a directory into itself
-        if ((sourceFiles.first() as LocalFileHolder).file.parentFile?.canonicalPath == destinationHolder.file.canonicalPath) {
-            markAsFailed(globalClass.resources.getString(R.string.task_summary_invalid_dest))
-            return
-        }
-
-        progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
-
+    private fun preparePendingFiles(sourcePath: String) {
         if (pendingFiles.isEmpty()) {
-            sourceFiles.forEach {
-                pendingFiles.addAll(listFilesWithRelativePath(sourcePath, it))
+            sourceFiles.forEach { source ->
+                pendingFiles.addAll(listFilesWithRelativePath(sourcePath, source))
             }
         }
+    }
 
+    private fun updateProgress(index: Int, itemName: String) {
         progressMonitor.apply {
-            totalContent = pendingFiles.size
-            processName = globalClass.resources.getString(R.string.copying)
+            contentName = itemName
+            remainingContent = pendingFiles.size - (index + 1)
+            progress = (index + 1f) / pendingFiles.size
         }
+    }
 
-        pendingFiles.forEachIndexed { index, itemToCopy ->
+    private fun handleConflict(item: TaskContentItem, existsAsFile: Boolean): Boolean {
+        if (!existsAsFile) return true // No conflict for directories or non-existent files
+
+        return when (commonConflictResolution) {
+            TaskContentStatus.SKIP -> {
+                item.status = TaskContentStatus.SKIP
+                true
+            }
+
+            TaskContentStatus.ASK -> {
+                item.status = TaskContentStatus.CONFLICT
+                progressMonitor.status = TaskStatus.CONFLICT
+                globalClass.taskManager.taskInterceptor.interceptTask(item, this)
+                false // Pause execution
+            }
+
+            TaskContentStatus.REPLACE -> {
+                item.status = TaskContentStatus.REPLACE
+                true
+            }
+
+            else -> true
+        }
+    }
+
+    private fun performSourceDeletion() {
+        if (!deleteSourceFiles) return
+
+        progressMonitor.processName =
+            globalClass.resources.getString(R.string.deleting_source_files)
+
+        when (val sample = sourceFiles.first()) {
+            is LocalFileHolder -> deleteLocalSources()
+            is ZipFileHolder -> deleteZipSources(sample)
+        }
+    }
+
+    private fun deleteLocalSources() {
+        val successfulItems = pendingFiles.filter { it.status == TaskContentStatus.SUCCESS }
+
+        successfulItems.forEachIndexed { index, item ->
             if (aborted) {
                 progressMonitor.status = TaskStatus.CANCELLED
                 return
             }
 
-            (itemToCopy.content as LocalFileHolder).let { fileToCopy ->
-                val destinationFile = File(destinationHolder.file, itemToCopy.relativePath)
+            progressMonitor.apply {
+                remainingContent = successfulItems.size - (index + 1)
+                progress = (index + 1f) / successfulItems.size
+            }
 
-                if (itemToCopy.status == TaskContentStatus.PENDING) {
+            (item.content as LocalFileHolder).file.deleteRecursively()
+        }
 
-                    progressMonitor.apply {
-                        contentName = fileToCopy.displayName
-                        remainingContent = pendingFiles.size - index + 1
-                        progress = (index + 1f) / pendingFiles.size
-                    }
+        // Clean up empty directories
+        sourceFiles.forEach { content ->
+            val file = (content as LocalFileHolder).file
+            if (file.exists() && file.walkTopDown().none { it.isFile }) {
+                file.deleteRecursively()
+            }
+        }
+    }
 
-                    if (destinationFile.exists()
-                        && destinationFile.isFile
-                        && (commonConflictResolution == TaskContentStatus.ASK || commonConflictResolution == TaskContentStatus.SKIP)
-                    ) {
-                        if (commonConflictResolution == TaskContentStatus.ASK) {
-                            itemToCopy.status = TaskContentStatus.CONFLICT
-                            progressMonitor.status = TaskStatus.CONFLICT
-                            globalClass.taskManager.taskInterceptor.interceptTask(
-                                taskContentItem = itemToCopy,
-                                task = this
-                            )
-                        } else {
-                            itemToCopy.status = TaskContentStatus.SKIP
-                        }
-                    } else {
-                        if (fileToCopy.isFile()) {
-                            try {
-                                if (deleteSourceFiles) {
-                                    fileToCopy.file.copyTo(
-                                        destinationFile,
-                                        overwrite = commonConflictResolution == TaskContentStatus.REPLACE
-                                    )
-                                } else {
-                                    fileToCopy.file.copyTo(
-                                        destinationFile,
-                                        overwrite = commonConflictResolution == TaskContentStatus.REPLACE
-                                    )
-                                }
-                                itemToCopy.status = TaskContentStatus.SUCCESS
-                            } catch (_: Exception) {
-                                itemToCopy.status = TaskContentStatus.FAILED
-                            }
-                        } else if (!destinationFile.mkdirs() && !destinationFile.exists()) {
-                            itemToCopy.status = TaskContentStatus.FAILED
-                        }
-                        itemToCopy.status = TaskContentStatus.SUCCESS
+    private fun deleteZipSources(sample: ZipFileHolder) {
+        try {
+            ZipFile(sample.zipTree.source.file).use { zipFile ->
+                val successfulPaths = pendingFiles
+                    .filter { it.status == TaskContentStatus.SUCCESS }
+                    .map { (it.content as ZipFileHolder).node.path }
+
+                if (successfulPaths.isNotEmpty()) {
+                    zipFile.removeFiles(successfulPaths)
+                }
+
+                // Remove empty directories
+                sourceFiles.forEach { src ->
+                    val zipSrc = src as ZipFileHolder
+                    val hasFiles = zipSrc.node.listFilesAndEmptyDirs().any { !it.isDirectory }
+                    if (!hasFiles) {
+                        zipFile.removeFile(zipSrc.node.path)
                     }
-                } else if (itemToCopy.status == TaskContentStatus.REPLACE) {
-                    // targetFile should always be a file at this point
-                    try {
-                        if (deleteSourceFiles) {
-                            Files.move(
-                                fileToCopy.file.toPath(),
-                                destinationFile.toPath(),
-                                StandardCopyOption.ATOMIC_MOVE,
-                                StandardCopyOption.REPLACE_EXISTING
-                            )
-                        } else {
-                            fileToCopy.file.copyTo(
-                                destinationFile,
-                                overwrite = true
-                            )
-                        }
-                        itemToCopy.status = TaskContentStatus.SUCCESS
-                    } catch (_: Exception) {
-                        itemToCopy.status = TaskContentStatus.FAILED
-                    }
-                } else if (itemToCopy.status == TaskContentStatus.SKIP) {
-                    itemToCopy.status = TaskContentStatus.SKIP
                 }
             }
+        } catch (e: Exception) {
+            logger.logError(e)
+            // Don't fail the entire task if deletion fails
         }
     }
 
-    private fun addLocalFileToZip(
-        zipFile: ZipFile,
-        fileToCopy: TaskContentItem,
-        targetPath: String,
-        override: Boolean
-    ) {
-        try {
-            if (fileToCopy.content.isFile()) {
-                zipFile.addFile(
-                    (fileToCopy.content as LocalFileHolder).file,
-                    ZipParameters().apply {
-                        isOverrideExistingFilesInZip = override
-                        this.fileNameInZip = targetPath
-                    }
-                )
-            } else {
-                zipFile.addFolder(
-                    (fileToCopy.content as LocalFileHolder).file,
-                    ZipParameters().apply {
-                        isOverrideExistingFilesInZip = override
-                        this.fileNameInZip = targetPath
-                    }
-                )
-            }
-            fileToCopy.status = TaskContentStatus.SUCCESS
-        } catch (_: Exception) {
-            fileToCopy.status = TaskContentStatus.FAILED
-        }
-    }
+    // Specialized copy methods
 
-    /** `sourcePath` is the path of the folder from which the files are copied **/
-    private fun copyLocalFilesToZip(sourcePath: String, destinationHolder: ZipFileHolder) {
+    private fun copyLocalFiles(sourcePath: String, destinationHolder: LocalFileHolder) {
         progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
-
-        if (pendingFiles.isEmpty()) {
-            sourceFiles.forEach {
-                pendingFiles.addAll(listFilesWithRelativePath(sourcePath, it))
-            }
-        }
+        preparePendingFiles(sourcePath)
 
         progressMonitor.apply {
             totalContent = pendingFiles.size
             processName = globalClass.resources.getString(R.string.copying)
         }
 
-        ZipFile(destinationHolder.zipTree.source.file).use { targetZipFile ->
-            pendingFiles.forEachIndexed { index, fileToCopy ->
-                if (aborted) {
-                    progressMonitor.status = TaskStatus.CANCELLED
+        pendingFiles.forEachIndexed { index, item ->
+            if (aborted) {
+                progressMonitor.status = TaskStatus.CANCELLED
+                return
+            }
+
+            if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+                return@forEachIndexed
+            }
+
+            val sourceFile = (item.content as LocalFileHolder).file
+            val destinationFile = File(destinationHolder.file, item.relativePath)
+
+            updateProgress(index, sourceFile.name)
+
+            if (item.status == TaskContentStatus.PENDING) {
+                val conflictExists = destinationFile.exists() && destinationFile.isFile
+                if (conflictExists && !handleConflict(item, true)) {
                     return
                 }
+            }
 
-                val targetEntryPath =
-                    "${destinationHolder.node.path}${if (destinationHolder.node.path.isEmpty()) emptyString else File.separator}${fileToCopy.relativePath}"
-                if (fileToCopy.status == TaskContentStatus.PENDING) {
-
-                    progressMonitor.apply {
-                        contentName = fileToCopy.content.displayName
-                        remainingContent = pendingFiles.size - index + 1
-                        progress = (index + 1f) / pendingFiles.size
-                    }
-
-                    val existingFile = targetZipFile.getFileHeader(targetEntryPath)
-                    if (existingFile != null) {
-                        if (existingFile.isDirectory || commonConflictResolution == TaskContentStatus.SKIP) { // Don't notify for existing folders
-                            fileToCopy.status = TaskContentStatus.SKIP
-                            return@forEachIndexed
-                        }
-                        if (commonConflictResolution == TaskContentStatus.ASK) {
-                            fileToCopy.status = TaskContentStatus.CONFLICT
-                            progressMonitor.status = TaskStatus.CONFLICT
-                            globalClass.taskManager.taskInterceptor.interceptTask(
-                                taskContentItem = fileToCopy,
-                                task = this
-                            )
-                            return@use
-                        }
-                    }
-                    // No conflicts were detected, so continue with the copy (with common resolution in mind)
-                    if (commonConflictResolution == TaskContentStatus.REPLACE) {
-                        addLocalFileToZip(targetZipFile, fileToCopy, targetEntryPath, true)
+            when (item.status) {
+                TaskContentStatus.PENDING, TaskContentStatus.REPLACE -> {
+                    item.status = if (copyLocalFile(
+                            sourceFile,
+                            destinationFile,
+                            item.status == TaskContentStatus.REPLACE
+                        )
+                    ) {
+                        TaskContentStatus.SUCCESS
                     } else {
-                        addLocalFileToZip(targetZipFile, fileToCopy, targetEntryPath, false)
+                        TaskContentStatus.FAILED
                     }
-                } else if (fileToCopy.status == TaskContentStatus.REPLACE) {
-                    // Only files (not folders) can be replaced, already existing folders are skipped
-                    // in the previous check.
-                    if (fileToCopy.content.isFile()) {
-                        addLocalFileToZip(targetZipFile, fileToCopy, targetEntryPath, true)
-                    }
-                } else if (fileToCopy.status == TaskContentStatus.SKIP) {
-                    // Return isn't necessary for now, but in case something is added later
-                    return@forEachIndexed
+                }
+
+                else -> { /* Already handled */
                 }
             }
         }
     }
 
-    /** Extract files from a zip archive to the local filesystem. `sourcePath` is the zip entry path being copied from. */
+    private fun copyLocalFile(source: File, destination: File, overwrite: Boolean): Boolean {
+        return try {
+            if (source.isFile) {
+                destination.parentFile?.mkdirs()
+                if (deleteSourceFiles) {
+                    Files.move(
+                        source.toPath(),
+                        destination.toPath(),
+                        *buildList {
+                            add(StandardCopyOption.ATOMIC_MOVE)
+                            if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
+                        }.toTypedArray()
+                    )
+                } else {
+                    source.copyTo(destination, overwrite)
+                }
+            } else {
+                destination.mkdirs() || destination.exists()
+            }
+            true
+        } catch (e: Exception) {
+            logger.logError(e)
+            false
+        }
+    }
+
+    private fun copyLocalFilesToZip(sourcePath: String, destinationHolder: ZipFileHolder) {
+        progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
+        preparePendingFiles(sourcePath)
+
+        progressMonitor.apply {
+            totalContent = pendingFiles.size
+            processName = globalClass.resources.getString(R.string.copying)
+        }
+
+        try {
+            ZipFile(destinationHolder.zipTree.source.file).use { targetZipFile ->
+                pendingFiles.forEachIndexed { index, item ->
+                    if (aborted) {
+                        progressMonitor.status = TaskStatus.CANCELLED
+                        return
+                    }
+
+                    if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+                        return@forEachIndexed
+                    }
+
+                    updateProgress(index, item.content.displayName)
+
+                    val targetPath =
+                        createZipEntryPath(destinationHolder.node.path, item.relativePath)
+
+                    if (item.status == TaskContentStatus.PENDING) {
+                        val existingHeader = targetZipFile.getFileHeader(targetPath)
+                        val conflictExists = existingHeader != null && !existingHeader.isDirectory
+                        if (conflictExists && !handleConflict(item, true)) {
+                            return
+                        }
+                    }
+
+                    when (item.status) {
+                        TaskContentStatus.PENDING, TaskContentStatus.REPLACE -> {
+                            item.status = if (addLocalFileToZip(
+                                    targetZipFile,
+                                    item,
+                                    targetPath,
+                                    item.status == TaskContentStatus.REPLACE
+                                )
+                            ) {
+                                TaskContentStatus.SUCCESS
+                            } else {
+                                TaskContentStatus.FAILED
+                            }
+                        }
+
+                        else -> { /* Already handled */
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            throw RuntimeException(globalClass.getString(R.string.failed_to_copy_files_to_zip), e)
+        }
+    }
+
+    private fun addLocalFileToZip(
+        zipFile: ZipFile,
+        item: TaskContentItem,
+        targetPath: String,
+        overwrite: Boolean
+    ): Boolean {
+        return try {
+            val sourceFile = (item.content as LocalFileHolder).file
+            val params = ZipParameters().apply {
+                isOverrideExistingFilesInZip = overwrite
+                fileNameInZip = targetPath
+            }
+
+            if (sourceFile.isFile) {
+                zipFile.addFile(sourceFile, params)
+            } else {
+                zipFile.addFolder(sourceFile, params)
+            }
+            true
+        } catch (e: Exception) {
+            logger.logError(e)
+            false
+        }
+    }
+
     private fun copyZipFilesToLocal(sourcePath: String, destinationHolder: LocalFileHolder) {
         progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
-
-        if (pendingFiles.isEmpty()) {
-            sourceFiles.forEach {
-                pendingFiles.addAll(listFilesWithRelativePath(sourcePath, it))
-            }
-        }
+        preparePendingFiles(sourcePath)
 
         progressMonitor.apply {
             totalContent = pendingFiles.size
             processName = globalClass.resources.getString(R.string.extracting)
         }
 
-        val sourceZipArchive = (sourceFiles.first() as ZipFileHolder).zipTree.source.file
-        ZipFile(sourceZipArchive).use { sourceZip ->
-            pendingFiles.forEachIndexed { index, itemToExtract ->
-                if (aborted) {
-                    progressMonitor.status = TaskStatus.CANCELLED
-                    return@use
-                }
-
-                val sourceHolder = itemToExtract.content as ZipFileHolder
-                val destinationFile = File(destinationHolder.uniquePath, itemToExtract.relativePath)
-
-                if (itemToExtract.status == TaskContentStatus.PENDING) {
-                    progressMonitor.apply {
-                        contentName = sourceHolder.displayName
-                        remainingContent = pendingFiles.size - index + 1
-                        progress = (index + 1f) / pendingFiles.size
+        val sourceZipFile = (sourceFiles.first() as ZipFileHolder).zipTree.source.file
+        try {
+            ZipFile(sourceZipFile).use { sourceZip ->
+                pendingFiles.forEachIndexed { index, item ->
+                    if (aborted) {
+                        progressMonitor.status = TaskStatus.CANCELLED
+                        return
                     }
 
-                    if (destinationFile.exists() && destinationFile.isFile) {
-                        if (commonConflictResolution == TaskContentStatus.SKIP) {
-                            itemToExtract.status = TaskContentStatus.SKIP
-                        } else if (commonConflictResolution == TaskContentStatus.ASK) {
-                            itemToExtract.status = TaskContentStatus.CONFLICT
-                            progressMonitor.status = TaskStatus.CONFLICT
-                            globalClass.taskManager.taskInterceptor.interceptTask(
-                                taskContentItem = itemToExtract,
-                                task = this
-                            )
-                            return@use // Pause the task
-                        } else if (commonConflictResolution == TaskContentStatus.REPLACE) {
-                            itemToExtract.status = TaskContentStatus.REPLACE
-                        }
+                    if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+                        return@forEachIndexed
                     }
-                }
-                when (itemToExtract.status) {
-                    TaskContentStatus.PENDING, TaskContentStatus.REPLACE -> {
-                        try {
-                            if (sourceHolder.isFile()) {
-                                destinationFile.parentFile?.mkdirs()
-                                sourceZip.getInputStream(sourceZip.getFileHeader(sourceHolder.node.path))
-                                    .use { input ->
-                                        destinationFile.outputStream().use { output ->
-                                            input.copyTo(output)
-                                        }
-                                    }
-                            } else { // It's a directory
-                                destinationFile.mkdirs()
-                            }
-                            itemToExtract.status = TaskContentStatus.SUCCESS
-                        } catch (_: Exception) {
-                            itemToExtract.status = TaskContentStatus.FAILED
+
+                    val sourceHolder = item.content as ZipFileHolder
+                    val destinationFile = File(destinationHolder.uniquePath, item.relativePath)
+
+                    updateProgress(index, sourceHolder.displayName)
+
+                    if (item.status == TaskContentStatus.PENDING) {
+                        val conflictExists = destinationFile.exists() && destinationFile.isFile
+                        if (conflictExists && !handleConflict(item, true)) {
+                            return
                         }
                     }
 
-                    else -> { /* do nothing */
+                    when (item.status) {
+                        TaskContentStatus.PENDING, TaskContentStatus.REPLACE -> {
+                            item.status =
+                                if (extractZipEntry(sourceZip, sourceHolder, destinationFile)) {
+                                    TaskContentStatus.SUCCESS
+                                } else {
+                                    TaskContentStatus.FAILED
+                                }
+                        }
+
+                        else -> { /* Already handled */
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            throw RuntimeException(
+                globalClass.getString(R.string.failed_to_extract_files_from_zip),
+                e
+            )
         }
     }
 
-    /** Copy files from one zip archive to another. */
+    private fun extractZipEntry(
+        sourceZip: ZipFile,
+        sourceHolder: ZipFileHolder,
+        destinationFile: File
+    ): Boolean {
+        return try {
+            if (sourceHolder.isFile()) {
+                destinationFile.parentFile?.mkdirs()
+                sourceZip.getInputStream(sourceZip.getFileHeader(sourceHolder.node.path))
+                    .use { input ->
+                        destinationFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+            } else {
+                destinationFile.mkdirs()
+            }
+            true
+        } catch (e: Exception) {
+            logger.logError(e)
+            false
+        }
+    }
+
     private fun copyZipFilesToZip(sourcePath: String, destinationHolder: ZipFileHolder) {
-        val sourceFile = (sourceFiles.first() as ZipFileHolder).zipTree.source.file
-        val destFile = destinationHolder.zipTree.source.file
-
-        // Prevent copying a directory into itself inside a zip
-        if (sourceFile.canonicalPath == destFile.canonicalPath) {
-            val destNodePath = destinationHolder.node.path
-            if (sourceFiles.any { !(it as ZipFileHolder).isFile() && destNodePath.startsWith(it.node.path) }) {
-                markAsFailed(globalClass.resources.getString(R.string.task_summary_invalid_dest))
-                return
-            }
-        }
-
         progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
-        if (pendingFiles.isEmpty()) {
-            sourceFiles.forEach {
-                pendingFiles.addAll(listFilesWithRelativePath(sourcePath, it))
-            }
-        }
+        preparePendingFiles(sourcePath)
 
         progressMonitor.apply {
             totalContent = pendingFiles.size
             processName = globalClass.resources.getString(R.string.copying)
         }
 
-        ZipFile(sourceFile).use { sourceZip ->
-            ZipFile(destFile).use { destZip ->
-                pendingFiles.forEachIndexed { index, itemToCopy ->
-                    if (aborted) {
-                        progressMonitor.status = TaskStatus.CANCELLED
-                        return@use
-                    }
+        val sourceFile = (sourceFiles.first() as ZipFileHolder).zipTree.source.file
+        val destFile = destinationHolder.zipTree.source.file
 
-                    val sourceHolder = itemToCopy.content as ZipFileHolder
-                    val targetEntryPath =
-                        "${destinationHolder.node.path}${if (destinationHolder.node.path.isEmpty()) emptyString else File.separator}${itemToCopy.relativePath}"
-
-                    if (itemToCopy.status == TaskContentStatus.PENDING) {
-                        progressMonitor.apply {
-                            contentName = itemToCopy.content.displayName
-                            remainingContent = pendingFiles.size - index + 1
-                            progress = (index + 1f) / pendingFiles.size
+        try {
+            ZipFile(sourceFile).use { sourceZip ->
+                ZipFile(destFile).use { destZip ->
+                    pendingFiles.forEachIndexed { index, item ->
+                        if (aborted) {
+                            progressMonitor.status = TaskStatus.CANCELLED
+                            return
                         }
 
-                        val existingHeader = destZip.getFileHeader(targetEntryPath)
-                        if (existingHeader != null) {
-                            if (existingHeader.isDirectory || commonConflictResolution == TaskContentStatus.SKIP) {
-                                itemToCopy.status = TaskContentStatus.SKIP
-                            } else if (commonConflictResolution == TaskContentStatus.ASK) {
-                                itemToCopy.status = TaskContentStatus.CONFLICT
-                                progressMonitor.status = TaskStatus.CONFLICT
-                                globalClass.taskManager.taskInterceptor.interceptTask(
-                                    taskContentItem = itemToCopy,
-                                    task = this
-                                )
-                                return@use // Pause task
-                            } else if (commonConflictResolution == TaskContentStatus.REPLACE) {
-                                itemToCopy.status = TaskContentStatus.REPLACE
+                        if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+                            return@forEachIndexed
+                        }
+
+                        updateProgress(index, item.content.displayName)
+
+                        val targetPath =
+                            createZipEntryPath(destinationHolder.node.path, item.relativePath)
+
+                        if (item.status == TaskContentStatus.PENDING) {
+                            val existingHeader = destZip.getFileHeader(targetPath)
+                            val conflictExists =
+                                existingHeader != null && !existingHeader.isDirectory
+                            if (conflictExists && !handleConflict(item, true)) {
+                                return
                             }
                         }
-                    }
 
-                    // If user chose 'Replace' for a conflict, we must first remove the old file.
-                    if (itemToCopy.status == TaskContentStatus.REPLACE) {
-                        try {
-                            destZip.removeFile(targetEntryPath)
-                        } catch (_: Exception) {
-                            // Ignore if removal fails (e.g., file didn't exist)
-                        }
-                    }
-
-                    when (itemToCopy.status) {
-                        TaskContentStatus.PENDING, TaskContentStatus.REPLACE -> {
+                        // Remove existing file if replacing
+                        if (item.status == TaskContentStatus.REPLACE) {
                             try {
-                                val params = ZipParameters().apply {
-                                    fileNameInZip = targetEntryPath
-                                    isOverrideExistingFilesInZip = true
-                                }
-
-                                if (sourceHolder.isFile()) {
-                                    sourceZip.getInputStream(sourceZip.getFileHeader(sourceHolder.node.path))
-                                        .use { input ->
-                                            destZip.addStream(input, params)
-                                        }
-                                } else { // It's a directory, add an entry with a trailing slash
-                                    params.fileNameInZip =
-                                        if (targetEntryPath.endsWith(File.separator)) targetEntryPath else "$targetEntryPath/"
-                                    destZip.addStream(ByteArrayInputStream(ByteArray(0)), params)
-                                }
-                                itemToCopy.status = TaskContentStatus.SUCCESS
-                            } catch (_: Exception) {
-                                itemToCopy.status = TaskContentStatus.FAILED
+                                destZip.removeFile(targetPath)
+                            } catch (e: Exception) {
+                                logger.logError(e) // Log but continue
                             }
                         }
 
-                        else -> { /* Do nothing */
+                        when (item.status) {
+                            TaskContentStatus.PENDING, TaskContentStatus.REPLACE -> {
+                                item.status =
+                                    if (copyZipEntry(sourceZip, destZip, item, targetPath)) {
+                                        TaskContentStatus.SUCCESS
+                                    } else {
+                                        TaskContentStatus.FAILED
+                                    }
+                            }
+
+                            else -> { /* Already handled */
+                            }
                         }
                     }
                 }
             }
+        } catch (e: Exception) {
+            throw RuntimeException(globalClass.getString(R.string.failed_to_copy_zip_entries), e)
+        }
+    }
+
+    private fun copyZipEntry(
+        sourceZip: ZipFile,
+        destZip: ZipFile,
+        item: TaskContentItem,
+        targetPath: String
+    ): Boolean {
+        return try {
+            val sourceHolder = item.content as ZipFileHolder
+            val params = ZipParameters().apply {
+                fileNameInZip = if (sourceHolder.isFile()) targetPath else "$targetPath/"
+                isOverrideExistingFilesInZip = true
+            }
+
+            if (sourceHolder.isFile()) {
+                sourceZip.getInputStream(sourceZip.getFileHeader(sourceHolder.node.path))
+                    .use { input ->
+                        destZip.addStream(input, params)
+                    }
+            } else {
+                destZip.addStream(ByteArrayInputStream(ByteArray(0)), params)
+            }
+            true
+        } catch (e: Exception) {
+            logger.logError(e)
+            false
+        }
+    }
+
+    private fun createZipEntryPath(basePath: String, relativePath: String): String {
+        return if (basePath.isEmpty()) {
+            relativePath
+        } else {
+            "$basePath${File.separator}$relativePath"
         }
     }
 
     private fun listFilesWithRelativePath(
         basePath: String,
         startFile: ContentHolder
-    ): ArrayList<out TaskContentItem> {
+    ): List<TaskContentItem> {
         if (startFile.isFile()) {
-            return arrayListOf(
+            return listOf(
                 TaskContentItem(
-                    startFile, startFile.displayName,
-                    TaskContentStatus.PENDING
+                    content = startFile,
+                    relativePath = startFile.displayName,
+                    status = TaskContentStatus.PENDING
                 )
             )
         }
 
-        if (startFile is LocalFileHolder) {
-            return startFile.file.listFilesAndEmptyDirs()
-                .map { file ->
+        return when (startFile) {
+            is LocalFileHolder -> {
+                startFile.file.listFilesAndEmptyDirs().map { file ->
                     TaskContentItem(
                         content = LocalFileHolder(file),
-                        relativePath = file
-                            .toRelativeString(File(basePath))
+                        relativePath = file.toRelativeString(File(basePath))
                             .orIf(startFile.displayName) { it.isEmpty() },
                         status = TaskContentStatus.PENDING
                     )
-                }.toCollection(arrayListOf())
-        }
+                }
+            }
 
-        if (startFile is ZipFileHolder) {
-            return startFile.node.listFilesAndEmptyDirs()
-                .map { node ->
+            is ZipFileHolder -> {
+                startFile.node.listFilesAndEmptyDirs().map { node ->
                     TaskContentItem(
                         content = ZipFileHolder(startFile.zipTree, node),
-                        relativePath = node.path
-                            .toRelativeString(basePath)
+                        relativePath = node.path.toRelativeString(basePath)
                             .orIf(startFile.displayName) { it.isEmpty() },
                         status = TaskContentStatus.PENDING
                     )
-                }.toCollection(arrayListOf())
-        }
+                }
+            }
 
-        return arrayListOf()
+            else -> emptyList()
+        }
     }
 }

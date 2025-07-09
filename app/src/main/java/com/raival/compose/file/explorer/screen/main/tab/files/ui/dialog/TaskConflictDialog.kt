@@ -3,6 +3,7 @@ package com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -59,7 +60,15 @@ fun TaskConflictDialog() {
                 ) {
                     Text(text = globalClass.getString(R.string.apply_to_other_conflicts))
                 }
-                Row {
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    TextButton(onClick = {
+                        interceptor.hide()
+                    }) {
+                        Text(text = globalClass.getString(R.string.cancel))
+                    }
+                    Spacer(Modifier.weight(1f))
                     TextButton(onClick = {
                         interceptor.resolve(TaskContentStatus.REPLACE, applyToOtherConflicts)
                     }) {

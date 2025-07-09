@@ -297,4 +297,9 @@
     <string name="no_warnings_have_been_logged">هیچ هشداری ثبت نشده است</string>
     <string name="no_information_logs_have_been_recorded">هیچ گزارش اطلاعاتی ثبت نشده است</string>
     <string name="clearing_logs">در حال پاک کردن گزارش‌ها…</string>
+    <string name="unsupported_source_destination_combination">ترکیب منبع/مقصد پشتیبانی نمی‌شود</string>
+    <string name="unknown_error">خطای نامشخص</string>
+    <string name="failed_to_copy_files_to_zip">کپی فایل‌ها به فایل زیپ ناموفق بود</string>
+    <string name="failed_to_extract_files_from_zip">استخراج فایل‌ها از فایل زیپ ناموفق بود</string>
+    <string name="failed_to_copy_zip_entries">کپی ورودی‌های فایل زیپ ناموفق بود</string>
 </resources>

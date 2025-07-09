@@ -90,20 +90,26 @@ class DeleteTask(
             if (itemToDelete.status == TaskContentStatus.PENDING) {
                 progressMonitor.apply {
                     contentName = itemToDelete.source.displayName
-                    remainingContent = pendingContent.size - index + 1
+                    remainingContent = pendingContent.size - (index + 1)
                     progress = (index + 1f) / pendingContent.size
                 }
 
                 try {
-                    if (itemToDelete.source is LocalFileHolder) {
-                        itemToDelete.source.file.deleteRecursively()
-                    } else if (itemToDelete.source is ZipFileHolder) {
-                        ZipFile(itemToDelete.source.zipTree.source.file).use {
-                            it.removeFile(itemToDelete.source.uniquePath)
+                    when (itemToDelete.source) {
+                        is LocalFileHolder -> {
+                            itemToDelete.source.file.deleteRecursively()
                         }
-                    } else {
-                        itemToDelete.status = TaskContentStatus.SKIP
-                        return@forEachIndexed
+
+                        is ZipFileHolder -> {
+                            ZipFile(itemToDelete.source.zipTree.source.file).use {
+                                it.removeFile(itemToDelete.source.uniquePath)
+                            }
+                        }
+
+                        else -> {
+                            itemToDelete.status = TaskContentStatus.SKIP
+                            return@forEachIndexed
+                        }
                     }
                     itemToDelete.status = TaskContentStatus.SUCCESS
                 } catch (e: Exception) {

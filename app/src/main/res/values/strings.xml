@@ -297,5 +297,10 @@
     <string name="great_no_errors_have_been_encountered">Great! No errors have been encountered</string>
     <string name="no_warnings_have_been_logged">No warnings have been logged</string>
     <string name="no_information_logs_have_been_recorded">No information logs have been recorded</string>
-    <string name="clearing_logs">Clearing logs...</string>
+    <string name="clearing_logs">Clearing logs…</string>
+    <string name="unsupported_source_destination_combination">Unsupported source/destination combination</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="failed_to_copy_files_to_zip">Failed to copy files to zip</string>
+    <string name="failed_to_extract_files_from_zip">Failed to extract files from zip</string>
+    <string name="failed_to_copy_zip_entries">Failed to copy zip entries</string>
 </resources>
