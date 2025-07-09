@@ -286,11 +286,6 @@
     <string name="equalizer">Equalizer</string>
     <string name="reset">Reset</string>
     <string name="done">Done</string>
-    <string name="ftp_server">FTP Server</string>
-    <string name="host">Host</string>
-    <string name="port">Port</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
     <string name="title_activity_logs">Logs</string>
     <string name="clear_logs">Clear logs</string>
     <string name="clear_all_logs_warning">Are you sure you want to clear all logs? This action cannot be undone.</string>
