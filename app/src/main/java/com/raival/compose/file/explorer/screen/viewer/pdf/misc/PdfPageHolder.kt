@@ -5,6 +5,7 @@ import android.graphics.pdf.PdfRenderer
 import android.graphics.pdf.PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY
 import android.util.Size
 import androidx.core.graphics.createBitmap
+import com.raival.compose.file.explorer.App.Companion.logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -58,7 +59,7 @@ data class PdfPageHolder(
                     }
                 }
             } catch (e: Exception) {
-                // Handle any rendering errors gracefully
+                logger.logError(e)
             } finally {
                 isLoading = false
             }

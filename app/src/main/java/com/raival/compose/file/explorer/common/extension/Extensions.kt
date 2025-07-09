@@ -255,13 +255,13 @@ fun Uri.exists(context: Context): Boolean {
                 // which means the URI is valid and accessible.
                 return true
             }
-        } catch (e: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
             // The content provider reported that the file doesn't exist.
             return false
-        } catch (e: SecurityException) {
+        } catch (_: SecurityException) {
             // We don't have permission to read the URI.
             return false
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Handle other potential exceptions, such as IllegalArgumentException for a malformed URI.
             return false
         }

@@ -20,6 +20,7 @@ import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.block
+import com.raival.compose.file.explorer.screen.logs.LogsActivity
 
 @Composable
 fun AppInfoDialog() {
@@ -72,6 +73,17 @@ fun AppInfoDialog() {
                     }
                 ) {
                     Text(text = stringResource(R.string.github))
+                }
+
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        context.startActivity(
+                            Intent(context, LogsActivity::class.java)
+                        )
+                    }
+                ) {
+                    Text(text = stringResource(R.string.title_activity_logs))
                 }
 
                 Button(

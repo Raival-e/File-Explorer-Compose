@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.task
 
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.listFilesAndEmptyDirs
@@ -102,6 +103,7 @@ class CopyTask(
                     }
                 }
             } catch (e: Exception) {
+                logger.logError(e)
                 markAsFailed(
                     globalClass.resources.getString(
                         R.string.task_summary_failed,
@@ -450,7 +452,7 @@ class CopyTask(
                                 destinationFile.mkdirs()
                             }
                             itemToExtract.status = TaskContentStatus.SUCCESS
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             itemToExtract.status = TaskContentStatus.FAILED
                         }
                     }
@@ -529,7 +531,7 @@ class CopyTask(
                     if (itemToCopy.status == TaskContentStatus.REPLACE) {
                         try {
                             destZip.removeFile(targetEntryPath)
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             // Ignore if removal fails (e.g., file didn't exist)
                         }
                     }
@@ -553,7 +555,7 @@ class CopyTask(
                                     destZip.addStream(ByteArrayInputStream(ByteArray(0)), params)
                                 }
                                 itemToCopy.status = TaskContentStatus.SUCCESS
-                            } catch (e: Exception) {
+                            } catch (_: Exception) {
                                 itemToCopy.status = TaskContentStatus.FAILED
                             }
                         }

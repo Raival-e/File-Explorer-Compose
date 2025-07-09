@@ -11,6 +11,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioMetadata
@@ -127,7 +128,8 @@ class AudioPlayerInstance(
                 }
 
                 retriever.release()
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                logger.logError(e)
                 // Fallback metadata
                 _metadata.value = AudioMetadata(
                     title = uri.lastPathSegment ?: globalClass.getString(R.string.unknown_title)

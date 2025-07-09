@@ -111,7 +111,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
             try {
                 context.startActivity(newIntent)
-            } catch (e: ActivityNotFoundException) {
+            } catch (_: ActivityNotFoundException) {
                 if (!anonymous) {
                     open(context, anonymous = true, skipSupportedExtensions = true, null)
                 } else {
@@ -119,8 +119,8 @@ class LocalFileHolder(val file: File) : ContentHolder() {
                 }
             } catch (e: Exception) {
                 with(globalClass) {
+                    logger.logError(e)
                     showMsg(getString(R.string.failed_to_open_this_file))
-                    log(e)
                 }
             }
         }

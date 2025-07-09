@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.zip
 
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
@@ -57,6 +58,7 @@ class ZipTree(
                 zipEntries.put(entry.name, entry)
             }
         } catch (e: Exception) {
+            logger.logError(e)
             globalClass.showMsg(R.string.invalid_zip)
         }
 

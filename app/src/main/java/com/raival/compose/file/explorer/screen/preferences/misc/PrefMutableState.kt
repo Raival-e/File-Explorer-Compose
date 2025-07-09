@@ -35,7 +35,7 @@ inline fun <reified A> prefMutableState(
                                 it.remove(key)
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         snapshotMutableState.value = rollbackValue
                     }
                 }

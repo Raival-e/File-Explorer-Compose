@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.task
 
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.toFormattedDate
@@ -71,6 +72,7 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
         try {
             if (parameters!!.toFind.isNotEmpty() && parameters!!.useRegex) parameters!!.toFind.toRegex()
         } catch (e: Exception) {
+            logger.logError(e)
             markAsFailed(
                 globalClass.resources.getString(
                     R.string.task_summary_failed,
@@ -127,6 +129,7 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
                     }
                     itemToRename.status = TaskContentStatus.SUCCESS
                 } catch (e: Exception) {
+                    logger.logError(e)
                     markAsFailed(
                         globalClass.resources.getString(
                             R.string.task_summary_failed,

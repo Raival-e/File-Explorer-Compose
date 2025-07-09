@@ -20,6 +20,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isDarkTheme
@@ -118,7 +119,8 @@ class TextEditorManager {
                 customSymbolsFile.readText(),
                 object : TypeToken<ArrayList<SymbolHolder>>() {}.type
             )
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            logger.logError(e)
             globalClass.showMsg(R.string.failed_to_load_symbols_file)
         }
     }
@@ -277,7 +279,8 @@ class TextEditorManager {
                 editorColorScheme = TextMateColorScheme.create(ThemeRegistry.getInstance())
                 codeEditor.colorScheme = editorColorScheme
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            logger.logError(e)
         }
     }
 

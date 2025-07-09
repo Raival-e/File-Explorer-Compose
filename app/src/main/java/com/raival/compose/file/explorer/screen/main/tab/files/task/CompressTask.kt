@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.task
 
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.toFormattedDate
@@ -106,6 +107,7 @@ class CompressTask(
                         }
                         itemToCompress.status = TaskContentStatus.SUCCESS
                     } catch (e: Exception) {
+                        logger.logError(e)
                         markAsFailed(
                             globalClass.resources.getString(
                                 R.string.task_summary_failed,

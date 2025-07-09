@@ -290,4 +290,16 @@
     <string name="port">پورت</string>
     <string name="username">نام کاربری</string>
     <string name="password">رمز عبور</string>
+    <string name="title_activity_logs">Logs</string>
+    <string name="clear_logs">Clear logs</string>
+    <string name="clear_all_logs_warning">Are you sure you want to clear all logs? This action cannot be undone.</string>
+    <string name="clear">Clear</string>
+    <string name="no_logs_available">No logs available</string>
+    <string name="no_errors_logged">No errors logged</string>
+    <string name="no_warnings_logged">No warnings logged</string>
+    <string name="no_info_logs_available">No info logs available</string>
+    <string name="great_no_errors_have_been_encountered">Great! No errors have been encountered</string>
+    <string name="no_warnings_have_been_logged">No warnings have been logged</string>
+    <string name="no_information_logs_have_been_recorded">No information logs have been recorded</string>
+    <string name="clearing_logs">Clearing logs...</string>
 </resources>

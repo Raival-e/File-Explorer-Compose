@@ -83,6 +83,7 @@ import coil3.compose.AsyncImage
 import coil3.toBitmap
 import com.anggrayudi.storage.extension.toDocumentFile
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.read
@@ -144,7 +145,8 @@ private fun ImageViewerScreen(instance: ViewerInstance) {
         try {
             imageData = instance.uri.read()
             isLoading = false
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            logger.logError(e)
             isError = true
             isLoading = false
         }
@@ -177,7 +179,8 @@ private fun ImageViewerScreen(instance: ViewerInstance) {
                     try {
                         imageData = instance.uri.read()
                         isLoading = false
-                    } catch (_: Exception) {
+                    } catch (e: Exception) {
+                        logger.logError(e)
                         isError = true
                         isLoading = false
                     }
