@@ -164,8 +164,7 @@ fun LogsScreen(
                 ),
                 navigationIcon = {
                     IconButton(
-                        onClick = onBackClick,
-                        enabled = combinedLogs.isNotEmpty()
+                        onClick = onBackClick
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
