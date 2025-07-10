@@ -312,4 +312,12 @@
     <string name="apk_bundle_sign_failed">Failed to sign the merged APK file</string>
     <string name="auto_sign_merged_apk_bundle_files">Auto sign merged APK bundle files</string>
     <string name="auto_sign_merged_apk_bundle_files_description">Automatically sign merged APK bundle files with a test key</string>
+    <string name="customize_home_tab">Customize home tab</string>
+    <string name="customize_home_layout">Customize Home Tab</string>
+    <string name="recently_modified_files">Recently modified files</string>
+    <string name="quick_access_categories">Quick access categories</string>
+    <string name="storage_devices_and_locations">Storage devices and locations</string>
+    <string name="bookmarked_files_and_folders">Bookmarked files and folders</string>
+    <string name="deleted_files">Deleted files</string>
+    <string name="quick_path_navigation">Quick path navigation</string>
 </resources>

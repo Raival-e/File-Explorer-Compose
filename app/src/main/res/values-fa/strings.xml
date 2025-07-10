@@ -311,4 +311,12 @@
     <string name="apk_bundle_sign_failed">امضای فایل APK ادغام شده ناموفق بود</string>
     <string name="auto_sign_merged_apk_bundle_files">امضای خودکار فایل‌های بسته APK ادغام شده</string>
     <string name="auto_sign_merged_apk_bundle_files_description">امضای خودکار فایل‌های بسته APK ادغام شده با کلید آزمایشی</string>
+    <string name="customize_home_tab">سفارشی کردن تب خانه</string>
+    <string name="customize_home_layout">سفارشی کردن تب خانه</string>
+    <string name="recently_modified_files">فایل‌های اخیراً تغییر یافته</string>
+    <string name="quick_access_categories">دسته‌بندی‌های دسترسی سریع</string>
+    <string name="storage_devices_and_locations">دستگاه‌های ذخیره‌سازی و مکان‌ها</string>
+    <string name="bookmarked_files_and_folders">فایل‌ها و پوشه‌های نشانک‌گذاری شده</string>
+    <string name="deleted_files">فایل‌های حذف شده</string>
+    <string name="quick_path_navigation">ناوبری سریع مسیر</string>
 </resources>

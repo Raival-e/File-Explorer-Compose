@@ -311,4 +311,12 @@
     <string name="apk_bundle_sign_failed">Falha ao assinar o arquivo APK mesclado</string>
     <string name="auto_sign_merged_apk_bundle_files">Assinar automaticamente arquivos de pacote APK mesclados</string>
     <string name="auto_sign_merged_apk_bundle_files_description">Assinar automaticamente arquivos de pacote APK mesclados com uma chave de teste</string>
+    <string name="customize_home_tab">Personalizar aba inicial</string>
+    <string name="customize_home_layout">Personalizar Aba Inicial</string>
+    <string name="recently_modified_files">Arquivos modificados recentemente</string>
+    <string name="quick_access_categories">Categorias de acesso rápido</string>
+    <string name="storage_devices_and_locations">Dispositivos de armazenamento e locais</string>
+    <string name="bookmarked_files_and_folders">Arquivos e pastas marcados</string>
+    <string name="deleted_files">Arquivos excluídos</string>
+    <string name="quick_path_navigation">Navegação rápida de caminho</string>
 </resources>

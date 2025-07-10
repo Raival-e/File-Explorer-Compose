@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.google.gson.Gson
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.fromJson
@@ -14,9 +15,10 @@ import com.raival.compose.file.explorer.common.extension.toJson
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
+import com.raival.compose.file.explorer.screen.main.tab.home.data.defaultHomeTabSections
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
-import com.raival.compose.file.explorer.screen.preferences.misc.dataStore
+import com.raival.compose.file.explorer.screen.preferences.misc.prefDataStore
 import com.raival.compose.file.explorer.screen.preferences.misc.prefMutableState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -42,6 +44,12 @@ class PreferencesManager {
             keyName = "showBottomBarLabels",
             defaultValue = true,
             getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+
+        var homeTabLayout by prefMutableState(
+            keyName = "homeTabLayout",
+            defaultValue = Gson().toJson(defaultHomeTabSections),
+            getPreferencesKey = { stringPreferencesKey("homeTabLayout") }
         )
     }
 
@@ -195,7 +203,7 @@ class PreferencesManager {
         fun getSortingPrefsFor(content: ContentHolder): FileSortingPrefs {
             return runBlocking {
                 fromJson(
-                    globalClass.dataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")]
+                    globalClass.prefDataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")]
                 ) ?: FileSortingPrefs(
                     sortMethod = defaultSortMethod,
                     showFoldersFirst = showFoldersFirst,
@@ -206,7 +214,7 @@ class PreferencesManager {
 
         fun setSortingPrefsFor(content: ContentHolder, prefs: FileSortingPrefs) {
             runBlocking {
-                globalClass.dataStore.edit {
+                globalClass.prefDataStore.edit {
                     it[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")] =
                         prefs.toJson()
                 }

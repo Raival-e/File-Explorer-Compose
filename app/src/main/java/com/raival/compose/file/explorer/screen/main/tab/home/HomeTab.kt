@@ -11,7 +11,10 @@ import androidx.compose.material.icons.rounded.Archive
 import androidx.compose.material.icons.rounded.AudioFile
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.VideoFile
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
@@ -33,14 +36,12 @@ import java.io.File
 
 class HomeTab : Tab() {
     override val id = globalClass.generateUid()
-
     override val title = globalClass.getString(R.string.home_tab_title)
-
     override val subtitle = emptyString
-
     override val header = globalClass.getString(R.string.home_tab_header)
-
     val recentFiles = mutableStateListOf<RecentFile>()
+
+    var showCustomizeHomeTabDialog by mutableStateOf(false)
 
     override fun onTabStarted() {
         super.onTabStarted()

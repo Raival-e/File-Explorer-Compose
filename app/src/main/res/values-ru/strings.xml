@@ -311,4 +311,12 @@
     <string name="apk_bundle_sign_failed">Не удалось подписать объединенный APK файл</string>
     <string name="auto_sign_merged_apk_bundle_files">Автоподпись объединенных файлов пакета APK</string>
     <string name="auto_sign_merged_apk_bundle_files_description">Автоматически подписывать объединенные файлы пакета APK тестовым ключом</string>
+    <string name="customize_home_tab">Настроить домашнюю вкладку</string>
+    <string name="customize_home_layout">Настроить Домашнюю Вкладку</string>
+    <string name="recently_modified_files">Недавно измененные файлы</string>
+    <string name="quick_access_categories">Категории быстрого доступа</string>
+    <string name="storage_devices_and_locations">Устройства хранения и местоположения</string>
+    <string name="bookmarked_files_and_folders">Файлы и папки в закладках</string>
+    <string name="deleted_files">Удаленные файлы</string>
+    <string name="quick_path_navigation">Быстрая навигация по путям</string>
 </resources>

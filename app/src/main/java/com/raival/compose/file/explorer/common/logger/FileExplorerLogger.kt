@@ -17,7 +17,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.UUID
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "logs")
+private val Context.logsDataStore: DataStore<Preferences> by preferencesDataStore(name = "logs")
 
 data class LogHolder(
     val message: String,
@@ -71,7 +71,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Save error to DataStore, maintaining only the 5 most recent
      */
     private suspend fun saveError(newError: LogHolder) {
-        context.dataStore.edit { preferences ->
+        context.logsDataStore.edit { preferences ->
             val currentErrorsJson = preferences[ERRORS_KEY] ?: "[]"
             val currentErrors = try {
                 gson.fromJson<List<LogHolder>>(currentErrorsJson, logListType) ?: emptyList()
@@ -90,7 +90,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Get all stored errors as a Flow
      */
     fun getErrors(): Flow<List<LogHolder>> {
-        return context.dataStore.data.map { preferences ->
+        return context.logsDataStore.data.map { preferences ->
             val errorsJson = preferences[ERRORS_KEY] ?: "[]"
             try {
                 gson.fromJson<List<LogHolder>>(errorsJson, logListType) ?: emptyList()
@@ -104,7 +104,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Clear all stored errors
      */
     suspend fun clearErrors() {
-        context.dataStore.edit { preferences ->
+        context.logsDataStore.edit { preferences ->
             preferences.remove(ERRORS_KEY)
         }
     }
@@ -149,7 +149,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Save warning to DataStore, maintaining only the 10 most recent
      */
     private suspend fun saveWarning(newWarning: LogHolder) {
-        context.dataStore.edit { preferences ->
+        context.logsDataStore.edit { preferences ->
             val currentWarningsJson = preferences[WARNINGS_KEY] ?: "[]"
             val currentWarnings = try {
                 gson.fromJson<List<LogHolder>>(currentWarningsJson, logListType) ?: emptyList()
@@ -169,7 +169,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Get all stored warnings as a Flow
      */
     fun getWarnings(): Flow<List<LogHolder>> {
-        return context.dataStore.data.map { preferences ->
+        return context.logsDataStore.data.map { preferences ->
             val warningsJson = preferences[WARNINGS_KEY] ?: "[]"
             try {
                 gson.fromJson<List<LogHolder>>(warningsJson, logListType) ?: emptyList()
@@ -183,7 +183,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Clear all stored warnings
      */
     suspend fun clearWarnings() {
-        context.dataStore.edit { preferences ->
+        context.logsDataStore.edit { preferences ->
             preferences.remove(WARNINGS_KEY)
         }
     }
@@ -215,7 +215,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Save info to DataStore, maintaining only the 30 most recent
      */
     private suspend fun saveInfo(newInfo: LogHolder) {
-        context.dataStore.edit { preferences ->
+        context.logsDataStore.edit { preferences ->
             val currentInfosJson = preferences[INFOS_KEY] ?: "[]"
             val currentInfos = try {
                 gson.fromJson<List<LogHolder>>(currentInfosJson, logListType) ?: emptyList()
@@ -234,7 +234,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Get all stored infos as a Flow
      */
     fun getInfos(): Flow<List<LogHolder>> {
-        return context.dataStore.data.map { preferences ->
+        return context.logsDataStore.data.map { preferences ->
             val infosJson = preferences[INFOS_KEY] ?: "[]"
             try {
                 gson.fromJson<List<LogHolder>>(infosJson, logListType) ?: emptyList()
@@ -248,7 +248,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Clear all stored infos
      */
     suspend fun clearInfos() {
-        context.dataStore.edit { preferences ->
+        context.logsDataStore.edit { preferences ->
             preferences.remove(INFOS_KEY)
         }
     }
@@ -267,7 +267,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Clear all logs (errors, warnings, and infos)
      */
     suspend fun clearAllLogs() {
-        context.dataStore.edit { preferences ->
+        context.logsDataStore.edit { preferences ->
             preferences.remove(ERRORS_KEY)
             preferences.remove(WARNINGS_KEY)
             preferences.remove(INFOS_KEY)
@@ -278,7 +278,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
      * Get total count of all logs
      */
     fun getTotalLogCount(): Flow<Int> {
-        return context.dataStore.data.map { preferences ->
+        return context.logsDataStore.data.map { preferences ->
             val errorCount = try {
                 val errorsJson = preferences[ERRORS_KEY] ?: "[]"
                 gson.fromJson<List<LogHolder>>(errorsJson, logListType)?.size ?: 0

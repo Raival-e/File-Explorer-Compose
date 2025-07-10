@@ -311,4 +311,12 @@
     <string name="apk_bundle_sign_failed">合并APK文件签名失败</string>
     <string name="auto_sign_merged_apk_bundle_files">自动签名合并的APK包文件</string>
     <string name="auto_sign_merged_apk_bundle_files_description">使用测试密钥自动签名合并的APK包文件</string>
+    <string name="customize_home_tab">自定义主页标签</string>
+    <string name="customize_home_layout">自定义主页标签</string>
+    <string name="recently_modified_files">最近修改的文件</string>
+    <string name="quick_access_categories">快速访问分类</string>
+    <string name="storage_devices_and_locations">存储设备和位置</string>
+    <string name="bookmarked_files_and_folders">书签文件和文件夹</string>
+    <string name="deleted_files">已删除文件</string>
+    <string name="quick_path_navigation">快速路径导航</string>
 </resources>

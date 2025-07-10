@@ -16,7 +16,7 @@ inline fun <reified A> prefMutableState(
     val key: Preferences.Key<A> = getPreferencesKey(keyName)
     val snapshotMutableState: MutableState<A> = mutableStateOf(
         runBlocking {
-            App.globalClass.dataStore.data.first()[key] ?: defaultValue
+            App.globalClass.prefDataStore.data.first()[key] ?: defaultValue
         }
     )
 
@@ -28,7 +28,7 @@ inline fun <reified A> prefMutableState(
                 snapshotMutableState.value = value
                 runBlocking {
                     try {
-                        App.globalClass.dataStore.edit {
+                        App.globalClass.prefDataStore.edit {
                             if (value != null) {
                                 it[key] = value as A
                             } else {
