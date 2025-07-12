@@ -222,7 +222,7 @@
     <string name="permissions">مجوزها</string>
     <string name="analysis">تجزیه و تحلیل</string>
     <string name="contents">محتویات</string>
-    <string name="md5_checksum">چک‌سام MD5</string>
+    <string name="md5_checksum">MD5</string>
     <string name="selection_summary">خلاصه انتخاب</string>
     <string name="items_count">%1$d مورد</string>
     <string name="total_size">اندازه کل</string>
@@ -328,4 +328,5 @@
     <string name="add_to_startup">اضافه کردن به تب‌های راه‌اندازی</string>
     <string name="remove_from_startup">حذف از تب‌های راه‌اندازی</string>
     <string name="moving">در حال انتقال</string>
+    <string name="sha1_checksum">SHA-256</string>
 </resources>

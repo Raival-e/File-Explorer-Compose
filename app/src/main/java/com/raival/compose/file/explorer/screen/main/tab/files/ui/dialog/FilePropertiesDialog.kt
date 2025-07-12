@@ -26,10 +26,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.DataUsage
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Inventory
@@ -63,13 +61,14 @@ import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.copyToClipboard
 import com.raival.compose.file.explorer.common.extension.showMsg
+import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.common.ui.block
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
@@ -98,37 +97,39 @@ fun FilePropertiesDialog(tab: FilesTab) {
             else -> stringResource(R.string.loading_properties)
         }
 
-        Dialog(
+        BottomSheetDialog(
             onDismissRequest = { tab.showFileProperties = false }
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .block()
-                    .padding(24.dp)
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp)
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = when (uiState.details) {
-                            is PropertiesState.SingleContentProperties -> if (selection.first().isFolder) Icons.Default.Folder else Icons.Default.Description
-                            is PropertiesState.MultipleContentProperties -> Icons.Default.SelectAll
-                            else -> Icons.Default.Info
-                        },
-                        contentDescription = null,
-                        modifier = Modifier.padding(end = 8.dp)
+                Column {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = title,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
-                    Text(text = title, style = MaterialTheme.typography.headlineSmall)
+                    Space(8.dp)
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                 }
+
+                Space(12.dp)
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 600.dp),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    item {
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                    }
-
                     item {
                         AnimatedContent(
                             targetState = uiState.details,
@@ -247,6 +248,12 @@ private fun SingleFileContent(details: PropertiesState.SingleContentProperties) 
                 valueFlow = details.checksum,
                 progressFlow = details.checksumProgress
             )
+            AsyncPropertyRow(
+                icon = Icons.Default.Info,
+                label = stringResource(R.string.sha1_checksum),
+                valueFlow = details.sha256,
+                progressFlow = details.sha256Progress
+            )
         }
     }
 }
@@ -296,7 +303,11 @@ private fun PropertySection(
             shape = RoundedCornerShape(6.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier
+                    .block(
+                        shape = RoundedCornerShape(6.dp),
+                    )
+                    .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 content()
@@ -311,43 +322,7 @@ fun PropertyRow(
     label: String,
     value: String
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(20.dp)
-        )
-        Space(12.dp)
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.width(100.dp),
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        Space(8.dp)
-        CopiableText(
-            text = value,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-fun AsyncPropertyRow(
-    icon: ImageVector,
-    label: String,
-    valueFlow: StateFlow<String>,
-    progressFlow: StateFlow<CalculationProgress>
-) {
-    val value by valueFlow.collectAsState()
-    val progress by progressFlow.collectAsState()
-
-    Column {
+    if (value.isNotBlank()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -367,18 +342,58 @@ fun AsyncPropertyRow(
                 color = MaterialTheme.colorScheme.onSurface
             )
             Space(8.dp)
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (progress.isCalculating) {
-                        PulsingDot()
-                        Space(8.dp)
+            CopiableText(
+                text = value,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+fun AsyncPropertyRow(
+    icon: ImageVector,
+    label: String,
+    valueFlow: StateFlow<String>,
+    progressFlow: StateFlow<CalculationProgress>
+) {
+    val value by valueFlow.collectAsState()
+    val progress by progressFlow.collectAsState()
+
+    if (value.isNotBlank()) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(20.dp)
+                )
+                Space(12.dp)
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.width(100.dp),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Space(8.dp)
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (progress.isCalculating) {
+                            PulsingDot()
+                            Space(8.dp)
+                        }
+                        CopiableText(
+                            text = value,
+                            color = if (progress.isCalculating)
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            else MaterialTheme.colorScheme.onSurface
+                        )
                     }
-                    CopiableText(
-                        text = value,
-                        color = if (progress.isCalculating)
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        else MaterialTheme.colorScheme.onSurface
-                    )
                 }
             }
         }

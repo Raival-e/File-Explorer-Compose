@@ -222,7 +222,7 @@
     <string name="permissions">Разрешения</string>
     <string name="analysis">Анализ</string>
     <string name="contents">Содержимое</string>
-    <string name="md5_checksum">MD5 контрольная сумма</string>
+    <string name="md5_checksum">MD5</string>
     <string name="selection_summary">Сводка выделения</string>
     <string name="items_count">%1$d элементов</string>
     <string name="total_size">Общий размер</string>
@@ -328,4 +328,5 @@
     <string name="add_to_startup">Добавить в стартовые вкладки</string>
     <string name="remove_from_startup">Убрать из стартовых вкладок</string>
     <string name="moving">Перемещение</string>
+    <string name="sha1_checksum">SHA-256</string>
 </resources>

@@ -223,7 +223,7 @@
     <string name="permissions">Permissions</string>
     <string name="analysis">Analysis</string>
     <string name="contents">Contents</string>
-    <string name="md5_checksum">MD5 Checksum</string>
+    <string name="md5_checksum">MD5</string>
     <string name="selection_summary">Selection Summary</string>
     <string name="items_count">%1$d items</string>
     <string name="total_size">Total Size</string>
@@ -329,4 +329,5 @@
     <string name="add_to_startup">Add to startup tabs</string>
     <string name="remove_from_startup">Remove from startup tabs</string>
     <string name="moving">Moving</string>
+    <string name="sha1_checksum">SHA-256</string>
 </resources>

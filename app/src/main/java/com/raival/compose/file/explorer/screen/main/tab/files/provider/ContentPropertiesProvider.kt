@@ -47,8 +47,10 @@ sealed interface PropertiesState {
         val owner: String,
         val contentCount: StateFlow<String>,
         val checksum: StateFlow<String>,
+        val sha256: StateFlow<String>,
         val contentProgress: StateFlow<CalculationProgress>,
         val checksumProgress: StateFlow<CalculationProgress>,
+        val sha256Progress: StateFlow<CalculationProgress>,
     ) : PropertiesState
 
     data class MultipleContentProperties(
@@ -73,9 +75,7 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
 
     init {
         when {
-            contentHolders.isEmpty() -> {
-                // Handle empty case - could show error state
-            }
+            contentHolders.isEmpty() -> {}
 
             contentHolders.size == 1 -> {
                 loadSingleContentDetails(contentHolders.first())
@@ -93,14 +93,20 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
     }
 
     private fun loadSingleContentDetails(file: ContentHolder) {
-        val contentCountFlow = MutableStateFlow(globalClass.getString(R.string.not_available))
+        val contentCountFlow = MutableStateFlow(emptyString)
         val checksumFlow = MutableStateFlow(
-            if (file.isFolder) globalClass.getString(R.string.not_available) else globalClass.getString(
+            if (file.isFolder) emptyString else globalClass.getString(
+                R.string.calculating
+            )
+        )
+        val sha256Flow = MutableStateFlow(
+            if (file.isFolder) emptyString else globalClass.getString(
                 R.string.calculating
             )
         )
         val contentProgressFlow = MutableStateFlow(CalculationProgress())
         val checksumProgressFlow = MutableStateFlow(CalculationProgress())
+        val sha256ProgressFlow = MutableStateFlow(CalculationProgress())
 
         _uiState.update {
             it.copy(
@@ -116,8 +122,10 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                     owner = getOwner(file),
                     contentCount = contentCountFlow,
                     checksum = checksumFlow,
+                    sha256 = sha256Flow,
                     contentProgress = contentProgressFlow,
-                    checksumProgress = checksumProgressFlow
+                    checksumProgress = checksumProgressFlow,
+                    sha256Progress = sha256ProgressFlow
                 )
             )
         }
@@ -172,8 +180,27 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                 }
             }
             activeJobs.add(job)
+            // Calculate SHA-256 with progress
+            val sha256Job = calculationScope.launch {
+                sha256ProgressFlow.value = CalculationProgress(isCalculating = true)
+                try {
+                    val sha256 = calculateSha256(file) { bytesProcessed, totalBytes ->
+                        sha256ProgressFlow.value = CalculationProgress(
+                            isCalculating = true,
+                            current = bytesProcessed,
+                            total = totalBytes
+                        )
+                    }
+                    sha256Flow.value = sha256
+                } catch (_: Exception) {
+                    sha256Flow.value = globalClass.getString(R.string.error_calculating)
+                } finally {
+                    sha256ProgressFlow.value = CalculationProgress(isCalculating = false)
+                }
+            }
+            activeJobs.add(sha256Job)
         } else {
-            checksumFlow.value = globalClass.getString(R.string.not_available)
+            checksumFlow.value = emptyString
         }
     }
 
@@ -287,7 +314,7 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
             }
         }
 
-        return globalClass.getString(R.string.not_available)
+        return emptyString
     }
 
     private fun getOwner(file: ContentHolder): String {
@@ -342,11 +369,47 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
         return Triple(fileCount, folderCount, totalSize)
     }
 
+    private suspend fun calculateSha256(
+        file: LocalFileHolder,
+        onProgress: (Long, Long) -> Unit
+    ): String {
+        if (file.isFolder) return emptyString
+
+        return withContext(IO) {
+            val md = MessageDigest.getInstance("SHA-256")
+            val fileSize = file.size
+            var bytesProcessed = 0L
+
+            try {
+                FileInputStream(file.file).use { fis ->
+                    val buffer = ByteArray(8192)
+                    var read: Int
+                    while (fis.read(buffer).also { read = it } != -1) {
+                        if (!currentCoroutineContext().isActive) break
+                        md.update(buffer, 0, read)
+                        bytesProcessed += read
+                        onProgress(bytesProcessed, fileSize)
+
+                        if (bytesProcessed % (64 * 1024) == 0L) {
+                            yield() // Yield every 64KB
+                        }
+                    }
+                }
+
+                val digest = md.digest()
+                val bigInt = BigInteger(1, digest)
+                bigInt.toString(16).padStart(64, '0')
+            } catch (_: Exception) {
+                globalClass.getString(R.string.error_calculating)
+            }
+        }
+    }
+
     private suspend fun calculateMD5WithProgress(
         file: LocalFileHolder,
         onProgress: (Long, Long) -> Unit
     ): String {
-        if (file.isFolder) return globalClass.getString(R.string.not_available)
+        if (file.isFolder) return emptyString
 
         return withContext(IO) {
             val md = MessageDigest.getInstance("MD5")

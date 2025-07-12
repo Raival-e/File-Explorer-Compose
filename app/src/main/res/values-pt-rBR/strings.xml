@@ -222,7 +222,7 @@
     <string name="permissions">Permissões</string>
     <string name="analysis">Análise</string>
     <string name="contents">Conteúdo</string>
-    <string name="md5_checksum">Checksum MD5</string>
+    <string name="md5_checksum">MD5</string>
     <string name="selection_summary">Resumo da Seleção</string>
     <string name="items_count">%1$d itens</string>
     <string name="total_size">Tamanho Total</string>
@@ -328,4 +328,5 @@
     <string name="add_to_startup">Adicionar às abas de inicialização</string>
     <string name="remove_from_startup">Remover das abas de inicialização</string>
     <string name="moving">Movendo</string>
+    <string name="sha1_checksum">SHA-256</string>
 </resources>
