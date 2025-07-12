@@ -327,4 +327,5 @@
     <string name="action_required">Требуется действие</string>
     <string name="add_to_startup">Добавить в стартовые вкладки</string>
     <string name="remove_from_startup">Убрать из стартовых вкладок</string>
+    <string name="moving">Перемещение</string>
 </resources>

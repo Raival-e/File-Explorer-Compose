@@ -327,4 +327,5 @@
     <string name="action_required">اقدام مورد نیاز</string>
     <string name="add_to_startup">اضافه کردن به تب‌های راه‌اندازی</string>
     <string name="remove_from_startup">حذف از تب‌های راه‌اندازی</string>
+    <string name="moving">در حال انتقال</string>
 </resources>

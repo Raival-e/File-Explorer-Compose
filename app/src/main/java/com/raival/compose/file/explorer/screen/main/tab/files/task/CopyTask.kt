@@ -266,6 +266,7 @@ class CopyTask(
 
             progressMonitor.apply {
                 remainingContent = successfulItems.size - (index + 1)
+                contentName = item.content.displayName
                 progress = (index + 1f) / successfulItems.size
             }
 
@@ -287,6 +288,13 @@ class CopyTask(
                 val successfulPaths = pendingFiles
                     .filter { it.status == TaskContentStatus.SUCCESS }
                     .map { (it.content as ZipFileHolder).node.path }
+
+                progressMonitor.apply {
+                    totalContent = successfulPaths.size
+                    remainingContent = 0
+                    contentName = emptyString
+                    progress = -1f
+                }
 
                 if (successfulPaths.isNotEmpty()) {
                     zipFile.removeFiles(successfulPaths)
@@ -315,7 +323,9 @@ class CopyTask(
 
         progressMonitor.apply {
             totalContent = pendingFiles.size
-            processName = globalClass.resources.getString(R.string.copying)
+            processName = if (deleteSourceFiles)
+                globalClass.resources.getString(R.string.moving)
+            else globalClass.resources.getString(R.string.copying)
         }
 
         pendingFiles.forEachIndexed { index, item ->
@@ -425,7 +435,9 @@ class CopyTask(
 
         progressMonitor.apply {
             totalContent = pendingFiles.size
-            processName = globalClass.resources.getString(R.string.copying)
+            processName = if (deleteSourceFiles)
+                globalClass.resources.getString(R.string.moving)
+            else globalClass.resources.getString(R.string.copying)
         }
 
         try {
@@ -604,7 +616,9 @@ class CopyTask(
 
         progressMonitor.apply {
             totalContent = pendingFiles.size
-            processName = globalClass.resources.getString(R.string.copying)
+            processName = if (deleteSourceFiles)
+                globalClass.resources.getString(R.string.moving)
+            else globalClass.resources.getString(R.string.copying)
         }
 
         val sourceFile = (sourceFiles.first() as ZipFileHolder).zipTree.source.file

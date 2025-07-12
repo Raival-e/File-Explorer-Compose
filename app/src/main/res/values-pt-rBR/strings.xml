@@ -327,4 +327,5 @@
     <string name="action_required">Ação necessária</string>
     <string name="add_to_startup">Adicionar às abas de inicialização</string>
     <string name="remove_from_startup">Remover das abas de inicialização</string>
+    <string name="moving">Movendo</string>
 </resources>
