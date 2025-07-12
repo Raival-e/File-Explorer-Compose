@@ -12,6 +12,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.fromJson
 import com.raival.compose.file.explorer.common.extension.toJson
+import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
@@ -49,7 +50,13 @@ class PreferencesManager {
         var homeTabLayout by prefMutableState(
             keyName = "homeTabLayout",
             defaultValue = Gson().toJson(getDefaultHomeLayout()),
-            getPreferencesKey = { stringPreferencesKey("homeTabLayout") }
+            getPreferencesKey = { stringPreferencesKey(it) }
+        )
+
+        var startupTabs by prefMutableState(
+            keyName = "startupTabs",
+            defaultValue = StartupTabs.default().toJson(),
+            getPreferencesKey = { stringPreferencesKey(it) }
         )
     }
 

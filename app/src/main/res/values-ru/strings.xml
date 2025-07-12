@@ -325,4 +325,6 @@
     <string name="task_validation_failed">Проверка задачи не удалась</string>
     <string name="task_is_not_in_pending_state">Задача не находится в состоянии ожидания</string>
     <string name="action_required">Требуется действие</string>
+    <string name="add_to_startup">Добавить в стартовые вкладки</string>
+    <string name="remove_from_startup">Убрать из стартовых вкладок</string>
 </resources>

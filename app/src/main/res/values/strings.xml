@@ -326,4 +326,6 @@
     <string name="task_validation_failed">Task validation failed</string>
     <string name="task_is_not_in_pending_state">Task is not in pending state</string>
     <string name="action_required">Action required</string>
+    <string name="add_to_startup">Add to startup tabs</string>
+    <string name="remove_from_startup">Remove from startup tabs</string>
 </resources>

@@ -19,7 +19,6 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
-import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.main.ui.AppInfoDialog
 import com.raival.compose.file.explorer.screen.main.ui.JumpToPathDialog
 import com.raival.compose.file.explorer.screen.main.ui.SaveTextEditorFilesDialog
@@ -65,13 +64,14 @@ class MainActivity : BaseActivity() {
                             mainActivityManager.getActiveTab().onTabStopped()
                     }
 
+                    LaunchedEffect(Unit) {
+                        handleIntent()
+                    }
+
                     LaunchedEffect(mainActivityManager.selectedTabIndex) {
                         if (mainActivityManager.tabs.isEmpty()) {
-                            mainActivityManager.addTabAndSelect(
-                                HomeTab()
-                            )
+                            mainActivityManager.loadStartupTabs()
                         }
-                        handleIntent()
 
                         if (pagerState.currentPage != mainActivityManager.selectedTabIndex) {
                             pagerState.scrollToPage(mainActivityManager.selectedTabIndex)

@@ -325,4 +325,6 @@
     <string name="task_validation_failed">Falha na validação da tarefa</string>
     <string name="task_is_not_in_pending_state">A tarefa não está em estado pendente</string>
     <string name="action_required">Ação necessária</string>
+    <string name="add_to_startup">Adicionar às abas de inicialização</string>
+    <string name="remove_from_startup">Remover das abas de inicialização</string>
 </resources>

@@ -30,8 +30,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.extension.fromJson
 import com.raival.compose.file.explorer.common.extension.isNot
+import com.raival.compose.file.explorer.common.extension.toJson
+import com.raival.compose.file.explorer.screen.main.startup.StartupTab
+import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
+import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import com.raival.compose.file.explorer.screen.main.tab.Tab
+import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -95,6 +105,82 @@ fun TabHeaderView(
                 onDismissRequest = { showTabHeaderMenu = false },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ) {
+                // get startup tabs
+                val startupTabs = remember {
+                    fromJson(App.globalClass.preferencesManager.appearancePrefs.startupTabs)
+                        ?: StartupTabs.default()
+                }
+
+                @Composable
+                fun addStartupTabMenuItems(
+                    tabType: StartupTabType,
+                    extra: String = emptyString,
+                    canAdd: Boolean,
+                    canRemove: Boolean
+                ) {
+                    if (canAdd) {
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.add_to_startup)) },
+                            onClick = {
+                                startupTabs.tabs.add(StartupTab(tabType, extra))
+                                App.globalClass.preferencesManager.appearancePrefs.startupTabs =
+                                    startupTabs.toJson()
+                                showTabHeaderMenu = false
+                            }
+                        )
+                    }
+
+                    if (canRemove && startupTabs.tabs.size > 1) {
+                        DropdownMenuItem(
+                            text = { Text(text = stringResource(R.string.remove_from_startup)) },
+                            onClick = {
+                                startupTabs.tabs.removeIf {
+                                    it.type == tabType && (extra == emptyString || it.extra == extra)
+                                }
+                                App.globalClass.preferencesManager.appearancePrefs.startupTabs =
+                                    startupTabs.toJson()
+                                showTabHeaderMenu = false
+                            }
+                        )
+                    }
+                }
+
+                when (tab) {
+                    is HomeTab -> {
+                        val homeTabs = startupTabs.tabs.filter { it.type == StartupTabType.HOME }
+                        addStartupTabMenuItems(
+                            tabType = StartupTabType.HOME,
+                            canAdd = homeTabs.isEmpty(),
+                            canRemove = homeTabs.isNotEmpty()
+                        )
+                    }
+
+                    is AppsTab -> {
+                        val appsTabs = startupTabs.tabs.filter { it.type == StartupTabType.APPS }
+                        addStartupTabMenuItems(
+                            tabType = StartupTabType.APPS,
+                            canAdd = appsTabs.isEmpty(),
+                            canRemove = appsTabs.isNotEmpty()
+                        )
+                    }
+
+                    is FilesTab -> {
+                        if (tab.activeFolder is LocalFileHolder) {
+                            val uniquePath = (tab.activeFolder as LocalFileHolder).uniquePath
+                            val filesTabsPaths = startupTabs.tabs
+                                .filter { it.type == StartupTabType.FILES }
+                                .map { it.extra }
+
+                            addStartupTabMenuItems(
+                                tabType = StartupTabType.FILES,
+                                extra = uniquePath,
+                                canAdd = true, // Files tabs can always be added
+                                canRemove = filesTabsPaths.contains(uniquePath)
+                            )
+                        }
+                    }
+                }
+
                 if (index > 0) {
                     DropdownMenuItem(
                         text = { Text(text = stringResource(R.string.close)) },

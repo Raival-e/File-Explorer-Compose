@@ -325,4 +325,6 @@
     <string name="task_validation_failed">任务验证失败</string>
     <string name="task_is_not_in_pending_state">任务不在待处理状态</string>
     <string name="action_required">需要操作</string>
+    <string name="add_to_startup">添加到启动标签页</string>
+    <string name="remove_from_startup">从启动标签页移除</string>
 </resources>

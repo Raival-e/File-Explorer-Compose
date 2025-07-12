@@ -325,4 +325,6 @@
     <string name="task_validation_failed">اعتبارسنجی کار ناموفق بود</string>
     <string name="task_is_not_in_pending_state">کار در حالت انتظار نیست</string>
     <string name="action_required">اقدام مورد نیاز</string>
+    <string name="add_to_startup">اضافه کردن به تب‌های راه‌اندازی</string>
+    <string name="remove_from_startup">حذف از تب‌های راه‌اندازی</string>
 </resources>

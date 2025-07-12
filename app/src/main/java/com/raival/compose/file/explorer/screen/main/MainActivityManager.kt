@@ -10,8 +10,12 @@ import androidx.compose.runtime.setValue
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.extension.fromJson
 import com.raival.compose.file.explorer.common.extension.isNot
+import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
+import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import com.raival.compose.file.explorer.screen.main.tab.Tab
+import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
@@ -20,6 +24,7 @@ import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.math.max
 
 class MainActivityManager {
@@ -171,6 +176,28 @@ class MainActivityManager {
             isSavingTextEditorFiles = false
 
             onRequestFinish()
+        }
+    }
+
+    fun loadStartupTabs() {
+        val startupTabs: StartupTabs =
+            fromJson(globalClass.preferencesManager.appearancePrefs.startupTabs)
+                ?: StartupTabs.default()
+
+        startupTabs.tabs.forEachIndexed { index, tab ->
+            val newTab = when (tab.type) {
+                StartupTabType.FILES -> FilesTab(LocalFileHolder(File(tab.extra)))
+                StartupTabType.APPS -> AppsTab()
+                else -> HomeTab()
+            }
+
+            if (index == 0) {
+                addTabAndSelect(newTab)
+            } else {
+                tabs.add(newTab).also {
+                    newTab.onTabStarted()
+                }
+            }
         }
     }
 }
