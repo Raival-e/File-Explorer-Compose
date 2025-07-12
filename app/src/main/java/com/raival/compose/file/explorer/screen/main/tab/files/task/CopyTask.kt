@@ -219,9 +219,7 @@ class CopyTask(
         }
     }
 
-    private fun handleConflict(item: TaskContentItem, existsAsFile: Boolean): Boolean {
-        if (!existsAsFile) return true // No conflict for directories or non-existent files
-
+    private fun handleConflict(item: TaskContentItem): Boolean {
         return when (commonConflictResolution) {
             TaskContentStatus.SKIP -> {
                 item.status = TaskContentStatus.SKIP
@@ -337,13 +335,13 @@ class CopyTask(
 
             updateProgress(index, sourceFile.name)
 
-            if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item, true)) {
+            if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item)) {
                 return
             }
 
             if (item.status == TaskContentStatus.PENDING) {
                 val conflictExists = destinationFile.exists() && destinationFile.isFile
-                if (conflictExists && !handleConflict(item, true)) {
+                if (conflictExists && !handleConflict(item)) {
                     return
                 }
             }
@@ -433,7 +431,7 @@ class CopyTask(
 
                     updateProgress(index, item.content.displayName)
 
-                    if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item, true)) {
+                    if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item)) {
                         return
                     }
 
@@ -443,7 +441,7 @@ class CopyTask(
                     if (item.status == TaskContentStatus.PENDING) {
                         val existingHeader = targetZipFile.getFileHeader(targetPath)
                         val conflictExists = existingHeader != null && !existingHeader.isDirectory
-                        if (conflictExists && !handleConflict(item, true)) {
+                        if (conflictExists && !handleConflict(item)) {
                             return
                         }
                     }
@@ -528,13 +526,13 @@ class CopyTask(
 
                     updateProgress(index, sourceHolder.displayName)
 
-                    if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item, true)) {
+                    if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item)) {
                         return
                     }
 
                     if (item.status == TaskContentStatus.PENDING) {
                         val conflictExists = destinationFile.exists() && destinationFile.isFile
-                        if (conflictExists && !handleConflict(item, true)) {
+                        if (conflictExists && !handleConflict(item)) {
                             return
                         }
                     }
@@ -616,10 +614,7 @@ class CopyTask(
 
                         updateProgress(index, item.content.displayName)
 
-                        if (item.status == TaskContentStatus.CONFLICT && !handleConflict(
-                                item,
-                                true
-                            )
+                        if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item)
                         ) {
                             return
                         }
@@ -631,7 +626,7 @@ class CopyTask(
                             val existingHeader = destZip.getFileHeader(targetPath)
                             val conflictExists =
                                 existingHeader != null && !existingHeader.isDirectory
-                            if (conflictExists && !handleConflict(item, true)) {
+                            if (conflictExists && !handleConflict(item)) {
                                 return
                             }
                         }
