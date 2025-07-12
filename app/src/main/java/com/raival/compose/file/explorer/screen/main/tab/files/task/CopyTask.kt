@@ -15,6 +15,7 @@ import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.model.ZipParameters
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -372,14 +373,27 @@ class CopyTask(
             if (source.isFile) {
                 destination.parentFile?.mkdirs()
                 if (deleteSourceFiles) {
-                    Files.move(
-                        source.toPath(),
-                        destination.toPath(),
-                        *buildList {
-                            add(StandardCopyOption.ATOMIC_MOVE)
-                            if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
-                        }.toTypedArray()
-                    )
+                    try {
+                        // Try atomic move first (faster when supported)
+                        Files.move(
+                            source.toPath(),
+                            destination.toPath(),
+                            *buildList {
+                                add(StandardCopyOption.ATOMIC_MOVE)
+                                if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
+                            }.toTypedArray()
+                        )
+                    } catch (_: AtomicMoveNotSupportedException) {
+                        // Fallback to copy only - deletion will be handled by performSourceDeletion()
+                        Files.copy(
+                            source.toPath(),
+                            destination.toPath(),
+                            *buildList {
+                                add(StandardCopyOption.COPY_ATTRIBUTES)
+                                if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
+                            }.toTypedArray()
+                        )
+                    }
                 } else {
                     source.copyTo(destination, overwrite)
                 }
