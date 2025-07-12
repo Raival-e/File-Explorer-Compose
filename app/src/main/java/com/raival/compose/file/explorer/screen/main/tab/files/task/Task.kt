@@ -23,10 +23,6 @@ abstract class Task(
         aborted = true
     }
 
-    open fun getConflictedFile(): TaskContentItem? {
-        return null
-    }
-
     abstract val metadata: TaskMetadata
     abstract val progressMonitor: TaskProgressMonitor
     abstract fun getCurrentStatus(): TaskStatus
