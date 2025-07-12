@@ -33,17 +33,17 @@ fun FileExplorerTheme(
 ) {
     val context = LocalContext.current
     val manager = globalClass.preferencesManager
-    val darkTheme: Boolean = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        if (manager.displayPrefs.theme == ThemePreference.SYSTEM.ordinal) {
+    val darkTheme: Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (manager.appearancePrefs.theme == ThemePreference.SYSTEM.ordinal) {
             isSystemInDarkTheme()
-        } else manager.displayPrefs.theme == ThemePreference.DARK.ordinal
+        } else manager.appearancePrefs.theme == ThemePreference.DARK.ordinal
     } else {
-        manager.displayPrefs.theme == ThemePreference.DARK.ordinal
+        manager.appearancePrefs.theme == ThemePreference.DARK.ordinal
     }
 
     fun getTheme(): ColorScheme {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            when (manager.displayPrefs.theme) {
+            when (manager.appearancePrefs.theme) {
                 ThemePreference.LIGHT.ordinal -> dynamicLightColorScheme(context)
                 ThemePreference.DARK.ordinal -> dynamicDarkColorScheme(context)
                 else -> if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
@@ -51,7 +51,7 @@ fun FileExplorerTheme(
                 )
             }
         } else {
-            when (manager.displayPrefs.theme) {
+            when (manager.appearancePrefs.theme) {
                 ThemePreference.LIGHT.ordinal -> LightColorScheme
                 ThemePreference.DARK.ordinal -> DarkColorScheme
                 else -> if (darkTheme) DarkColorScheme else LightColorScheme
@@ -63,7 +63,7 @@ fun FileExplorerTheme(
         mutableStateOf(getTheme())
     }
 
-    LaunchedEffect(manager.displayPrefs.theme) {
+    LaunchedEffect(manager.appearancePrefs.theme) {
         colorScheme = getTheme()
     }
 
@@ -71,8 +71,10 @@ fun FileExplorerTheme(
 
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            (view.context as? Activity)?.window?.let {
+                WindowCompat.getInsetsController(it, view).isAppearanceLightStatusBars = !darkTheme
+            }
+
         }
     }
 

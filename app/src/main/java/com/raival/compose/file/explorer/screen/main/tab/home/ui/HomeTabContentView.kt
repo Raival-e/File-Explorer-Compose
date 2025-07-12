@@ -31,6 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,161 +47,168 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.cheonjaeung.compose.grid.SimpleGridCells
 import com.cheonjaeung.compose.grid.VerticalGrid
+import com.google.gson.Gson
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.Space
+import com.raival.compose.file.explorer.screen.main.MainActivityManager
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.BOOKMARKS
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.RECENT
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
+import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeLayout
+import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionConfig
+import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionType
+import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
 import com.raival.compose.file.explorer.screen.main.ui.SimpleNewTabViewItem
 import com.raival.compose.file.explorer.screen.main.ui.StorageDeviceView
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ColumnScope.HomeTabContentView(tab: HomeTab) {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .verticalScroll(rememberScrollState())) {
-        val mainActivityManager = globalClass.mainActivityManager
-        val context = LocalContext.current
+    val mainActivityManager = globalClass.mainActivityManager
+    val scope = rememberCoroutineScope()
+    val enabledSections = remember { mutableStateListOf<HomeSectionConfig>() }
 
-        LaunchedEffect(tab.id) {
-            tab.fetchRecentFiles()
-        }
-
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 12.dp),
-            text = stringResource(R.string.recent_files),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        if (tab.recentFileHolders.isEmpty()) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                    .clickable {
-                        mainActivityManager.replaceCurrentTabWith(
-                            FilesTab(StorageProvider.recentFiles)
-                        )
-                    },
-                text = stringResource(R.string.no_recent_files),
-                style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Center
+    LaunchedEffect(tab.id) {
+        tab.fetchRecentFiles()
+        val config = try {
+            Gson().fromJson(
+                globalClass.preferencesManager.appearancePrefs.homeTabLayout,
+                HomeLayout::class.java
             )
-        } else {
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                item { Space(6.dp) }
+        } catch (e: Exception) {
+            logger.logError(e)
+            getDefaultHomeLayout()
+        }.sections.filter { it.isEnabled }.sortedBy { it.order }
 
-                items(tab.recentFileHolders, key = { it.path }) {
-                    Column(
-                        modifier = Modifier
-                            .size(110.dp, 140.dp)
-                            .padding(horizontal = 6.dp)
-                            .background(
-                                shape = RoundedCornerShape(8.dp),
-                                color = MaterialTheme.colorScheme.surfaceContainerLow
-                            )
-                            .border(
-                                width = 0.5.dp,
-                                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .clip(RoundedCornerShape(8.dp))
-                            .combinedClickable(
-                                onClick = {
-                                    it.documentHolder.openFile(context, false, false)
-                                },
-                                onLongClick = {
-                                    mainActivityManager.addTabAndSelect(
-                                        FilesTab(it.documentHolder)
-                                    )
-                                }
-                            )
-                    ) {
-                        if (canUseCoil(it.documentHolder)) {
-                            AsyncImage(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(2f),
-                                model = it.documentHolder,
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                filterQuality = FilterQuality.Low
-                            )
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(2f),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Image(
-                                    modifier = Modifier.size(48.dp),
-                                    painter = painterResource(id = it.documentHolder.getFileIconResource()),
-                                    contentDescription = null
-                                )
-                            }
-                        }
+        enabledSections.addAll(config)
+    }
 
-                        Text(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .padding(8.dp),
-                            text = it.name,
-                            style = MaterialTheme.typography.labelSmall,
-                            maxLines = 2
-                        )
-                    }
+    if (tab.showCustomizeHomeTabDialog) {
+        HomeLayoutSettingsScreen { sections ->
+            tab.showCustomizeHomeTabDialog = false
+            var isAllDisabled = false
+
+            // Prevent disabling all sections
+            if (sections.all { !it.isEnabled }) {
+                isAllDisabled = true
+            }
+
+            sections.forEachIndexed { index, config ->
+                config.order = index
+            }
+
+            enabledSections.apply {
+                clear()
+                if (isAllDisabled) {
+                    addAll(getDefaultHomeLayout(true).sections.filter { it.isEnabled }
+                        .sortedBy { it.order })
+                } else {
+                    addAll(sections.filter { it.isEnabled }.sortedBy { it.order })
                 }
 
-                item {
-                    TextButton(
-                        onClick = {
-                            mainActivityManager.replaceCurrentTabWith(
-                                FilesTab(StorageProvider.recentFiles)
-                            )
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.more)
-                        )
-                    }
-                }
+            }
 
-                item { Space(6.dp) }
+            scope.launch {
+                if (isAllDisabled) {
+                    globalClass.preferencesManager.appearancePrefs.homeTabLayout = Gson().toJson(
+                        getDefaultHomeLayout(true)
+                    )
+                } else {
+                    globalClass.preferencesManager.appearancePrefs.homeTabLayout = Gson().toJson(
+                        HomeLayout(sections)
+                    )
+                }
             }
         }
+    }
 
-        Space(12.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        enabledSections.forEach { section ->
+            when (section.type) {
+                HomeSectionType.RECENT_FILES -> {
+                    RecentFilesSection(tab = tab, mainActivityManager = mainActivityManager)
+                }
 
+                HomeSectionType.CATEGORIES -> {
+                    CategoriesSection(tab = tab)
+                }
+
+                HomeSectionType.STORAGE -> {
+                    StorageSection(mainActivityManager = mainActivityManager)
+                }
+
+                HomeSectionType.BOOKMARKS -> {
+                    BookmarksSection(mainActivityManager = mainActivityManager)
+                }
+
+                HomeSectionType.RECYCLE_BIN -> {
+                    RecycleBinSection(mainActivityManager = mainActivityManager)
+                }
+
+                HomeSectionType.JUMP_TO_PATH -> {
+                    JumpToPathSection(mainActivityManager = mainActivityManager)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentFilesSection(
+    tab: HomeTab,
+    mainActivityManager: MainActivityManager
+) {
+    val context = LocalContext.current
+
+    // Recent files
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        text = stringResource(R.string.recent_files),
+        style = MaterialTheme.typography.titleMedium
+    )
+
+    if (tab.recentFiles.isEmpty()) {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 12.dp),
-            text = stringResource(R.string.categories),
-            style = MaterialTheme.typography.titleMedium
+                .height(140.dp)
+                .padding(horizontal = 12.dp, vertical = 12.dp)
+                .clickable {
+                    mainActivityManager.replaceCurrentTabWith(
+                        FilesTab(VirtualFileHolder(RECENT))
+                    )
+                },
+            text = stringResource(R.string.no_recent_files),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
         )
-
-        VerticalGrid(
+    } else {
+        LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            columns = SimpleGridCells.Fixed(3)
+                .height(140.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            tab.getMainCategories().forEach {
+            item { Space(6.dp) }
+
+            items(tab.recentFiles, key = { it.path }) {
                 Column(
-                    Modifier
-                        .padding(4.dp)
+                    modifier = Modifier
+                        .size(110.dp, 140.dp)
+                        .padding(horizontal = 6.dp)
                         .background(
                             shape = RoundedCornerShape(8.dp),
                             color = MaterialTheme.colorScheme.surfaceContainerLow
@@ -208,66 +218,184 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
                             color = MaterialTheme.colorScheme.surfaceContainerHighest,
                             shape = RoundedCornerShape(8.dp)
                         )
-                        .clickable { it.onClick() }
-                        .padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                        .clip(RoundedCornerShape(8.dp))
+                        .combinedClickable(
+                            onClick = {
+                                it.file.open(context, false, false, null)
+                            },
+                            onLongClick = {
+                                mainActivityManager.replaceCurrentTabWith(
+                                    FilesTab(it.file)
+                                )
+                            }
+                        )
                 ) {
-                    Icon(
-                        modifier = Modifier.padding(8.dp),
-                        imageVector = it.icon,
-                        contentDescription = null
+                    if (canUseCoil(it.file)) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(2f),
+                            model = it.file,
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            filterQuality = FilterQuality.Low
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(2f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier.size(48.dp),
+                                painter = painterResource(id = it.file.iconPlaceholder),
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .padding(8.dp),
+                        text = it.name,
+                        style = MaterialTheme.typography.labelSmall,
+                        maxLines = 2
                     )
-                    Text(text = it.name)
                 }
             }
-        }
-
-        Space(12.dp)
-
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 12.dp),
-            text = stringResource(R.string.storage),
-            style = MaterialTheme.typography.titleMedium
-        )
-
-        StorageProvider.getStorageDevices(globalClass).forEach {
-            StorageDeviceView(storageDeviceHolder = it) {
-                mainActivityManager.replaceCurrentTabWith(FilesTab(it.documentHolder))
+            item {
+                TextButton(
+                    onClick = {
+                        mainActivityManager.replaceCurrentTabWith(
+                            FilesTab(VirtualFileHolder(RECENT))
+                        )
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.more)
+                    )
+                }
             }
 
-            HorizontalDivider()
+            item { Space(6.dp) }
         }
+    }
 
-        if (globalClass.filesTabManager.bookmarks.isNotEmpty()) {
-            SimpleNewTabViewItem(
-                title = stringResource(R.string.bookmarks),
-                imageVector = Icons.Rounded.Bookmarks
+    Space(12.dp)
+}
+
+@Composable
+private fun CategoriesSection(
+    tab: HomeTab
+) {
+    // Quick access tiles
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        text = stringResource(R.string.categories),
+        style = MaterialTheme.typography.titleMedium
+    )
+
+    VerticalGrid(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp),
+        columns = SimpleGridCells.Fixed(3)
+    ) {
+        tab.getMainCategories().forEach {
+            Column(
+                Modifier
+                    .padding(4.dp)
+                    .background(
+                        shape = RoundedCornerShape(8.dp),
+                        color = MaterialTheme.colorScheme.surfaceContainerLow
+                    )
+                    .border(
+                        width = 0.5.dp,
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clickable { it.onClick() }
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                mainActivityManager.replaceCurrentTabWith(
-                    FilesTab(StorageProvider.bookmarks)
+                Icon(
+                    modifier = Modifier.padding(8.dp),
+                    imageVector = it.icon,
+                    contentDescription = null
                 )
+                Text(text = it.name)
             }
-
-            HorizontalDivider()
         }
+    }
 
-        SimpleNewTabViewItem(
-            title = stringResource(R.string.recycle_bin),
-            imageVector = Icons.Rounded.DeleteSweep
-        ) {
-            mainActivityManager.replaceCurrentTabWith(FilesTab(globalClass.recycleBinDir))
+    Space(12.dp)
+}
+
+@Composable
+private fun StorageSection(
+    mainActivityManager: MainActivityManager
+) {
+    // Storage options
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        text = stringResource(R.string.storage),
+        style = MaterialTheme.typography.titleMedium
+    )
+
+    StorageProvider.getStorageDevices(globalClass).forEach {
+        StorageDeviceView(storageDevice = it) {
+            mainActivityManager.replaceCurrentTabWith(FilesTab(it.contentHolder))
         }
-
         HorizontalDivider()
+    }
+}
 
+@Composable
+private fun BookmarksSection(
+    mainActivityManager: MainActivityManager
+) {
+    if (globalClass.filesTabManager.bookmarks.isNotEmpty()) {
         SimpleNewTabViewItem(
-            title = stringResource(R.string.jump_to_path),
-            imageVector = Icons.Rounded.ArrowOutward
+            title = stringResource(R.string.bookmarks),
+            imageVector = Icons.Rounded.Bookmarks
         ) {
-            mainActivityManager.showJumpToPathDialog = true
+            mainActivityManager.replaceCurrentTabWith(
+                FilesTab(VirtualFileHolder(BOOKMARKS))
+            )
         }
+        HorizontalDivider()
+    }
+}
+
+@Composable
+private fun RecycleBinSection(
+    mainActivityManager: MainActivityManager
+) {
+    SimpleNewTabViewItem(
+        title = stringResource(R.string.recycle_bin),
+        imageVector = Icons.Rounded.DeleteSweep
+    ) {
+        mainActivityManager.replaceCurrentTabWith(FilesTab(globalClass.recycleBinDir))
+    }
+    HorizontalDivider()
+}
+
+@Composable
+private fun JumpToPathSection(
+    mainActivityManager: MainActivityManager
+) {
+    SimpleNewTabViewItem(
+        title = stringResource(R.string.jump_to_path),
+        imageVector = Icons.Rounded.ArrowOutward
+    ) {
+        mainActivityManager.showJumpToPathDialog = true
     }
 }

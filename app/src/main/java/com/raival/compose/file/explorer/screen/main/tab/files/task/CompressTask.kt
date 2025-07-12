@@ -1,196 +1,151 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.task
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Compress
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.anggrayudi.storage.extension.launchOnUiThread
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.addIfAbsent
 import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.randomString
-import com.raival.compose.file.explorer.common.extension.trimToLastTwoSegments
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.ByteArrayOutputStream
-import java.util.zip.ZipEntry
-import java.util.zip.ZipInputStream
-import java.util.zip.ZipOutputStream
+import com.raival.compose.file.explorer.common.extension.toFormattedDate
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
+import net.lingala.zip4j.ZipFile
+import java.io.File
 
 class CompressTask(
-    private val source: List<DocumentHolder>
-) : FilesTabTask() {
-    override val id: String = String.randomString(8)
+    val sourceContent: List<ContentHolder>
+) : Task() {
+    private var parameters: CompressTaskParameters? = null
+    private var pendingContent = arrayListOf<TaskContentItem>()
 
-    override fun getTitle(): String = globalClass.getString(R.string.compress)
-
-    override fun getSubtitle(): String = if (source.size == 1)
-        source[0].path.trimToLastTwoSegments()
-    else globalClass.getString(R.string.task_subtitle, source.size)
-
-    override suspend fun execute(destination: DocumentHolder, callback: Any) {
-        val taskCallback = callback as FilesTabTaskCallback
-
-        val total: Int
-        var completed = 0
-        var skipped = 0
-
-        val entriesToAdded = arrayListOf<String>()
-
-        val details = FilesTabTaskDetails(
-            this,
-            TASK_COMPRESS,
-            getTitle(),
-            globalClass.getString(R.string.preparing),
-            emptyString,
-            0f
-        )
-
-        taskCallback.onPrepare(details)
-
-        val filesToCompress = arrayListOf<String>()
-
-        source.forEach {
-            filesToCompress.add(it.path)
-            if (!it.isFile) {
-                filesToCompress.addAll(it.walk(true).map { f -> f.path })
-            }
-        }
-
-        total = filesToCompress.size
-
-        fun updateProgress(info: String = emptyString): FilesTabTaskDetails {
-            return details.apply {
-                if (info.isNotEmpty()) this.info = info
-                if (progress >= 0) this.progress = (completed + skipped) / total.toFloat()
-                subtitle = globalClass.getString(R.string.progress, completed + skipped, total)
-            }
-        }
-
-        fun addFileToZip(
-            documentHolder: DocumentHolder,
-            zipOut: ZipOutputStream,
-            buffer: ByteArray,
-            parentPath: String
-        ) {
-            if (!filesToCompress.contains(documentHolder.path)) return
-
-            val entryName = if (parentPath.isEmpty()) {
-                documentHolder.getName()
-            } else {
-                "$parentPath/${documentHolder.getName()}"
-            }
-
-            if (documentHolder.isFolder) {
-                val children = documentHolder.listContent(false)
-                if (children.isNotEmpty()) {
-                    children.forEach { child ->
-                        addFileToZip(child, zipOut, buffer, entryName)
-                    }
-                } else {
-                    val entry = ZipEntry("$entryName/")
-                    zipOut.putNextEntry(entry)
-                    zipOut.closeEntry()
-                    completed++
-                    entriesToAdded.addIfAbsent(entryName)
+    override val metadata = System.currentTimeMillis().toFormattedDate().let { time ->
+        TaskMetadata(
+            id = id,
+            creationTime = time,
+            title = globalClass.resources.getString(R.string.compress),
+            subtitle = globalClass.resources.getString(R.string.task_subtitle, sourceContent.size),
+            displayDetails = sourceContent.joinToString(", ") { it.displayName },
+            fullDetails = buildString {
+                sourceContent.forEachIndexed { index, source ->
+                    append(source.displayName)
+                    append("\n")
                 }
-            } else {
-                taskCallback.onReport(
-                    updateProgress(
-                        info = globalClass.getString(
-                            R.string.compressing,
-                            documentHolder.getName()
-                        )
+                append("\n")
+                append(time)
+            },
+            isCancellable = true,
+            canMoveToBackground = true
+        )
+    }
+    override val progressMonitor = TaskProgressMonitor(
+        status = TaskStatus.PENDING,
+        taskTitle = metadata.title,
+    )
+
+    override fun getCurrentStatus() = progressMonitor.status
+
+    override fun validate() = sourceContent.find { !it.isValid() } == null
+
+    private fun markAsFailed(info: String) {
+        progressMonitor.apply {
+            status = TaskStatus.FAILED
+            summary = info
+        }
+    }
+
+    override suspend fun run() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
+    }
+
+    override suspend fun run(params: TaskParameters) {
+        parameters = params as CompressTaskParameters
+        progressMonitor.status = TaskStatus.RUNNING
+        protect = false
+
+        if (sourceContent.isEmpty()) {
+            markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
+            return
+        }
+
+        progressMonitor.processName = globalClass.resources.getString(R.string.preparing)
+
+        val basePath = sourceContent[0].getParent()?.uniquePath ?: emptyString
+
+        if (pendingContent.isEmpty()) {
+            sourceContent.forEachIndexed { index, content ->
+                pendingContent.add(
+                    TaskContentItem(
+                        content = content,
+                        relativePath = content.uniquePath.removePrefix("/$basePath"),
+                        status = TaskContentStatus.PENDING
                     )
                 )
-
-                val inputStream =
-                    globalClass.contentResolver.openInputStream(documentHolder.uri)
-
-                if (inputStream == null) {
-                    skipped++
-                    taskCallback.onReport(updateProgress())
-                }
-
-                inputStream?.use { input ->
-                    val entry = ZipEntry(entryName)
-                    zipOut.putNextEntry(entry)
-
-                    var length: Int
-                    while (input.read(buffer).also { length = it } > 0) {
-                        zipOut.write(buffer, 0, length)
-                    }
-
-                    zipOut.closeEntry()
-
-                    completed++
-
-                    entriesToAdded.addIfAbsent(entryName)
-
-                    taskCallback.onReport(updateProgress())
-                }
             }
         }
 
-        val buffer = ByteArray(1024)
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        destination.openInputStream().use { inputStream ->
-            ZipInputStream(BufferedInputStream(inputStream)).use { zipInputStream ->
-                ZipOutputStream(BufferedOutputStream(byteArrayOutputStream)).use { zipOut ->
-                    source.forEach { documentHolder ->
-                        addFileToZip(documentHolder, zipOut, buffer, emptyString)
+        progressMonitor.apply {
+            totalContent = pendingContent.size
+            processName = globalClass.getString(R.string.compressing)
+        }
+
+        ZipFile(parameters!!.destPath).use { zipFile ->
+            pendingContent.forEachIndexed { index, itemToCompress ->
+                if (aborted) {
+                    progressMonitor.status = TaskStatus.PAUSED
+                    return
+                }
+
+                if (itemToCompress.status == TaskContentStatus.PENDING) {
+                    progressMonitor.apply {
+                        contentName = itemToCompress.content.displayName
+                        remainingContent = pendingContent.size - (index + 1)
+                        progress = -1f
                     }
 
-                    var entry: ZipEntry? = zipInputStream.nextEntry
-                    while (entry != null) {
-                        if (entriesToAdded.contains(entry.name)) {
-                            zipOut.closeEntry()
-                            entry = zipInputStream.nextEntry
-                            continue
+                    try {
+                        if (itemToCompress.content.isFolder) {
+                            zipFile.addFolder(File(itemToCompress.content.uniquePath))
+                        } else {
+                            zipFile.addFile(itemToCompress.content.uniquePath)
                         }
-
-                        zipOut.putNextEntry(entry)
-
-                        var len: Int
-                        while (zipInputStream.read(buffer).also { len = it } > 0) {
-                            zipOut.write(buffer, 0, len)
-                        }
-
-                        zipOut.closeEntry()
-                        entry = zipInputStream.nextEntry
+                        itemToCompress.status = TaskContentStatus.SUCCESS
+                    } catch (e: Exception) {
+                        logger.logError(e)
+                        markAsFailed(
+                            globalClass.resources.getString(
+                                R.string.task_summary_failed,
+                                e.message ?: emptyString
+                            )
+                        )
+                        return
                     }
                 }
             }
         }
 
-        val tempDestination = DocumentHolder.fromFile(
-            kotlin.io.path.createTempFile(String.randomString(16)).toFile()
-        )
-        tempDestination.openOutputStream()?.use { outputStream ->
-            byteArrayOutputStream.writeTo(outputStream)
-        }
-
-        destination.writeText(emptyString)
-
-        tempDestination.openInputStream()?.use { inputStream ->
-            destination.openOutputStream()?.use { outputStream ->
-                inputStream.copyTo(outputStream)
+        if (progressMonitor.status == TaskStatus.RUNNING) {
+            progressMonitor.status = TaskStatus.SUCCESS
+            progressMonitor.summary = buildString {
+                pendingContent.forEach { content ->
+                    append(content.content.displayName)
+                    append(" -> ")
+                    append(content.status.name)
+                }
             }
-        }
-
-        tempDestination.delete()
-
-        launchOnUiThread {
-            taskCallback.onComplete(details.apply {
-                subtitle = globalClass.getString(R.string.done)
-            })
         }
     }
 
-    override fun getIcon(): ImageVector = Icons.Rounded.Compress
-
-    override fun getSourceFiles(): List<DocumentHolder> {
-        return source
+    override fun setParameters(params: TaskParameters) {
+        parameters = params as CompressTaskParameters
     }
+
+    override suspend fun continueTask() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
+    }
+
 }

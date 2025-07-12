@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
@@ -31,15 +32,16 @@ fun Container(
     title: String,
     content: @Composable () -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(true) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
             .block(
-                color = MaterialTheme.colorScheme.surface,
-                borderSize = 0.dp
+                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                borderSize = 0.dp,
+                shape = RoundedCornerShape(6.dp)
             )
             .padding(12.dp)
     ) {

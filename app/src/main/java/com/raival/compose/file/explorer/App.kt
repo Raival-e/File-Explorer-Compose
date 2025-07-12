@@ -3,7 +3,6 @@ package com.raival.compose.file.explorer
 import android.app.Application
 import android.content.Context
 import android.os.Process
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import coil3.ImageLoader
@@ -19,13 +18,13 @@ import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.raival.compose.file.explorer.coil.apk.ApkFileDecoder
 import com.raival.compose.file.explorer.coil.pdf.PdfFileDecoder
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.printFullStackTrace
-import com.raival.compose.file.explorer.common.extension.toFormattedDate
+import com.raival.compose.file.explorer.common.logger.FileExplorerLogger
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTabManager
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.manager.FilesTabManager
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.task.TaskManager
+import com.raival.compose.file.explorer.screen.main.tab.files.zip.ZipManager
 import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
 import com.raival.compose.file.explorer.screen.textEditor.TextEditorManager
 import com.raival.compose.file.explorer.screen.viewer.ViewersManager
@@ -36,6 +35,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
@@ -47,24 +47,23 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
 
         val globalClass
             get() = appContext as App
+
+        val logger
+            get() = globalClass.logger
     }
 
-    val appFiles: DocumentHolder
-        get() = DocumentHolder.fromFile(
-            File(globalClass.cacheDir, "files").apply {
-                if (!exists()) mkdirs()
-            }
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    lateinit var logger: FileExplorerLogger
+        private set
+
+    val appFiles: LocalFileHolder
+        get() = LocalFileHolder(
+            File(globalClass.cacheDir, "files").apply { if (!exists()) mkdirs() }
         )
 
-    private val errorLogFile: DocumentHolder
-        get() = "logs.txt".let {
-            DocumentHolder.fromFile(File(globalClass.cacheDir, it).apply {
-                if (!exists()) createNewFile()
-            })
-        }
-
-    val recycleBinDir: DocumentHolder
-        get() = DocumentHolder.fromFile(File(getExternalFilesDir(null), "bin").apply { mkdirs() })
+    val recycleBinDir: LocalFileHolder
+        get() = LocalFileHolder(File(getExternalFilesDir(null), "bin").apply { mkdirs() })
 
     private var uid = 0
 
@@ -72,20 +71,30 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { it.setupTabs() } }
     val filesTabManager: FilesTabManager by lazy { FilesTabManager() }
     val preferencesManager: PreferencesManager by lazy { PreferencesManager() }
-    val viewersManager: ViewersManager by lazy { ViewersManager() }
+    val viewersManager: ViewersManager by lazy {
+        setupTextMate()
+        ViewersManager()
+    }
+    val taskManager: TaskManager by lazy { TaskManager() }
+    val zipManager: ZipManager by lazy { ZipManager() }
 
     override fun onCreate() {
-        Thread.setDefaultUncaughtExceptionHandler { _: Thread?, throwable: Throwable? ->
-            throwable?.let {
-                Log.e("AppCrash", emptyString, it).also { log(throwable) }
-            }
+        super.onCreate()
+
+        logger = FileExplorerLogger(this, applicationScope)
+        setupGlobalExceptionHandler()
+
+        appContext = this
+    }
+
+    private fun setupGlobalExceptionHandler() {
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, exception ->
+            logger.logError(exception)
+            defaultHandler?.uncaughtException(thread, exception)
             Process.killProcess(Process.myPid())
             exitProcess(2)
         }
-
-        super.onCreate()
-
-        appContext = this
     }
 
     private fun setupTextMate() {
@@ -138,33 +147,6 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
 
 
     fun generateUid() = uid++
-
-    fun log(throwable: Throwable) {
-        log(throwable.printFullStackTrace(), "Error")
-    }
-
-    fun log(msg: String, header: String = emptyString) {
-        if (!errorLogFile.exists()) return
-        if (errorLogFile.isFolder) return
-
-        if (errorLogFile.fileSize > 1024 * 100) {
-            errorLogFile.writeText(emptyString)
-        }
-
-        errorLogFile.appendText(
-            buildString {
-                if (header.isNotEmpty()) {
-                    append(System.lineSeparator().repeat(2))
-                    append("-".repeat(4))
-                    append(" $header: ${System.currentTimeMillis().toFormattedDate()} ")
-                    append("-".repeat(4))
-                    append(System.lineSeparator())
-                }
-                append(msg)
-                append(System.lineSeparator())
-            }
-        )
-    }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         return ImageLoader(context)

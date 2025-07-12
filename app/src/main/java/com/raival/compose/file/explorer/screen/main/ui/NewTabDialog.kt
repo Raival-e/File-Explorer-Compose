@@ -39,8 +39,8 @@ fun NewTabDialog() {
                 )
 
                 StorageProvider.getStorageDevices(globalClass).forEach {
-                    StorageDeviceView(storageDeviceHolder = it) {
-                        globalClass.mainActivityManager.addTabAndSelect(FilesTab(it.documentHolder))
+                    StorageDeviceView(storageDevice = it) {
+                        globalClass.mainActivityManager.addTabAndSelect(FilesTab(it.contentHolder))
                         mainActivityManager.showNewTabDialog = false
                     }
                     HorizontalDivider()

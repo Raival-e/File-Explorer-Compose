@@ -1,8 +1,7 @@
 package com.raival.compose.file.explorer.screen.main
 
 import android.content.Context
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -14,8 +13,8 @@ import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDeviceHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +26,7 @@ class MainActivityManager {
     var title by mutableStateOf(globalClass.getString(R.string.main_activity_title))
     var subtitle by mutableStateOf(emptyString)
 
-    val storageDeviceHolders = arrayListOf<StorageDeviceHolder>()
+    val storageDevices = arrayListOf<StorageDevice>()
 
     var showNewTabDialog by mutableStateOf(false)
     var showAppInfoDialog by mutableStateOf(false)
@@ -35,13 +34,14 @@ class MainActivityManager {
     var showSaveTextEditorFilesBeforeCloseDialog by mutableStateOf(false)
     var isSavingTextEditorFiles by mutableStateOf(false)
 
+
     var selectedTabIndex by mutableIntStateOf(0)
     val tabs = mutableStateListOf<Tab>()
 
-    val drawerState = DrawerState(initialValue = DrawerValue.Closed)
+    val tabLayoutState = LazyListState()
 
     fun setupTabs() {
-        storageDeviceHolders.addAll(StorageProvider.getStorageDevices(globalClass))
+        storageDevices.addAll(StorageProvider.getStorageDevices(globalClass))
     }
 
     fun closeAllTabs() {
@@ -93,43 +93,47 @@ class MainActivityManager {
     }
 
     fun selectTabAt(index: Int) {
-        if (tabs.isNotEmpty() && selectedTabIndex isNot index && selectedTabIndex < tabs.size) tabs[selectedTabIndex].onTabStopped()
+        if (tabs.isNotEmpty()
+            && selectedTabIndex isNot index
+            && selectedTabIndex < tabs.size
+        ) getActiveTab().onTabStopped()
         selectedTabIndex = index
 
-        tabs[selectedTabIndex].apply {
+        getActiveTab().apply {
             if (!isCreated) onTabStarted() else onTabResumed()
         }
     }
 
     fun replaceCurrentTabWith(tab: Tab) {
-        if (tabs.isNotEmpty()) tabs[selectedTabIndex].onTabStopped()
+        if (tabs.isNotEmpty()) getActiveTab().onTabStopped()
         tabs[selectedTabIndex] = tab
         selectTabAt(selectedTabIndex)
     }
 
-    fun jumpToFile(file: DocumentHolder, context: Context) {
+    fun jumpToFile(file: LocalFileHolder, context: Context) {
         openFile(file, context)
     }
 
-    private fun openFile(file: DocumentHolder, context: Context) {
+    private fun openFile(file: LocalFileHolder, context: Context) {
         if (file.exists()) {
             addTabAndSelect(FilesTab(file, context))
         }
     }
 
+    fun resumeActiveTab() {
+        getActiveTab().onTabResumed()
+    }
+
+    fun getActiveTab(): Tab {
+        return tabs[selectedTabIndex]
+    }
+
     fun canExit(coroutineScope: CoroutineScope): Boolean {
-        if (drawerState.isOpen) {
-            coroutineScope.launch {
-                drawerState.close()
-            }
+        if (getActiveTab().onBackPressed()) {
             return false
         }
 
-        if (tabs[selectedTabIndex].onBackPressed()) {
-            return false
-        }
-
-        if (tabs[selectedTabIndex] !is HomeTab) {
+        if (getActiveTab() !is HomeTab && !globalClass.preferencesManager.behaviorPrefs.skipHomeWhenTabClosed) {
             replaceCurrentTabWith(HomeTab())
             return false
         }

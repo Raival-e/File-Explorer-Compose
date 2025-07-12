@@ -8,35 +8,26 @@ import android.os.Environment
 import android.os.StatFs
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
-import androidx.documentfile.provider.DocumentFile
-import com.anggrayudi.storage.file.DocumentFileCompat
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDeviceHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.EXTERNAL_STORAGE
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.INTERNAL_STORAGE
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.ROOT
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.RootFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.EXTERNAL_STORAGE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.INTERNAL_STORAGE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.ROOT
 import java.io.File
 
 object StorageProvider {
-    val recentFiles = DocumentHolder.fromFile(File("/:Recent"))
-    val images = DocumentHolder.fromFile(File("/:Images"))
-    val videos = DocumentHolder.fromFile(File("/:Videos"))
-    val audios = DocumentHolder.fromFile(File("/:Audios"))
-    val documents = DocumentHolder.fromFile(File("/:Documents"))
-    val archives = DocumentHolder.fromFile(File("/:Archives"))
-    val bookmarks = DocumentHolder.fromFile(File("/:Bookmarks"))
+    fun getStorageDevices(context: Context): List<StorageDevice> {
+        val storageDevices = mutableListOf<StorageDevice>()
 
-    fun getStorageDevices(context: Context): List<StorageDeviceHolder> {
-        val storageDeviceHolders = mutableListOf<StorageDeviceHolder>()
-
-        storageDeviceHolders.add(getPrimaryInternalStorage(context))
+        storageDevices.add(getPrimaryInternalStorage(context))
 
         val externalDirs = getExternalStorageDirectories(context)
 
         for (externalDir in externalDirs) {
-            if (externalDir.path == Environment.getExternalStorageDirectory().path){
+            if (externalDir.path == Environment.getExternalStorageDirectory().path) {
                 continue
             }
 
@@ -45,9 +36,9 @@ object StorageProvider {
             val availableSize = statFs.availableBytes
             val usedSize = totalSize - availableSize
 
-            storageDeviceHolders.add(
-                StorageDeviceHolder(
-                    DocumentHolder(DocumentFile.fromFile(externalDir)),
+            storageDevices.add(
+                StorageDevice(
+                    LocalFileHolder(externalDir),
                     "External Storage (${externalDir.name})",
                     totalSize,
                     usedSize,
@@ -56,12 +47,12 @@ object StorageProvider {
             )
         }
 
-        storageDeviceHolders.add(getRoot(context))
+        storageDevices.add(getRoot(context))
 
-        return storageDeviceHolders
+        return storageDevices
     }
 
-    fun getRoot(context: Context): StorageDeviceHolder {
+    fun getRoot(context: Context): StorageDevice {
         val externalStorageDir = Environment.getRootDirectory()
 
         val externalStatFs = StatFs(externalStorageDir.absolutePath)
@@ -70,8 +61,8 @@ object StorageProvider {
         val externalAvailableSize = externalStatFs.availableBytes
         val externalUsedSize = externalTotalSize - externalAvailableSize
 
-        return StorageDeviceHolder(
-            DocumentHolder(DocumentFileCompat.fromFile(context, externalStorageDir)!!),
+        return StorageDevice(
+            RootFileHolder(),
             context.getString(R.string.root_dir),
             externalTotalSize,
             externalUsedSize,
@@ -79,7 +70,7 @@ object StorageProvider {
         )
     }
 
-    fun getPrimaryInternalStorage(context: Context): StorageDeviceHolder {
+    fun getPrimaryInternalStorage(context: Context): StorageDevice {
         val externalStorageDir = Environment.getExternalStorageDirectory()
 
         val externalStatFs = StatFs(externalStorageDir.absolutePath)
@@ -88,8 +79,8 @@ object StorageProvider {
         val externalAvailableSize = externalStatFs.availableBytes
         val externalUsedSize = externalTotalSize - externalAvailableSize
 
-        return StorageDeviceHolder(
-            DocumentHolder(DocumentFile.fromFile(externalStorageDir)),
+        return StorageDevice(
+            LocalFileHolder(externalStorageDir),
             context.getString(R.string.internal_storage),
             externalTotalSize,
             externalUsedSize,
@@ -111,8 +102,8 @@ object StorageProvider {
         return directories
     }
 
-    fun getDocumentFiles(): ArrayList<DocumentHolder> {
-        val documentFiles = ArrayList<DocumentHolder>()
+    fun getDocumentFiles(): ArrayList<LocalFileHolder> {
+        val documentFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
@@ -148,15 +139,15 @@ object StorageProvider {
 
             while (it.moveToNext()) {
                 val path = it.getString(pathColumn)
-                documentFiles.add(DocumentHolder.fromFile(File(path)))
+                documentFiles.add(LocalFileHolder(File(path)))
             }
         }
 
         return documentFiles
     }
 
-    fun getArchiveFiles(): ArrayList<DocumentHolder> {
-        val archiveFiles = ArrayList<DocumentHolder>()
+    fun getArchiveFiles(): ArrayList<LocalFileHolder> {
+        val archiveFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
@@ -190,15 +181,15 @@ object StorageProvider {
 
             while (it.moveToNext()) {
                 val path = it.getString(pathColumn)
-                archiveFiles.add(DocumentHolder.fromFile(File(path)))
+                archiveFiles.add(LocalFileHolder(File(path)))
             }
         }
 
         return archiveFiles
     }
 
-    fun getImageFiles(): ArrayList<DocumentHolder> {
-        val imageFiles = ArrayList<DocumentHolder>()
+    fun getImageFiles(): ArrayList<LocalFileHolder> {
+        val imageFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
         val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
@@ -220,15 +211,15 @@ object StorageProvider {
 
             while (it.moveToNext()) {
                 val path = it.getString(pathColumn)
-                imageFiles.add(DocumentHolder.fromFile(File(path)))
+                imageFiles.add(LocalFileHolder(File(path)))
             }
         }
 
         return imageFiles
     }
 
-    fun getVideoFiles(): ArrayList<DocumentHolder> {
-        val videoFiles = ArrayList<DocumentHolder>()
+    fun getVideoFiles(): ArrayList<LocalFileHolder> {
+        val videoFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
         val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
@@ -250,15 +241,18 @@ object StorageProvider {
 
             while (it.moveToNext()) {
                 val path = it.getString(pathColumn)
-                videoFiles.add(DocumentHolder.fromFile(File(path)))
+                videoFiles.add(LocalFileHolder(File(path)))
             }
         }
 
         return videoFiles
     }
 
-    fun getAudioFiles(): ArrayList<DocumentHolder> {
-        val audioFiles = ArrayList<DocumentHolder>()
+    fun getBookmarks() = globalClass.filesTabManager.bookmarks
+        .map { LocalFileHolder(File(it)) } as ArrayList<LocalFileHolder>
+
+    fun getAudioFiles(): ArrayList<LocalFileHolder> {
+        val audioFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
         val uri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -280,7 +274,7 @@ object StorageProvider {
 
             while (it.moveToNext()) {
                 val path = it.getString(pathColumn)
-                audioFiles.add(DocumentHolder.fromFile(File(path)))
+                audioFiles.add(LocalFileHolder(File(path)))
             }
         }
 
@@ -290,10 +284,10 @@ object StorageProvider {
     fun getRecentFiles(
         recentHours: Int = 48,
         limit: Int = 25
-    ): ArrayList<DocumentHolder> {
-        val recentFiles = ArrayList<DocumentHolder>()
+    ): ArrayList<LocalFileHolder> {
+        val recentFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
-        val showHiddenFiles = globalClass.preferencesManager.displayPrefs.showHiddenFiles
+        val showHiddenFiles = globalClass.preferencesManager.fileListPrefs.showHiddenFiles
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
 
@@ -324,7 +318,7 @@ object StorageProvider {
                 val filePath = it.getString(columnIndexPath)
                 val file = File(filePath)
                 if (file.isFile && (showHiddenFiles || !file.name.startsWith("."))) {
-                    recentFiles.add(DocumentHolder.fromFile(file))
+                    recentFiles.add(LocalFileHolder(file))
                 }
             }
         }

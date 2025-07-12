@@ -44,50 +44,59 @@ android {
     }
 }
 
-composeCompiler {
-    enableStrongSkippingMode = true
-}
-
 dependencies {
-    implementation(libs.androidx.profileinstaller)
     "baselineProfile"(project(":baselineprofile"))
+    implementation(libs.androidx.profileinstaller)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.lifecycle.runtime.compose.android)
+    // Local/File-based dependencies
+    implementation(files("libs/APKEditor.jar"))
+
+    // AndroidX - Core & Lifecycle
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.material)
 
+    // Jetpack Compose
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.icons.extended)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.ui.tooling.preview.android)
 
+    // Other Jetpack & Android Libraries
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.palette.ktx)
+
+    // Sora Code Editor
     implementation(libs.sora.editor)
     implementation(libs.sora.editor.language.java)
     implementation(libs.sora.editor.language.textmate)
 
+    // Image Loading - Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
     implementation(libs.coil.svg)
     implementation(libs.coil.video)
 
-    implementation(libs.gson)
-    implementation(libs.androidx.datastore)
-
+    // Third-Party UI/Compose Utilities
+    implementation(libs.accompanist.systemuicontroller)
     implementation(libs.cascade.compose)
     implementation(libs.compose.swipebox)
-    implementation(libs.reorderable)
-    implementation(libs.storage)
     implementation(libs.grid)
     implementation(libs.lazycolumnscrollbar)
+    implementation(libs.reorderable)
     implementation(libs.zoomable)
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.ui)
 
-    // APKEditor
-    implementation(files("libs/APKEditor.jar"))
+    // Third-Party General Utilities
     implementation(libs.apksig)
+    implementation(libs.commons.net)
+    implementation(libs.gson)
+    implementation(libs.storage)
+    implementation(libs.zip4j)
 }

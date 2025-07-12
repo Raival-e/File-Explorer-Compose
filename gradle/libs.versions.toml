@@ -1,42 +1,51 @@
 [versions]
+accompanistSystemuicontroller = "0.36.0"
 agp = "8.6.1"
+apksig = "8.11.0"
+commonsNet = "3.11.1"
 desugar_jdk_libs = "2.1.5"
-grid = "2.2.1"
-kotlin = "2.0.0"
+grid = "2.3.2"
+kotlin = "2.2.0"
 coreKtx = "1.16.0"
-appcompat = "1.7.0"
+appcompat = "1.7.1"
 lazycolumnscrollbar = "2.2.0"
 material = "1.12.0"
-androidxComposeBom = "2025.05.01"
+androidxComposeBom = "2025.06.01"
 media3Exoplayer = "1.7.1"
-soraEditor = "0.23.5"
+paletteKtx = "1.0.0"
+soraEditor = "0.23.6"
 gson = "2.13.1"
 dataStore = "1.1.7"
-storage = "2.0.0"
+storage = "2.1.0"
 cascade_compose = "2.3.0"
 compose_swipebox = "1.4.0"
-lifecycle_runtime_compose_android = "2.9.0"
+lifecycle_runtime_compose_android = "2.9.1"
 activity_compose = "1.10.1"
-lifecycle_runtime_ktx = "2.9.0"
+lifecycle_runtime_ktx = "2.9.1"
 coilCompose = "3.2.0"
-zoomable = "2.7.0"
+zip4j = "2.11.5"
+zoomable = "2.8.1"
 junit = "1.2.1"
 espressoCore = "3.6.1"
 uiautomator = "2.3.0"
 benchmarkMacroJunit4 = "1.3.4"
 baselineprofile = "1.3.4"
 profileinstaller = "1.4.1"
-reorderable = "2.4.3"
-apksig = "8.10.0"
+reorderable = "2.5.1"
+uiToolingPreviewAndroid = "1.8.3"
 
 [libraries]
+accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
 androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
+androidx-palette-ktx = { module = "androidx.palette:palette-ktx", version.ref = "paletteKtx" }
+apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coilCompose" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilCompose" }
 coil-video = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilCompose" }
+commons-net = { module = "commons-net:commons-net", version.ref = "commonsNet" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 grid = { module = "com.cheonjaeung.compose.grid:grid", version.ref = "grid" }
 lazycolumnscrollbar = { module = "com.github.nanihadesuka:LazyColumnScrollbar", version.ref = "lazycolumnscrollbar" }
@@ -57,6 +66,7 @@ cascade-compose = { group = "me.saket.cascade", name = "cascade-compose", versio
 compose-swipebox = { group = "io.github.kevinnzou", name = "compose-swipebox", version.ref = "compose_swipebox" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle_runtime_ktx" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose-android", version.ref = "coilCompose"}
+zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 zoomable = { module = "net.engawapg.lib:zoomable", version.ref = "zoomable" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -64,7 +74,7 @@ androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomato
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
-apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig"}
+androidx-ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

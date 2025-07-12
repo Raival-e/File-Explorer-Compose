@@ -23,13 +23,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
 import com.raival.compose.file.explorer.common.ui.Space
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDeviceHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.INTERNAL_STORAGE
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.ROOT
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.INTERNAL_STORAGE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.ROOT
 
 @Composable
 fun StorageDeviceView(
-    storageDeviceHolder: StorageDeviceHolder,
+    storageDevice: StorageDevice,
     onClick: () -> Unit = {}
 ) {
     Row(
@@ -44,7 +44,7 @@ fun StorageDeviceView(
     ) {
         Icon(
             modifier = Modifier.padding(8.dp),
-            imageVector = when (storageDeviceHolder.type) {
+            imageVector = when (storageDevice.type) {
                 INTERNAL_STORAGE -> Icons.Rounded.FolderOpen
                 ROOT -> Icons.Rounded.Numbers
                 else -> Icons.Rounded.SdStorage
@@ -53,7 +53,7 @@ fun StorageDeviceView(
         )
         Space(size = 8.dp)
         Column {
-            Text(text = storageDeviceHolder.title)
+            Text(text = storageDevice.title)
             Space(size = 8.dp)
             Row(
                 Modifier.fillMaxWidth(),
@@ -63,7 +63,7 @@ fun StorageDeviceView(
                     modifier = Modifier
                         .weight(1f)
                         .height(8.dp),
-                    progress = { storageDeviceHolder.usedSize.toFloat() / storageDeviceHolder.totalSize },
+                    progress = { storageDevice.usedSize.toFloat() / storageDevice.totalSize },
                     strokeCap = StrokeCap.Round
                 )
                 Space(size = 8.dp)
@@ -71,7 +71,7 @@ fun StorageDeviceView(
                     modifier = Modifier
                         .alpha(0.6f)
                         .weight(1f),
-                    text = "${storageDeviceHolder.usedSize.toFormattedSize()}/${storageDeviceHolder.totalSize.toFormattedSize()}",
+                    text = "${storageDevice.usedSize.toFormattedSize()}/${storageDevice.totalSize.toFormattedSize()}",
                     fontSize = 12.sp,
                     textAlign = TextAlign.End
                 )

@@ -27,7 +27,7 @@ class JsonFormatter : Formatter {
         return try {
             if (isObject) JSONObject(txt).toString(2)
             else JSONArray(txt).toString(2)
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             txt
         }
     }

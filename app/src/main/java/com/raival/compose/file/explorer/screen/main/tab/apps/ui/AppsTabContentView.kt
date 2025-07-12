@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,18 +58,15 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.common.ui.block
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRow
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRowIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
-fun ColumnScope.AppsTabContentView(tab: AppsTab) {
+fun AppsTabContentView(tab: AppsTab) {
     LaunchedEffect(tab.id) {
         if (tab.appsList.isEmpty()) {
             tab.fetchInstalledApps()
@@ -160,14 +156,11 @@ fun ColumnScope.AppsTabContentView(tab: AppsTab) {
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                     TextButton(
                         onClick = {
-                            globalClass.filesTabManager.filesTabTasks.add(
-                                CopyTask(arrayListOf(DocumentHolder.fromFile(File(selectedApp.path))))
-                            )
                             tab.previewAppDialog = null
                             globalClass.showMsg(R.string.new_task_has_been_added)
                         }
                     ) {
-                        Text(text = stringResource(R.string.copy))
+                        Text(text = stringResource(R.string.save))
                     }
                 }
             }
@@ -351,7 +344,7 @@ fun ColumnScope.AppsTabContentView(tab: AppsTab) {
             }
         }
 
-        androidx.compose.animation.AnimatedVisibility(
+        AnimatedVisibility(
             modifier = Modifier.align(Alignment.Center),
             visible = tab.isLoading || tab.isSearching
         ) {

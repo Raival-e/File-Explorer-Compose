@@ -178,7 +178,8 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
                         preferences.deleteEmptyLineFast =
                             (!preferences.deleteEmptyLineFast).also { newValue ->
                                 codeEditor.props.deleteEmptyLineFast = newValue
-                            }                    },
+                            }
+                    },
                     leadingIcon = { Icon(Icons.AutoMirrored.Rounded.Backspace, null) },
                     trailingIcon = {
                         Checkbox(
@@ -227,9 +228,10 @@ fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () 
                         Checkbox(
                             checked = preferences.autoIndent,
                             onCheckedChange = {
-                                preferences.autoIndent = (!preferences.autoIndent).also { newValue ->
-                                    codeEditor.props.autoIndent = newValue
-                                }
+                                preferences.autoIndent =
+                                    (!preferences.autoIndent).also { newValue ->
+                                        codeEditor.props.autoIndent = newValue
+                                    }
                             }
                         )
                     }

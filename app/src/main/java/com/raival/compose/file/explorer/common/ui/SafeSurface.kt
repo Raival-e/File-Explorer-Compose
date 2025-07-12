@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun SafeSurface(
+    enableStatusBarsPadding: Boolean = true,
     content: @Composable () -> Unit
 ) {
     Surface(
@@ -28,13 +29,15 @@ fun SafeSurface(
         color = colorScheme.surfaceContainerLowest
     ) {
         Column(Modifier.fillMaxSize()) {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .background(color = colorScheme.surfaceContainer)
-                    .windowInsetsPadding(WindowInsets.statusBars)
-            ) {}
+            if (enableStatusBarsPadding) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .background(color = colorScheme.surfaceContainer)
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                ) {}
+            }
             content()
         }
     }

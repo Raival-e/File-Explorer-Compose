@@ -14,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.ui.Space
 
 @Composable
-fun InfoBar() {
-    val textEditorManager = globalClass.textEditorManager
+fun InfoBar(
+    subtitle: String
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -32,7 +32,7 @@ fun InfoBar() {
             modifier = Modifier
                 .alpha(0.65f)
                 .animateContentSize(),
-            text = textEditorManager.activitySubtitle,
+            text = subtitle,
             fontSize = 10.sp
         )
         Spacer(modifier = Modifier.weight(1f))

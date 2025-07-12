@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.EditAttributes
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Settings
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
 
 @Composable
@@ -97,6 +99,23 @@ fun Toolbar() {
                 onDismissRequest = { showOptionsMenu = false },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             ) {
+                if (mainActivityManager.getActiveTab() is HomeTab) {
+                    DropdownMenuItem(
+                        text = { Text(text = stringResource(R.string.customize_home_tab)) },
+                        onClick = {
+                            (mainActivityManager.getActiveTab() as HomeTab).showCustomizeHomeTabDialog =
+                                true
+                            showOptionsMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.EditAttributes,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.preferences)) },
                     onClick = {

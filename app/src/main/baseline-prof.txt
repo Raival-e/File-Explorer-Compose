@@ -1161,7 +1161,7 @@ HSPLandroidx/compose/animation/core/Animatable;-><init>(Ljava/lang/Object;Landro
 HSPLandroidx/compose/animation/core/Animatable;-><init>(Ljava/lang/Object;Landroidx/compose/animation/core/TwoWayConverter;Ljava/lang/Object;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 HSPLandroidx/compose/animation/core/Animatable;->access$clampToBounds(Landroidx/compose/animation/core/Animatable;Ljava/lang/Object;)Ljava/lang/Object;
 HSPLandroidx/compose/animation/core/Animatable;->access$endAnimation(Landroidx/compose/animation/core/Animatable;)V
-HSPLandroidx/compose/animation/core/Animatable;->access$setRunning(Landroidx/compose/animation/core/Animatable;Z)V
+HSPLandroidx/compose/animation/core/Animatable;->access$setShowDialog(Landroidx/compose/animation/core/Animatable;Z)V
 HSPLandroidx/compose/animation/core/Animatable;->access$setTargetValue(Landroidx/compose/animation/core/Animatable;Ljava/lang/Object;)V
 HSPLandroidx/compose/animation/core/Animatable;->asState()Landroidx/compose/runtime/State;
 HSPLandroidx/compose/animation/core/Animatable;->clampToBounds(Ljava/lang/Object;)Ljava/lang/Object;
@@ -1172,7 +1172,7 @@ HSPLandroidx/compose/animation/core/Animatable;->getTypeConverter()Landroidx/com
 HSPLandroidx/compose/animation/core/Animatable;->getValue()Ljava/lang/Object;
 HSPLandroidx/compose/animation/core/Animatable;->getVelocityVector()Landroidx/compose/animation/core/AnimationVector;
 HSPLandroidx/compose/animation/core/Animatable;->runAnimation(Landroidx/compose/animation/core/Animation;Ljava/lang/Object;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-HSPLandroidx/compose/animation/core/Animatable;->setRunning(Z)V
+HSPLandroidx/compose/animation/core/Animatable;->setShowDialog(Z)V
 HSPLandroidx/compose/animation/core/Animatable;->setTargetValue(Ljava/lang/Object;)V
 Landroidx/compose/animation/core/Animatable$runAnimation$2;
 HSPLandroidx/compose/animation/core/Animatable$runAnimation$2;-><init>(Landroidx/compose/animation/core/Animatable;Ljava/lang/Object;Landroidx/compose/animation/core/Animation;JLkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)V
@@ -1227,10 +1227,10 @@ HSPLandroidx/compose/animation/core/AnimationScope;->getLastFrameTimeNanos()J
 HSPLandroidx/compose/animation/core/AnimationScope;->getStartTimeNanos()J
 HSPLandroidx/compose/animation/core/AnimationScope;->getValue()Ljava/lang/Object;
 HSPLandroidx/compose/animation/core/AnimationScope;->getVelocityVector()Landroidx/compose/animation/core/AnimationVector;
-HSPLandroidx/compose/animation/core/AnimationScope;->isRunning()Z
+HSPLandroidx/compose/animation/core/AnimationScope;->getShowDialog()Z
 HSPLandroidx/compose/animation/core/AnimationScope;->setFinishedTimeNanos$animation_core_release(J)V
 HSPLandroidx/compose/animation/core/AnimationScope;->setLastFrameTimeNanos$animation_core_release(J)V
-HSPLandroidx/compose/animation/core/AnimationScope;->setRunning$animation_core_release(Z)V
+HSPLandroidx/compose/animation/core/AnimationScope;->setShowDialog$animation_core_release(Z)V
 HSPLandroidx/compose/animation/core/AnimationScope;->setValue$animation_core_release(Ljava/lang/Object;)V
 HSPLandroidx/compose/animation/core/AnimationScope;->setVelocityVector$animation_core_release(Landroidx/compose/animation/core/AnimationVector;)V
 Landroidx/compose/animation/core/AnimationSpec;
@@ -1257,10 +1257,10 @@ HSPLandroidx/compose/animation/core/AnimationState;->getLastFrameTimeNanos()J
 HSPLandroidx/compose/animation/core/AnimationState;->getTypeConverter()Landroidx/compose/animation/core/TwoWayConverter;
 HSPLandroidx/compose/animation/core/AnimationState;->getValue()Ljava/lang/Object;
 HSPLandroidx/compose/animation/core/AnimationState;->getVelocityVector()Landroidx/compose/animation/core/AnimationVector;
-HSPLandroidx/compose/animation/core/AnimationState;->isRunning()Z
+HSPLandroidx/compose/animation/core/AnimationState;->getShowDialog()Z
 HSPLandroidx/compose/animation/core/AnimationState;->setFinishedTimeNanos$animation_core_release(J)V
 HSPLandroidx/compose/animation/core/AnimationState;->setLastFrameTimeNanos$animation_core_release(J)V
-HSPLandroidx/compose/animation/core/AnimationState;->setRunning$animation_core_release(Z)V
+HSPLandroidx/compose/animation/core/AnimationState;->setShowDialog$animation_core_release(Z)V
 HSPLandroidx/compose/animation/core/AnimationState;->setValue$animation_core_release(Ljava/lang/Object;)V
 HSPLandroidx/compose/animation/core/AnimationState;->setVelocityVector$animation_core_release(Landroidx/compose/animation/core/AnimationVector;)V
 Landroidx/compose/animation/core/AnimationStateKt;
@@ -1411,8 +1411,8 @@ HSPLandroidx/compose/animation/core/InfiniteTransition;->access$setStartTimeNano
 PLandroidx/compose/animation/core/InfiniteTransition;->access$setStartTimeNanos$p(Landroidx/compose/animation/core/InfiniteTransition;J)V
 HSPLandroidx/compose/animation/core/InfiniteTransition;->addAnimation$animation_core_release(Landroidx/compose/animation/core/InfiniteTransition$TransitionAnimationState;)V
 PLandroidx/compose/animation/core/InfiniteTransition;->addAnimation$animation_core_release(Landroidx/compose/animation/core/InfiniteTransition$TransitionAnimationState;)V
-HSPLandroidx/compose/animation/core/InfiniteTransition;->isRunning()Z
-PLandroidx/compose/animation/core/InfiniteTransition;->isRunning()Z
+HSPLandroidx/compose/animation/core/InfiniteTransition;->getShowDialog()Z
+PLandroidx/compose/animation/core/InfiniteTransition;->getShowDialog()Z
 HSPLandroidx/compose/animation/core/InfiniteTransition;->onFrame(J)V
 PLandroidx/compose/animation/core/InfiniteTransition;->onFrame(J)V
 PLandroidx/compose/animation/core/InfiniteTransition;->removeAnimation$animation_core_release(Landroidx/compose/animation/core/InfiniteTransition$TransitionAnimationState;)V
@@ -1420,8 +1420,8 @@ HSPLandroidx/compose/animation/core/InfiniteTransition;->run$animation_core_rele
 PLandroidx/compose/animation/core/InfiniteTransition;->run$animation_core_release(Landroidx/compose/runtime/Composer;I)V
 HSPLandroidx/compose/animation/core/InfiniteTransition;->setRefreshChildNeeded(Z)V
 PLandroidx/compose/animation/core/InfiniteTransition;->setRefreshChildNeeded(Z)V
-HSPLandroidx/compose/animation/core/InfiniteTransition;->setRunning(Z)V
-PLandroidx/compose/animation/core/InfiniteTransition;->setRunning(Z)V
+HSPLandroidx/compose/animation/core/InfiniteTransition;->setShowDialog(Z)V
+PLandroidx/compose/animation/core/InfiniteTransition;->setShowDialog(Z)V
 Landroidx/compose/animation/core/InfiniteTransition$TransitionAnimationState;
 HSPLandroidx/compose/animation/core/InfiniteTransition$TransitionAnimationState;-><init>(Landroidx/compose/animation/core/InfiniteTransition;Ljava/lang/Object;Ljava/lang/Object;Landroidx/compose/animation/core/TwoWayConverter;Landroidx/compose/animation/core/AnimationSpec;Ljava/lang/String;)V
 PLandroidx/compose/animation/core/InfiniteTransition$TransitionAnimationState;-><init>(Landroidx/compose/animation/core/InfiniteTransition;Ljava/lang/Object;Ljava/lang/Object;Landroidx/compose/animation/core/TwoWayConverter;Landroidx/compose/animation/core/AnimationSpec;Ljava/lang/String;)V
@@ -1691,7 +1691,7 @@ HSPLandroidx/compose/animation/core/Transition;->getStartTimeNanos$animation_cor
 HSPLandroidx/compose/animation/core/Transition;->getTargetState()Ljava/lang/Object;
 HSPLandroidx/compose/animation/core/Transition;->getUpdateChildrenNeeded()Z
 HSPLandroidx/compose/animation/core/Transition;->get_playTimeNanos()J
-HSPLandroidx/compose/animation/core/Transition;->isRunning()Z
+HSPLandroidx/compose/animation/core/Transition;->getShowDialog()Z
 HSPLandroidx/compose/animation/core/Transition;->isSeeking()Z
 HSPLandroidx/compose/animation/core/Transition;->onChildAnimationUpdated()V
 PLandroidx/compose/animation/core/Transition;->onDisposed$animation_core_release()V
@@ -1812,8 +1812,8 @@ Landroidx/compose/animation/core/TransitionState;
 HSPLandroidx/compose/animation/core/TransitionState;-><clinit>()V
 HSPLandroidx/compose/animation/core/TransitionState;-><init>()V
 HSPLandroidx/compose/animation/core/TransitionState;-><init>(Lkotlin/jvm/internal/DefaultConstructorMarker;)V
-HSPLandroidx/compose/animation/core/TransitionState;->isRunning$animation_core_release()Z
-HSPLandroidx/compose/animation/core/TransitionState;->setRunning$animation_core_release(Z)V
+HSPLandroidx/compose/animation/core/TransitionState;->getShowDialog$animation_core_release()Z
+HSPLandroidx/compose/animation/core/TransitionState;->setShowDialog$animation_core_release(Z)V
 Landroidx/compose/animation/core/TweenSpec;
 HSPLandroidx/compose/animation/core/TweenSpec;-><clinit>()V
 HSPLandroidx/compose/animation/core/TweenSpec;-><init>(IILandroidx/compose/animation/core/Easing;)V

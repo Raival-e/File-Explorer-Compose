@@ -1,142 +1,160 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.task
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ContentCut
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.anggrayudi.storage.extension.launchOnUiThread
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.randomString
-import com.raival.compose.file.explorer.common.extension.trimToLastTwoSegments
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.DocumentHolder
-import java.io.File
+import com.raival.compose.file.explorer.common.extension.toFormattedDate
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
+import net.lingala.zip4j.ZipFile
 
 class DeleteTask(
-    private val source: List<DocumentHolder>,
-    private val moveToRecycleBin: Boolean = false
-) : FilesTabTask() {
-    override val id: String = String.randomString(8)
+    val sourceContent: List<ContentHolder>
+) : Task() {
+    private var parameters: DeleteTaskParameters? = null
+    private var pendingContent = arrayListOf<DeleteContentItem>()
 
-    override fun getTitle(): String = globalClass.getString(R.string.delete)
+    override val metadata = System.currentTimeMillis().toFormattedDate().let { time ->
+        TaskMetadata(
+            id = id,
+            creationTime = time,
+            title = globalClass.resources.getString(R.string.delete),
+            subtitle = globalClass.resources.getString(R.string.task_subtitle, sourceContent.size),
+            displayDetails = sourceContent.joinToString(", ") { it.displayName },
+            fullDetails = buildString {
+                sourceContent.forEachIndexed { index, source ->
+                    append(source.displayName)
+                    append("\n")
+                }
+                append("\n")
+                append(time)
+            },
+            isCancellable = true,
+            canMoveToBackground = true
+        )
+    }
 
-    override fun getSubtitle(): String = if (source.size == 1)
-        source[0].path.trimToLastTwoSegments()
-    else globalClass.getString(R.string.task_subtitle, source.size)
+    override val progressMonitor = TaskProgressMonitor(
+        status = TaskStatus.PENDING,
+        taskTitle = metadata.title,
+    )
 
-    override suspend fun execute(destination: DocumentHolder, callback: Any) {
-        if (moveToRecycleBin && !destination.hasParent(globalClass.recycleBinDir)) {
-            MoveTask(source).execute(
-                DocumentHolder.fromFile(
-                    File(
-                        globalClass.recycleBinDir.toFile()!!,
-                        "${System.currentTimeMillis()}"
-                    ).apply {
-                        mkdirs()
-                    }
-                ),
-                callback
-            )
+    override fun getCurrentStatus() = progressMonitor.status
+
+    override fun validate() = sourceContent.find { !it.isValid() } == null
+
+    private fun markAsFailed(info: String) {
+        progressMonitor.apply {
+            status = TaskStatus.FAILED
+            summary = info
+        }
+    }
+
+    override suspend fun run() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
+    }
+
+    override suspend fun run(params: TaskParameters) {
+        parameters = params as DeleteTaskParameters
+        progressMonitor.status = TaskStatus.RUNNING
+        protect = false
+
+        if (sourceContent.isEmpty()) {
+            markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
             return
         }
 
-        val taskCallback = callback as FilesTabTaskCallback
+        progressMonitor.processName = globalClass.resources.getString(R.string.preparing)
 
-        var deleted = 0
-        var skipped = 0
-
-        val details = FilesTabTaskDetails(
-            this,
-            TASK_DELETE,
-            getTitle(),
-            globalClass.getString(R.string.preparing),
-            emptyString,
-            -1f
-        )
-
-        taskCallback.onPrepare(details)
-
-        fun updateProgress(info: String = emptyString): FilesTabTaskDetails {
-            return details.apply {
-                subtitle = globalClass.getString(R.string.progress_short, deleted)
-                if (info.isNotEmpty()) this.info = info
+        if (pendingContent.isEmpty()) {
+            sourceContent.forEachIndexed { index, content ->
+                pendingContent.add(
+                    DeleteContentItem(source = content, status = TaskContentStatus.PENDING)
+                )
             }
         }
 
-        fun deleteFolder(toDelete: DocumentHolder) {
-            taskCallback.onReport(
-                updateProgress(
-                    globalClass.getString(
-                        R.string.deleting,
-                        toDelete.getName()
-                    )
-                )
-            )
+        progressMonitor.apply {
+            totalContent = pendingContent.size
+            processName = globalClass.getString(R.string.deleting)
+        }
 
-            if (toDelete.isEmpty()) {
-                if (toDelete.delete()) {
-                    deleted++
-                } else {
-                    skipped++
+        pendingContent.forEachIndexed { index, itemToDelete ->
+            if (aborted) {
+                progressMonitor.status = TaskStatus.PAUSED
+                return
+            }
+
+            if (itemToDelete.status == TaskContentStatus.PENDING) {
+                progressMonitor.apply {
+                    contentName = itemToDelete.source.displayName
+                    remainingContent = pendingContent.size - (index + 1)
+                    progress = (index + 1f) / pendingContent.size
                 }
-            } else {
-                toDelete.listContent(false).forEach {
-                    if (it.isFile) {
-                        taskCallback.onReport(
-                            updateProgress(
-                                globalClass.getString(
-                                    R.string.deleting,
-                                    it.getName()
-                                )
-                            )
-                        )
-                        if (it.delete()) {
-                            deleted++
-                        } else {
-                            skipped++
+
+                try {
+                    when (itemToDelete.source) {
+                        is LocalFileHolder -> {
+                            itemToDelete.source.file.deleteRecursively()
                         }
-                    } else {
-                        deleteFolder(it)
-                    }
-                }
-                if (toDelete.delete()) {
-                    deleted++
-                } else {
-                    skipped++
-                }
-            }
-        }
 
-        source.forEach { currentFile ->
-            if (currentFile.isFile) {
-                taskCallback.onReport(
-                    updateProgress(
-                        globalClass.getString(
-                            R.string.deleting,
-                            currentFile.getName()
+                        is ZipFileHolder -> {
+                            ZipFile(itemToDelete.source.zipTree.source.file).use {
+                                it.removeFile(itemToDelete.source.uniquePath)
+                            }
+                        }
+
+                        else -> {
+                            itemToDelete.status = TaskContentStatus.SKIP
+                            return@forEachIndexed
+                        }
+                    }
+                    itemToDelete.status = TaskContentStatus.SUCCESS
+                } catch (e: Exception) {
+                    logger.logError(e)
+                    markAsFailed(
+                        globalClass.resources.getString(
+                            R.string.task_summary_failed,
+                            e.message ?: emptyString
                         )
                     )
-                )
-                if (currentFile.delete()) {
-                    deleted++
-                } else {
-                    skipped++
+                    return
                 }
-            } else {
-                deleteFolder(currentFile)
             }
         }
 
-        launchOnUiThread {
-            taskCallback.onComplete(details.apply {
-                subtitle = globalClass.getString(R.string.done)
-            })
+        if (progressMonitor.status == TaskStatus.RUNNING) {
+            progressMonitor.status = TaskStatus.SUCCESS
+            progressMonitor.summary = buildString {
+                pendingContent.forEach { content ->
+                    append(content.source.displayName)
+                    append(" -> ")
+                    append(content.status.name)
+                }
+            }
         }
     }
 
-    override fun getIcon(): ImageVector = Icons.Rounded.ContentCut
-
-    override fun getSourceFiles(): List<DocumentHolder> {
-        return source
+    override suspend fun continueTask() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
     }
+
+    override fun setParameters(params: TaskParameters) {
+        parameters = params as DeleteTaskParameters
+    }
+
+    internal data class DeleteContentItem(
+        val source: ContentHolder,
+        var status: TaskContentStatus
+    )
 }

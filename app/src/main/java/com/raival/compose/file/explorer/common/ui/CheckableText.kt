@@ -40,7 +40,7 @@ fun CheckableText(
     checkedBoxBackgroundColor: Color = MaterialTheme.colorScheme.primary,
     uncheckedBoxBackgroundColor: Color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.5.dp),
     boxSize: Dp = 21.dp,
-    strokeWidth: Dp = 1.dp,
+    strokeWidth: Dp = 0.5.dp,
     checkIcon: ImageVector = Icons.Rounded.Done,
     checkIconTint: Color = MaterialTheme.colorScheme.surface,
     text: @Composable () -> Unit
