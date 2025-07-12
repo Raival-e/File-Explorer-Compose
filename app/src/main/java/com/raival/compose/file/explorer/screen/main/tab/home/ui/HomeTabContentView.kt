@@ -141,7 +141,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
                 }
 
                 HomeSectionType.CATEGORIES -> {
-                    CategoriesSection(tab = tab, mainActivityManager = mainActivityManager)
+                    CategoriesSection(tab = tab)
                 }
 
                 HomeSectionType.STORAGE -> {
@@ -289,8 +289,7 @@ private fun RecentFilesSection(
 
 @Composable
 private fun CategoriesSection(
-    tab: HomeTab,
-    mainActivityManager: MainActivityManager
+    tab: HomeTab
 ) {
     // Quick access tiles
     Text(
