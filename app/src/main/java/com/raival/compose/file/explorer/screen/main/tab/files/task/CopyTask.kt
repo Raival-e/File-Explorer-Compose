@@ -25,6 +25,7 @@ class CopyTask(
 ) : Task() {
     private var parameters: CopyTaskParameters? = null
     private val pendingFiles: ArrayList<TaskContentItem> = arrayListOf()
+    private var canPerformAtomicFileMove = true
 
     override val metadata = createTaskMetadata()
     override val progressMonitor = TaskProgressMonitor(
@@ -371,17 +372,7 @@ class CopyTask(
             if (source.isFile) {
                 destination.parentFile?.mkdirs()
                 if (deleteSourceFiles) {
-                    try {
-                        // Try atomic move first (faster when supported)
-                        Files.move(
-                            source.toPath(),
-                            destination.toPath(),
-                            *buildList {
-                                add(StandardCopyOption.ATOMIC_MOVE)
-                                if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
-                            }.toTypedArray()
-                        )
-                    } catch (_: AtomicMoveNotSupportedException) {
+                    if (!canPerformAtomicFileMove) {
                         // Fallback to copy only - deletion will be handled by performSourceDeletion()
                         Files.copy(
                             source.toPath(),
@@ -391,6 +382,29 @@ class CopyTask(
                                 if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
                             }.toTypedArray()
                         )
+                    } else {
+                        try {
+                            // Try atomic move first (faster when supported)
+                            Files.move(
+                                source.toPath(),
+                                destination.toPath(),
+                                *buildList {
+                                    add(StandardCopyOption.ATOMIC_MOVE)
+                                    if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
+                                }.toTypedArray()
+                            )
+                        } catch (_: AtomicMoveNotSupportedException) {
+                            // Fallback to copy only - deletion will be handled by performSourceDeletion()
+                            Files.copy(
+                                source.toPath(),
+                                destination.toPath(),
+                                *buildList {
+                                    add(StandardCopyOption.COPY_ATTRIBUTES)
+                                    if (overwrite) add(StandardCopyOption.REPLACE_EXISTING)
+                                }.toTypedArray()
+                            )
+                            canPerformAtomicFileMove = false
+                        }
                     }
                 } else {
                     source.copyTo(destination, overwrite)
