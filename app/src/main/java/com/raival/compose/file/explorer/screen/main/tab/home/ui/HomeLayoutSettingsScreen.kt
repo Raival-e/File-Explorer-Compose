@@ -60,7 +60,7 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeLayout
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionConfig
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionType
-import com.raival.compose.file.explorer.screen.main.tab.home.data.defaultHomeTabSections
+import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
@@ -107,7 +107,7 @@ fun HomeLayoutSettingsScreen(
                 )
             } catch (e: Exception) {
                 logger.logError(e)
-                defaultHomeTabSections
+                getDefaultHomeLayout()
             }.sections.sortedBy { it.order }
 
             sections.addAll(config)
@@ -136,7 +136,7 @@ fun HomeLayoutSettingsScreen(
                             onClick = {
                                 coroutineScope.launch {
                                     sections.clear()
-                                    sections.addAll(defaultHomeTabSections.sections)
+                                    sections.addAll(getDefaultHomeLayout().sections)
                                 }
                             }
                         ) {

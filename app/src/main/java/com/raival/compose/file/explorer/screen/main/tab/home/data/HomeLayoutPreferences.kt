@@ -4,20 +4,20 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import kotlinx.serialization.Serializable
 
-val defaultHomeTabSections = HomeLayout(
+fun getDefaultHomeLayout(minimalLayout: Boolean = false) = HomeLayout(
     listOf(
         HomeSectionConfig(
             id = "recent_files",
             type = HomeSectionType.RECENT_FILES,
             title = globalClass.getString(R.string.recent_files),
-            isEnabled = true,
+            isEnabled = !minimalLayout,
             order = 0
         ),
         HomeSectionConfig(
             id = "categories",
             type = HomeSectionType.CATEGORIES,
             title = globalClass.getString(R.string.categories),
-            isEnabled = true,
+            isEnabled = !minimalLayout,
             order = 1
         ),
         HomeSectionConfig(
@@ -31,21 +31,21 @@ val defaultHomeTabSections = HomeLayout(
             id = "bookmarks",
             type = HomeSectionType.BOOKMARKS,
             title = globalClass.getString(R.string.bookmarks),
-            isEnabled = true,
+            isEnabled = !minimalLayout,
             order = 3
         ),
         HomeSectionConfig(
             id = "recycle_bin",
             type = HomeSectionType.RECYCLE_BIN,
             title = globalClass.getString(R.string.recycle_bin),
-            isEnabled = true,
+            isEnabled = !minimalLayout,
             order = 4
         ),
         HomeSectionConfig(
             id = "jump_to_path",
             type = HomeSectionType.JUMP_TO_PATH,
             title = globalClass.getString(R.string.jump_to_path),
-            isEnabled = true,
+            isEnabled = !minimalLayout,
             order = 5
         )
     )

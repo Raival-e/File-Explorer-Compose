@@ -15,7 +15,7 @@ import com.raival.compose.file.explorer.common.extension.toJson
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
-import com.raival.compose.file.explorer.screen.main.tab.home.data.defaultHomeTabSections
+import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
 import com.raival.compose.file.explorer.screen.preferences.misc.prefDataStore
@@ -48,7 +48,7 @@ class PreferencesManager {
 
         var homeTabLayout by prefMutableState(
             keyName = "homeTabLayout",
-            defaultValue = Gson().toJson(defaultHomeTabSections),
+            defaultValue = Gson().toJson(getDefaultHomeLayout()),
             getPreferencesKey = { stringPreferencesKey("homeTabLayout") }
         )
     }

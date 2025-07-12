@@ -63,7 +63,7 @@ import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeLayout
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionConfig
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionType
-import com.raival.compose.file.explorer.screen.main.tab.home.data.defaultHomeTabSections
+import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
 import com.raival.compose.file.explorer.screen.main.ui.SimpleNewTabViewItem
 import com.raival.compose.file.explorer.screen.main.ui.StorageDeviceView
 import kotlinx.coroutines.launch
@@ -84,7 +84,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
             )
         } catch (e: Exception) {
             logger.logError(e)
-            defaultHomeTabSections
+            getDefaultHomeLayout()
         }.sections.filter { it.isEnabled }.sortedBy { it.order }
 
         enabledSections.addAll(config)
@@ -93,17 +93,38 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
     if (tab.showCustomizeHomeTabDialog) {
         HomeLayoutSettingsScreen { sections ->
             tab.showCustomizeHomeTabDialog = false
+            var isAllDisabled = false
+
+            // Prevent disabling all sections
+            if (sections.all { !it.isEnabled }) {
+                isAllDisabled = true
+            }
+
+            sections.forEachIndexed { index, config ->
+                config.order = index
+            }
+
             enabledSections.apply {
                 clear()
-                addAll(sections.filter { it.isEnabled }.sortedBy { it.order })
-            }
-            scope.launch {
-                sections.forEachIndexed { index, config ->
-                    config.order = index
+                if (isAllDisabled) {
+                    addAll(getDefaultHomeLayout(true).sections.filter { it.isEnabled }
+                        .sortedBy { it.order })
+                } else {
+                    addAll(sections.filter { it.isEnabled }.sortedBy { it.order })
                 }
-                globalClass.preferencesManager.appearancePrefs.homeTabLayout = Gson().toJson(
-                    HomeLayout(sections)
-                )
+
+            }
+
+            scope.launch {
+                if (isAllDisabled) {
+                    globalClass.preferencesManager.appearancePrefs.homeTabLayout = Gson().toJson(
+                        getDefaultHomeLayout(true)
+                    )
+                } else {
+                    globalClass.preferencesManager.appearancePrefs.homeTabLayout = Gson().toJson(
+                        HomeLayout(sections)
+                    )
+                }
             }
         }
     }
