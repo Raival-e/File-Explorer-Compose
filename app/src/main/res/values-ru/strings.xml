@@ -319,4 +319,10 @@
     <string name="bookmarked_files_and_folders">Файлы и папки в закладках</string>
     <string name="deleted_files">Удаленные файлы</string>
     <string name="quick_path_navigation">Быстрая навигация по путям</string>
+    <string name="task_running_notification_channel_name">Уведомление о выполнении задач</string>
+    <string name="task_running_notification_text">Задачи выполняются…</string>
+    <string name="task_cannot_be_continued_from_current_state">Задача не может быть продолжена из текущего состояния: %1$s</string>
+    <string name="task_validation_failed">Проверка задачи не удалась</string>
+    <string name="task_is_not_in_pending_state">Задача не находится в состоянии ожидания</string>
+    <string name="action_required">Требуется действие</string>
 </resources>

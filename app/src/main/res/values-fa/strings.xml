@@ -319,4 +319,10 @@
     <string name="bookmarked_files_and_folders">فایل‌ها و پوشه‌های نشانک‌گذاری شده</string>
     <string name="deleted_files">فایل‌های حذف شده</string>
     <string name="quick_path_navigation">ناوبری سریع مسیر</string>
+    <string name="task_running_notification_channel_name">اعلان اجرای کار</string>
+    <string name="task_running_notification_text">کارها در حال اجرا هستند…</string>
+    <string name="task_cannot_be_continued_from_current_state">کار نمی‌تواند از وضعیت فعلی ادامه یابد: %1$s</string>
+    <string name="task_validation_failed">اعتبارسنجی کار ناموفق بود</string>
+    <string name="task_is_not_in_pending_state">کار در حالت انتظار نیست</string>
+    <string name="action_required">اقدام مورد نیاز</string>
 </resources>

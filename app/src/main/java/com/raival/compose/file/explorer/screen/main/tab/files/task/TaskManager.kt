@@ -7,43 +7,69 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.showMsg
+import com.raival.compose.file.explorer.screen.main.tab.files.service.ContentOperationService.Companion.startNewBackgroundTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.ConcurrentHashMap
 
 class TaskManager {
-    val tasks = mutableListOf<Task>()
+    private val taskScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val taskMutex = Mutex()
+
+    // Use thread-safe collections
+    private val allTasks = ConcurrentHashMap<String, Task>()
+
+    val pendingTasks = mutableListOf<Task>()
     val runningTasks = mutableListOf<Task>()
     val pausedTasks = mutableListOf<Task>()
     val failedTasks = mutableListOf<Task>()
     val invalidTasks = mutableListOf<Task>()
+    val completedTasks = mutableListOf<Task>()
 
     private var isMonitoring = false
 
-    val runningTaskDialogInfo = RunningTaskDialogInfo()
+    @Volatile
+    var runningTaskDialogInfo = RunningTaskDialogInfo()
     val taskInterceptor = TaskConflict()
 
-    fun addTask(task: Task) {
-        tasks.add(task)
-        globalClass.showMsg(globalClass.resources.getString(R.string.new_task_has_been_added))
+    suspend fun addTask(task: Task, notifyUser: Boolean = true) = taskMutex.withLock {
+        if (task.validate()) {
+            allTasks[task.id] = task
+            pendingTasks.add(task)
+            if (notifyUser)
+                globalClass.showMsg(globalClass.resources.getString(R.string.new_task_has_been_added))
+        } else {
+            invalidTasks.add(task)
+            globalClass.showMsg(globalClass.getString(R.string.task_validation_failed))
+        }
     }
 
-    fun addTaskAndRun(task: Task, parameters: TaskParameters) {
-        tasks.add(task)
-        runTask(task.id, parameters)
+    suspend fun addTaskAndRun(task: Task, parameters: TaskParameters) {
+        addTask(task, false)
+        if (allTasks.containsKey(task.id)) {
+            runTask(task.id, parameters)
+        }
     }
 
-    fun removeTask(id: String) {
-        tasks.removeIf { it.id == id }
+    suspend fun removeTask(id: String) = taskMutex.withLock {
+        allTasks[id]?.abortTask()
+        allTasks.remove(id)
+
+        pendingTasks.removeIf { it.id == id }
         runningTasks.removeIf { it.id == id }
         pausedTasks.removeIf { it.id == id }
         failedTasks.removeIf { it.id == id }
         invalidTasks.removeIf { it.id == id }
+        completedTasks.removeIf { it.id == id }
     }
 
-    fun validateTasks() {
-        val iterator = tasks.iterator()
+    suspend fun validateTasks() = taskMutex.withLock {
+        val iterator = pendingTasks.iterator()
         while (iterator.hasNext()) {
             val task = iterator.next()
             if (!task.validate()) {
@@ -54,93 +80,133 @@ class TaskManager {
         }
     }
 
+    suspend fun runTask(id: String, taskParameters: TaskParameters) = taskMutex.withLock {
+        val task = allTasks[id]
+        if (task == null) {
+            showMsg(globalClass.getString(R.string.task_not_found))
+            return@withLock
+        }
+
+        if (task.getCurrentStatus() != TaskStatus.PENDING) {
+            showMsg(globalClass.getString(R.string.task_is_not_in_pending_state))
+            return@withLock
+        }
+
+        moveTaskToRunning(task)
+        task.setParameters(taskParameters)
+        bringToForeground(task)
+        startNewBackgroundTask(globalClass, task.id)
+    }
+
+    suspend fun continueTask(taskId: String) = taskMutex.withLock {
+        val task = allTasks[taskId]
+        if (task == null) {
+            showMsg(globalClass.getString(R.string.task_not_found))
+            return@withLock
+        }
+
+        val currentStatus = task.getCurrentStatus()
+
+        if (currentStatus != TaskStatus.CONFLICT
+            && currentStatus != TaskStatus.FAILED
+            && currentStatus != TaskStatus.PAUSED
+        ) {
+            showMsg(
+                globalClass.getString(
+                    R.string.task_cannot_be_continued_from_current_state,
+                    currentStatus
+                )
+            )
+            return@withLock
+        }
+
+        // Move task back to running
+        pausedTasks.removeIf { it.id == taskId }
+        failedTasks.removeIf { it.id == taskId }
+
+        if (!runningTasks.any { it.id == taskId }) {
+            runningTasks.add(task)
+        }
+
+        bringToForeground(task)
+        startNewBackgroundTask(globalClass, task.id)
+    }
+
+    private fun moveTaskToRunning(task: Task) {
+        pendingTasks.removeIf { it.id == task.id }
+        pausedTasks.removeIf { it.id == task.id }
+        failedTasks.removeIf { it.id == task.id }
+
+        if (!runningTasks.any { it.id == task.id }) {
+            runningTasks.add(task)
+        }
+    }
+
+    suspend fun handleTaskStatusChange(task: Task, newStatus: TaskStatus) = taskMutex.withLock {
+        when (newStatus) {
+            TaskStatus.SUCCESS -> {
+                runningTasks.removeIf { it.id == task.id }
+                completedTasks.add(task)
+                showMsg(globalClass.getString(R.string.task_completed))
+            }
+
+            TaskStatus.FAILED -> {
+                runningTasks.removeIf { it.id == task.id }
+                failedTasks.add(task)
+                showMsg(globalClass.getString(R.string.task_failed))
+            }
+
+            TaskStatus.PAUSED -> {
+                runningTasks.removeIf { it.id == task.id }
+                pausedTasks.add(task)
+                showMsg(globalClass.getString(R.string.task_paused))
+            }
+
+            TaskStatus.CONFLICT -> {
+                runningTasks.removeIf { it.id == task.id }
+                pausedTasks.add(task)
+                // Conflict will be handled by the UI
+            }
+
+            else -> {
+                // No action needed for other states
+            }
+        }
+    }
+
+    fun getTask(id: String): Task? = allTasks[id]
+
     fun overrideConflicts(taskId: String, resolution: TaskContentStatus) {
-        val task = pausedTasks.find { it.id == taskId }
-        task?.overrideConflicts(resolution)
+        allTasks[taskId]?.overrideConflicts(resolution)
     }
 
-    fun runTask(id: String, taskParameters: TaskParameters) {
-        val task = tasks.find { it.id == id }
-
-        if (task != null) {
-            runningTasks.add(task)
-            tasks.remove(task)
-            CoroutineScope(Dispatchers.IO).launch {
-                task.run(taskParameters)
+    fun bringToForeground(task: Task) {
+        if (!isMonitoring) {
+            taskScope.launch {
+                monitorRunningTask(task)
             }
-            if (!isMonitoring) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    monitorRunningTasks()
-                }
-            }
-        } else {
-            showMsg(globalClass.getString(R.string.task_not_found))
         }
     }
 
-    fun continueTask(taskId: String) {
-        val task = pausedTasks.find { it.id == taskId } ?: failedTasks.find { it.id == taskId }
-        if (task != null) {
-            runningTasks.add(task)
-            if (pausedTasks.contains(task)) pausedTasks.remove(task)
-            if (failedTasks.contains(task)) failedTasks.remove(task)
-            CoroutineScope(Dispatchers.IO).launch {
-                if (task.getCurrentStatus() == TaskStatus.PENDING) {
-                    showMsg(globalClass.getString(R.string.unable_to_continue_task))
-                } else {
-                    task.continueTask()
-                }
-            }
-            if (!isMonitoring) {
-                CoroutineScope(Dispatchers.IO).launch {
-                    monitorRunningTasks()
-                }
-            }
-        } else {
-            showMsg(globalClass.getString(R.string.task_not_found))
-        }
-    }
-
-    private suspend fun monitorRunningTasks() {
+    private suspend fun monitorRunningTask(task: Task) {
         isMonitoring = true
-        while (runningTasks.isNotEmpty()) {
-            runningTasks.removeIf { task ->
-                if (task.getCurrentStatus() == TaskStatus.CANCELLED) pausedTasks.add(task).also {
-                    showMsg(globalClass.getString(R.string.task_paused))
-                }
-                if (task.getCurrentStatus() == TaskStatus.FAILED) failedTasks.add(task).also {
-                    showMsg(globalClass.getString(R.string.task_failed))
-                }
-                if (task.getCurrentStatus() == TaskStatus.SUCCESS) {
-                    showMsg(globalClass.getString(R.string.task_completed))
-                }
-                if (task.getCurrentStatus() == TaskStatus.CONFLICT) {
-                    pausedTasks.add(task)
+        runningTaskDialogInfo.show(task)
+        try {
+            while (runningTaskDialogInfo.showDialog) {
+                if (!runningTasks.contains(task)) {
+                    break
                 }
 
-                task.getCurrentStatus() == TaskStatus.FAILED
-                        || task.getCurrentStatus() == TaskStatus.CANCELLED
-                        || task.getCurrentStatus() == TaskStatus.SUCCESS
-                        || task.getCurrentStatus() == TaskStatus.CONFLICT
+                runningTaskDialogInfo.updateInfo(task.progressMonitor)
+                delay(100)
             }
-
-            if (runningTasks.isEmpty()) {
-                runningTaskDialogInfo.hide()
-            }
-
-            // Simple implementation, will be changed when background tasks are implemented
-            if (runningTasks.size == 1) {
-                runningTasks[0].let { task ->
-                    runningTaskDialogInfo.show(task)
-                    runningTaskDialogInfo.updateInfo(task.progressMonitor)
-                }
-            } else {
-                runningTaskDialogInfo.hide()
-            }
-            delay(100)
+        } finally {
+            isMonitoring = false
+            runningTaskDialogInfo.hide()
         }
-        isMonitoring = false
-        globalClass.mainActivityManager.resumeActiveTab()
+    }
+
+    fun hideRunningTaskDialog() {
         runningTaskDialogInfo.hide()
     }
 
@@ -154,10 +220,7 @@ class TaskManager {
         var task by mutableStateOf<Task?>(null)
             private set
 
-        fun interceptTask(
-            taskContentItem: TaskContentItem,
-            task: Task
-        ) {
+        fun interceptTask(taskContentItem: TaskContentItem, task: Task) {
             this.hasConflict = true
             this.message = globalClass.resources.getString(
                 R.string.file_already_exists,
@@ -169,9 +232,9 @@ class TaskManager {
 
         private fun reset() {
             hasConflict = false
+            task = null
             message = emptyString
             taskContentItem = null
-            task = null
         }
 
         fun hide() {
@@ -179,41 +242,42 @@ class TaskManager {
         }
 
         fun resolve(resolution: TaskContentStatus, applyToAllConflicts: Boolean = false) {
-            if (taskContentItem != null) {
-                taskContentItem!!.status = resolution
+            val currentTask = task
+            val currentItem = taskContentItem
+
+            if (currentTask == null || currentItem == null) return
+
+            currentItem.status = resolution
+
+            if (applyToAllConflicts) {
+                globalClass.taskManager.overrideConflicts(currentTask.id, resolution)
             }
 
-            globalClass.taskManager.apply {
-                if (applyToAllConflicts) {
-                    globalClass.taskManager.overrideConflicts(task!!.id, resolution)
-                }
-                globalClass.taskManager.continueTask(task!!.id)
-            }
+            // Reset before continuing to avoid race conditions
+            hide()
 
-            reset()
+            // Continue the task
+            CoroutineScope(Dispatchers.IO).launch {
+                globalClass.taskManager.continueTask(currentTask.id)
+            }
         }
     }
 
     class RunningTaskDialogInfo {
         var linkedTask by mutableStateOf<Task?>(null)
-
         var showDialog by mutableStateOf(false)
             private set
         var progressMonitor by mutableStateOf<TaskProgressMonitor?>(null)
 
         fun show(task: Task) {
-            if (showDialog) {
-                return
-            }
+            if (showDialog) return
 
             linkedTask = task
             showDialog = true
         }
 
         fun hide() {
-            if (!showDialog) {
-                return
-            }
+            if (!showDialog) return
 
             showDialog = false
             reset()

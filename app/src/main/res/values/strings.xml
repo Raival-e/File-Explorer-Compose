@@ -320,4 +320,10 @@
     <string name="bookmarked_files_and_folders">Bookmarked files and folders</string>
     <string name="deleted_files">Deleted files</string>
     <string name="quick_path_navigation">Quick path navigation</string>
+    <string name="task_running_notification_channel_name">Task Running Notification</string>
+    <string name="task_running_notification_text">Tasks are running...</string>
+    <string name="task_cannot_be_continued_from_current_state">Task cannot be continued from current state: %1$s</string>
+    <string name="task_validation_failed">Task validation failed</string>
+    <string name="task_is_not_in_pending_state">Task is not in pending state</string>
+    <string name="action_required">Action required</string>
 </resources>

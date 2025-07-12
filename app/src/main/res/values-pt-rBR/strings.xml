@@ -319,4 +319,10 @@
     <string name="bookmarked_files_and_folders">Arquivos e pastas marcados</string>
     <string name="deleted_files">Arquivos excluídos</string>
     <string name="quick_path_navigation">Navegação rápida de caminho</string>
+    <string name="task_running_notification_channel_name">Notificação de Tarefa em Execução</string>
+    <string name="task_running_notification_text">Tarefas estão em execução…</string>
+    <string name="task_cannot_be_continued_from_current_state">A tarefa não pode ser continuada do estado atual: %1$s</string>
+    <string name="task_validation_failed">Falha na validação da tarefa</string>
+    <string name="task_is_not_in_pending_state">A tarefa não está em estado pendente</string>
+    <string name="action_required">Ação necessária</string>
 </resources>

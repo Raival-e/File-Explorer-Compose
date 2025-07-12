@@ -20,7 +20,6 @@ import java.security.spec.PKCS8EncodedKeySpec
 class ApksMergeTask(
     val sourceContent: ContentHolder
 ) : Task() {
-    private var aborted = false
     private var parameters: ApksMergeTaskParameters? = null
 
     override val metadata = System.currentTimeMillis().toFormattedDate().let { time ->
@@ -49,10 +48,6 @@ class ApksMergeTask(
 
     override fun validate() = sourceContent.isValid()
 
-    override fun abortTask() {
-        aborted = true
-    }
-
     private fun markAsFailed(info: String) {
         progressMonitor.apply {
             status = TaskStatus.FAILED
@@ -60,9 +55,18 @@ class ApksMergeTask(
         }
     }
 
+    override suspend fun run() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
+    }
+
     override suspend fun run(params: TaskParameters) {
         parameters = params as ApksMergeTaskParameters
         progressMonitor.status = TaskStatus.RUNNING
+        protect = false
 
         if (!sourceContent.isValid() || sourceContent !is LocalFileHolder) {
             markAsFailed(globalClass.resources.getString(R.string.invalid_bundle_file))
@@ -197,4 +201,7 @@ class ApksMergeTask(
         run(parameters!!)
     }
 
+    override fun setParameters(params: TaskParameters) {
+        parameters = params as ApksMergeTaskParameters
+    }
 }

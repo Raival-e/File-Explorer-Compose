@@ -15,7 +15,6 @@ import java.util.Date
 import java.util.Locale
 
 class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
-    private var aborted = false
     private var parameters: RenameTaskParameters? = null
     private var pendingContent = arrayListOf<RenameContentItem>()
 
@@ -48,10 +47,6 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
 
     override fun validate() = sourceContent.find { !it.isValid() } == null
 
-    override fun abortTask() {
-        aborted = true
-    }
-
     private fun markAsFailed(info: String) {
         progressMonitor.apply {
             status = TaskStatus.FAILED
@@ -59,9 +54,18 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
         }
     }
 
+    override suspend fun run() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
+    }
+
     override suspend fun run(params: TaskParameters) {
         parameters = params as RenameTaskParameters
         progressMonitor.status = TaskStatus.RUNNING
+        protect = false
 
         if (sourceContent.isEmpty()) {
             markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
@@ -107,7 +111,7 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
 
         pendingContent.forEachIndexed { index, itemToRename ->
             if (aborted) {
-                progressMonitor.status = TaskStatus.CANCELLED
+                progressMonitor.status = TaskStatus.PAUSED
                 return
             }
 
@@ -159,6 +163,10 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
             return
         }
         run(parameters!!)
+    }
+
+    override fun setParameters(params: TaskParameters) {
+        parameters = params as RenameTaskParameters
     }
 
     private fun getNewPath(

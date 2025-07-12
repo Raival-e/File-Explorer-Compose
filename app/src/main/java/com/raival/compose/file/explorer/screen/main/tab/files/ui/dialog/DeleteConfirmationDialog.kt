@@ -24,7 +24,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTaskParam
 import com.raival.compose.file.explorer.screen.main.tab.files.task.DeleteTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.DeleteTaskParameters
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -55,24 +55,27 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
             confirmButton = {
                 TextButton(
                     onClick = {
+                        val coroutineScope = CoroutineScope(Dispatchers.IO)
                         onDismissRequest()
                         tab.unselectAllFiles()
                         if (showRememberChoice && rememberChoice) {
                             preferencesManager.fileOperationPrefs.moveToRecycleBin =
                                 moveToRecycleBin
                         }
-                        CoroutineScope(IO).launch {
+                        coroutineScope.launch {
                             if (!tab.showEmptyRecycleBin && moveToRecycleBin) {
                                 globalClass.recycleBinDir.createSubFolder(
                                     System.currentTimeMillis().toString()
                                 ) { newDir ->
                                     if (newDir != null) {
-                                        globalClass.taskManager.addTaskAndRun(
-                                            CopyTask(targetFiles, true),
-                                            CopyTaskParameters(
-                                                newDir
+                                        coroutineScope.launch {
+                                            globalClass.taskManager.addTaskAndRun(
+                                                CopyTask(targetFiles, true),
+                                                CopyTaskParameters(
+                                                    newDir
+                                                )
                                             )
-                                        )
+                                        }
                                     } else {
                                         globalClass.showMsg(globalClass.getString(R.string.unable_to_move_to_recycle_bin))
                                     }

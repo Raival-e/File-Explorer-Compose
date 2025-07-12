@@ -50,6 +50,9 @@ import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileIcon
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun FileOptionsMenuDialog(tab: FilesTab) {
@@ -121,12 +124,14 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         tab.hideDocumentOptionsMenu()
-                        globalClass.taskManager.addTask(
-                            CopyTask(
-                                targetFiles,
-                                deleteSourceFiles = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            globalClass.taskManager.addTask(
+                                CopyTask(
+                                    targetFiles,
+                                    deleteSourceFiles = true
+                                )
                             )
-                        )
+                        }
                         tab.unselectAllFiles()
                     }
                 ) {
@@ -138,12 +143,14 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     modifier = Modifier.weight(1f),
                     onClick = {
                         tab.hideDocumentOptionsMenu()
-                        globalClass.taskManager.addTask(
-                            CopyTask(
-                                targetFiles,
-                                deleteSourceFiles = false
+                        CoroutineScope(Dispatchers.IO).launch {
+                            globalClass.taskManager.addTask(
+                                CopyTask(
+                                    targetFiles,
+                                    deleteSourceFiles = false
+                                )
                             )
-                        )
+                        }
                         tab.unselectAllFiles()
                     }
                 ) {
@@ -243,12 +250,14 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 if (apkBundleFileType.contains(targetContentHolder.file.extension)) {
                     FileOption(Icons.Rounded.Merge, stringResource(R.string.convert_to_apk)) {
                         tab.hideDocumentOptionsMenu()
-                        globalClass.taskManager.addTaskAndRun(
-                            ApksMergeTask(targetContentHolder),
-                            ApksMergeTaskParameters(
-                                globalClass.preferencesManager.fileOperationPrefs.signMergedApkBundleFiles
+                        CoroutineScope(Dispatchers.IO).launch {
+                            globalClass.taskManager.addTaskAndRun(
+                                ApksMergeTask(targetContentHolder),
+                                ApksMergeTaskParameters(
+                                    globalClass.preferencesManager.fileOperationPrefs.signMergedApkBundleFiles
+                                )
                             )
-                        )
+                        }
                         tab.unselectAllFiles()
                     }
                 }
@@ -256,9 +265,11 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
 
             if (tab.activeFolder !is ZipFileHolder) {
                 FileOption(Icons.Rounded.Compress, stringResource(R.string.compress)) {
-                    globalClass.taskManager.addTask(
-                        CompressTask(targetFiles)
-                    )
+                    CoroutineScope(Dispatchers.IO).launch {
+                        globalClass.taskManager.addTask(
+                            CompressTask(targetFiles)
+                        )
+                    }
                     tab.hideDocumentOptionsMenu()
                     tab.unselectAllFiles()
                 }

@@ -319,4 +319,10 @@
     <string name="bookmarked_files_and_folders">书签文件和文件夹</string>
     <string name="deleted_files">已删除文件</string>
     <string name="quick_path_navigation">快速路径导航</string>
+    <string name="task_running_notification_channel_name">任务运行通知</string>
+    <string name="task_running_notification_text">任务正在运行…</string>
+    <string name="task_cannot_be_continued_from_current_state">任务无法从当前状态继续：%1$s</string>
+    <string name="task_validation_failed">任务验证失败</string>
+    <string name="task_is_not_in_pending_state">任务不在待处理状态</string>
+    <string name="action_required">需要操作</string>
 </resources>

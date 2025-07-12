@@ -22,9 +22,6 @@ class CopyTask(
     val sourceFiles: List<ContentHolder>,
     val deleteSourceFiles: Boolean
 ) : Task() {
-
-    @Volatile
-    private var aborted = false
     private var parameters: CopyTaskParameters? = null
     private val pendingFiles: ArrayList<TaskContentItem> = arrayListOf()
 
@@ -36,8 +33,13 @@ class CopyTask(
 
     override fun getCurrentStatus() = progressMonitor.status
     override fun validate() = sourceFiles.all { it.isValid() && it.canRead }
-    override fun abortTask() {
-        aborted = true
+
+    override suspend fun run() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
     }
 
     override suspend fun run(params: TaskParameters) {
@@ -62,6 +64,10 @@ class CopyTask(
         }
     }
 
+    override fun setParameters(params: TaskParameters) {
+        parameters = params as? CopyTaskParameters
+    }
+
     // Private helper methods
 
     private fun createTaskMetadata(): TaskMetadata {
@@ -82,13 +88,14 @@ class CopyTask(
                 append(time)
             },
             isCancellable = true,
-            canMoveToBackground = false
+            canMoveToBackground = true
         )
     }
 
     private fun initializeTask(): Boolean {
         progressMonitor.status = TaskStatus.RUNNING
         aborted = false
+        protect = false
 
         if (sourceFiles.isEmpty()) {
             markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
@@ -253,7 +260,7 @@ class CopyTask(
 
         successfulItems.forEachIndexed { index, item ->
             if (aborted) {
-                progressMonitor.status = TaskStatus.CANCELLED
+                progressMonitor.status = TaskStatus.PAUSED
                 return
             }
 
@@ -313,11 +320,14 @@ class CopyTask(
 
         pendingFiles.forEachIndexed { index, item ->
             if (aborted) {
-                progressMonitor.status = TaskStatus.CANCELLED
+                progressMonitor.status = TaskStatus.PAUSED
                 return
             }
 
-            if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+            if (item.status != TaskContentStatus.PENDING
+                && item.status != TaskContentStatus.REPLACE
+                && item.status != TaskContentStatus.CONFLICT
+            ) {
                 return@forEachIndexed
             }
 
@@ -325,6 +335,10 @@ class CopyTask(
             val destinationFile = File(destinationHolder.file, item.relativePath)
 
             updateProgress(index, sourceFile.name)
+
+            if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item, true)) {
+                return
+            }
 
             if (item.status == TaskContentStatus.PENDING) {
                 val conflictExists = destinationFile.exists() && destinationFile.isFile
@@ -392,15 +406,22 @@ class CopyTask(
             ZipFile(destinationHolder.zipTree.source.file).use { targetZipFile ->
                 pendingFiles.forEachIndexed { index, item ->
                     if (aborted) {
-                        progressMonitor.status = TaskStatus.CANCELLED
+                        progressMonitor.status = TaskStatus.PAUSED
                         return
                     }
 
-                    if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+                    if (item.status != TaskContentStatus.PENDING
+                        && item.status != TaskContentStatus.REPLACE
+                        && item.status != TaskContentStatus.CONFLICT
+                    ) {
                         return@forEachIndexed
                     }
 
                     updateProgress(index, item.content.displayName)
+
+                    if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item, true)) {
+                        return
+                    }
 
                     val targetPath =
                         createZipEntryPath(destinationHolder.node.path, item.relativePath)
@@ -477,11 +498,14 @@ class CopyTask(
             ZipFile(sourceZipFile).use { sourceZip ->
                 pendingFiles.forEachIndexed { index, item ->
                     if (aborted) {
-                        progressMonitor.status = TaskStatus.CANCELLED
+                        progressMonitor.status = TaskStatus.PAUSED
                         return
                     }
 
-                    if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+                    if (item.status != TaskContentStatus.PENDING
+                        && item.status != TaskContentStatus.REPLACE
+                        && item.status != TaskContentStatus.CONFLICT
+                    ) {
                         return@forEachIndexed
                     }
 
@@ -489,6 +513,10 @@ class CopyTask(
                     val destinationFile = File(destinationHolder.uniquePath, item.relativePath)
 
                     updateProgress(index, sourceHolder.displayName)
+
+                    if (item.status == TaskContentStatus.CONFLICT && !handleConflict(item, true)) {
+                        return
+                    }
 
                     if (item.status == TaskContentStatus.PENDING) {
                         val conflictExists = destinationFile.exists() && destinationFile.isFile
@@ -561,15 +589,26 @@ class CopyTask(
                 ZipFile(destFile).use { destZip ->
                     pendingFiles.forEachIndexed { index, item ->
                         if (aborted) {
-                            progressMonitor.status = TaskStatus.CANCELLED
+                            progressMonitor.status = TaskStatus.PAUSED
                             return
                         }
 
-                        if (item.status != TaskContentStatus.PENDING && item.status != TaskContentStatus.REPLACE) {
+                        if (item.status != TaskContentStatus.PENDING
+                            && item.status != TaskContentStatus.REPLACE
+                            && item.status != TaskContentStatus.CONFLICT
+                        ) {
                             return@forEachIndexed
                         }
 
                         updateProgress(index, item.content.displayName)
+
+                        if (item.status == TaskContentStatus.CONFLICT && !handleConflict(
+                                item,
+                                true
+                            )
+                        ) {
+                            return
+                        }
 
                         val targetPath =
                             createZipEntryPath(destinationHolder.node.path, item.relativePath)

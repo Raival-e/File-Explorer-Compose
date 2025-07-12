@@ -13,7 +13,6 @@ import net.lingala.zip4j.ZipFile
 class DeleteTask(
     val sourceContent: List<ContentHolder>
 ) : Task() {
-    private var aborted = false
     private var parameters: DeleteTaskParameters? = null
     private var pendingContent = arrayListOf<DeleteContentItem>()
 
@@ -33,7 +32,7 @@ class DeleteTask(
                 append(time)
             },
             isCancellable = true,
-            canMoveToBackground = false
+            canMoveToBackground = true
         )
     }
 
@@ -46,10 +45,6 @@ class DeleteTask(
 
     override fun validate() = sourceContent.find { !it.isValid() } == null
 
-    override fun abortTask() {
-        aborted = true
-    }
-
     private fun markAsFailed(info: String) {
         progressMonitor.apply {
             status = TaskStatus.FAILED
@@ -57,9 +52,18 @@ class DeleteTask(
         }
     }
 
+    override suspend fun run() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
+    }
+
     override suspend fun run(params: TaskParameters) {
         parameters = params as DeleteTaskParameters
         progressMonitor.status = TaskStatus.RUNNING
+        protect = false
 
         if (sourceContent.isEmpty()) {
             markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
@@ -83,7 +87,7 @@ class DeleteTask(
 
         pendingContent.forEachIndexed { index, itemToDelete ->
             if (aborted) {
-                progressMonitor.status = TaskStatus.CANCELLED
+                progressMonitor.status = TaskStatus.PAUSED
                 return
             }
 
@@ -143,6 +147,10 @@ class DeleteTask(
             return
         }
         run(parameters!!)
+    }
+
+    override fun setParameters(params: TaskParameters) {
+        parameters = params as DeleteTaskParameters
     }
 
     internal data class DeleteContentItem(

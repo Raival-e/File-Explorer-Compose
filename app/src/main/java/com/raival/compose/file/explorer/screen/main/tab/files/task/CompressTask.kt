@@ -12,7 +12,6 @@ import java.io.File
 class CompressTask(
     val sourceContent: List<ContentHolder>
 ) : Task() {
-    private var aborted = false
     private var parameters: CompressTaskParameters? = null
     private var pendingContent = arrayListOf<TaskContentItem>()
 
@@ -32,7 +31,7 @@ class CompressTask(
                 append(time)
             },
             isCancellable = true,
-            canMoveToBackground = false
+            canMoveToBackground = true
         )
     }
     override val progressMonitor = TaskProgressMonitor(
@@ -44,10 +43,6 @@ class CompressTask(
 
     override fun validate() = sourceContent.find { !it.isValid() } == null
 
-    override fun abortTask() {
-        aborted = true
-    }
-
     private fun markAsFailed(info: String) {
         progressMonitor.apply {
             status = TaskStatus.FAILED
@@ -55,9 +50,18 @@ class CompressTask(
         }
     }
 
+    override suspend fun run() {
+        if (parameters == null) {
+            markAsFailed(globalClass.getString(R.string.unable_to_continue_task))
+            return
+        }
+        run(parameters!!)
+    }
+
     override suspend fun run(params: TaskParameters) {
         parameters = params as CompressTaskParameters
         progressMonitor.status = TaskStatus.RUNNING
+        protect = false
 
         if (sourceContent.isEmpty()) {
             markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
@@ -88,7 +92,7 @@ class CompressTask(
         ZipFile(parameters!!.destPath).use { zipFile ->
             pendingContent.forEachIndexed { index, itemToCompress ->
                 if (aborted) {
-                    progressMonitor.status = TaskStatus.CANCELLED
+                    progressMonitor.status = TaskStatus.PAUSED
                     return
                 }
 
@@ -130,6 +134,10 @@ class CompressTask(
                 }
             }
         }
+    }
+
+    override fun setParameters(params: TaskParameters) {
+        parameters = params as CompressTaskParameters
     }
 
     override suspend fun continueTask() {
