@@ -49,15 +49,6 @@ class MainActivityManager {
         storageDevices.addAll(StorageProvider.getStorageDevices(globalClass))
     }
 
-    fun closeAllTabs() {
-        tabs.removeIf {
-            (it.id isNot tabs[0].id).also { toClose ->
-                if (toClose) it.onTabRemoved()
-            }
-        }
-        selectTabAt(0)
-    }
-
     fun removeOtherTabs(tabIndex: Int) {
         if (tabIndex isNot selectedTabIndex) {
             selectTabAt(tabIndex)
@@ -133,7 +124,7 @@ class MainActivityManager {
         return tabs[selectedTabIndex]
     }
 
-    fun canExit(coroutineScope: CoroutineScope): Boolean {
+    fun canExit(): Boolean {
         if (getActiveTab().onBackPressed()) {
             return false
         }

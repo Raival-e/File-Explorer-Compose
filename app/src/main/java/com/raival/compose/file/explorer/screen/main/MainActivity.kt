@@ -26,6 +26,7 @@ import com.raival.compose.file.explorer.screen.main.ui.TabContentView
 import com.raival.compose.file.explorer.screen.main.ui.TabLayout
 import com.raival.compose.file.explorer.screen.main.ui.Toolbar
 import com.raival.compose.file.explorer.theme.FileExplorerTheme
+import kotlinx.coroutines.launch
 import java.io.File
 
 class MainActivity : BaseActivity() {
@@ -49,8 +50,10 @@ class MainActivity : BaseActivity() {
                         }
 
                     BackHandler {
-                        if (mainActivityManager.canExit(coroutineScope)) {
-                            finish()
+                        coroutineScope.launch {
+                            if (mainActivityManager.canExit()) {
+                                finish()
+                            }
                         }
                     }
 
