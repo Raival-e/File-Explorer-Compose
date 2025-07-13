@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">文件管理器</string>
+    <string name="app_name">Prism File Explorer</string>
     <string name="root_dir">根目录</string>
     <string name="internal_storage">内部存储</string>
     <string name="storage_permission_required">需要存储访问权限</string>
     <string name="title_activity_text_editor">文本编辑器</string>
-    <string name="main_activity_title">文件管理器</string>
+    <string name="main_activity_title">Prism File Explorer</string>
     <string name="jump_to_path">跳转到路径</string>
     <string name="destination_path">目标路径</string>
     <string name="open">打开</string>

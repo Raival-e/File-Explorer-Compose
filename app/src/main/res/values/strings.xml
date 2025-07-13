@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">File Explorer</string>
+    <string name="app_name">Prism File Explorer</string>
     <string name="root_dir">Root</string>
     <string name="internal_storage">Internal Storage</string>
     <string name="storage_permission_required">Storage access permission is required</string>
     <string name="title_activity_text_editor">TextEditorActivity</string>
-    <string name="main_activity_title">File Explorer</string>
+    <string name="main_activity_title">Prism File Explorer</string>
     <string name="jump_to_path">Jump to path</string>
     <string name="destination_path">Destination path</string>
     <string name="open">Open</string>

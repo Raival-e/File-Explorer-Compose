@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">Проводник файлов</string>
+    <string name="app_name">Prism File Explorer</string>
     <string name="root_dir">Корень</string>
     <string name="internal_storage">Внутреннее хранилище</string>
     <string name="storage_permission_required">Требуется разрешение на доступ к хранилищу</string>
     <string name="title_activity_text_editor">Текстовый редактор</string>
-    <string name="main_activity_title">Проводник файлов</string>
+    <string name="main_activity_title">Prism File Explorer</string>
     <string name="jump_to_path">Перейти к пути</string>
     <string name="destination_path">Путь назначения</string>
     <string name="open">Открыть</string>

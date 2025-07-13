@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">مدیر فایل</string>
+    <string name="app_name">Prism File Explorer</string>
     <string name="root_dir">ریشه</string>
     <string name="internal_storage">حافظه داخلی</string>
     <string name="storage_permission_required">مجوز دسترسی به حافظه مورد نیاز است</string>
     <string name="title_activity_text_editor">ویرایشگر متن</string>
-    <string name="main_activity_title">مدیر فایل</string>
+    <string name="main_activity_title">Prism File Explorer</string>
     <string name="jump_to_path">رفتن به مسیر</string>
     <string name="destination_path">مسیر مقصد</string>
     <string name="open">باز کردن</string>
