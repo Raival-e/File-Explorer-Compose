@@ -2,6 +2,7 @@ package com.raival.compose.file.explorer
 
 import android.app.Application
 import android.content.Context
+import android.os.Environment
 import android.os.Process
 import android.widget.Toast
 import androidx.annotation.StringRes
@@ -63,7 +64,11 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
         )
 
     val recycleBinDir: LocalFileHolder
-        get() = LocalFileHolder(File(getExternalFilesDir(null), "bin").apply { mkdirs() })
+        get() = LocalFileHolder(
+            File(
+                Environment.getExternalStorageDirectory(),
+                ".prism/bin"
+            ).apply { mkdirs() })
 
     private var uid = 0
 

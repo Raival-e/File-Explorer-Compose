@@ -1,7 +1,7 @@
 [versions]
 accompanistSystemuicontroller = "0.36.0"
 agp = "8.6.1"
-apksig = "8.11.0"
+apksig = "8.11.1"
 commonsNet = "3.11.1"
 desugar_jdk_libs = "2.1.5"
 grid = "2.3.2"
