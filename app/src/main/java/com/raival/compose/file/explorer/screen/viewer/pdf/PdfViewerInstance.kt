@@ -97,9 +97,9 @@ class PdfViewerInstance(
         App.Companion.globalClass.getString(R.string.last_modified) to metadata.lastModified.toFormattedDate()
     )
 
-    fun fetchPage(page: PdfPageHolder, scale: Float = 2f, onFinished: (PdfPageHolder) -> Unit) {
+    fun renderPage(page: PdfPageHolder, scale: Float = 2f, onFinished: (PdfPageHolder) -> Unit) {
         if (pdfRenderer != null) {
-            page.fetch(scale, scope, mutex, pdfRenderer, onFinished = { onFinished(page) })
+            page.render(scale, scope, mutex, pdfRenderer, onFinished = { onFinished(page) })
         }
     }
 

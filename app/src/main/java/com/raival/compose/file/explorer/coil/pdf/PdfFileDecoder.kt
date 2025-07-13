@@ -16,16 +16,17 @@ import java.io.File
 
 class PdfFileDecoder(val source: File) : Decoder {
     override suspend fun decode(): DecodeResult? {
-        //TODO: large pages causes lags?
         ParcelFileDescriptor.open(source, ParcelFileDescriptor.MODE_READ_ONLY)
             ?.use { fileDescriptor ->
                 PdfRenderer(fileDescriptor).use { pdfRenderer ->
                     pdfRenderer.openPage(0).use { page ->
-                        val resolutionMultiplier = 0.75f
-                        val bitmap = createBitmap(
-                            (page.width * resolutionMultiplier).toInt(),
-                            (page.height * resolutionMultiplier).toInt()
-                        ).also { Canvas(it).drawColor(Color.WHITE) }
+                        val targetWidth = 500
+                        val aspectRatio = page.height.toFloat() / page.width.toFloat()
+                        val targetHeight = (targetWidth * aspectRatio).toInt()
+
+                        val bitmap = createBitmap(targetWidth, targetHeight)
+                            .also { Canvas(it).drawColor(Color.WHITE) }
+
                         page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                         return DecodeResult(bitmap.asImage(), false)
                     }

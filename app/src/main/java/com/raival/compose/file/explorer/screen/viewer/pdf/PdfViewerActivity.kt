@@ -250,7 +250,7 @@ class PdfViewerActivity : ViewerActivity() {
         DisposableEffect(page.index) {
             if (bitmap == null && !isLoading) {
                 isLoading = true
-                instance.fetchPage(page) { readyPage ->
+                instance.renderPage(page) { readyPage ->
                     bitmap = readyPage.bitmap
                     isLoading = false
                 }

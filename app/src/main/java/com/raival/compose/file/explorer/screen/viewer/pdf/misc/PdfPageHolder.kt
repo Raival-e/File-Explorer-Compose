@@ -21,7 +21,7 @@ data class PdfPageHolder(
 ) {
     private var job: Job? = null
 
-    fun fetch(
+    fun render(
         scale: Float,
         scope: CoroutineScope,
         mutex: Mutex,
@@ -42,10 +42,38 @@ data class PdfPageHolder(
                     if (job?.isCancelled == false && bitmap == null) {
                         pdfRenderer.openPage(index).use { page ->
                             size = Size(page.width, page.height)
-                            val newBitmap = createBitmap(
-                                (size.width * scale).toInt(),
-                                (size.height * scale).toInt()
-                            )
+
+                            // Determine page orientation
+                            val isLandscape = page.width > page.height
+
+                            // Set different limits based on orientation
+                            val maxWidth = if (isLandscape) 4096 else 2048
+                            val maxHeight = if (isLandscape) 2048 else 6144
+
+                            // Calculate initial scaled dimensions
+                            val scaledWidth = (size.width * scale).toInt()
+                            val scaledHeight = (size.height * scale).toInt()
+
+                            // Check if dimensions exceed orientation-specific limits
+                            val finalWidth: Int
+                            val finalHeight: Int
+
+                            if (scaledWidth > maxWidth || scaledHeight > maxHeight) {
+                                // Calculate safe scale factors for both dimensions
+                                val maxScaleForWidth = maxWidth.toFloat() / size.width
+                                val maxScaleForHeight = maxHeight.toFloat() / size.height
+
+                                // Use the most restrictive scale to ensure both dimensions are within limits
+                                val safeScale = minOf(maxScaleForWidth, maxScaleForHeight)
+
+                                finalWidth = (size.width * safeScale).toInt()
+                                finalHeight = (size.height * safeScale).toInt()
+                            } else {
+                                finalWidth = scaledWidth
+                                finalHeight = scaledHeight
+                            }
+
+                            val newBitmap = createBitmap(finalWidth, finalHeight)
                             newBitmap.eraseColor(android.graphics.Color.WHITE)
                             page.render(newBitmap, null, null, RENDER_MODE_FOR_DISPLAY)
 
