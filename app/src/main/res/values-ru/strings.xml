@@ -329,4 +329,6 @@
     <string name="remove_from_startup">Убрать из стартовых вкладок</string>
     <string name="moving">Перемещение</string>
     <string name="sha1_checksum">SHA-256</string>
+    <string name="view_source_code">Просмотр исходного кода</string>
+    <string name="view_application_logs">Просмотр логов приложения</string>
 </resources>

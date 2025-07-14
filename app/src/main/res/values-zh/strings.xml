@@ -329,4 +329,6 @@
     <string name="remove_from_startup">从启动标签页移除</string>
     <string name="moving">移动中</string>
     <string name="sha1_checksum">SHA-256</string>
+    <string name="view_source_code">查看源代码</string>
+    <string name="view_application_logs">查看应用日志</string>
 </resources>
