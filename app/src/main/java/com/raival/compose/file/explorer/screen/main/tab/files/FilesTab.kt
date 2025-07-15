@@ -437,7 +437,7 @@ class FilesTab(
             .setIcon(
                 android.graphics.drawable.Icon.createWithResource(
                     context,
-                    if (file.isFile()) R.mipmap.default_shortcut else R.mipmap.folder_shortcut
+                    if (file.isFile()) R.mipmap.file_shortcut else R.mipmap.folder_shortcut
                 )
             )
             .setShortLabel(file.displayName)

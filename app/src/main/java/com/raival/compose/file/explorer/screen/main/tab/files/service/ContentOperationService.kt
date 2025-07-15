@@ -59,7 +59,7 @@ class ContentOperationService : Service() {
                 if (userActionRequired) getString(R.string.action_required)
                 else globalClass.getString(R.string.task_running_notification_text)
             )
-            .setSmallIcon(R.mipmap.app_icon)
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
             .setNumber(activeTasksCount)
