@@ -20,7 +20,7 @@
     },
     {
       "grammar": "textmate/xml/syntax/xml.tmLanguage.json",
-      "name": "xml",
+      "name": "XML",
       "scopeName": "text.xml",
       "languageConfiguration": "textmate/xml/language-configuration.json"
     }

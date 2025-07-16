@@ -30,12 +30,15 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHo
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.javaFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.jsonFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.kotlinFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.xmlFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JAVA
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_JSON
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_KOTLIN
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.Language.LANGUAGE_XML
 import com.raival.compose.file.explorer.screen.textEditor.holder.SymbolHolder
 import com.raival.compose.file.explorer.screen.textEditor.language.json.JsonCodeLanguage
 import com.raival.compose.file.explorer.screen.textEditor.language.kotlin.KotlinCodeLanguage
+import com.raival.compose.file.explorer.screen.textEditor.language.xml.XmlCodeLanguage
 import com.raival.compose.file.explorer.screen.textEditor.model.Searcher
 import com.raival.compose.file.explorer.screen.textEditor.model.WarningDialogProperties
 import com.raival.compose.file.explorer.screen.textEditor.scheme.DarkScheme
@@ -359,6 +362,12 @@ class TextEditorManager {
                 }
             }
 
+            LANGUAGE_XML -> {
+                codeEditor.apply {
+                    setEditorLanguage(XmlCodeLanguage())
+                }
+            }
+
             else -> {
                 codeEditor.apply {
                     setEditorLanguage(EmptyLanguage())
@@ -373,7 +382,7 @@ class TextEditorManager {
         activitySubtitle = activeFile.basePath
 
         canFormatFile = activeFile.extension.let {
-            it == jsonFileType || it == javaFileType || it == kotlinFileType
+            it == jsonFileType || it == javaFileType || it == kotlinFileType || it == xmlFileType
         }
     }
 
@@ -382,6 +391,7 @@ class TextEditorManager {
             javaFileType -> setCodeEditorLanguage(codeEditor, LANGUAGE_JAVA)
             kotlinFileType -> setCodeEditorLanguage(codeEditor, LANGUAGE_KOTLIN)
             jsonFileType -> setCodeEditorLanguage(codeEditor, LANGUAGE_JSON)
+            xmlFileType -> setCodeEditorLanguage(codeEditor, LANGUAGE_XML)
             else -> setCodeEditorLanguage(codeEditor, -1)
         }
     }

@@ -22,9 +22,11 @@ import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.javaFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.jsonFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.kotlinFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.xmlFileType
 import com.raival.compose.file.explorer.screen.textEditor.holder.SymbolHolder
 import com.raival.compose.file.explorer.screen.textEditor.language.json.JsonCodeLanguage
 import com.raival.compose.file.explorer.screen.textEditor.language.kotlin.KotlinCodeLanguage
+import com.raival.compose.file.explorer.screen.textEditor.language.xml.XmlCodeLanguage
 import com.raival.compose.file.explorer.screen.textEditor.ui.BottomBarView
 import com.raival.compose.file.explorer.screen.textEditor.ui.InfoBar
 import com.raival.compose.file.explorer.screen.textEditor.ui.JumpToPositionDialog
@@ -96,6 +98,9 @@ class TextViewerActivity : ViewerActivity() {
                                         textViewerInstance.changeFontStyle(codeEditor)
                                     } else if (name.endsWith(jsonFileType)) {
                                         codeEditor.setEditorLanguage(JsonCodeLanguage())
+                                        textViewerInstance.changeFontStyle(codeEditor)
+                                    } else if (name.endsWith(xmlFileType)) {
+                                        codeEditor.setEditorLanguage(XmlCodeLanguage())
                                         textViewerInstance.changeFontStyle(codeEditor)
                                     } else {
                                         codeEditor.setEditorLanguage(EmptyLanguage())

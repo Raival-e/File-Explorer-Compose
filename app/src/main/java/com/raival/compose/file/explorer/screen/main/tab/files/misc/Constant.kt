@@ -10,6 +10,7 @@ object Language {
     const val LANGUAGE_JAVA = 1
     const val LANGUAGE_KOTLIN = 2
     const val LANGUAGE_JSON = 3
+    const val LANGUAGE_XML = 4
 }
 
 object StorageDeviceType {

@@ -31,6 +31,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHo
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.javaFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.jsonFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.kotlinFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.xmlFileType
 import com.raival.compose.file.explorer.screen.textEditor.holder.SymbolHolder
 import com.raival.compose.file.explorer.screen.textEditor.model.Searcher
 import com.raival.compose.file.explorer.screen.textEditor.model.WarningDialogProperties
@@ -196,7 +197,7 @@ class TextViewerInstance(
         activityTitle = uriContent.name ?: globalClass.getString(R.string.unknown)
 
         canFormatFile = uriContent.extension.let {
-            it == jsonFileType || it == javaFileType || it == kotlinFileType
+            it == jsonFileType || it == javaFileType || it == kotlinFileType || it == xmlFileType
         }
     }
 
