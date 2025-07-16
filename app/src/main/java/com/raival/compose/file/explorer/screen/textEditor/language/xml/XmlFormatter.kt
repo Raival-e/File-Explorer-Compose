@@ -1,14 +1,9 @@
 package com.raival.compose.file.explorer.screen.textEditor.language.xml
 
-import android.util.Log
-import com.raival.compose.file.explorer.common.extension.printFullStackTrace
 import io.github.rosemoe.sora.lang.format.Formatter
 import io.github.rosemoe.sora.text.Content
 import io.github.rosemoe.sora.text.TextRange
-import org.json.JSONArray
-import org.json.JSONObject
 import org.xml.sax.InputSource
-import org.xmlpull.v1.XmlPullParser
 import java.io.StringReader
 import java.io.StringWriter
 import javax.xml.parsers.DocumentBuilderFactory
