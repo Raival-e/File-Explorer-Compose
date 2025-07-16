@@ -300,6 +300,7 @@ class FilesTab(
                                         }
                                     )
                                 }
+                                changedFile.resetCachedTimestamp()
                             }
                         }
                         if (zipTree.source.extension == apkFileType) {
