@@ -17,11 +17,8 @@ import kotlinx.coroutines.launch
 
 class AppsTab : Tab() {
     override val id = globalClass.generateUid()
-
     override val title = globalClass.getString(R.string.apps_tab_title)
-
     override val subtitle = emptyString
-
     override val header = globalClass.getString(R.string.apps_tab_header)
 
     val appsList = mutableStateListOf<AppHolder>()
@@ -34,6 +31,11 @@ class AppsTab : Tab() {
     var searchQuery by mutableStateOf(emptyString)
     var isSearching by mutableStateOf(false)
     var isLoading by mutableStateOf(false)
+    var sortOption by mutableStateOf(SortOption.NAME)
+
+    enum class SortOption {
+        NAME, SIZE, INSTALL_DATE, UPDATE_DATE
+    }
 
     override fun onTabResumed() {
         super.onTabResumed()
@@ -46,25 +48,10 @@ class AppsTab : Tab() {
     }
 
     override fun onBackPressed(): Boolean {
-        if (isSearchPanelOpen || isSearching || isLoading) {
-            if (isSearching) {
-                isSearching = false
-            }
-
-            if (isSearchPanelOpen) {
-                isSearchPanelOpen = false
-            }
-
-            appsList.clear()
-
-            when (selectedChoice) {
-                0 -> appsList.addAll(userApps)
-                1 -> appsList.addAll(systemApps)
-                2 -> {
-                    appsList.addAll(userApps)
-                    appsList.addAll(systemApps)
-                }
-            }
+        if (isSearchPanelOpen) {
+            isSearchPanelOpen = false
+            searchQuery = emptyString
+            updateAppsList()
             return true
         }
         return false
@@ -73,15 +60,73 @@ class AppsTab : Tab() {
     fun fetchInstalledApps() {
         isLoading = true
         CoroutineScope(Dispatchers.IO).launch {
-            getInstalledApps(globalClass).forEach {
-                if (it.isSystemApp) systemApps.add(it)
-                else userApps.add(it)
+            try {
+                val apps = getInstalledApps(globalClass)
+                apps.forEach { app ->
+                    if (app.isSystemApp) systemApps.add(app)
+                    else userApps.add(app)
+                }
+                updateAppsList()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading = false
             }
+        }
+    }
 
-            appsList.clear()
-            appsList.addAll(userApps)
+    fun updateAppsList() {
+        appsList.clear()
+        val filteredApps = when (selectedChoice) {
+            0 -> userApps
+            1 -> systemApps
+            2 -> userApps + systemApps
+            else -> emptyList()
+        }
 
-            isLoading = false
+        val sortedApps = when (sortOption) {
+            SortOption.NAME -> filteredApps.sortedBy { it.name.lowercase() }
+            SortOption.SIZE -> filteredApps.sortedByDescending { it.size }
+            SortOption.INSTALL_DATE -> filteredApps.sortedByDescending { it.installDate }
+            SortOption.UPDATE_DATE -> filteredApps.sortedByDescending { it.lastUpdateDate }
+        }
+
+        appsList.addAll(sortedApps)
+    }
+
+    fun performSearch() {
+        if (searchQuery.isBlank()) {
+            updateAppsList()
+            return
+        }
+
+        isSearching = true
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val baseList = when (selectedChoice) {
+                    0 -> userApps
+                    1 -> systemApps
+                    2 -> userApps + systemApps
+                    else -> emptyList()
+                }
+
+                val filteredApps = baseList.filter { app ->
+                    app.name.contains(searchQuery, ignoreCase = true) ||
+                            app.packageName.contains(searchQuery, ignoreCase = true)
+                }
+
+                val sortedApps = when (sortOption) {
+                    SortOption.NAME -> filteredApps.sortedBy { it.name.lowercase() }
+                    SortOption.SIZE -> filteredApps.sortedByDescending { it.size }
+                    SortOption.INSTALL_DATE -> filteredApps.sortedByDescending { it.installDate }
+                    SortOption.UPDATE_DATE -> filteredApps.sortedByDescending { it.lastUpdateDate }
+                }
+
+                appsList.clear()
+                appsList.addAll(sortedApps)
+            } finally {
+                isSearching = false
+            }
         }
     }
 }

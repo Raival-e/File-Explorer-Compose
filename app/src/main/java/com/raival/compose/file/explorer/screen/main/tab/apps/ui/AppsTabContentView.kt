@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.apps.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,184 +14,108 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.toFormattedSize
-import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.common.ui.block
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
-import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRow
-import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRowIcon
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppsTabContentView(tab: AppsTab) {
+    var showSortMenu by remember { mutableStateOf(false) }
+
     LaunchedEffect(tab.id) {
         if (tab.appsList.isEmpty()) {
             tab.fetchInstalledApps()
         }
     }
 
-    LaunchedEffect(tab.selectedChoice) {
-        tab.appsList.clear()
-
-        when (tab.selectedChoice) {
-            0 -> tab.appsList.addAll(tab.userApps)
-            1 -> tab.appsList.addAll(tab.systemApps)
-            2 -> {
-                tab.appsList.addAll(tab.userApps)
-                tab.appsList.addAll(tab.systemApps)
-            }
-        }
+    LaunchedEffect(tab.selectedChoice, tab.sortOption) {
+        tab.updateAppsList()
     }
 
+    // App Info Dialog
     if (tab.previewAppDialog != null) {
-        val selectedApp = tab.previewAppDialog!!
-        val details = arrayListOf<Pair<String, String>>().apply {
-            add(Pair(globalClass.getString(R.string.package_name), selectedApp.packageName))
-            add(Pair(globalClass.getString(R.string.version_name), selectedApp.versionName))
-            add(
-                Pair(
-                    globalClass.getString(R.string.version_code),
-                    selectedApp.versionCode.toString()
-                )
-            )
-            add(Pair(globalClass.getString(R.string.size), selectedApp.size.toFormattedSize()))
-        }
-
-        BottomSheetDialog(
-            onDismissRequest = { tab.previewAppDialog = null }
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    AsyncImage(
-                        modifier = Modifier
-                            .size(72.dp)
-                            .clip(RoundedCornerShape(16.dp)),
-                        model = selectedApp.path,
-                        filterQuality = FilterQuality.Low,
-                        error = painterResource(id = R.drawable.apk_file_extension),
-                        contentScale = ContentScale.Fit,
-                        contentDescription = null
-                    )
-                }
-                Space(size = 8.dp)
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = selectedApp.name,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Space(size = 8.dp)
-
-                LazyColumn {
-                    items(details, key = { it.first }) {
-                        Row(Modifier.padding(vertical = 4.dp)) {
-                            Text(text = "${it.first}: ")
-                            Text(
-                                modifier = Modifier.alpha(0.5f),
-                                text = it.second,
-                                maxLines = 1
-                            )
-                        }
-                    }
-                }
-
-                Space(size = 8.dp)
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                    TextButton(
-                        onClick = {
-                            tab.previewAppDialog = null
-                            globalClass.showMsg(R.string.new_task_has_been_added)
-                        }
-                    ) {
-                        Text(text = stringResource(R.string.save))
-                    }
-                }
-            }
-        }
+        AppInfoBottomSheet(
+            app = tab.previewAppDialog!!,
+            onDismiss = { tab.previewAppDialog = null }
+        )
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        LazyColumn {
-            items(tab.appsList, key = { it.packageName }) { app ->
-                ItemRow(
-                    title = app.name,
-                    subtitle = app.packageName,
-                    icon = {
-                        ItemRowIcon(
-                            icon = app.path,
-                            placeholder = R.drawable.apk_file_extension
-                        )
-                    },
-                    onItemClick = {
-                        tab.previewAppDialog = app
-                    }
-                )
-            }
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column {
+            // Apps List
+            LazyColumn {
+                item {
+                    Space(8.dp)
+                }
 
-            item {
-                Space(150.dp)
+                items(tab.appsList, key = { it.packageName }) { app ->
+                    AppListItem(
+                        app = app,
+                        onClick = { tab.previewAppDialog = app }
+                    )
+                }
+
+                item {
+                    Space(size = 150.dp)
+                }
             }
         }
+
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Transparent,
+                            Color.Transparent,
+                            Color.Transparent,
+                            MaterialTheme.colorScheme.surfaceContainerLowest
+                        )
+                    )
+                )
+        )
 
         Column(
             modifier = Modifier
@@ -212,43 +137,89 @@ fun AppsTabContentView(tab: AppsTab) {
                 }
             }
 
-            SingleChoiceSegmentedButtonRow(
+            // Filter and Sort Controls
+            Row(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                SegmentedButton(
-                    selected = tab.selectedChoice == 0,
-                    onClick = {
-                        tab.selectedChoice = 0
-                    },
-                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
-                    label = {
-                        Text(text = stringResource(R.string.user_apps))
-                    }
-                )
+                // Filter Segments
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 16.dp)
+                ) {
+                    SegmentedButton(
+                        selected = tab.selectedChoice == 0,
+                        onClick = { tab.selectedChoice = 0 },
+                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+                        label = { Text(stringResource(R.string.user_apps)) }
+                    )
+                    SegmentedButton(
+                        selected = tab.selectedChoice == 1,
+                        onClick = { tab.selectedChoice = 1 },
+                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+                        label = { Text(stringResource(R.string.system_apps)) }
+                    )
+                    SegmentedButton(
+                        selected = tab.selectedChoice == 2,
+                        onClick = { tab.selectedChoice = 2 },
+                        shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+                        label = { Text(stringResource(R.string.all)) }
+                    )
+                }
 
-                SegmentedButton(
-                    selected = tab.selectedChoice == 1,
-                    onClick = {
-                        tab.selectedChoice = 1
-                    },
-                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
-                    label = {
-                        Text(text = stringResource(R.string.system_apps))
-                    }
-                )
+                Space(size = 8.dp)
 
-                SegmentedButton(
-                    selected = tab.selectedChoice == 2,
-                    onClick = {
-                        tab.selectedChoice = 2
-                    },
-                    shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
-                    label = {
-                        Text(text = stringResource(R.string.all))
+                // Sort Button
+                Box {
+                    FloatingActionButton(
+                        modifier = Modifier.padding(16.dp),
+                        onClick = {
+                            showSortMenu = true
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.Sort,
+                            contentDescription = null
+                        )
                     }
-                )
+
+                    DropdownMenu(
+                        expanded = showSortMenu,
+                        onDismissRequest = { showSortMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.name)) },
+                            onClick = {
+                                tab.sortOption = AppsTab.SortOption.NAME
+                                showSortMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.size)) },
+                            onClick = {
+                                tab.sortOption = AppsTab.SortOption.SIZE
+                                showSortMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.install_date)) },
+                            onClick = {
+                                tab.sortOption = AppsTab.SortOption.INSTALL_DATE
+                                showSortMenu = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.update_date)) },
+                            onClick = {
+                                tab.sortOption = AppsTab.SortOption.UPDATE_DATE
+                                showSortMenu = false
+                            }
+                        )
+                    }
+                }
             }
 
             AnimatedVisibility(tab.isSearchPanelOpen) {
@@ -301,6 +272,7 @@ fun AppsTabContentView(tab: AppsTab) {
                                         } else {
                                             tab.searchQuery = emptyString
                                             tab.isSearching = false
+                                            tab.performSearch()
                                         }
                                     }
                                 ) {
@@ -314,29 +286,7 @@ fun AppsTabContentView(tab: AppsTab) {
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(
                             onSearch = {
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    if (tab.isSearching) {
-                                        tab.isSearching = false
-                                        delay(200)
-                                    }
-
-                                    tab.isSearching = true
-
-                                    val list = arrayListOf<AppHolder>().apply {
-                                        when (tab.selectedChoice) {
-                                            0 -> addAll(tab.userApps)
-                                            1 -> addAll(tab.systemApps)
-                                            else -> addAll(tab.userApps + tab.systemApps)
-                                        }
-                                    }
-
-                                    tab.appsList.clear()
-                                    tab.appsList.addAll(list.filter {
-                                        it.name.contains(tab.searchQuery, true)
-                                    })
-
-                                    tab.isSearching = false
-                                }
+                                tab.performSearch()
                             }
                         )
                     )
@@ -344,12 +294,14 @@ fun AppsTabContentView(tab: AppsTab) {
             }
         }
 
+        // Loading Indicator
         AnimatedVisibility(
-            modifier = Modifier.align(Alignment.Center),
-            visible = tab.isLoading || tab.isSearching
+            visible = tab.isLoading || tab.isSearching,
+            modifier = Modifier.align(Alignment.Center)
         ) {
             CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier.size(48.dp),
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
