@@ -120,7 +120,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
                             .format(Date(installedInfo.firstInstallTime))
                         lastUpdateTime = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
                             .format(Date(installedInfo.lastUpdateTime))
-                    } catch (e: PackageManager.NameNotFoundException) {
+                    } catch (_: PackageManager.NameNotFoundException) {
                         // App not installed
                     }
 
