@@ -29,12 +29,16 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHo
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
+import com.reandroid.archive.ZipAlign
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.lingala.zip4j.ZipFile
+import net.lingala.zip4j.model.ZipParameters
 import java.io.File
 
 class FilesTab(
@@ -225,17 +229,16 @@ class FilesTab(
             if (selectedFiles.isEmpty()) lastSelectedFileIndex = -1
         }
 
-        showMoreOptionsButton = selectedFiles.size > 0
+        showMoreOptionsButton = selectedFiles.isNotEmpty()
 
         activeFolder = item
 
         listFiles { newContent ->
-            if (activeFolder is LocalFileHolder) {
-                showEmptyRecycleBin =
-                    (activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir)
-                            || activeFolder.uniquePath == globalClass.recycleBinDir.uniquePath
+            showEmptyRecycleBin = if (activeFolder is LocalFileHolder) {
+                ((activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir)
+                        || activeFolder.uniquePath == globalClass.recycleBinDir.uniquePath)
             } else {
-                showEmptyRecycleBin = false
+                false
             }
 
             canCreateNewContent = activeFolder.canAddNewContent
@@ -281,6 +284,30 @@ class FilesTab(
             }
         } else if (activeFolder is ZipFileHolder) {
             if (globalClass.zipManager.checkForSourceChanges()) {
+                val zipTree = (activeFolder as ZipFileHolder).zipTree
+                val changedFiles = zipTree.checkExtractedFiles()
+                if (changedFiles.isNotEmpty()) {
+                    isLoading = true
+                    CoroutineScope(Dispatchers.IO).launch {
+                        ZipFile(zipTree.source.file).use { zipFile ->
+                            changedFiles.forEach { changedFile ->
+                                zipTree.getRelatedNode(changedFile)?.let { node ->
+                                    zipFile.addFile(
+                                        changedFile.file,
+                                        ZipParameters().apply {
+                                            fileNameInZip = node.path
+                                            isOverrideExistingFilesInZip = true
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                        if (zipTree.source.extension == apkFileType) {
+                            ZipAlign.alignApk(zipTree.source.file)
+                        }
+                        isLoading = false
+                    }
+                }
                 reloadFiles()
                 return true
             }
@@ -453,6 +480,15 @@ class FilesTab(
                 PendingIntent.FLAG_IMMUTABLE
             ).intentSender
         )
+    }
+
+    fun extractZipHolderForPreview(zipFileHolder: ZipFileHolder, onDone: (String) -> Unit) {
+        isLoading = true
+        CoroutineScope(Dispatchers.IO).launch {
+            val newFilePath = zipFileHolder.extractForPreview()
+            isLoading = false
+            onDone(newFilePath)
+        }
     }
 
     class ApkDialog {

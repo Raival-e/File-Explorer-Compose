@@ -116,6 +116,11 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        globalClass.cleanOnExitDir()
+    }
+
     private fun handleIntent() {
         intent?.let {
             if (it.hasExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)) {

@@ -36,6 +36,7 @@ import io.github.rosemoe.sora.langs.textmate.registry.model.ThemeModel
 import io.github.rosemoe.sora.langs.textmate.registry.provider.AssetsFileResolver
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.eclipse.tm4e.core.registry.IThemeSource
@@ -69,8 +70,16 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
                 Environment.getExternalStorageDirectory(),
                 ".prism/bin"
             ).apply { mkdirs() })
-
+    @Volatile
     private var uid = 0
+
+    val cleanOnExitDir
+        get() = LocalFileHolder(
+            File(
+                getExternalFilesDir(null),
+                "cleanOnExit"
+            ).apply { mkdirs() }
+        )
 
     val textEditorManager: TextEditorManager by lazy { TextEditorManager().also { setupTextMate() } }
     val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { it.setupTabs() } }
@@ -90,6 +99,16 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
         setupGlobalExceptionHandler()
 
         appContext = this
+
+        cleanOnExitDir()
+    }
+
+    fun cleanOnExitDir() {
+        CoroutineScope(IO).launch {
+            if (cleanOnExitDir.file.exists()) {
+                cleanOnExitDir.file.deleteRecursively()
+            }
+        }
     }
 
     private fun setupGlobalExceptionHandler() {
@@ -103,7 +122,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     }
 
     private fun setupTextMate() {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(IO).launch {
             FileProviderRegistry.getInstance().addFileProvider(
                 AssetsFileResolver(
                     appContext.assets

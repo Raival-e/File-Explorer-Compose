@@ -30,6 +30,7 @@ import java.io.StringWriter
 import java.io.Writer
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
+import java.util.UUID
 import kotlin.math.log10
 import kotlin.math.pow
 
@@ -271,6 +272,10 @@ fun Uri.exists(context: Context): Boolean {
     return false
 }
 
+fun String.toUuid(): UUID {
+    return UUID.nameUUIDFromBytes(this.toByteArray())
+}
+
 fun String.asCodeEditorCursorCoordinates(): Pair<Int, Int> {
     val trimmedInput = trim()
     return when {
@@ -309,6 +314,10 @@ fun Int.isMultipleOf100(): Boolean {
 
 fun showMsg(msg: String) {
     globalClass.showMsg(msg)
+}
+
+fun showMsg(msgId: Int) {
+    globalClass.showMsg(msgId)
 }
 
 @SuppressLint("SimpleDateFormat")

@@ -4,6 +4,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.extension.toUuid
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.zip.model.ZipNode
@@ -16,7 +17,14 @@ class ZipTree(
     val source: LocalFileHolder,
 ) {
     val timeStamp = source.lastModified
-
+    val cleanOnExitDir = LocalFileHolder(
+        file = File(globalClass.cleanOnExitDir.file, source.uniquePath.toUuid().toString()).apply {
+            if (!exists()) {
+                mkdirs()
+            }
+        }
+    )
+    val extractedFiles = hashMapOf<String, LocalFileHolder>()
     private val zipEntries = hashMapOf<String, ZipEntry>()
     private val nodes = hashMapOf<String, ZipNode>()
 
@@ -31,6 +39,28 @@ class ZipTree(
 
     var isReady = false
         private set
+
+    fun getRelatedNode(extractedFile: LocalFileHolder): ZipNode? {
+        if (!extractedFile.uniquePath.startsWith(cleanOnExitDir.uniquePath)) return null
+        return findNodeByPath(
+            extractedFile.uniquePath.removePrefix(cleanOnExitDir.uniquePath)
+                .removePrefix(File.separator)
+        )
+    }
+
+    fun createExtractionDestinationDirFor(node: ZipNode) =
+        if (node.parentPath.isEmpty()) cleanOnExitDir.file else File(
+            cleanOnExitDir.file,
+            node.parentPath
+        )
+
+    fun getExtractionDestinationFile(node: ZipNode): LocalFileHolder? {
+        val file = File(createExtractionDestinationDirFor(node), node.name)
+
+        if (!file.exists()) return null
+
+        return LocalFileHolder(file)
+    }
 
     fun getRootNode() = root
 
@@ -105,5 +135,20 @@ class ZipTree(
         }
 
         zipEntries.clear()
+    }
+
+    fun checkExtractedFiles(): ArrayList<LocalFileHolder> {
+        val result = arrayListOf<LocalFileHolder>()
+        extractedFiles.forEach { item ->
+            val file = item.value
+            if (file.hasSourceChanged()) {
+                result.add(file)
+            }
+        }
+        return result
+    }
+
+    fun addExtractedFile(node: ZipNode, file: LocalFileHolder) {
+        extractedFiles[node.path] = file
     }
 }

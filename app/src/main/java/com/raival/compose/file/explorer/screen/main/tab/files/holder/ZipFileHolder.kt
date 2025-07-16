@@ -1,10 +1,14 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.holder
 
+import android.content.Context
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.extension.showMsg
 import com.raival.compose.file.explorer.common.extension.toFormattedDate
 import com.raival.compose.file.explorer.common.extension.toFormattedSize
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.zip.ZipTree
 import com.raival.compose.file.explorer.screen.main.tab.files.zip.model.ZipNode
@@ -131,6 +135,46 @@ class ZipFileHolder(
     }
 
     override fun isValid() = true
+
+    override fun open(
+        context: Context,
+        anonymous: Boolean,
+        skipSupportedExtensions: Boolean,
+        customMimeType: String?
+    ) {
+        val file = zipTree.getExtractionDestinationFile(node)
+
+        if (file != null) {
+            file.open(context, anonymous, skipSupportedExtensions, customMimeType)
+        } else {
+            (globalClass.mainActivityManager.getActiveTab() as? FilesTab)?.extractZipHolderForPreview(
+                this
+            ) {
+                val file = zipTree.getExtractionDestinationFile(node)
+                if (file != null) {
+                    zipTree.addExtractedFile(node, file)
+                    file.open(context, anonymous, skipSupportedExtensions, customMimeType)
+                } else {
+                    showMsg(R.string.failed_to_extract_file)
+                }
+            }
+        }
+    }
+
+    suspend fun extractForPreview(): String {
+        val path = zipTree.createExtractionDestinationDirFor(node).absolutePath
+        try {
+            ZipFile(zipTree.source.file).use { zipFile ->
+                zipFile.extractFile(
+                    node.path,
+                    zipTree.cleanOnExitDir.uniquePath
+                )
+            }
+        } catch (e: Exception) {
+            logger.logError(e)
+        }
+        return path
+    }
 
     private fun createDetails(): String {
         val separator = " | "

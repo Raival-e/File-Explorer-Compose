@@ -332,4 +332,5 @@
     <string name="sha1_checksum">SHA-256</string>
     <string name="view_source_code">View source code</string>
     <string name="view_application_logs">View application logs</string>
+    <string name="failed_to_extract_file">Failed to extrcat file</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.ui
 
 import android.content.Intent
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,7 @@ import com.raival.compose.file.explorer.screen.logs.LogsActivity
 @Composable
 fun AppInfoDialog() {
     val mainActivityManager = globalClass.mainActivityManager
-    val appIcon = globalClass.packageManager.getApplicationIcon(globalClass.packageName)
+    val appIcon = AppCompatResources.getDrawable(globalClass, R.drawable.app_icon)
     val versionName =
         globalClass.packageManager.getPackageInfo(globalClass.packageName, 0).versionName
     val context = LocalContext.current

@@ -331,4 +331,5 @@
     <string name="sha1_checksum">SHA-256</string>
     <string name="view_source_code">مشاهده کد منبع</string>
     <string name="view_application_logs">مشاهده گزارش‌های برنامه</string>
+    <string name="failed_to_extract_file">استخراج فایل ناموفق بود</string>
 </resources>

@@ -329,6 +329,7 @@
     <string name="remove_from_startup">Remover das abas de inicialização</string>
     <string name="moving">Movendo</string>
     <string name="sha1_checksum">SHA-256</string>
-    <string name="view_source_code">Ver código fonte</string>
-    <string name="view_application_logs">Ver logs da aplicação</string>
+    <string name="view_source_code">Ver código-fonte</string>
+    <string name="view_application_logs">Ver logs do aplicativo</string>
+    <string name="failed_to_extract_file">Falha ao extrair arquivo</string>
 </resources>

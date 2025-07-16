@@ -14,7 +14,9 @@ class ZipManager {
                 zipTree.reset()
                 foundChanges = true
             }
+            if (zipTree.checkExtractedFiles().isNotEmpty()) foundChanges = true
         }
+
         return foundChanges
     }
 

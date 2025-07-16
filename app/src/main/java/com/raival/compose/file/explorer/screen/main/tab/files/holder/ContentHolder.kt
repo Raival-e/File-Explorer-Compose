@@ -102,17 +102,6 @@ abstract class ContentHolder {
         return parent != null && parent.isValid() && (!onlyReadable || parent.canRead)
     }
 
-    open suspend fun walk(includeEmptyFolders: Boolean, onContent: (ContentHolder) -> Unit) {
-        if (!isValid() || !isFolder) return
-
-        if (listContent().isEmpty() && !includeEmptyFolders) return
-
-        listContent().forEach {
-            onContent(it)
-            it.walk(includeEmptyFolders, onContent)
-        }
-    }
-
     open suspend fun listSortedContent(): ArrayList<out ContentHolder> {
         val sortingPrefs = globalClass.preferencesManager.filesSortingPrefs.getSortingPrefsFor(this)
 

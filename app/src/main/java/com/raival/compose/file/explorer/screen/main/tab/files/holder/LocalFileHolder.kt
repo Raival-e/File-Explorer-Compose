@@ -23,7 +23,7 @@ import java.io.File
 class LocalFileHolder(val file: File) : ContentHolder() {
     private var folderCount = 0
     private var fileCount = 0
-    private var cachedLastModified = -1L
+    private var timestamp = -1L
 
     override val displayName: String by lazy { file.name }
 
@@ -49,7 +49,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
     override val lastModified: Long
         get() = file.lastModified().also {
-            if (cachedLastModified == -1L) cachedLastModified = it
+            if (timestamp == -1L) timestamp = it
         }
 
     override val size: Long by lazy { file.length() }
@@ -169,7 +169,11 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
     fun exists() = isValid()
 
-    fun hasSourceChanged() = cachedLastModified != -1L && lastModified != cachedLastModified
+    fun hasSourceChanged() = timestamp != -1L && lastModified != timestamp
+
+    fun resetCachedTimestamp() {
+        timestamp = lastModified
+    }
 
     fun getAppsHandlingFile(mimeType: String = emptyString): List<OpenWithActivityHolder> {
         val packageManager: PackageManager = globalClass.packageManager
