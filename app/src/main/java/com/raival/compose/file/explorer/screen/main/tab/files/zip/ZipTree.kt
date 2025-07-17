@@ -16,7 +16,7 @@ import java.util.zip.ZipFile
 class ZipTree(
     val source: LocalFileHolder,
 ) {
-    val timeStamp = source.lastModified
+    var timeStamp = source.lastModified
     val cleanOnExitDir = LocalFileHolder(
         file = File(globalClass.cleanOnExitDir.file, source.uniquePath.toUuid().toString()).apply {
             if (!exists()) {
@@ -70,6 +70,7 @@ class ZipTree(
 
     fun reset() {
         isReady = false
+        timeStamp = source.lastModified
     }
 
     fun prepare() {

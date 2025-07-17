@@ -10,11 +10,11 @@ class ZipManager {
     fun checkForSourceChanges(): Boolean {
         var foundChanges = false
         archiveList.values.forEach { zipTree ->
-            if (zipTree.source.lastModified != zipTree.timeStamp) {
-                zipTree.reset()
+            if (zipTree.source.lastModified != zipTree.timeStamp || zipTree.checkExtractedFiles()
+                    .isNotEmpty()
+            ) {
                 foundChanges = true
             }
-            if (zipTree.checkExtractedFiles().isNotEmpty()) foundChanges = true
         }
 
         return foundChanges

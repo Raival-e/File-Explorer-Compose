@@ -284,11 +284,12 @@ class FilesTab(
             }
         } else if (activeFolder is ZipFileHolder) {
             if (globalClass.zipManager.checkForSourceChanges()) {
-                val zipTree = (activeFolder as ZipFileHolder).zipTree
-                val changedFiles = zipTree.checkExtractedFiles()
-                if (changedFiles.isNotEmpty()) {
-                    isLoading = true
-                    CoroutineScope(Dispatchers.IO).launch {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val zipTree = (activeFolder as ZipFileHolder).zipTree
+                    val changedFiles = zipTree.checkExtractedFiles()
+                    if (changedFiles.isNotEmpty()) {
+                        isLoading = true
+
                         ZipFile(zipTree.source.file).use { zipFile ->
                             changedFiles.forEach { changedFile ->
                                 zipTree.getRelatedNode(changedFile)?.let { node ->
@@ -307,9 +308,11 @@ class FilesTab(
                             ZipAlign.alignApk(zipTree.source.file)
                         }
                         isLoading = false
+
                     }
+                    zipTree.reset()
+                    reloadFiles()
                 }
-                reloadFiles()
                 return true
             }
         }
