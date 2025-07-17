@@ -255,10 +255,6 @@
     <string name="stopping">停止中…</string>
     <string name="storage_access_required">需要存储访问权限</string>
     <string name="storage_access_description">为了管理您的文件，我们需要访问您的设备存储。这使您能够无缝保存、组织和访问您的内容。</string>
-    <string name="save_files">保存文件</string>
-    <string name="save_and_organize_your_documents">保存并整理您的文档</string>
-    <string name="access_folders">访问文件夹</string>
-    <string name="browse_and_manage_your_file_structure">浏览和管理您的文件结构</string>
     <string name="grant_access">授予访问权限</string>
     <string name="skip_for_now">暂时跳过</string>
     <string name="path">路径</string>

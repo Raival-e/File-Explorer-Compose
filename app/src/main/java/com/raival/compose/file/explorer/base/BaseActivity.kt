@@ -20,13 +20,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderOpen
-import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -162,32 +158,6 @@ abstract class BaseActivity : AppCompatActivity() {
                 lineHeight = 24.sp,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
-
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
-                    PermissionFeatureItem(
-                        icon = Icons.Outlined.Save,
-                        title = stringResource(R.string.save_files),
-                        description = stringResource(R.string.save_and_organize_your_documents)
-                    )
-
-                    PermissionFeatureItem(
-                        icon = Icons.Outlined.Folder,
-                        title = stringResource(R.string.access_folders),
-                        description = stringResource(R.string.browse_and_manage_your_file_structure),
-                        showDivider = false
-                    )
-                }
-            }
 
             Spacer(modifier = Modifier.weight(1f))
 

@@ -255,10 +255,6 @@
     <string name="stopping">در حال توقف…</string>
     <string name="storage_access_required">دسترسی به حافظه مورد نیاز است</string>
     <string name="storage_access_description">برای مدیریت فایل‌هایتان، ما به دسترسی به حافظه دستگاهتان نیاز داریم. این به شما امکان ذخیره، سازماندهی و دسترسی یکپارچه به محتوایتان را می‌دهد.</string>
-    <string name="save_files">ذخیره فایل‌ها</string>
-    <string name="save_and_organize_your_documents">ذخیره و سازماندهی اسنادتان</string>
-    <string name="access_folders">دسترسی به پوشه‌ها</string>
-    <string name="browse_and_manage_your_file_structure">مرور و مدیریت ساختار فایل‌هایتان</string>
     <string name="grant_access">اعطای دسترسی</string>
     <string name="skip_for_now">فعلاً رد کن</string>
     <string name="path">مسیر</string>

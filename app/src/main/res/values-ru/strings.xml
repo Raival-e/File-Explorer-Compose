@@ -255,10 +255,6 @@
     <string name="stopping">Остановка…</string>
     <string name="storage_access_required">Требуется доступ к хранилищу</string>
     <string name="storage_access_description">Для управления файлами нам нужен доступ к хранилищу устройства. Это позволит сохранять, организовывать и получать доступ к содержимому.</string>
-    <string name="save_files">Сохранить файлы</string>
-    <string name="save_and_organize_your_documents">Сохранить и организовать документы</string>
-    <string name="access_folders">Доступ к папкам</string>
-    <string name="browse_and_manage_your_file_structure">Просматривать и управлять структурой файлов</string>
     <string name="grant_access">Предоставить доступ</string>
     <string name="skip_for_now">Пропустить сейчас</string>
     <string name="path">Путь</string>

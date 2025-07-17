@@ -255,10 +255,6 @@
     <string name="stopping">Parando…</string>
     <string name="storage_access_required">Acesso ao Armazenamento Necessário</string>
     <string name="storage_access_description">Para gerenciar seus arquivos, precisamos acessar o armazenamento do seu dispositivo. Isso permite salvar, organizar e acessar seu conteúdo perfeitamente.</string>
-    <string name="save_files">Salvar Arquivos</string>
-    <string name="save_and_organize_your_documents">Salvar e organizar seus documentos</string>
-    <string name="access_folders">Acessar Pastas</string>
-    <string name="browse_and_manage_your_file_structure">Navegar e gerenciar sua estrutura de arquivos</string>
     <string name="grant_access">Conceder Acesso</string>
     <string name="skip_for_now">Pular por agora</string>
     <string name="path">Caminho</string>

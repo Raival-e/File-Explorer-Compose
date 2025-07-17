@@ -256,10 +256,6 @@
     <string name="stopping">Stopping…</string>
     <string name="storage_access_required">Storage Access Required</string>
     <string name="storage_access_description">To manage your files, we need access to your device storage. This allows you to save, organize, and access your content seamlessly.</string>
-    <string name="save_files">Save Files</string>
-    <string name="save_and_organize_your_documents">Save and organize your documents</string>
-    <string name="access_folders">Access Folders</string>
-    <string name="browse_and_manage_your_file_structure">Browse and manage your file structure</string>
     <string name="grant_access">Grant Access</string>
     <string name="skip_for_now">Skip for now</string>
     <string name="path">Path</string>
