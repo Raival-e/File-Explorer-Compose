@@ -2,7 +2,7 @@ package com.raival.compose.file.explorer.screen.main.tab.files.holder
 
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getArchiveFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getAudioFiles

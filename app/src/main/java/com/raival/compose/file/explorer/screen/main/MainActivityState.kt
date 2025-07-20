@@ -3,7 +3,7 @@ package com.raival.compose.file.explorer.screen.main
 import androidx.compose.foundation.lazy.LazyListState
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
 

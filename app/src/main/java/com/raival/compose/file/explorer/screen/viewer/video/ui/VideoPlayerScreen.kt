@@ -57,7 +57,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
-import com.raival.compose.file.explorer.common.extension.toFormattedTime
+import com.raival.compose.file.explorer.common.toFormattedTime
 import com.raival.compose.file.explorer.screen.viewer.video.VideoPlayerInstance
 import com.raival.compose.file.explorer.screen.viewer.video.model.VideoPlayerState
 import net.engawapg.lib.zoomable.rememberZoomState

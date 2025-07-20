@@ -1,6 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.startup
 
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 
 data class StartupTabs(
     val tabs: ArrayList<StartupTab>

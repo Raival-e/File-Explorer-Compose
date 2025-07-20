@@ -22,10 +22,10 @@ import com.google.gson.reflect.TypeToken
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.isDarkTheme
-import com.raival.compose.file.explorer.common.extension.isNot
-import com.raival.compose.file.explorer.common.extension.whiteSpace
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isDarkTheme
+import com.raival.compose.file.explorer.common.isNot
+import com.raival.compose.file.explorer.common.whiteSpace
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.javaFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.jsonFileType

@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.block
+import com.raival.compose.file.explorer.common.detectVerticalSwipe
 import com.raival.compose.file.explorer.common.ui.Space
-import com.raival.compose.file.explorer.common.ui.block
-import com.raival.compose.file.explorer.common.ui.detectVerticalSwipe
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileSortingMenuDialog
 

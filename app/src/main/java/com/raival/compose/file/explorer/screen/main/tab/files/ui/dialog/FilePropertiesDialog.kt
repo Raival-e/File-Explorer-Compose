@@ -66,11 +66,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.copyToClipboard
-import com.raival.compose.file.explorer.common.extension.showMsg
+import com.raival.compose.file.explorer.common.block
+import com.raival.compose.file.explorer.common.copyToClipboard
+import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
-import com.raival.compose.file.explorer.common.ui.block
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.CalculationProgress
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.ContentPropertiesProvider

@@ -3,7 +3,7 @@ package com.raival.compose.file.explorer.screen.textEditor.model
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 
 class WarningDialogProperties {
     var showWarningDialog by mutableStateOf(false)

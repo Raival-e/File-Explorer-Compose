@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.setContent
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.setContent
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.common.ui.SwipeToDeleteBox

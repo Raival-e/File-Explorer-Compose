@@ -23,7 +23,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 
 @Composable
 fun PreferenceItem(

@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.asCodeEditorCursorCoordinates
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.asCodeEditorCursorCoordinates
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.ui.Space
 import io.github.rosemoe.sora.widget.CodeEditor
 

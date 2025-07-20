@@ -3,8 +3,8 @@ package com.raival.compose.file.explorer.screen.main.tab.files.zip
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.toUuid
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.toUuid
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.zip.model.ZipNode

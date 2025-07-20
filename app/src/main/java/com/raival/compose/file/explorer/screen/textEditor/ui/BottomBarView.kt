@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.moveSelectionBy
+import com.raival.compose.file.explorer.common.moveSelectionBy
 import com.raival.compose.file.explorer.common.ui.CustomIconButton
 import com.raival.compose.file.explorer.screen.textEditor.holder.SymbolHolder
 import io.github.rosemoe.sora.widget.CodeEditor

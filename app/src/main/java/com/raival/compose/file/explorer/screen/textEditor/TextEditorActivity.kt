@@ -20,7 +20,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
-import com.raival.compose.file.explorer.common.extension.setContent
+import com.raival.compose.file.explorer.common.setContent
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.textEditor.ui.BottomBarView
 import com.raival.compose.file.explorer.screen.textEditor.ui.CodeEditorView

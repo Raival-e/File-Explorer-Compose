@@ -1,6 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.zip.model
 
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 import java.io.File
 
 data class ZipNode(

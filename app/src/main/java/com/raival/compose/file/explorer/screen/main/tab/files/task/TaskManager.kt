@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.showMsg
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.screen.main.tab.files.service.ContentOperationService.Companion.startNewBackgroundTask
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

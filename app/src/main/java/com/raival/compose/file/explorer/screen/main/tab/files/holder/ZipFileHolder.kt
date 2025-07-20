@@ -4,10 +4,10 @@ import android.content.Context
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.showMsg
-import com.raival.compose.file.explorer.common.extension.toFormattedDate
-import com.raival.compose.file.explorer.common.extension.toFormattedSize
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.showMsg
+import com.raival.compose.file.explorer.common.toFormattedDate
+import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.zip.ZipTree

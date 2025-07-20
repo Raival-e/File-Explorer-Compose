@@ -38,7 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.dp
+import com.raival.compose.file.explorer.common.dp
 import com.raival.compose.file.explorer.common.ui.Isolate
 import com.raival.compose.file.explorer.screen.viewer.pdf.PdfViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.pdf.misc.PdfPageHolder

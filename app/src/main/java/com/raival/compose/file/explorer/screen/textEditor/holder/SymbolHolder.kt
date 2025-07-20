@@ -1,6 +1,6 @@
 package com.raival.compose.file.explorer.screen.textEditor.holder
 
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 
 data class SymbolHolder(
     var label: String,

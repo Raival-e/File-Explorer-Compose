@@ -38,7 +38,7 @@ import com.kevinnzou.compose.swipebox.SwipeDirection
 import com.kevinnzou.compose.swipebox.widget.SwipeIcon
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.trimToLastTwoSegments
+import com.raival.compose.file.explorer.common.trimToLastTwoSegments
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab

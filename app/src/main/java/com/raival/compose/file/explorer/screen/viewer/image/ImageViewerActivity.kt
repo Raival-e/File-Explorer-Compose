@@ -85,11 +85,11 @@ import com.anggrayudi.storage.extension.toDocumentFile
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.read
-import com.raival.compose.file.explorer.common.extension.showMsg
-import com.raival.compose.file.explorer.common.extension.toFormattedDate
-import com.raival.compose.file.explorer.common.extension.toFormattedSize
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.read
+import com.raival.compose.file.explorer.common.showMsg
+import com.raival.compose.file.explorer.common.toFormattedDate
+import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.viewer.ViewerActivity
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance

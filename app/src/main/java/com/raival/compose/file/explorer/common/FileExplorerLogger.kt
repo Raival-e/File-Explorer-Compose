@@ -1,4 +1,4 @@
-package com.raival.compose.file.explorer.common.logger
+package com.raival.compose.file.explorer.common
 
 import android.content.Context
 import androidx.datastore.core.DataStore
@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.google.gson.Gson
-import com.raival.compose.file.explorer.common.extension.printFullStackTrace
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -37,7 +37,7 @@ class FileExplorerLogger(private val context: Context, private val scope: Corout
     }
 
     private val gson = Gson()
-    private val logListType = object : com.google.gson.reflect.TypeToken<List<LogHolder>>() {}.type
+    private val logListType = object : TypeToken<List<LogHolder>>() {}.type
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     // ERROR LOGGING FUNCTIONS

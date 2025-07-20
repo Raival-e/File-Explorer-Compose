@@ -2,8 +2,8 @@ package com.raival.compose.file.explorer.screen.main
 
 import android.content.Context
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.common.extension.fromJson
-import com.raival.compose.file.explorer.common.extension.isNot
+import com.raival.compose.file.explorer.common.fromJson
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import com.raival.compose.file.explorer.screen.main.tab.Tab

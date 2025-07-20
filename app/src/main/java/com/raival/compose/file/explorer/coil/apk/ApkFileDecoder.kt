@@ -7,7 +7,7 @@ import coil3.decode.Decoder
 import coil3.fetch.SourceFetchResult
 import coil3.request.Options
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.common.extension.drawableToBitmap
+import com.raival.compose.file.explorer.common.drawableToBitmap
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
 import java.io.File
 

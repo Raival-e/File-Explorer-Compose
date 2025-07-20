@@ -5,8 +5,8 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.randomString
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.randomString
 
 abstract class ViewerActivity : BaseActivity() {
     private var uri: Uri? = null

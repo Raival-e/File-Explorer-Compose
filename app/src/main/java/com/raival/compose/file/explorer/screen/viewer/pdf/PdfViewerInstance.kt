@@ -8,8 +8,8 @@ import com.anggrayudi.storage.extension.toDocumentFile
 import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.name
-import com.raival.compose.file.explorer.common.extension.toFormattedDate
+import com.raival.compose.file.explorer.common.name
+import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.pdf.misc.PdfMetadata
 import com.raival.compose.file.explorer.screen.viewer.pdf.misc.PdfPageHolder

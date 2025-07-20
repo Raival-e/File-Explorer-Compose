@@ -59,9 +59,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.copyToClipboard
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.logger.LogHolder
+import com.raival.compose.file.explorer.common.LogHolder
+import com.raival.compose.file.explorer.common.copyToClipboard
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.ui.Space
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.orIf
+import com.raival.compose.file.explorer.common.orIf
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import kotlinx.coroutines.launch
 import java.io.File

@@ -52,9 +52,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.block
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.ui.Space
-import com.raival.compose.file.explorer.common.ui.block
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 
 @OptIn(ExperimentalMaterial3Api::class)

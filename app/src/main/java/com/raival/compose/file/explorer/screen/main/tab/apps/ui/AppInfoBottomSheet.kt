@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.toFormattedSize
+import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder

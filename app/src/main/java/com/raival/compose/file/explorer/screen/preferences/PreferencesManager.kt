@@ -9,9 +9,9 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.google.gson.Gson
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.fromJson
-import com.raival.compose.file.explorer.common.extension.toJson
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.fromJson
+import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs

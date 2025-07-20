@@ -1,7 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.holder
 
 import android.graphics.Bitmap
-import com.raival.compose.file.explorer.common.extension.randomString
+import com.raival.compose.file.explorer.common.randomString
 
 data class OpenWithActivityHolder(
     val id: String = String.randomString(8),

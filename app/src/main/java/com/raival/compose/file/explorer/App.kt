@@ -19,7 +19,7 @@ import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.raival.compose.file.explorer.coil.apk.ApkFileDecoder
 import com.raival.compose.file.explorer.coil.pdf.PdfFileDecoder
-import com.raival.compose.file.explorer.common.logger.FileExplorerLogger
+import com.raival.compose.file.explorer.common.FileExplorerLogger
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTabManager
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper

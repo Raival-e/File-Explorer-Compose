@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.fromJson
-import com.raival.compose.file.explorer.common.extension.toJson
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.fromJson
+import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.screen.main.startup.StartupTab
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabs

@@ -1,6 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.task
 
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 
 data class TaskProgressMonitor(
     var status: TaskStatus = TaskStatus.PENDING, // Pending, Running, Success, Failed, Cancelled

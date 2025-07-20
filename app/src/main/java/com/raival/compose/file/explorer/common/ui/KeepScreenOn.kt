@@ -4,7 +4,7 @@ import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
-import com.raival.compose.file.explorer.common.extension.findActivity
+import com.raival.compose.file.explorer.common.findActivity
 
 @Composable
 fun KeepScreenOn() {

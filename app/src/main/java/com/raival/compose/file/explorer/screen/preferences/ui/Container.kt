@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.raival.compose.file.explorer.common.ui.block
+import com.raival.compose.file.explorer.common.block
 
 @Composable
 fun Container(

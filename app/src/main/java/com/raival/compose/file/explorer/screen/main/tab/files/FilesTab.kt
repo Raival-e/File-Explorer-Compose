@@ -17,11 +17,11 @@ import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider.getUriForFile
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.getIndexIf
-import com.raival.compose.file.explorer.common.extension.getMimeType
-import com.raival.compose.file.explorer.common.extension.orIf
-import com.raival.compose.file.explorer.common.extension.removeIf
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.getIndexIf
+import com.raival.compose.file.explorer.common.getMimeType
+import com.raival.compose.file.explorer.common.orIf
+import com.raival.compose.file.explorer.common.removeIf
 import com.raival.compose.file.explorer.screen.main.MainActivity
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder

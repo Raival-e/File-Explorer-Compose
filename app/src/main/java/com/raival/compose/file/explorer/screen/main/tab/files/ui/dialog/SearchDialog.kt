@@ -55,11 +55,11 @@ import androidx.compose.ui.window.DialogProperties
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.copyToClipboard
-import com.raival.compose.file.explorer.common.extension.emptyString
-import com.raival.compose.file.explorer.common.extension.getIndexIf
+import com.raival.compose.file.explorer.common.block
+import com.raival.compose.file.explorer.common.copyToClipboard
+import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.ui.Space
-import com.raival.compose.file.explorer.common.ui.block
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder

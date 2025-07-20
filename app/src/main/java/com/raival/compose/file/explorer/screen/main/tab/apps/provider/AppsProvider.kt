@@ -6,7 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
 import java.io.File
 import java.util.Date
