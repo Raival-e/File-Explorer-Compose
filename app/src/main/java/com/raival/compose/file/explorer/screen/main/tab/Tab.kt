@@ -24,8 +24,10 @@ abstract class Tab {
 
     fun requestHomeToolbarUpdate() {
         CoroutineScope(Dispatchers.Main).launch {
-            globalClass.mainActivityManager.title = title
-            globalClass.mainActivityManager.subtitle = subtitle
+            globalClass.mainActivityManager.updateHomeToolbar(
+                title = title,
+                subtitle = subtitle
+            )
         }
     }
 }

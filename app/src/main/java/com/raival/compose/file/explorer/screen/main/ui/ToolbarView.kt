@@ -39,7 +39,11 @@ import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
 
 @Composable
-fun Toolbar() {
+fun Toolbar(
+    title: String,
+    subtitle: String,
+    onToggleAppInfoDialog: (Boolean) -> Unit
+) {
     val mainActivityManager = globalClass.mainActivityManager
     val context = LocalContext.current
 
@@ -55,9 +59,7 @@ fun Toolbar() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = {
-                mainActivityManager.showAppInfoDialog = true
-            }
+            onClick = { onToggleAppInfoDialog(true) }
         ) {
             Icon(imageVector = Icons.Rounded.Menu, contentDescription = null)
         }
@@ -67,16 +69,16 @@ fun Toolbar() {
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = mainActivityManager.title,
+                text = title,
                 fontSize = 17.sp,
                 maxLines = 1,
                 lineHeight = 20.sp,
                 overflow = TextOverflow.Ellipsis
             )
-            AnimatedVisibility(visible = mainActivityManager.subtitle.isNotEmpty()) {
+            AnimatedVisibility(visible = subtitle.isNotEmpty()) {
                 Text(
                     modifier = Modifier.alpha(0.7f),
-                    text = mainActivityManager.subtitle,
+                    text = subtitle,
                     fontSize = 10.sp,
                     maxLines = 1,
                     lineHeight = 16.sp,
@@ -87,9 +89,7 @@ fun Toolbar() {
 
         Box {
             IconButton(
-                onClick = {
-                    showOptionsMenu = true
-                }
+                onClick = { showOptionsMenu = true }
             ) {
                 Icon(imageVector = Icons.Rounded.MoreVert, contentDescription = null)
             }

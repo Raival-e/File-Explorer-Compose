@@ -396,6 +396,6 @@ private fun JumpToPathSection(
         title = stringResource(R.string.jump_to_path),
         imageVector = Icons.Rounded.ArrowOutward
     ) {
-        mainActivityManager.showJumpToPathDialog = true
+        mainActivityManager.toggleJumpToPathDialog(true)
     }
 }

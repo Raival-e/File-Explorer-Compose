@@ -45,17 +45,17 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.logs.LogsActivity
 
 @Composable
-fun AppInfoDialog() {
-    val mainActivityManager = globalClass.mainActivityManager
+fun AppInfoDialog(
+    show: Boolean,
+    onDismiss: () -> Unit
+) {
     val appIcon = AppCompatResources.getDrawable(globalClass, R.drawable.app_icon)
     val versionName =
         globalClass.packageManager.getPackageInfo(globalClass.packageName, 0).versionName
     val context = LocalContext.current
 
-    if (mainActivityManager.showAppInfoDialog) {
-        Dialog(
-            onDismissRequest = { mainActivityManager.showAppInfoDialog = false }
-        ) {
+    if (show) {
+        Dialog(onDismissRequest = onDismiss) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -137,7 +137,7 @@ fun AppInfoDialog() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    onClick = { mainActivityManager.showAppInfoDialog = false },
+                    onClick = onDismiss,
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.onSurface

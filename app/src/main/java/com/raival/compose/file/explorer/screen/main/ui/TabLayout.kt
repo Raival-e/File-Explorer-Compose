@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -17,20 +18,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
+import com.raival.compose.file.explorer.screen.main.tab.Tab
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
-fun TabLayout() {
+fun TabLayout(
+    tabLayoutState: LazyListState,
+    tabs: List<Tab>,
+    selectedTabIndex: Int,
+    onReorder: (Int, Int) -> Unit,
+    onAddNewTab: () -> Unit
+) {
     val mainActivityManager = globalClass.mainActivityManager
-    val tabLayoutState = globalClass.mainActivityManager.tabLayoutState
     val reorderableLazyListState = rememberReorderableLazyListState(tabLayoutState) { from, to ->
-        if (from.index == mainActivityManager.selectedTabIndex) mainActivityManager.selectedTabIndex =
-            to.index
-        else if (to.index == mainActivityManager.selectedTabIndex) mainActivityManager.selectedTabIndex =
-            from.index
-        mainActivityManager.tabs.add(to.index, mainActivityManager.tabs.removeAt(from.index))
+        onReorder(from.index, to.index)
     }
 
     Row(
@@ -40,9 +42,7 @@ fun TabLayout() {
             .background(color = MaterialTheme.colorScheme.surfaceContainer)
     ) {
         IconButton(
-            onClick = {
-                mainActivityManager.addTabAndSelect(HomeTab())
-            }
+            onClick = onAddNewTab
         ) {
             Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
         }
@@ -52,13 +52,13 @@ fun TabLayout() {
             state = tabLayoutState,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            itemsIndexed(mainActivityManager.tabs, key = { _, item -> item.id }) { index, tab ->
+            itemsIndexed(tabs, key = { _, item -> item.id }) { index, tab ->
                 ReorderableItem(reorderableLazyListState, key = tab.id) { isDragging ->
                     TabHeaderView(
                         tab = tab,
-                        isSelected = mainActivityManager.getActiveTab() == tab,
+                        isSelected = selectedTabIndex == index,
                         index = index,
-                        this
+                        reorderableScope = this
                     )
                 }
             }

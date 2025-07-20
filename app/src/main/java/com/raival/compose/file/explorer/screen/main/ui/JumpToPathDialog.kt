@@ -42,16 +42,17 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHo
 import java.io.File
 
 @Composable
-fun JumpToPathDialog() {
+fun JumpToPathDialog(
+    show: Boolean,
+    onDismiss: () -> Unit = {}
+) {
     val mainActivityManager = globalClass.mainActivityManager
-    if (mainActivityManager.showJumpToPathDialog) {
+    if (show) {
         val context = LocalContext.current
         var jumpToPathText by remember { mutableStateOf(emptyString) }
         var isJumpToPathValid by remember { mutableStateOf(false) }
 
-        Dialog(
-            onDismissRequest = { mainActivityManager.showJumpToPathDialog = false },
-        ) {
+        Dialog(onDismissRequest = onDismiss) {
             Card(
                 shape = RoundedCornerShape(6.dp),
                 colors = CardDefaults.cardColors(
@@ -116,9 +117,7 @@ fun JumpToPathDialog() {
                     ) {
                         OutlinedButton(
                             modifier = Modifier.weight(1f),
-                            onClick = {
-                                mainActivityManager.showJumpToPathDialog = false
-                            },
+                            onClick = onDismiss,
                             shape = RoundedCornerShape(6.dp)
                         ) {
                             Text(
@@ -137,7 +136,7 @@ fun JumpToPathDialog() {
                                         ),
                                         context
                                     )
-                                    mainActivityManager.showJumpToPathDialog = false
+                                    onDismiss()
                                 }
                             },
                             enabled = jumpToPathText.isNotEmpty() && isJumpToPathValid,

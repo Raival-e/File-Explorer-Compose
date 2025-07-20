@@ -32,7 +32,6 @@ import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.fromJson
-import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.common.extension.toJson
 import com.raival.compose.file.explorer.screen.main.startup.StartupTab
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
@@ -81,7 +80,7 @@ fun TabHeaderView(
                 indication = null,
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = {
-                    if (mainActivityManager.selectedTabIndex isNot index) {
+                    if (!isSelected) {
                         mainActivityManager.selectTabAt(index)
                     } else {
                         showTabHeaderMenu = true

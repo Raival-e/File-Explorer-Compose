@@ -5,14 +5,17 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 
 @Composable
-fun SaveTextEditorFilesDialog(onRequestFinish: () -> Unit) {
-    val mainActivityManager = globalClass.mainActivityManager
-
-    if (mainActivityManager.isSavingTextEditorFiles) {
+fun SaveTextEditorFilesDialog(
+    show: Boolean,
+    onDismiss: () -> Unit,
+    onRequestFinish: () -> Unit,
+    onSave: () -> Unit,
+    isSaving: Boolean
+) {
+    if (isSaving) {
         AlertDialog(
             text = { Text(text = stringResource(R.string.saving)) },
             onDismissRequest = { },
@@ -20,14 +23,14 @@ fun SaveTextEditorFilesDialog(onRequestFinish: () -> Unit) {
         )
     }
 
-    if (mainActivityManager.showSaveTextEditorFilesBeforeCloseDialog) {
+    if (show) {
         AlertDialog(
             title = { Text(text = stringResource(R.string.warning)) },
             text = { Text(text = stringResource(R.string.save_files_before_exit_warning_message)) },
             dismissButton = {
                 TextButton(
                     onClick = {
-                        mainActivityManager.showSaveTextEditorFilesBeforeCloseDialog = false
+                        onDismiss()
                         onRequestFinish()
                     }
                 ) { Text(text = stringResource(R.string.ignore)) }
@@ -35,14 +38,12 @@ fun SaveTextEditorFilesDialog(onRequestFinish: () -> Unit) {
             confirmButton = {
                 TextButton(
                     onClick = {
-                        mainActivityManager.showSaveTextEditorFilesBeforeCloseDialog = false
-                        mainActivityManager.saveTextEditorFiles(onRequestFinish)
+                        onDismiss()
+                        onSave()
                     }
                 ) { Text(text = stringResource(R.string.save)) }
             },
-            onDismissRequest = {
-                mainActivityManager.showSaveTextEditorFilesBeforeCloseDialog = false
-            }
+            onDismissRequest = onDismiss
         )
     }
 }

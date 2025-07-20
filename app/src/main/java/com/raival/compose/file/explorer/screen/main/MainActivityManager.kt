@@ -1,15 +1,7 @@
 package com.raival.compose.file.explorer.screen.main
 
 import android.content.Context
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.raival.compose.file.explorer.App.Companion.globalClass
-import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.extension.emptyString
 import com.raival.compose.file.explorer.common.extension.fromJson
 import com.raival.compose.file.explorer.common.extension.isNot
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
@@ -18,92 +10,149 @@ import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
-import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.max
+import kotlin.math.min
 
 class MainActivityManager {
-    var title by mutableStateOf(globalClass.getString(R.string.main_activity_title))
-    var subtitle by mutableStateOf(emptyString)
+    val managerScope = CoroutineScope(Dispatchers.IO)
+    private val _state = MutableStateFlow(MainActivityState())
+    val state = _state.asStateFlow()
 
-    val storageDevices = arrayListOf<StorageDevice>()
-
-    var showNewTabDialog by mutableStateOf(false)
-    var showAppInfoDialog by mutableStateOf(false)
-    var showJumpToPathDialog by mutableStateOf(false)
-    var showSaveTextEditorFilesBeforeCloseDialog by mutableStateOf(false)
-    var isSavingTextEditorFiles by mutableStateOf(false)
-
-
-    var selectedTabIndex by mutableIntStateOf(0)
-    val tabs = mutableStateListOf<Tab>()
-
-    val tabLayoutState = LazyListState()
-
-    fun setupTabs() {
-        storageDevices.addAll(StorageProvider.getStorageDevices(globalClass))
+    /**\
+     * Loads available storage devices (Internal Storage, SD cards, etc)
+     */
+    fun setup() {
+        managerScope.launch {
+            _state.value = _state.value.copy(
+                storageDevices = StorageProvider.getStorageDevices(globalClass)
+            )
+        }
     }
 
+    /**
+     * Removes all tabs except the one at the given index.
+     *
+     * If the tab at the given index is not already selected, it will be selected first.
+     * Then, all other tabs will be removed.
+     *
+     * @param tabIndex The index of the tab to keep.
+     */
     fun removeOtherTabs(tabIndex: Int) {
-        if (tabIndex isNot selectedTabIndex) {
-            selectTabAt(tabIndex)
-            removeOtherTabs(tabIndex)
-            return
-        }
+        // For now, you can only remove tabs other than the selected tab
+        if (tabIndex isNot _state.value.selectedTabIndex) return
 
-        val tabToKeep = tabs[tabIndex].id
-        tabs.removeIf { it.id.isNot(tabToKeep).also { toClose -> if (toClose) it.onTabRemoved() } }
-
-        selectTabAt(0)
+        val tabToKeep = _state.value.tabs[tabIndex]
+        _state.value = _state.value.copy(
+            tabs = _state.value.tabs.filter {
+                val toKeep = it == tabToKeep
+                if (!toKeep) it.onTabRemoved()
+                toKeep
+            },
+            selectedTabIndex = 0
+        )
     }
 
     fun removeTabAt(index: Int) {
-        if (tabs.size <= 1) return
+        // There must be at least one tab
+        if (_state.value.tabs.size <= 1) return
 
-        tabs.removeAt(index).apply {
-            if (selectedTabIndex == index) onTabStopped()
+        // Call the proper callbacks on the tab to be removed
+        _state.value.tabs[index].apply {
+            if (_state.value.selectedTabIndex == index) onTabStopped()
             onTabRemoved()
         }
 
-        if (selectedTabIndex == index) selectTabAt(max(0, index - 1))
+        // If the tab to be removed is the selected tab, select the previous tab
+        val newSelectedTabIndex = if (index <= _state.value.selectedTabIndex) {
+            max(0, index - 1)
+        } else {
+            index
+        }.also {
+            // Call the proper callbacks on the new selected tab (if it's not the already selected one)
+            if (index != it) {
+                val newSelectedTab = _state.value.tabs[it]
+                if (newSelectedTab.isCreated) newSelectedTab.onTabResumed() else newSelectedTab.onTabStarted()
+            }
+        }
+
+        // Update the state
+        _state.value = _state.value.copy(
+            tabs = _state.value.tabs.filterIndexed { i, _ ->
+                i != index
+            },
+            selectedTabIndex = newSelectedTabIndex
+        )
     }
 
-    fun addTabAndSelect(tab: Tab, index: Int = selectedTabIndex + 1) {
-        selectTabAt(
-            if (tabs.isEmpty()) {
-                tabs.add(tab)
-                0
-            } else if (index < 0) {
-                tabs.add(tab)
-                tabs.size - 1
-            } else {
-                tabs.add(index, tab)
-                index
-            }
+    fun addTabAndSelect(tab: Tab, index: Int = -1) {
+        // Stop the active tab
+        getActiveTab()?.onTabStopped()
+
+        // Start the new tab
+        if (tab.isCreated) tab.onTabResumed() else tab.onTabStarted()
+
+        // Validate the index
+        val validatedIndex = if (index isNot -1) {
+            max(0, min(index, _state.value.tabs.lastIndex + 1))
+        } else {
+            _state.value.tabs.lastIndex + 1
+        }
+
+        // Update the state
+        _state.value = _state.value.copy(
+            tabs = _state.value.tabs + tab,
+            selectedTabIndex = validatedIndex
         )
     }
 
     fun selectTabAt(index: Int) {
-        if (tabs.isNotEmpty()
-            && selectedTabIndex isNot index
-            && selectedTabIndex < tabs.size
-        ) getActiveTab().onTabStopped()
-        selectedTabIndex = index
-
-        getActiveTab().apply {
-            if (!isCreated) onTabStarted() else onTabResumed()
+        // Validate the index
+        val validatedIndex = if (index isNot -1) {
+            max(0, min(index, _state.value.tabs.lastIndex))
+        } else {
+            _state.value.tabs.lastIndex
         }
+
+        // If the tab is already selected, resume that tab
+        if (validatedIndex == _state.value.selectedTabIndex) {
+            getActiveTab()?.onTabResumed()
+        } else {
+            // Stop the active tab
+            getActiveTab()?.onTabStopped()
+
+            // Start the new tab
+            val newSelectedTab = _state.value.tabs[validatedIndex]
+            if (newSelectedTab.isCreated) newSelectedTab.onTabResumed() else newSelectedTab.onTabStarted()
+        }
+
+        // Update the state
+        _state.value = _state.value.copy(selectedTabIndex = validatedIndex)
     }
 
     fun replaceCurrentTabWith(tab: Tab) {
-        if (tabs.isNotEmpty()) getActiveTab().onTabStopped()
-        tabs[selectedTabIndex] = tab
-        selectTabAt(selectedTabIndex)
+        // Stop the active tab
+        getActiveTab()?.apply {
+            onTabStopped()
+            onTabRemoved()
+        }
+
+        // Start the new tab
+        if (tab.isCreated) tab.onTabResumed() else tab.onTabStarted()
+
+        // update the state
+        _state.value = _state.value.copy(
+            tabs = _state.value.tabs.mapIndexed { index, oldTab ->
+                if (index == _state.value.selectedTabIndex) tab else oldTab
+            }
+        )
     }
 
     fun jumpToFile(file: LocalFileHolder, context: Context) {
@@ -117,30 +166,71 @@ class MainActivityManager {
     }
 
     fun resumeActiveTab() {
-        getActiveTab().onTabResumed()
+        getActiveTab()?.onTabResumed()
     }
 
-    fun getActiveTab(): Tab {
-        return tabs[selectedTabIndex]
+    fun onResume() {
+        resumeActiveTab()
     }
 
+    fun onStop() {
+        getActiveTab()?.onTabStopped()
+    }
+
+    fun getActiveTab(): Tab? {
+        return if (_state.value.tabs.isNotEmpty()) {
+            _state.value.tabs[_state.value.selectedTabIndex]
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Checks if the app can exit.
+     *
+     * This function checks the following conditions in order:
+     * 1. If the active tab handles the back press, the app cannot exit.
+     * 2. If the active tab is not the home tab and the "skip home when tab closed" setting is disabled,
+     *    the active tab is replaced with the home tab and the app cannot exit.
+     * 3. If there is more than one tab and the selected tab is not the first tab,
+     *    the active tab is removed and the app cannot exit.
+     * 4. If there is only one tab and there are unsaved files in the text editor,
+     *    a dialog is shown to save the files and the app cannot exit.
+     *
+     * If none of the above conditions are met, the app can exit.
+     *
+     * @return True if the app can exit, false otherwise.
+     */
     fun canExit(): Boolean {
-        if (getActiveTab().onBackPressed()) {
+        val tabs = _state.value.tabs
+        val selectedTabIndex = _state.value.selectedTabIndex
+
+        if (tabs.isEmpty()) {
+            return true
+        }
+
+        // Handle tabs's onBackPress
+        if (getActiveTab()!!.onBackPressed()) {
             return false
         }
 
+        // Replace the active tab with the home tab (if turned on in settings)
         if (getActiveTab() !is HomeTab && !globalClass.preferencesManager.behaviorPrefs.skipHomeWhenTabClosed) {
             replaceCurrentTabWith(HomeTab())
             return false
         }
 
+        // Remove the active tab
         if (tabs.size > 1 && selectedTabIndex isNot 0) {
             removeTabAt(selectedTabIndex)
             return false
         }
 
+        // Check TextEditor files
         if (tabs.size == 1 && !allTextEditorFileInstancesSaved()) {
-            showSaveTextEditorFilesBeforeCloseDialog = true
+            _state.value = _state.value.copy(
+                showSaveEditorFilesDialog = true
+            )
             return false
         }
 
@@ -154,41 +244,83 @@ class MainActivityManager {
         return true
     }
 
-    fun saveTextEditorFiles(onRequestFinish: () -> Unit) {
-        isSavingTextEditorFiles = true
+    fun saveTextEditorFiles(onFinish: () -> Unit) {
+        _state.value = _state.value.copy(
+            isSavingFiles = true
+        )
 
-        CoroutineScope(Dispatchers.IO).launch {
+        managerScope.launch {
             globalClass.textEditorManager.fileInstanceList.forEach {
                 if (it.requireSave) {
                     it.file.writeText(it.content.toString())
                 }
             }
 
-            isSavingTextEditorFiles = false
+            _state.value = _state.value.copy(
+                isSavingFiles = false
+            )
 
-            onRequestFinish()
+            onFinish()
         }
     }
 
     fun loadStartupTabs() {
-        val startupTabs: StartupTabs =
-            fromJson(globalClass.preferencesManager.appearancePrefs.startupTabs)
-                ?: StartupTabs.default()
+        managerScope.launch {
+            val startupTabs: StartupTabs =
+                fromJson(globalClass.preferencesManager.appearancePrefs.startupTabs)
+                    ?: StartupTabs.default()
 
-        startupTabs.tabs.forEachIndexed { index, tab ->
-            val newTab = when (tab.type) {
-                StartupTabType.FILES -> FilesTab(LocalFileHolder(File(tab.extra)))
-                StartupTabType.APPS -> AppsTab()
-                else -> HomeTab()
-            }
+            val tabs = arrayListOf<Tab>()
+            val index = 0
 
-            if (index == 0) {
-                addTabAndSelect(newTab)
-            } else {
-                tabs.add(newTab).also {
-                    newTab.onTabStarted()
+            startupTabs.tabs.forEachIndexed { index, tab ->
+                val newTab = when (tab.type) {
+                    StartupTabType.FILES -> FilesTab(LocalFileHolder(File(tab.extra)))
+                    StartupTabType.APPS -> AppsTab()
+                    else -> HomeTab()
                 }
+
+                tabs.add(newTab)
             }
+
+            _state.value = _state.value.copy(
+                tabs = tabs,
+                selectedTabIndex = index
+            )
         }
+    }
+
+    fun toggleJumpToPathDialog(show: Boolean) {
+        _state.value = _state.value.copy(
+            showJumpToPathDialog = show
+        )
+    }
+
+    fun toggleAppInfoDialog(show: Boolean) {
+        _state.value = _state.value.copy(
+            showAppInfoDialog = show
+        )
+    }
+
+    fun toggleSaveEditorFilesDialog(show: Boolean) {
+        _state.value = _state.value.copy(
+            showSaveEditorFilesDialog = show
+        )
+    }
+
+    fun reorderTabs(from: Int, to: Int) {
+        _state.value = _state.value.copy(
+            tabs = _state.value.tabs.toMutableList().apply {
+                add(to, removeAt(from))
+            },
+            selectedTabIndex = _state.value.tabs.indexOf(getActiveTab())
+        )
+    }
+
+    fun updateHomeToolbar(title: String, subtitle: String) {
+        _state.value = _state.value.copy(
+            title = title,
+            subtitle = subtitle
+        )
     }
 }

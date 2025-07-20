@@ -82,7 +82,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
         )
 
     val textEditorManager: TextEditorManager by lazy { TextEditorManager().also { setupTextMate() } }
-    val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { it.setupTabs() } }
+    val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { it.setup() } }
     val filesTabManager: FilesTabManager by lazy { FilesTabManager() }
     val preferencesManager: PreferencesManager by lazy { PreferencesManager() }
     val viewersManager: ViewersManager by lazy {
