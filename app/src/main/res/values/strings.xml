@@ -359,4 +359,6 @@
     <string name="disabled">Disabled</string>
     <string name="update_date">Update Date</string>
     <string name="extract">Extract</string>
+    <string name="date_time_format">Date time format</string>
+    <string name="select_date_format">Select date format</string>
 </resources>

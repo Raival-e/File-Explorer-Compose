@@ -3,6 +3,8 @@ package com.raival.compose.file.explorer.screen.main.tab.files.provider
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.toFormattedDate
+import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import kotlinx.coroutines.CoroutineScope
@@ -23,9 +25,6 @@ import java.io.FileInputStream
 import java.math.BigInteger
 import java.nio.file.Files
 import java.security.MessageDigest
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 data class CalculationProgress(
     val isCalculating: Boolean = false,
@@ -114,10 +113,8 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                     name = file.displayName.ifEmpty { globalClass.getString(R.string.root) },
                     path = file.getParent()?.uniquePath ?: File.separator,
                     type = determineFileType(file),
-                    lastModified = formatTimestamp(file.lastModified),
-                    size = if (file.isFolder) globalClass.getString(R.string.calculating) else formatFileSize(
-                        file.size
-                    ),
+                    lastModified = file.lastModified.toFormattedDate(),
+                    size = if (file.isFolder) globalClass.getString(R.string.calculating) else file.size.toFormattedSize(),
                     permissions = getPermissions(file),
                     owner = getOwner(file),
                     contentCount = contentCountFlow,
@@ -149,7 +146,7 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                             state.details as? PropertiesState.SingleContentProperties
                         currentDetails?.let {
                             state.copy(
-                                details = it.copy(size = formatFileSize(totalSize))
+                                details = it.copy(size = totalSize.toFormattedSize())
                             )
                         } ?: state
                     }
@@ -265,7 +262,7 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                         totalFiles,
                         totalFolders
                     )
-                    totalSizeFlow.value = formatFileSize(totalSize)
+                    totalSizeFlow.value = totalSize.toFormattedSize()
 
                     yield() // Allow cancellation
                 }
@@ -287,22 +284,6 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                 file.extension.lowercase().ifEmpty { globalClass.getString(R.string.unknown) }
             }
         }
-    }
-
-    private fun formatTimestamp(millis: Long): String {
-        val sdf = SimpleDateFormat("MMM dd, yyyy • hh:mm:ss a", Locale.getDefault())
-        return sdf.format(Date(millis))
-    }
-
-    private fun formatFileSize(bytes: Long): String {
-        if (bytes < 1024) return "$bytes B"
-        val z = (63 - java.lang.Long.numberOfLeadingZeros(bytes)) / 10
-        return String.format(
-            Locale.US,
-            "%.1f %sB",
-            bytes.toDouble() / (1L shl (z * 10)),
-            " KMGTPE"[z]
-        )
     }
 
     private fun getPermissions(file: ContentHolder): String {

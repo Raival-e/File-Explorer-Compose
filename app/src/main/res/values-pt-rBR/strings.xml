@@ -358,4 +358,6 @@
     <string name="disabled">Desativado</string>
     <string name="update_date">Data de Atualização</string>
     <string name="extract">Extrair</string>
+    <string name="date_time_format">Formato de data e hora</string>
+    <string name="select_date_format">Selecionar formato de data</string>
 </resources>

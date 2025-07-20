@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
@@ -69,8 +70,6 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHo
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import kotlinx.coroutines.launch
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -79,7 +78,6 @@ fun AppInfoBottomSheet(
     onDismiss: () -> Unit
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
 
     BottomSheetDialog(onDismissRequest = onDismiss) {
         Column(
@@ -245,14 +243,14 @@ fun AppInfoBottomSheet(
                         item {
                             InfoCard(
                                 title = stringResource(R.string.install_date),
-                                value = dateFormat.format(app.installDate),
+                                value = app.installDate.time.toFormattedDate(),
                                 icon = Icons.Rounded.CalendarMonth
                             )
                         }
                         item {
                             InfoCard(
                                 title = stringResource(R.string.last_update),
-                                value = dateFormat.format(app.lastUpdateDate),
+                                value = app.lastUpdateDate.time.toFormattedDate(),
                                 icon = Icons.Rounded.Update
                             )
                         }

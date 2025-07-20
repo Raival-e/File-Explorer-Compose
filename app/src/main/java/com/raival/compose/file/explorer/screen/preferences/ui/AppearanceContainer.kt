@@ -2,6 +2,7 @@ package com.raival.compose.file.explorer.screen.preferences.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
+import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.Nightlight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +54,33 @@ fun AppearanceContainer() {
             icon = Icons.AutoMirrored.Rounded.Label,
             switchState = appearancePrefs.showBottomBarLabels,
             onSwitchChange = { appearancePrefs.showBottomBarLabels = it }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
+        )
+
+        val commonDateFormat = arrayListOf(
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd",
+            "dd-MM-yyyy HH:mm:ss",
+            "dd-MM-yyyy",
+        )
+
+        PreferenceItem(
+            label = stringResource(R.string.date_time_format),
+            supportingText = appearancePrefs.dateTimeFormat,
+            icon = Icons.Rounded.CalendarToday,
+            onClick = {
+                manager.singleChoiceDialog.show(
+                    title = globalClass.getString(R.string.date_time_format),
+                    description = globalClass.getString(R.string.select_date_format),
+                    choices = commonDateFormat,
+                    selectedChoice = commonDateFormat.indexOf(appearancePrefs.dateTimeFormat),
+                    onSelect = { appearancePrefs.dateTimeFormat = commonDateFormat[it] }
+                )
+            }
         )
     }
 }

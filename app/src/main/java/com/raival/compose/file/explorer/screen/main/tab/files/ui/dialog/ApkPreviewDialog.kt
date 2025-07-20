@@ -70,14 +70,12 @@ import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ApkInfo
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -119,10 +117,8 @@ fun ApkPreviewDialog(tab: FilesTab) {
                             packageManager.getPackageInfo(archiveInfo.packageName, 0)
                         isInstalled = true
                         installedVersion = installedInfo.versionName
-                        installTime = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                            .format(Date(installedInfo.firstInstallTime))
-                        lastUpdateTime = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-                            .format(Date(installedInfo.lastUpdateTime))
+                        installTime = installedInfo.firstInstallTime.toFormattedDate()
+                        lastUpdateTime = installedInfo.lastUpdateTime.toFormattedDate()
                     } catch (_: PackageManager.NameNotFoundException) {
                         // App not installed
                     }

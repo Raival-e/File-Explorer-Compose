@@ -358,4 +358,6 @@
     <string name="disabled">غیرفعال</string>
     <string name="update_date">تاریخ به روز رسانی</string>
     <string name="extract">استخراج</string>
+    <string name="date_time_format">فرمت تاریخ و زمان</string>
+    <string name="select_date_format">انتخاب فرمت تاریخ</string>
 </resources>

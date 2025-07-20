@@ -58,6 +58,12 @@ class PreferencesManager {
             defaultValue = StartupTabs.default().toJson(),
             getPreferencesKey = { stringPreferencesKey(it) }
         )
+
+        var dateTimeFormat by prefMutableState(
+            keyName = "dateTimeFormat",
+            defaultValue = "yyyy-MM-dd HH:mm:ss",
+            getPreferencesKey = { stringPreferencesKey(it) }
+        )
     }
 
     class FileListPrefs {

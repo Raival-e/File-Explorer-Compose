@@ -358,4 +358,6 @@
     <string name="disabled">Отключено</string>
     <string name="update_date">Дата обновления</string>
     <string name="extract">Извлечь</string>
+    <string name="date_time_format">Формат даты и времени</string>
+    <string name="select_date_format">Выберите формат даты</string>
 </resources>
