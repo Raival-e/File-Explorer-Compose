@@ -153,6 +153,8 @@ fun BottomBarView(
                 ),
                 icon = Icons.Rounded.ChevronRight
             )
+
+            extraButton()
         }
     }
 }
