@@ -1,5 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.tab.apps.ui
 
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,11 +8,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Upload
@@ -33,10 +35,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -106,7 +107,8 @@ fun AppInfoBottomSheet(
                     text = app.name,
                     style = MaterialTheme.typography.headlineSmall,
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center
                 )
                 Space(size = 4.dp)
                 Text(
@@ -114,10 +116,14 @@ fun AppInfoBottomSheet(
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center
                 )
                 Space(size = 8.dp)
                 Row(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .horizontalScroll(rememberScrollState()),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -149,26 +155,7 @@ fun AppInfoBottomSheet(
                             )
                         )
                     }
-                    AssistChip(
-                        onClick = { },
-                        label = {
-                            Text(
-                                if (app.isSystemApp) stringResource(R.string.system) else stringResource(
-                                    R.string.user_apps
-                                )
-                            )
-                        },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Default.Android,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    )
-                    VerticalDivider(Modifier
-                        .height(20.dp)
-                        .padding(horizontal = 8.dp))
+                    VerticalDivider(Modifier.height(20.dp))
                     val coroutineScope = rememberCoroutineScope()
                     AssistChip(
                         onClick = {
@@ -200,17 +187,9 @@ fun AppInfoBottomSheet(
             Space(size = 16.dp)
 
             // Tab Buttons
-            TabRow(
+            PrimaryScrollableTabRow(
                 selectedTabIndex = selectedTab,
-                containerColor = Color.Transparent,
-                indicator = { tabPositions ->
-                    if (selectedTab < tabPositions.size) {
-                        TabRowDefaults.SecondaryIndicator(
-                            modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
+                containerColor = Color.Transparent
             ) {
                 Tab(
                     selected = selectedTab == 0,
@@ -254,12 +233,14 @@ fun AppInfoBottomSheet(
                                 icon = Icons.Rounded.Memory
                             )
                         }
-                        item {
-                            InfoCard(
-                                title = stringResource(R.string.category),
-                                value = app.category,
-                                icon = Icons.Rounded.Category
-                            )
+                        if (app.category.isNotEmpty()) {
+                            item {
+                                InfoCard(
+                                    title = stringResource(R.string.category),
+                                    value = app.category,
+                                    icon = Icons.Rounded.Category
+                                )
+                            }
                         }
                         item {
                             InfoCard(
