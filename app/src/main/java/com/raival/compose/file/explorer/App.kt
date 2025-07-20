@@ -54,7 +54,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
             get() = globalClass.logger
     }
 
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val applicationScope = CoroutineScope(SupervisorJob() + IO)
 
     lateinit var logger: FileExplorerLogger
         private set
