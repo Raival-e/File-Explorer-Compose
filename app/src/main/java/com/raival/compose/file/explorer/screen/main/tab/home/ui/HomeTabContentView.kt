@@ -79,7 +79,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
         tab.fetchRecentFiles()
         val config = try {
             Gson().fromJson(
-                globalClass.preferencesManager.appearancePrefs.homeTabLayout,
+                globalClass.preferencesManager.homeTabLayout,
                 HomeLayout::class.java
             )
         } catch (e: Exception) {
@@ -117,11 +117,11 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
 
             scope.launch {
                 if (isAllDisabled) {
-                    globalClass.preferencesManager.appearancePrefs.homeTabLayout = Gson().toJson(
+                    globalClass.preferencesManager.homeTabLayout = Gson().toJson(
                         getDefaultHomeLayout(true)
                     )
                 } else {
-                    globalClass.preferencesManager.appearancePrefs.homeTabLayout = Gson().toJson(
+                    globalClass.preferencesManager.homeTabLayout = Gson().toJson(
                         HomeLayout(sections)
                     )
                 }
@@ -362,7 +362,7 @@ private fun StorageSection(
 private fun BookmarksSection(
     mainActivityManager: MainActivityManager
 ) {
-    if (globalClass.filesTabManager.bookmarks.isNotEmpty()) {
+    if (globalClass.preferencesManager.bookmarks.isNotEmpty()) {
         SimpleNewTabViewItem(
             title = stringResource(R.string.bookmarks),
             imageVector = Icons.Rounded.Bookmarks

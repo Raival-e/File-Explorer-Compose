@@ -32,7 +32,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         buildString {
             append(lastModified.toFormattedDate())
             if (file.isDirectory) {
-                if (globalClass.preferencesManager.fileListPrefs.showFolderContentCount && file.canRead()) {
+                if (globalClass.preferencesManager.showFolderContentCount && file.canRead()) {
                     append(separator)
                     append(getFormattedFileCount())
                 }

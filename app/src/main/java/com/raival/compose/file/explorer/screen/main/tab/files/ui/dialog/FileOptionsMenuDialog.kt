@@ -225,7 +225,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
             ) {
                 FileOption(Icons.Rounded.BookmarkAdd, stringResource(R.string.add_to_bookmarks)) {
                     tab.hideDocumentOptionsMenu()
-                    globalClass.filesTabManager.bookmarks += targetFiles.map { it.uniquePath }
+                    globalClass.preferencesManager.bookmarks += targetFiles.map { it.uniquePath }
                         .distinct()
                     globalClass.showMsg(R.string.added_to_bookmarks)
                     tab.unselectAllFiles()
@@ -254,7 +254,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                             globalClass.taskManager.addTaskAndRun(
                                 ApksMergeTask(targetContentHolder),
                                 ApksMergeTaskParameters(
-                                    globalClass.preferencesManager.fileOperationPrefs.signMergedApkBundleFiles
+                                    globalClass.preferencesManager.signMergedApkBundleFiles
                                 )
                             )
                         }

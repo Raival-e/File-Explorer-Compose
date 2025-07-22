@@ -101,7 +101,7 @@ fun StartupTabsSettingsScreen(
             LaunchedEffect(Unit) {
                 val config = try {
                     fromJson<StartupTabs>(
-                        globalClass.preferencesManager.behaviorPrefs.startupTabs
+                        globalClass.preferencesManager.startupTabs
                     ) ?: StartupTabs.default()
                 } catch (e: Exception) {
                     logger.logError(e)

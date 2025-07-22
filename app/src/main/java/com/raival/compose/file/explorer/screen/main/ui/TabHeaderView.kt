@@ -109,7 +109,7 @@ fun TabHeaderView(
                 val startupTabs = remember {
                     arrayListOf<StartupTab>().apply {
                         addAll(
-                            (fromJson(globalClass.preferencesManager.behaviorPrefs.startupTabs)
+                            (fromJson(globalClass.preferencesManager.startupTabs)
                                 ?: StartupTabs.default()).tabs
                         )
                     }
@@ -127,7 +127,7 @@ fun TabHeaderView(
                             text = { Text(text = stringResource(R.string.add_to_startup)) },
                             onClick = {
                                 startupTabs.add(StartupTab(tabType, extra))
-                                globalClass.preferencesManager.behaviorPrefs.startupTabs =
+                                globalClass.preferencesManager.startupTabs =
                                     StartupTabs(startupTabs).toJson()
                                 showTabHeaderMenu = false
                                 showMsg(globalClass.getString(R.string.added_as_startup_tab))
@@ -142,7 +142,7 @@ fun TabHeaderView(
                                 startupTabs.removeIf {
                                     it.type == tabType && (extra == emptyString || it.extra == extra)
                                 }
-                                globalClass.preferencesManager.behaviorPrefs.startupTabs =
+                                globalClass.preferencesManager.startupTabs =
                                     StartupTabs(startupTabs).toJson()
                                 showTabHeaderMenu = false
                                 showMsg(globalClass.getString(R.string.removed_from_startup_tabs))

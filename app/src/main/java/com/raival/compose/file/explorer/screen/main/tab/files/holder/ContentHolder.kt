@@ -103,7 +103,7 @@ abstract class ContentHolder {
     }
 
     open suspend fun listSortedContent(): ArrayList<out ContentHolder> {
-        val sortingPrefs = globalClass.preferencesManager.filesSortingPrefs.getSortingPrefsFor(this)
+        val sortingPrefs = globalClass.preferencesManager.getSortingPrefsFor(this)
 
         return listContent().apply {
             when (sortingPrefs.sortMethod) {
@@ -122,7 +122,7 @@ abstract class ContentHolder {
 
             if (sortingPrefs.showFoldersFirst) sortWith(sortFoldersFirst)
 
-            if (!globalClass.preferencesManager.fileListPrefs.showHiddenFiles) {
+            if (!globalClass.preferencesManager.showHiddenFiles) {
                 removeIf { it.isHidden() }
             }
         }

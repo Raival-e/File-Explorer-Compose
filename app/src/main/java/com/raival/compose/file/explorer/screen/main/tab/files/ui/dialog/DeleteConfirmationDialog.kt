@@ -33,7 +33,7 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
         val preferencesManager = globalClass.preferencesManager
 
         var moveToRecycleBin by remember {
-            mutableStateOf(preferencesManager.fileOperationPrefs.moveToRecycleBin)
+            mutableStateOf(preferencesManager.moveToRecycleBin)
         }
         var showRememberChoice by remember {
             mutableStateOf(false)
@@ -59,7 +59,7 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
                         onDismissRequest()
                         tab.unselectAllFiles()
                         if (showRememberChoice && rememberChoice) {
-                            preferencesManager.fileOperationPrefs.moveToRecycleBin =
+                            preferencesManager.moveToRecycleBin =
                                 moveToRecycleBin
                         }
                         coroutineScope.launch {

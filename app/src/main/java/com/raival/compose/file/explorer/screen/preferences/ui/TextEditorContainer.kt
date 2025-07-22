@@ -19,8 +19,7 @@ import com.raival.compose.file.explorer.R
 
 @Composable
 fun TextEditorContainer() {
-    val manager = globalClass.preferencesManager
-    val preferences = manager.textEditorPrefs
+    val preferences = globalClass.preferencesManager
 
     val recentFilesLimits = arrayListOf(
         "5", "10", "15", "25", "Unlimited"
@@ -32,7 +31,7 @@ fun TextEditorContainer() {
             supportingText = if (preferences.recentFilesLimit == -1) recentFilesLimits[4] else preferences.recentFilesLimit.toString(),
             icon = Icons.Rounded.History,
             onClick = {
-                manager.singleChoiceDialog.show(
+                preferences.singleChoiceDialog.show(
                     title = globalClass.getString(R.string.recent_files_limit),
                     description = globalClass.getString(R.string.maximum_number_of_recent_files_desc),
                     choices = recentFilesLimits,

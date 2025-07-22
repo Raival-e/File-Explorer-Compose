@@ -56,13 +56,13 @@ fun BookmarksDialog(tab: FilesTab) {
         }
 
         LaunchedEffect(Unit) {
-            val originalList = globalClass.filesTabManager.bookmarks
+            val originalList = globalClass.preferencesManager.bookmarks
             bookmarks.addAll(
                 originalList.map { LocalFileHolder(File(it)) }.filter { it.isValid() }
             )
 
             if (bookmarks.size != originalList.size) {
-                globalClass.filesTabManager.bookmarks = bookmarks.map { it.uniquePath }.toSet()
+                globalClass.preferencesManager.bookmarks = bookmarks.map { it.uniquePath }.toSet()
             }
         }
 
@@ -94,7 +94,7 @@ fun BookmarksDialog(tab: FilesTab) {
 
             Space(size = 8.dp)
 
-            AnimatedVisibility(globalClass.filesTabManager.bookmarks.isNotEmpty()) {
+            AnimatedVisibility(globalClass.preferencesManager.bookmarks.isNotEmpty()) {
                 LazyColumn(Modifier.animateContentSize()) {
                     itemsIndexed(
                         items = bookmarks,
@@ -113,7 +113,7 @@ fun BookmarksDialog(tab: FilesTab) {
                                     weight = 1f,
                                     iconSize = 20.dp
                                 ) {
-                                    globalClass.filesTabManager.bookmarks -= item.uniquePath
+                                    globalClass.preferencesManager.bookmarks -= item.uniquePath
                                 }
                             }
                         ) { _, _, _ ->
@@ -150,7 +150,7 @@ fun BookmarksDialog(tab: FilesTab) {
                 }
             }
 
-            AnimatedVisibility(globalClass.filesTabManager.bookmarks.isEmpty()) {
+            AnimatedVisibility(globalClass.preferencesManager.bookmarks.isEmpty()) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()

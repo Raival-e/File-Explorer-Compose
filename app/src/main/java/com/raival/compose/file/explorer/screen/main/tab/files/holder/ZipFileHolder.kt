@@ -181,7 +181,7 @@ class ZipFileHolder(
         return buildString {
             append(node.lastModified.toFormattedDate())
             if (node.isDirectory) {
-                if (globalClass.preferencesManager.fileListPrefs.showFolderContentCount) {
+                if (globalClass.preferencesManager.showFolderContentCount) {
                     append(separator)
                     append(getFormattedFileCount())
                 }

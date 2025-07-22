@@ -34,16 +34,16 @@ fun FileExplorerTheme(
     val context = LocalContext.current
     val manager = globalClass.preferencesManager
     val darkTheme: Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        if (manager.appearancePrefs.theme == ThemePreference.SYSTEM.ordinal) {
+        if (manager.theme == ThemePreference.SYSTEM.ordinal) {
             isSystemInDarkTheme()
-        } else manager.appearancePrefs.theme == ThemePreference.DARK.ordinal
+        } else manager.theme == ThemePreference.DARK.ordinal
     } else {
-        manager.appearancePrefs.theme == ThemePreference.DARK.ordinal
+        manager.theme == ThemePreference.DARK.ordinal
     }
 
     fun getTheme(): ColorScheme {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            when (manager.appearancePrefs.theme) {
+            when (manager.theme) {
                 ThemePreference.LIGHT.ordinal -> dynamicLightColorScheme(context)
                 ThemePreference.DARK.ordinal -> dynamicDarkColorScheme(context)
                 else -> if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
@@ -51,7 +51,7 @@ fun FileExplorerTheme(
                 )
             }
         } else {
-            when (manager.appearancePrefs.theme) {
+            when (manager.theme) {
                 ThemePreference.LIGHT.ordinal -> LightColorScheme
                 ThemePreference.DARK.ordinal -> DarkColorScheme
                 else -> if (darkTheme) DarkColorScheme else LightColorScheme
@@ -63,7 +63,7 @@ fun FileExplorerTheme(
         mutableStateOf(getTheme())
     }
 
-    LaunchedEffect(manager.appearancePrefs.theme) {
+    LaunchedEffect(manager.theme) {
         colorScheme = getTheme()
     }
 

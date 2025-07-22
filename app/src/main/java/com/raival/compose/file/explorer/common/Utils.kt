@@ -653,7 +653,7 @@ fun Int.isMultipleOf100(): Boolean {
 
 @SuppressLint("SimpleDateFormat")
 fun Long.toFormattedDate(): String =
-    SimpleDateFormat(globalClass.preferencesManager.appearancePrefs.dateTimeFormat).format(this)
+    SimpleDateFormat(globalClass.preferencesManager.dateTimeFormat).format(this)
 
 fun Long.toFormattedSize(): String {
     if (this <= 0) return "0 B"

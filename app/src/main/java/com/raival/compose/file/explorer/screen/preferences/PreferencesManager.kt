@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.google.gson.Gson
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.fromJson
@@ -27,210 +27,205 @@ import kotlinx.coroutines.runBlocking
 class PreferencesManager {
     val singleChoiceDialog = SingleChoiceDialog()
 
-    val appearancePrefs = AppearancePrefs()
-    val fileListPrefs = FileListPrefs()
-    val fileOperationPrefs = FileOperationPrefs()
-    val behaviorPrefs = BehaviorPrefs()
-    val textEditorPrefs = TextEditorPrefs()
-    val filesSortingPrefs = FilesSortingPrefs()
+    //---------- Appearance -------------//
+    var theme by prefMutableState(
+        keyName = "theme",
+        defaultValue = ThemePreference.SYSTEM.ordinal,
+        getPreferencesKey = { intPreferencesKey(it) }
+    )
 
-    class AppearancePrefs {
-        var theme by prefMutableState(
-            keyName = "theme",
-            defaultValue = ThemePreference.SYSTEM.ordinal,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
+    var showBottomBarLabels by prefMutableState(
+        keyName = "showBottomBarLabels",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var showBottomBarLabels by prefMutableState(
-            keyName = "showBottomBarLabels",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var homeTabLayout by prefMutableState(
+        keyName = "homeTabLayout",
+        defaultValue = getDefaultHomeLayout().toJson(),
+        getPreferencesKey = { stringPreferencesKey(it) }
+    )
 
-        var homeTabLayout by prefMutableState(
-            keyName = "homeTabLayout",
-            defaultValue = Gson().toJson(getDefaultHomeLayout()),
-            getPreferencesKey = { stringPreferencesKey(it) }
-        )
+    var dateTimeFormat by prefMutableState(
+        keyName = "dateTimeFormat",
+        defaultValue = "yyyy-MM-dd HH:mm:ss",
+        getPreferencesKey = { stringPreferencesKey(it) }
+    )
 
-        var dateTimeFormat by prefMutableState(
-            keyName = "dateTimeFormat",
-            defaultValue = "yyyy-MM-dd HH:mm:ss",
-            getPreferencesKey = { stringPreferencesKey(it) }
-        )
-    }
 
-    class FileListPrefs {
-        var itemSize by prefMutableState(
-            keyName = "fileListSize",
-            defaultValue = FilesTabFileListSize.MEDIUM.ordinal,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
+    //---------- File List -------------//
+    var itemSize by prefMutableState(
+        keyName = "fileListSize",
+        defaultValue = FilesTabFileListSize.MEDIUM.ordinal,
+        getPreferencesKey = { intPreferencesKey(it) }
+    )
 
-        var columnCount by prefMutableState(
-            keyName = "fileListColumnCount",
-            defaultValue = 1,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
+    var columnCount by prefMutableState(
+        keyName = "fileListColumnCount",
+        defaultValue = 1,
+        getPreferencesKey = { intPreferencesKey(it) }
+    )
 
-        var showFolderContentCount by prefMutableState(
-            keyName = "showFolderContentCount",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var showFolderContentCount by prefMutableState(
+        keyName = "showFolderContentCount",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var showHiddenFiles by prefMutableState(
-            keyName = "showHiddenFiles",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
-    }
+    var showHiddenFiles by prefMutableState(
+        keyName = "showHiddenFiles",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-    class BehaviorPrefs {
-        var showFileOptionMenuOnLongClick by prefMutableState(
-            keyName = "showFileOptionMenuOnLongClick",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    //---------- Behavior -------------//
+    var showFileOptionMenuOnLongClick by prefMutableState(
+        keyName = "showFileOptionMenuOnLongClick",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var disablePullDownToRefresh by prefMutableState(
-            keyName = "disablePullDownToRefresh",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var disablePullDownToRefresh by prefMutableState(
+        keyName = "disablePullDownToRefresh",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var skipHomeWhenTabClosed by prefMutableState(
-            keyName = "skipHomeWhenTabClosed",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var skipHomeWhenTabClosed by prefMutableState(
+        keyName = "skipHomeWhenTabClosed",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var startupTabs by prefMutableState(
-            keyName = "startupTabs",
-            defaultValue = StartupTabs.default().toJson(),
-            getPreferencesKey = { stringPreferencesKey(it) }
-        )
-    }
+    var startupTabs by prefMutableState(
+        keyName = "startupTabs",
+        defaultValue = StartupTabs.default().toJson(),
+        getPreferencesKey = { stringPreferencesKey(it) }
+    )
 
-    class FileOperationPrefs {
-        var searchInFilesLimit by prefMutableState(
-            keyName = "searchInFilesLimit",
-            defaultValue = 150,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
+    var bookmarks by prefMutableState(
+        keyName = "bookmarks",
+        defaultValue = emptySet(),
+        getPreferencesKey = { stringSetPreferencesKey(it) }
+    )
 
-        var signMergedApkBundleFiles by prefMutableState(
-            keyName = "signMergedApkBundleFiles",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    //---------- File Operation -------------//
+    var searchInFilesLimit by prefMutableState(
+        keyName = "searchInFilesLimit",
+        defaultValue = 150,
+        getPreferencesKey = { intPreferencesKey(it) }
+    )
 
-        var moveToRecycleBin by prefMutableState(
-            keyName = "moveToRecycleBin",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
-    }
+    var signMergedApkBundleFiles by prefMutableState(
+        keyName = "signMergedApkBundleFiles",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-    class TextEditorPrefs {
-        var pinLineNumber by prefMutableState(
-            keyName = "pinLineNumber",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var moveToRecycleBin by prefMutableState(
+        keyName = "moveToRecycleBin",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var symbolPairAutoCompletion by prefMutableState(
-            keyName = "symbolPairAutoCompletion",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    //---------- Text Editor -------------//
+    var pinLineNumber by prefMutableState(
+        keyName = "pinLineNumber",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var autoIndent by prefMutableState(
-            keyName = "autoIndent",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var symbolPairAutoCompletion by prefMutableState(
+        keyName = "symbolPairAutoCompletion",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var enableMagnifier by prefMutableState(
-            keyName = "enableMagnifier",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var autoIndent by prefMutableState(
+        keyName = "autoIndent",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var useICULibToSelectWords by prefMutableState(
-            keyName = "useICULibToSelectWords",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var enableMagnifier by prefMutableState(
+        keyName = "enableMagnifier",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var deleteEmptyLineFast by prefMutableState(
-            keyName = "deleteEmptyLineFast",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var useICULibToSelectWords by prefMutableState(
+        keyName = "useICULibToSelectWords",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var deleteMultiSpaces by prefMutableState(
-            keyName = "deleteMultiSpaces",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var deleteEmptyLineFast by prefMutableState(
+        keyName = "deleteEmptyLineFast",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var recentFilesLimit by prefMutableState(
-            keyName = "textEditorRecentFilesLimit",
-            defaultValue = -1,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
+    var deleteMultiSpaces by prefMutableState(
+        keyName = "deleteMultiSpaces",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var readOnly by prefMutableState(
-            keyName = "readOnly",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    var recentFilesLimit by prefMutableState(
+        keyName = "textEditorRecentFilesLimit",
+        defaultValue = -1,
+        getPreferencesKey = { intPreferencesKey(it) }
+    )
 
-        var wordWrap by prefMutableState(
-            keyName = "wordWrap",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
-    }
+    var readOnly by prefMutableState(
+        keyName = "readOnly",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-    class FilesSortingPrefs {
-        var defaultSortMethod by prefMutableState(
-            keyName = "filesSortingMethod",
-            defaultValue = SORT_BY_NAME,
-            getPreferencesKey = { intPreferencesKey(it) }
-        )
+    var wordWrap by prefMutableState(
+        keyName = "wordWrap",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
 
-        var showFoldersFirst by prefMutableState(
-            keyName = "showFoldersFirst",
-            defaultValue = true,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
 
-        var reverse by prefMutableState(
-            keyName = "reverseFilesSortingMethod",
-            defaultValue = false,
-            getPreferencesKey = { booleanPreferencesKey(it) }
-        )
+    // //---------- File Sorting -------------//
+    var defaultSortMethod by prefMutableState(
+        keyName = "filesSortingMethod",
+        defaultValue = SORT_BY_NAME,
+        getPreferencesKey = { intPreferencesKey(it) }
+    )
 
-        fun getSortingPrefsFor(content: ContentHolder): FileSortingPrefs {
-            return runBlocking {
-                fromJson(
-                    globalClass.prefDataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")]
-                ) ?: FileSortingPrefs(
-                    sortMethod = defaultSortMethod,
-                    showFoldersFirst = showFoldersFirst,
-                    reverseSorting = reverse
-                )
-            }
+    var showFoldersFirst by prefMutableState(
+        keyName = "showFoldersFirst",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
+    var reverse by prefMutableState(
+        keyName = "reverseFilesSortingMethod",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
+    fun getSortingPrefsFor(content: ContentHolder): FileSortingPrefs {
+        return runBlocking {
+            fromJson(
+                globalClass.prefDataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")]
+            ) ?: FileSortingPrefs(
+                sortMethod = defaultSortMethod,
+                showFoldersFirst = showFoldersFirst,
+                reverseSorting = reverse
+            )
         }
+    }
 
-        fun setSortingPrefsFor(content: ContentHolder, prefs: FileSortingPrefs) {
-            runBlocking {
-                globalClass.prefDataStore.edit {
-                    it[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")] =
-                        prefs.toJson()
-                }
+    fun setSortingPrefsFor(content: ContentHolder, prefs: FileSortingPrefs) {
+        runBlocking {
+            globalClass.prefDataStore.edit {
+                it[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")] =
+                    prefs.toJson()
             }
         }
     }

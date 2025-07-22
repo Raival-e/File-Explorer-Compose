@@ -51,7 +51,7 @@ fun FileSortingMenuDialog(
     reloadFiles: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    val prefs = globalClass.preferencesManager.filesSortingPrefs
+    val prefs = globalClass.preferencesManager
     val specificOptions = prefs.getSortingPrefsFor(tab.activeFolder)
 
     var applyForThisFileOnly by remember(tab.activeFolder.uniquePath) {

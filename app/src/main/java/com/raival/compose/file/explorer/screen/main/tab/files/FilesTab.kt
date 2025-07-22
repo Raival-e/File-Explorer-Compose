@@ -270,7 +270,7 @@ class FilesTab(
             val newContent =
                 (activeFolder as LocalFileHolder).file.listFiles()?.toCollection(arrayListOf())
                     ?.apply {
-                        if (!globalClass.preferencesManager.fileListPrefs.showHiddenFiles) {
+                        if (!globalClass.preferencesManager.showHiddenFiles) {
                             removeIf { it.name.startsWith(".") }
                         }
                     }

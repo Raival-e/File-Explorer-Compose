@@ -88,7 +88,6 @@ fun SearchDialog(tab: FilesTab) {
 
                     val searchLimit = globalClass
                         .preferencesManager
-                        .fileOperationPrefs
                         .searchInFilesLimit
 
                     val isExceedingTheSearchLimit =
@@ -110,7 +109,6 @@ fun SearchDialog(tab: FilesTab) {
 
                     val searchLimit = globalClass
                         .preferencesManager
-                        .fileOperationPrefs
                         .searchInFilesLimit
 
                     val isExceedingTheSearchLimit =

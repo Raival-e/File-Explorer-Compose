@@ -131,7 +131,7 @@ fun RowScope.BottomOptionsBarButton(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (!preferencesManager.appearancePrefs.showBottomBarLabels) {
+        if (!preferencesManager.showBottomBarLabels) {
             Space(size = 4.dp)
         }
 
@@ -143,7 +143,7 @@ fun RowScope.BottomOptionsBarButton(
 
         Space(size = 4.dp)
 
-        if (preferencesManager.appearancePrefs.showBottomBarLabels) {
+        if (preferencesManager.showBottomBarLabels) {
             Text(
                 text = text,
                 fontSize = 11.sp,

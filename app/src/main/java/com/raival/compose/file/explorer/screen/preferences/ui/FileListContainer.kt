@@ -17,13 +17,12 @@ import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFile
 
 @Composable
 fun FileListContainer() {
-    val manager = globalClass.preferencesManager
-    val fileListPrefs = manager.fileListPrefs
+    val prefs = globalClass.preferencesManager
 
     Container(title = stringResource(R.string.file_list)) {
         PreferenceItem(
             label = stringResource(R.string.file_list_size),
-            supportingText = when (fileListPrefs.itemSize) {
+            supportingText = when (prefs.itemSize) {
                 FilesTabFileListSize.EXTRA_SMALL.ordinal -> stringResource(R.string.extra_small)
                 FilesTabFileListSize.SMALL.ordinal -> stringResource(R.string.small)
                 FilesTabFileListSize.MEDIUM.ordinal -> stringResource(R.string.medium)
@@ -32,7 +31,7 @@ fun FileListContainer() {
             },
             icon = Icons.Rounded.Height,
             onClick = {
-                manager.singleChoiceDialog.show(
+                prefs.singleChoiceDialog.show(
                     title = globalClass.getString(R.string.file_list_size),
                     description = globalClass.getString(R.string.file_list_size_desc),
                     choices = listOf(
@@ -42,8 +41,8 @@ fun FileListContainer() {
                         globalClass.getString(R.string.large),
                         globalClass.getString(R.string.extra_large)
                     ),
-                    selectedChoice = fileListPrefs.itemSize,
-                    onSelect = { fileListPrefs.itemSize = it }
+                    selectedChoice = prefs.itemSize,
+                    onSelect = { prefs.itemSize = it }
                 )
             }
         )
@@ -59,22 +58,22 @@ fun FileListContainer() {
 
         PreferenceItem(
             label = stringResource(R.string.files_list_column_count),
-            supportingText = if (fileListPrefs.columnCount == -1) columnCount[4] else fileListPrefs.columnCount.toString(),
+            supportingText = if (prefs.columnCount == -1) columnCount[4] else prefs.columnCount.toString(),
             icon = Icons.AutoMirrored.Rounded.ManageSearch,
             onClick = {
-                manager.singleChoiceDialog.show(
+                prefs.singleChoiceDialog.show(
                     title = globalClass.getString(R.string.files_list_column_count),
                     description = globalClass.getString(R.string.choose_number_of_columns),
                     choices = columnCount,
-                    selectedChoice = if (fileListPrefs.columnCount == -1) 4 else columnCount.indexOf(
-                        fileListPrefs.columnCount.toString()
+                    selectedChoice = if (prefs.columnCount == -1) 4 else columnCount.indexOf(
+                        prefs.columnCount.toString()
                     ),
                     onSelect = {
                         val limit = when (columnCount[it]) {
                             columnCount[4] -> -1
                             else -> columnCount[it].toIntOrNull() ?: -1
                         }
-                        fileListPrefs.columnCount = limit
+                        prefs.columnCount = limit
                     }
                 )
             }
@@ -89,8 +88,8 @@ fun FileListContainer() {
             label = stringResource(R.string.show_hidden_files),
             supportingText = emptyString,
             icon = Icons.Rounded.HideSource,
-            switchState = fileListPrefs.showHiddenFiles,
-            onSwitchChange = { fileListPrefs.showHiddenFiles = it }
+            switchState = prefs.showHiddenFiles,
+            onSwitchChange = { prefs.showHiddenFiles = it }
         )
 
         HorizontalDivider(
@@ -102,8 +101,8 @@ fun FileListContainer() {
             label = stringResource(R.string.show_folder_s_content_count),
             supportingText = emptyString,
             icon = Icons.Rounded.Numbers,
-            switchState = fileListPrefs.showFolderContentCount,
-            onSwitchChange = { fileListPrefs.showFolderContentCount = it }
+            switchState = prefs.showFolderContentCount,
+            onSwitchChange = { prefs.showFolderContentCount = it }
         )
     }
 }

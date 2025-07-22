@@ -248,7 +248,7 @@ object StorageProvider {
         return videoFiles
     }
 
-    fun getBookmarks() = globalClass.filesTabManager.bookmarks
+    fun getBookmarks() = globalClass.preferencesManager.bookmarks
         .map { LocalFileHolder(File(it)) } as ArrayList<LocalFileHolder>
 
     fun getAudioFiles(): ArrayList<LocalFileHolder> {
@@ -287,7 +287,7 @@ object StorageProvider {
     ): ArrayList<LocalFileHolder> {
         val recentFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
-        val showHiddenFiles = globalClass.preferencesManager.fileListPrefs.showHiddenFiles
+        val showHiddenFiles = globalClass.preferencesManager.showHiddenFiles
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
 

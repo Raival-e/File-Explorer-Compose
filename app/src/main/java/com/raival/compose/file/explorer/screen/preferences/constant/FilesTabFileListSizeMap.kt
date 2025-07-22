@@ -19,12 +19,12 @@ object FilesTabFileListSizeMap {
         const val EXTRA_LARGE = 22
     }
 
-    fun getFileListSpace() = when (globalClass.preferencesManager.fileListPrefs.itemSize) {
+    fun getFileListSpace() = when (globalClass.preferencesManager.itemSize) {
         FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8
         else -> 4
     }
 
-    fun getFileListIconSize() = when (globalClass.preferencesManager.fileListPrefs.itemSize) {
+    fun getFileListIconSize() = when (globalClass.preferencesManager.itemSize) {
         FilesTabFileListSize.EXTRA_SMALL.ordinal -> IconSize.EXTRA_SMALL
         FilesTabFileListSize.SMALL.ordinal -> IconSize.SMALL
         FilesTabFileListSize.MEDIUM.ordinal -> IconSize.MEDIUM
@@ -32,7 +32,7 @@ object FilesTabFileListSizeMap {
         else -> IconSize.EXTRA_LARGE
     }
 
-    fun getFileListFontSize() = when (globalClass.preferencesManager.fileListPrefs.itemSize) {
+    fun getFileListFontSize() = when (globalClass.preferencesManager.itemSize) {
         FilesTabFileListSize.EXTRA_SMALL.ordinal -> FontSize.EXTRA_SMALL
         FilesTabFileListSize.SMALL.ordinal -> FontSize.SMALL
         FilesTabFileListSize.MEDIUM.ordinal -> FontSize.MEDIUM

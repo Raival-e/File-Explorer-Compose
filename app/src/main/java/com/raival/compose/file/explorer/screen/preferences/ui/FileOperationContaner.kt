@@ -13,8 +13,7 @@ import com.raival.compose.file.explorer.R
 
 @Composable
 fun FileOperationContainer() {
-    val manager = globalClass.preferencesManager
-    val preferences = manager.fileOperationPrefs
+    val preferences = globalClass.preferencesManager
     val limits = arrayListOf("15", "25", "50", "100", stringResource(R.string.unlimited))
 
     Container(title = stringResource(R.string.file_operation)) {
@@ -23,7 +22,7 @@ fun FileOperationContainer() {
             supportingText = if (preferences.searchInFilesLimit == -1) limits[4] else preferences.searchInFilesLimit.toString(),
             icon = Icons.AutoMirrored.Rounded.ManageSearch,
             onClick = {
-                manager.singleChoiceDialog.show(
+                preferences.singleChoiceDialog.show(
                     title = globalClass.getString(R.string.search_in_files_limit),
                     description = globalClass.getString(R.string.maximum_number_of_files_search_desc),
                     choices = limits,

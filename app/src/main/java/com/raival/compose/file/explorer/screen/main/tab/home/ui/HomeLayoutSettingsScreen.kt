@@ -102,7 +102,7 @@ fun HomeLayoutSettingsScreen(
         LaunchedEffect(Unit) {
             val config = try {
                 Gson().fromJson(
-                    globalClass.preferencesManager.appearancePrefs.homeTabLayout,
+                    globalClass.preferencesManager.homeTabLayout,
                     HomeLayout::class.java
                 )
             } catch (e: Exception) {

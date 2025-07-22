@@ -16,20 +16,19 @@ import com.raival.compose.file.explorer.screen.preferences.constant.ThemePrefere
 
 @Composable
 fun AppearanceContainer() {
-    val manager = globalClass.preferencesManager
-    val appearancePrefs = manager.appearancePrefs
+    val prefs = globalClass.preferencesManager
 
     Container(title = stringResource(R.string.appearance)) {
         PreferenceItem(
             label = stringResource(R.string.theme),
-            supportingText = when (appearancePrefs.theme) {
+            supportingText = when (prefs.theme) {
                 ThemePreference.LIGHT.ordinal -> stringResource(R.string.light)
                 ThemePreference.DARK.ordinal -> stringResource(R.string.dark)
                 else -> stringResource(R.string.follow_system)
             },
             icon = Icons.Rounded.Nightlight,
             onClick = {
-                manager.singleChoiceDialog.show(
+                prefs.singleChoiceDialog.show(
                     title = globalClass.getString(R.string.theme),
                     description = globalClass.getString(R.string.select_theme_preference),
                     choices = listOf(
@@ -37,8 +36,8 @@ fun AppearanceContainer() {
                         globalClass.getString(R.string.dark),
                         globalClass.getString(R.string.follow_system)
                     ),
-                    selectedChoice = appearancePrefs.theme,
-                    onSelect = { appearancePrefs.theme = it }
+                    selectedChoice = prefs.theme,
+                    onSelect = { prefs.theme = it }
                 )
             }
         )
@@ -52,8 +51,8 @@ fun AppearanceContainer() {
             label = stringResource(R.string.show_bottom_bar_labels),
             supportingText = emptyString,
             icon = Icons.AutoMirrored.Rounded.Label,
-            switchState = appearancePrefs.showBottomBarLabels,
-            onSwitchChange = { appearancePrefs.showBottomBarLabels = it }
+            switchState = prefs.showBottomBarLabels,
+            onSwitchChange = { prefs.showBottomBarLabels = it }
         )
 
         HorizontalDivider(
@@ -70,15 +69,15 @@ fun AppearanceContainer() {
 
         PreferenceItem(
             label = stringResource(R.string.date_time_format),
-            supportingText = appearancePrefs.dateTimeFormat,
+            supportingText = prefs.dateTimeFormat,
             icon = Icons.Rounded.CalendarToday,
             onClick = {
-                manager.singleChoiceDialog.show(
+                prefs.singleChoiceDialog.show(
                     title = globalClass.getString(R.string.date_time_format),
                     description = globalClass.getString(R.string.select_date_format),
                     choices = commonDateFormat,
-                    selectedChoice = commonDateFormat.indexOf(appearancePrefs.dateTimeFormat),
-                    onSelect = { appearancePrefs.dateTimeFormat = commonDateFormat[it] }
+                    selectedChoice = commonDateFormat.indexOf(prefs.dateTimeFormat),
+                    onSelect = { prefs.dateTimeFormat = commonDateFormat[it] }
                 )
             }
         )

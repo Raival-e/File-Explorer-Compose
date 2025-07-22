@@ -33,7 +33,7 @@ fun OptionsMenu(
     codeEditor: CodeEditor,
     onDismissRequest: () -> Unit
 ) {
-    val preferences = globalClass.preferencesManager.textEditorPrefs
+    val preferences = globalClass.preferencesManager
 
     CascadeDropdownMenu(
         expanded = expanded,

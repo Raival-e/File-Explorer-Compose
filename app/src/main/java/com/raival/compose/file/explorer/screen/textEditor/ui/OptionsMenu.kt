@@ -28,7 +28,7 @@ import me.saket.cascade.CascadeDropdownMenu
 @Composable
 fun OptionsMenu(expanded: Boolean, codeEditor: CodeEditor, onDismissRequest: () -> Unit) {
     val textEditorManager = globalClass.textEditorManager
-    val preferences = globalClass.preferencesManager.textEditorPrefs
+    val preferences = globalClass.preferencesManager
 
     CascadeDropdownMenu(
         expanded = expanded,

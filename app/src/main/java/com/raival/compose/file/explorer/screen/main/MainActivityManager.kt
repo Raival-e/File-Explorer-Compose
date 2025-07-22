@@ -215,7 +215,7 @@ class MainActivityManager {
         }
 
         // Replace the active tab with the home tab (if turned on in settings)
-        if (getActiveTab() !is HomeTab && !globalClass.preferencesManager.behaviorPrefs.skipHomeWhenTabClosed) {
+        if (getActiveTab() !is HomeTab && !globalClass.preferencesManager.skipHomeWhenTabClosed) {
             replaceCurrentTabWith(HomeTab())
             return false
         }
@@ -267,7 +267,7 @@ class MainActivityManager {
     fun loadStartupTabs() {
         managerScope.launch {
             val startupTabs: StartupTabs =
-                fromJson(globalClass.preferencesManager.behaviorPrefs.startupTabs)
+                fromJson(globalClass.preferencesManager.startupTabs)
                     ?: StartupTabs.default()
 
             val tabs = arrayListOf<Tab>()

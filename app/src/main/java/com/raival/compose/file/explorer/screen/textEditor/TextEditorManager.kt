@@ -526,7 +526,7 @@ class TextEditorManager {
             )
 
             props.apply {
-                globalClass.preferencesManager.textEditorPrefs.let {
+                globalClass.preferencesManager.let {
                     useICULibToSelectWords = it.useICULibToSelectWords
                     symbolPairAutoCompletion = it.symbolPairAutoCompletion
                     deleteEmptyLineFast = it.deleteEmptyLineFast
@@ -538,7 +538,7 @@ class TextEditorManager {
                 }
             }
 
-            globalClass.preferencesManager.textEditorPrefs.let {
+            globalClass.preferencesManager.let {
                 editable = !it.readOnly
                 setPinLineNumber(it.pinLineNumber)
                 getComponent(Magnifier::class.java).isEnabled = it.enableMagnifier
@@ -570,7 +570,7 @@ class TextEditorManager {
         var showRecentFileDialog by mutableStateOf(false)
 
         fun getRecentFiles(textEditorManager: TextEditorManager): SnapshotStateList<FileInstance> {
-            val limit = globalClass.preferencesManager.textEditorPrefs.recentFilesLimit
+            val limit = globalClass.preferencesManager.recentFilesLimit
             var index = 0
             textEditorManager.fileInstanceList.removeIf {
                 if (limit > 0 && index > limit - 1) {

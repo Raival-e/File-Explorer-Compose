@@ -66,7 +66,7 @@ fun ItemRow(
             .fillMaxWidth()
             .then(if (onItemClick != null) Modifier.clickable { onItemClick() } else Modifier)) {
         Space(
-            size = when (preferencesManager.fileListPrefs.itemSize) {
+            size = when (preferencesManager.itemSize) {
                 FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
                 else -> 4.dp
             }
@@ -104,7 +104,7 @@ fun ItemRow(
         }
 
         Space(
-            size = when (preferencesManager.fileListPrefs.itemSize) {
+            size = when (preferencesManager.itemSize) {
                 FilesTabFileListSize.LARGE.ordinal, FilesTabFileListSize.EXTRA_LARGE.ordinal -> 8.dp
                 else -> 4.dp
             }

@@ -21,7 +21,6 @@ import com.raival.compose.file.explorer.coil.apk.ApkFileDecoder
 import com.raival.compose.file.explorer.coil.pdf.PdfFileDecoder
 import com.raival.compose.file.explorer.common.FileExplorerLogger
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
-import com.raival.compose.file.explorer.screen.main.tab.files.FilesTabManager
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.task.TaskManager
@@ -83,7 +82,6 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
 
     val textEditorManager: TextEditorManager by lazy { TextEditorManager().also { setupTextMate() } }
     val mainActivityManager: MainActivityManager by lazy { MainActivityManager().also { it.setup() } }
-    val filesTabManager: FilesTabManager by lazy { FilesTabManager() }
     val preferencesManager: PreferencesManager by lazy { PreferencesManager() }
     val viewersManager: ViewersManager by lazy {
         setupTextMate()

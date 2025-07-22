@@ -284,7 +284,7 @@ class TextViewerInstance(
             )
 
             props.apply {
-                globalClass.preferencesManager.textEditorPrefs.let {
+                globalClass.preferencesManager.let {
                     useICULibToSelectWords = it.useICULibToSelectWords
                     symbolPairAutoCompletion = it.symbolPairAutoCompletion
                     deleteEmptyLineFast = it.deleteEmptyLineFast
@@ -296,7 +296,7 @@ class TextViewerInstance(
                 }
             }
 
-            globalClass.preferencesManager.textEditorPrefs.let {
+            globalClass.preferencesManager.let {
                 editable = !it.readOnly
                 setPinLineNumber(it.pinLineNumber)
                 getComponent(Magnifier::class.java).isEnabled = it.enableMagnifier

@@ -139,7 +139,7 @@ class HomeTab : Tab() {
     private fun getRecentFiles(): ArrayList<RecentFile> {
         val recentFiles = ArrayList<RecentFile>()
         val contentResolver: ContentResolver = globalClass.contentResolver
-        val showHiddenFiles = globalClass.preferencesManager.fileListPrefs.showHiddenFiles
+        val showHiddenFiles = globalClass.preferencesManager.showHiddenFiles
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
 

@@ -104,7 +104,7 @@ class MainActivity : BaseActivity() {
 
                     StartupTabsSettingsScreen(mainActivityState.showStartupTabsDialog) {
                         mainActivityManager.toggleStartupTabsDialog(false)
-                        globalClass.preferencesManager.behaviorPrefs.startupTabs = it.toJson()
+                        globalClass.preferencesManager.startupTabs = it.toJson()
                     }
 
                     Column(Modifier.fillMaxSize()) {

@@ -88,7 +88,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
                     fontSize = 24.sp,
                     textAlign = TextAlign.Center
                 )
-                if (tab.activeFolder.canRead && !preferencesManager.fileListPrefs.showHiddenFiles) {
+                if (tab.activeFolder.canRead && !preferencesManager.showHiddenFiles) {
                     Space(12.dp)
                     Text(
                         modifier = Modifier
@@ -102,7 +102,7 @@ fun ColumnScope.FilesList(tab: FilesTab) {
             }
         }
 
-        if (preferencesManager.behaviorPrefs.disablePullDownToRefresh) {
+        if (preferencesManager.disablePullDownToRefresh) {
             FilesListGrid(tab)
         } else {
             PullToRefreshBox(
@@ -149,7 +149,7 @@ fun FilesListGrid(tab: FilesTab) {
     val preferencesManager = globalClass.preferencesManager
     val documentHolderSelectionHighlightColor = colorScheme.surfaceContainerHigh.copy(alpha = 1f)
     val documentHolderHighlightColor = colorScheme.primary.copy(alpha = 0.05f)
-    val columnCount = preferencesManager.fileListPrefs.columnCount
+    val columnCount = preferencesManager.columnCount
 
     LazyVerticalGrid(
         columns = if (columnCount > 0)
@@ -207,7 +207,7 @@ fun FilesListGrid(tab: FilesTab) {
 
                             tab.selectedFiles[currentItemPath] = item
 
-                            if ((isFirstSelection && preferencesManager.behaviorPrefs.showFileOptionMenuOnLongClick)
+                            if ((isFirstSelection && preferencesManager.showFileOptionMenuOnLongClick)
                                 || !isNewSelection
                             ) {
                                 tab.fileOptionsDialog.show(item)
