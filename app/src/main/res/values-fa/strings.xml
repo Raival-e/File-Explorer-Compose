@@ -360,4 +360,6 @@
     <string name="extract">استخراج</string>
     <string name="date_time_format">فرمت تاریخ و زمان</string>
     <string name="select_date_format">انتخاب فرمت تاریخ</string>
+    <string name="added_as_startup_tab">به‌عنوان تب راه‌اندازی اضافه شد</string>
+    <string name="removed_from_startup_tabs">از تب‌های راه‌اندازی حذف شد</string>
 </resources>

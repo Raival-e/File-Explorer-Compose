@@ -360,4 +360,6 @@
     <string name="extract">提取</string>
     <string name="date_time_format">日期时间格式</string>
     <string name="select_date_format">选择日期格式</string>
+    <string name="added_as_startup_tab">已添加为启动标签页</string>
+    <string name="removed_from_startup_tabs">已从启动标签页移除</string>
 </resources>

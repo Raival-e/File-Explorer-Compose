@@ -361,4 +361,6 @@
     <string name="extract">Extract</string>
     <string name="date_time_format">Date time format</string>
     <string name="select_date_format">Select date format</string>
+    <string name="added_as_startup_tab">Added as startup tab</string>
+    <string name="removed_from_startup_tabs">Removed from startup tabs</string>
 </resources>

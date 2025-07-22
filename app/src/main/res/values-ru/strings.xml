@@ -360,4 +360,6 @@
     <string name="extract">Извлечь</string>
     <string name="date_time_format">Формат даты и времени</string>
     <string name="select_date_format">Выберите формат даты</string>
+    <string name="added_as_startup_tab">Добавлено в стартовые вкладки</string>
+    <string name="removed_from_startup_tabs">Удалено из стартовых вкладок</string>
 </resources>

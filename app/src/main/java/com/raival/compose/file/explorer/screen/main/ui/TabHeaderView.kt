@@ -28,10 +28,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.raival.compose.file.explorer.App
+import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.fromJson
+import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.screen.main.startup.StartupTab
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
@@ -64,7 +65,7 @@ fun TabHeaderView(
         mutableStateOf(false)
     }
 
-    val mainActivityManager = App.globalClass.mainActivityManager
+    val mainActivityManager = globalClass.mainActivityManager
 
     Row(
         modifier = Modifier
@@ -106,7 +107,7 @@ fun TabHeaderView(
             ) {
                 // get startup tabs
                 val startupTabs = remember {
-                    fromJson(App.globalClass.preferencesManager.appearancePrefs.startupTabs)
+                    fromJson(globalClass.preferencesManager.appearancePrefs.startupTabs)
                         ?: StartupTabs.default()
                 }
 
@@ -122,9 +123,10 @@ fun TabHeaderView(
                             text = { Text(text = stringResource(R.string.add_to_startup)) },
                             onClick = {
                                 startupTabs.tabs.add(StartupTab(tabType, extra))
-                                App.globalClass.preferencesManager.appearancePrefs.startupTabs =
+                                globalClass.preferencesManager.appearancePrefs.startupTabs =
                                     startupTabs.toJson()
                                 showTabHeaderMenu = false
+                                showMsg(globalClass.getString(R.string.added_as_startup_tab))
                             }
                         )
                     }
@@ -136,9 +138,10 @@ fun TabHeaderView(
                                 startupTabs.tabs.removeIf {
                                     it.type == tabType && (extra == emptyString || it.extra == extra)
                                 }
-                                App.globalClass.preferencesManager.appearancePrefs.startupTabs =
+                                globalClass.preferencesManager.appearancePrefs.startupTabs =
                                     startupTabs.toJson()
                                 showTabHeaderMenu = false
+                                showMsg(globalClass.getString(R.string.removed_from_startup_tabs))
                             }
                         )
                     }
@@ -184,7 +187,7 @@ fun TabHeaderView(
                     DropdownMenuItem(
                         text = { Text(text = stringResource(R.string.close)) },
                         onClick = {
-                            App.globalClass.mainActivityManager.removeTabAt(index)
+                            globalClass.mainActivityManager.removeTabAt(index)
                             showTabHeaderMenu = false
                         }
                     )
@@ -193,7 +196,7 @@ fun TabHeaderView(
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.close_others)) },
                     onClick = {
-                        App.globalClass.mainActivityManager.removeOtherTabs(index)
+                        globalClass.mainActivityManager.removeOtherTabs(index)
                         showTabHeaderMenu = false
                     }
                 )

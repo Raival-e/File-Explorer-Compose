@@ -278,6 +278,8 @@ class MainActivityManager {
                     StartupTabType.FILES -> FilesTab(LocalFileHolder(File(tab.extra)))
                     StartupTabType.APPS -> AppsTab()
                     else -> HomeTab()
+                }.apply {
+                    if (isCreated) onTabResumed() else onTabStarted()
                 }
 
                 tabs.add(newTab)

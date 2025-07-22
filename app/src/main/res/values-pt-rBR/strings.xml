@@ -360,4 +360,6 @@
     <string name="extract">Extrair</string>
     <string name="date_time_format">Formato de data e hora</string>
     <string name="select_date_format">Selecionar formato de data</string>
+    <string name="added_as_startup_tab">Adicionado como aba de inicialização</string>
+    <string name="removed_from_startup_tabs">Removido das abas de inicialização</string>
 </resources>
