@@ -18,6 +18,7 @@ import coil3.request.crossfade
 import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.raival.compose.file.explorer.coil.apk.ApkFileDecoder
+import com.raival.compose.file.explorer.coil.audio.AudioFileDecoder
 import com.raival.compose.file.explorer.coil.pdf.PdfFileDecoder
 import com.raival.compose.file.explorer.common.FileExplorerLogger
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
@@ -192,6 +193,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
                 add(VideoFrameDecoder.Factory())
                 add(ApkFileDecoder.Factory())
                 add(PdfFileDecoder.Factory())
+                add(AudioFileDecoder.Factory())
             }
             .build()
     }
