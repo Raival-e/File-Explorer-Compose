@@ -107,8 +107,12 @@ fun TabHeaderView(
             ) {
                 // get startup tabs
                 val startupTabs = remember {
-                    fromJson(globalClass.preferencesManager.appearancePrefs.startupTabs)
-                        ?: StartupTabs.default()
+                    arrayListOf<StartupTab>().apply {
+                        addAll(
+                            (fromJson(globalClass.preferencesManager.behaviorPrefs.startupTabs)
+                                ?: StartupTabs.default()).tabs
+                        )
+                    }
                 }
 
                 @Composable
@@ -122,24 +126,24 @@ fun TabHeaderView(
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.add_to_startup)) },
                             onClick = {
-                                startupTabs.tabs.add(StartupTab(tabType, extra))
-                                globalClass.preferencesManager.appearancePrefs.startupTabs =
-                                    startupTabs.toJson()
+                                startupTabs.add(StartupTab(tabType, extra))
+                                globalClass.preferencesManager.behaviorPrefs.startupTabs =
+                                    StartupTabs(startupTabs).toJson()
                                 showTabHeaderMenu = false
                                 showMsg(globalClass.getString(R.string.added_as_startup_tab))
                             }
                         )
                     }
 
-                    if (canRemove && startupTabs.tabs.size > 1) {
+                    if (canRemove && startupTabs.size > 1) {
                         DropdownMenuItem(
                             text = { Text(text = stringResource(R.string.remove_from_startup)) },
                             onClick = {
-                                startupTabs.tabs.removeIf {
+                                startupTabs.removeIf {
                                     it.type == tabType && (extra == emptyString || it.extra == extra)
                                 }
-                                globalClass.preferencesManager.appearancePrefs.startupTabs =
-                                    startupTabs.toJson()
+                                globalClass.preferencesManager.behaviorPrefs.startupTabs =
+                                    StartupTabs(startupTabs).toJson()
                                 showTabHeaderMenu = false
                                 showMsg(globalClass.getString(R.string.removed_from_startup_tabs))
                             }
@@ -149,7 +153,7 @@ fun TabHeaderView(
 
                 when (tab) {
                     is HomeTab -> {
-                        val homeTabs = startupTabs.tabs.filter { it.type == StartupTabType.HOME }
+                        val homeTabs = startupTabs.filter { it.type == StartupTabType.HOME }
                         addStartupTabMenuItems(
                             tabType = StartupTabType.HOME,
                             canAdd = homeTabs.isEmpty(),
@@ -158,7 +162,7 @@ fun TabHeaderView(
                     }
 
                     is AppsTab -> {
-                        val appsTabs = startupTabs.tabs.filter { it.type == StartupTabType.APPS }
+                        val appsTabs = startupTabs.filter { it.type == StartupTabType.APPS }
                         addStartupTabMenuItems(
                             tabType = StartupTabType.APPS,
                             canAdd = appsTabs.isEmpty(),
@@ -169,7 +173,7 @@ fun TabHeaderView(
                     is FilesTab -> {
                         if (tab.activeFolder is LocalFileHolder) {
                             val uniquePath = (tab.activeFolder as LocalFileHolder).uniquePath
-                            val filesTabsPaths = startupTabs.tabs
+                            val filesTabsPaths = startupTabs
                                 .filter { it.type == StartupTabType.FILES }
                                 .map { it.extra }
 

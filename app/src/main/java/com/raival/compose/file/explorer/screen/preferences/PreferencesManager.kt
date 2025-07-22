@@ -53,12 +53,6 @@ class PreferencesManager {
             getPreferencesKey = { stringPreferencesKey(it) }
         )
 
-        var startupTabs by prefMutableState(
-            keyName = "startupTabs",
-            defaultValue = StartupTabs.default().toJson(),
-            getPreferencesKey = { stringPreferencesKey(it) }
-        )
-
         var dateTimeFormat by prefMutableState(
             keyName = "dateTimeFormat",
             defaultValue = "yyyy-MM-dd HH:mm:ss",
@@ -109,6 +103,12 @@ class PreferencesManager {
             keyName = "skipHomeWhenTabClosed",
             defaultValue = false,
             getPreferencesKey = { booleanPreferencesKey(it) }
+        )
+
+        var startupTabs by prefMutableState(
+            keyName = "startupTabs",
+            defaultValue = StartupTabs.default().toJson(),
+            getPreferencesKey = { stringPreferencesKey(it) }
         )
     }
 

@@ -363,4 +363,11 @@
     <string name="select_date_format">Select date format</string>
     <string name="added_as_startup_tab">Added as startup tab</string>
     <string name="removed_from_startup_tabs">Removed from startup tabs</string>
+    <string name="manage_startup_tabs">Manage startup tabs</string>
+    <string name="customize_startup_tabs">Customize startup tabs</string>
+    <string name="home">Home</string>
+    <string name="files">Files</string>
+    <string name="quick_access_to_common_folders_and_shortcuts">Quick access to common folders and shortcuts</string>
+    <string name="browse_and_manage_installed_applications">Browse and manage installed applications</string>
+    <string name="navigate_and_manage_your_files_and_folders">Navigate and manage your files and folders</string>
 </resources>

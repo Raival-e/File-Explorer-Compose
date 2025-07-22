@@ -13,6 +13,7 @@ data class MainActivityState(
     val showAppInfoDialog: Boolean = false,
     val showJumpToPathDialog: Boolean = false,
     val showSaveEditorFilesDialog: Boolean = false,
+    val showStartupTabsDialog: Boolean = false,
     val isSavingFiles: Boolean = false,
     val selectedTabIndex: Int = 0,
     val storageDevices: List<StorageDevice> = emptyList(),

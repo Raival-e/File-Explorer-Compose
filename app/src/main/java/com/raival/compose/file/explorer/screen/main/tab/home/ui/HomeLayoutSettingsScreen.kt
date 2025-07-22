@@ -163,7 +163,7 @@ fun HomeLayoutSettingsScreen(
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     items(sections, key = { it.id }) { section ->

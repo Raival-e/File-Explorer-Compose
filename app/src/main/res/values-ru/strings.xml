@@ -362,4 +362,11 @@
     <string name="select_date_format">Выберите формат даты</string>
     <string name="added_as_startup_tab">Добавлено в стартовые вкладки</string>
     <string name="removed_from_startup_tabs">Удалено из стартовых вкладок</string>
+    <string name="manage_startup_tabs">Управление стартовыми вкладками</string>
+    <string name="customize_startup_tabs">Настроить стартовые вкладки</string>
+    <string name="home">Главная</string>
+    <string name="files">Файлы</string>
+    <string name="quick_access_to_common_folders_and_shortcuts">Быстрый доступ к общим папкам и ярлыкам</string>
+    <string name="browse_and_manage_installed_applications">Обзор и управление установленными приложениями</string>
+    <string name="navigate_and_manage_your_files_and_folders">Навигация и управление файлами и папками</string>
 </resources>

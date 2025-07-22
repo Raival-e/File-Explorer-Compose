@@ -362,4 +362,11 @@
     <string name="select_date_format">انتخاب فرمت تاریخ</string>
     <string name="added_as_startup_tab">به‌عنوان تب راه‌اندازی اضافه شد</string>
     <string name="removed_from_startup_tabs">از تب‌های راه‌اندازی حذف شد</string>
+    <string name="manage_startup_tabs">مدیریت تب‌های راه‌اندازی</string>
+    <string name="customize_startup_tabs">سفارشی کردن تب‌های راه‌اندازی</string>
+    <string name="home">خانه</string>
+    <string name="files">فایل‌ها</string>
+    <string name="quick_access_to_common_folders_and_shortcuts">دسترسی سریع به پوشه‌ها و میانبرهای رایج</string>
+    <string name="browse_and_manage_installed_applications">مرور و مدیریت برنامه‌های نصب‌شده</string>
+    <string name="navigate_and_manage_your_files_and_folders">ناوبری و مدیریت فایل‌ها و پوشه‌های شما</string>
 </resources>

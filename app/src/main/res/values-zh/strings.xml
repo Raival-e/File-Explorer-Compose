@@ -362,4 +362,11 @@
     <string name="select_date_format">选择日期格式</string>
     <string name="added_as_startup_tab">已添加为启动标签页</string>
     <string name="removed_from_startup_tabs">已从启动标签页移除</string>
+    <string name="manage_startup_tabs">管理启动标签页</string>
+    <string name="customize_startup_tabs">自定义启动标签页</string>
+    <string name="home">主页</string>
+    <string name="files">文件</string>
+    <string name="quick_access_to_common_folders_and_shortcuts">快速访问常用文件夹和快捷方式</string>
+    <string name="browse_and_manage_installed_applications">浏览和管理已安装的应用程序</string>
+    <string name="navigate_and_manage_your_files_and_folders">浏览和管理您的文件和文件夹</string>
 </resources>

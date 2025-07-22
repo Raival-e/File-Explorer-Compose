@@ -362,4 +362,11 @@
     <string name="select_date_format">Selecionar formato de data</string>
     <string name="added_as_startup_tab">Adicionado como aba de inicialização</string>
     <string name="removed_from_startup_tabs">Removido das abas de inicialização</string>
+    <string name="manage_startup_tabs">Gerenciar abas de inicialização</string>
+    <string name="customize_startup_tabs">Personalizar abas de inicialização</string>
+    <string name="home">Início</string>
+    <string name="files">Arquivos</string>
+    <string name="quick_access_to_common_folders_and_shortcuts">Acesso rápido a pastas e atalhos comuns</string>
+    <string name="browse_and_manage_installed_applications">Navegar e gerenciar aplicativos instalados</string>
+    <string name="navigate_and_manage_your_files_and_folders">Navegar e gerenciar seus arquivos e pastas</string>
 </resources>

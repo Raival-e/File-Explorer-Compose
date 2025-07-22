@@ -3,7 +3,7 @@ package com.raival.compose.file.explorer.screen.main.startup
 import com.raival.compose.file.explorer.common.emptyString
 
 data class StartupTabs(
-    val tabs: ArrayList<StartupTab>
+    val tabs: List<StartupTab>
 ) {
     companion object {
         fun default() = StartupTabs(arrayListOf(StartupTab(StartupTabType.HOME)))

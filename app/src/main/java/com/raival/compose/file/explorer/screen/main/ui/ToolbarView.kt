@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AutoAwesomeMotion
 import androidx.compose.material.icons.rounded.EditAttributes
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreVert
@@ -115,6 +116,20 @@ fun Toolbar(
                         }
                     )
                 }
+
+                DropdownMenuItem(
+                    text = { Text(text = stringResource(R.string.manage_startup_tabs)) },
+                    onClick = {
+                        mainActivityManager.toggleStartupTabsDialog(true)
+                        showOptionsMenu = false
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Rounded.AutoAwesomeMotion,
+                            contentDescription = null
+                        )
+                    }
+                )
 
                 DropdownMenuItem(
                     text = { Text(text = stringResource(R.string.preferences)) },

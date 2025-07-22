@@ -267,7 +267,7 @@ class MainActivityManager {
     fun loadStartupTabs() {
         managerScope.launch {
             val startupTabs: StartupTabs =
-                fromJson(globalClass.preferencesManager.appearancePrefs.startupTabs)
+                fromJson(globalClass.preferencesManager.behaviorPrefs.startupTabs)
                     ?: StartupTabs.default()
 
             val tabs = arrayListOf<Tab>()
@@ -307,6 +307,12 @@ class MainActivityManager {
     fun toggleSaveEditorFilesDialog(show: Boolean) {
         _state.value = _state.value.copy(
             showSaveEditorFilesDialog = show
+        )
+    }
+
+    fun toggleStartupTabsDialog(show: Boolean) {
+        _state.value = _state.value.copy(
+            showStartupTabsDialog = show
         )
     }
 

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
@@ -24,6 +25,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
+import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.apps.ui.AppsTabContentView
@@ -35,6 +37,7 @@ import com.raival.compose.file.explorer.screen.main.tab.home.ui.HomeTabContentVi
 import com.raival.compose.file.explorer.screen.main.ui.AppInfoDialog
 import com.raival.compose.file.explorer.screen.main.ui.JumpToPathDialog
 import com.raival.compose.file.explorer.screen.main.ui.SaveTextEditorFilesDialog
+import com.raival.compose.file.explorer.screen.main.ui.StartupTabsSettingsScreen
 import com.raival.compose.file.explorer.screen.main.ui.TabLayout
 import com.raival.compose.file.explorer.screen.main.ui.Toolbar
 import com.raival.compose.file.explorer.theme.FileExplorerTheme
@@ -99,6 +102,11 @@ class MainActivity : BaseActivity() {
                         onSave = { mainActivityManager.saveTextEditorFiles { finish() } }
                     )
 
+                    StartupTabsSettingsScreen(mainActivityState.showStartupTabsDialog) {
+                        mainActivityManager.toggleStartupTabsDialog(false)
+                        globalClass.preferencesManager.behaviorPrefs.startupTabs = it.toJson()
+                    }
+
                     Column(Modifier.fillMaxSize()) {
                         Toolbar(
                             title = mainActivityState.title,
@@ -125,7 +133,9 @@ class MainActivity : BaseActivity() {
 
         if (state.tabs.isEmpty()) {
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
