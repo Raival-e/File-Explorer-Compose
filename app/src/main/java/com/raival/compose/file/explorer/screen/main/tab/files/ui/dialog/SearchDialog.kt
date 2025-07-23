@@ -72,8 +72,12 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchDialog(tab: FilesTab) {
-    if (tab.showSearchPenal) {
+fun SearchDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val context = LocalContext.current
         var isSearching by remember { mutableStateOf(false) }
         val useDarkIcons = !isSystemInDarkTheme()
@@ -81,7 +85,7 @@ fun SearchDialog(tab: FilesTab) {
         fun search(query: String) {
             if (query.isNotEmpty()) {
                 isSearching = true
-                tab.search.searchResults.clear()
+                tab.searcher.searchResults.clear()
 
                 suspend fun searchInList() {
                     if (!isSearching) return
@@ -91,14 +95,14 @@ fun SearchDialog(tab: FilesTab) {
                         .searchInFilesLimit
 
                     val isExceedingTheSearchLimit =
-                        searchLimit > 0 && tab.search.searchResults.size >= searchLimit
+                        searchLimit > 0 && tab.searcher.searchResults.size >= searchLimit
 
                     if (isExceedingTheSearchLimit) return
 
                     tab.activeFolderContent.forEach {
                         if (!isSearching) return
                         if (it.displayName.contains(query, true)) {
-                            tab.search.searchResults += it
+                            tab.searcher.searchResults += it
                             delay(150)
                         }
                     }
@@ -112,14 +116,14 @@ fun SearchDialog(tab: FilesTab) {
                         .searchInFilesLimit
 
                     val isExceedingTheSearchLimit =
-                        searchLimit > 0 && tab.search.searchResults.size >= searchLimit
+                        searchLimit > 0 && tab.searcher.searchResults.size >= searchLimit
 
                     if (isExceedingTheSearchLimit) return
 
                     if (contentHolder.isFile()) {
                         if (contentHolder.displayName.contains(query, true)) {
                             if (!isSearching) return
-                            tab.search.searchResults += contentHolder
+                            tab.searcher.searchResults += contentHolder
                             delay(150)
                         }
                     }
@@ -144,12 +148,12 @@ fun SearchDialog(tab: FilesTab) {
                 }
             } else {
                 isSearching = false
-                tab.search.searchResults.clear()
+                tab.searcher.searchResults.clear()
             }
         }
 
         Dialog(
-            onDismissRequest = { tab.showSearchPenal = false },
+            onDismissRequest = onDismissRequest,
             properties = DialogProperties(
                 dismissOnClickOutside = false,
                 decorFitsSystemWindows = false,
@@ -195,9 +199,9 @@ fun SearchDialog(tab: FilesTab) {
                             focusedIndicatorColor = Color.Transparent,
                             unfocusedIndicatorColor = Color.Transparent,
                         ),
-                        value = tab.search.searchQuery,
+                        value = tab.searcher.searchQuery,
                         onValueChange = {
-                            tab.search.searchQuery = it
+                            tab.searcher.searchQuery = it
                         },
                         placeholder = {
                             Text(
@@ -206,7 +210,7 @@ fun SearchDialog(tab: FilesTab) {
                             )
                         },
                         leadingIcon = {
-                            IconButton(onClick = { tab.showSearchPenal = false }) {
+                            IconButton(onClick = onDismissRequest) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                                     contentDescription = null
@@ -214,14 +218,14 @@ fun SearchDialog(tab: FilesTab) {
                             }
                         },
                         trailingIcon = {
-                            AnimatedVisibility(visible = tab.search.searchQuery.isNotEmpty()) {
+                            AnimatedVisibility(visible = tab.searcher.searchQuery.isNotEmpty()) {
                                 IconButton(
                                     onClick = {
                                         if (isSearching) {
                                             isSearching = false
                                         } else {
-                                            tab.search.searchQuery = emptyString
-                                            tab.search.searchResults.clear()
+                                            tab.searcher.searchQuery = emptyString
+                                            tab.searcher.searchResults.clear()
                                             isSearching = false
                                         }
                                     }
@@ -241,7 +245,7 @@ fun SearchDialog(tab: FilesTab) {
                                         isSearching = false
                                         delay(200)
                                     }
-                                    search(tab.search.searchQuery)
+                                    search(tab.searcher.searchQuery)
                                 }
                             }
                         )
@@ -278,7 +282,7 @@ fun SearchDialog(tab: FilesTab) {
                 ) {
                     LazyColumn {
                         itemsIndexed(
-                            tab.search.searchResults,
+                            tab.searcher.searchResults,
                             key = { index, item -> item.uniquePath }) { index, item ->
                             var showMoreOptionsMenu by remember(item.uniquePath) {
                                 mutableStateOf(false)
@@ -318,12 +322,9 @@ fun SearchDialog(tab: FilesTab) {
                                             Text(text = stringResource(R.string.locate))
                                         },
                                         onClick = {
-                                            tab.showSearchPenal = false
+                                            onDismissRequest()
                                             if (item.hasParent()) {
-                                                tab.highlightedFiles.apply {
-                                                    clear()
-                                                    add(item.uniquePath)
-                                                }
+                                                tab.highlight(item.uniquePath)
                                                 tab.openFolder(item.getParent()!!) {
                                                     CoroutineScope(Dispatchers.Main).launch {
                                                         tab.getFileListState().scrollToItem(

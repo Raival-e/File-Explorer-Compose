@@ -210,7 +210,7 @@ fun FilesListGrid(tab: FilesTab) {
                             if ((isFirstSelection && preferencesManager.showFileOptionMenuOnLongClick)
                                 || !isNewSelection
                             ) {
-                                tab.fileOptionsDialog.show(item)
+                                tab.toggleFileOptionsMenu(item)
                             }
 
                             if (isNewSelection) {

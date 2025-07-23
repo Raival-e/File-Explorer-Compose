@@ -31,6 +31,7 @@ import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.DynamicSelectTextField
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.OpenWithActivityHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRow
@@ -40,9 +41,13 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OpenWithAppListDialog(tab: FilesTab) {
-    if (tab.openWithDialog.showOpenWithDialog && tab.openWithDialog.targetFile != null) {
-        val contentHolder = tab.openWithDialog.targetFile!!
+fun OpenWithAppListDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
+        val contentHolder = tab.targetFile!! as LocalFileHolder
         val context = LocalContext.current
 
         val appsList = remember {
@@ -72,7 +77,7 @@ fun OpenWithAppListDialog(tab: FilesTab) {
         }
 
         BottomSheetDialog(
-            onDismissRequest = { tab.openWithDialog.hide() }
+            onDismissRequest = onDismissRequest
         ) {
             Column(Modifier.animateContentSize()) {
                 Text(
@@ -131,7 +136,7 @@ fun OpenWithAppListDialog(tab: FilesTab) {
                                             item.packageName,
                                             item.name
                                         )
-                                        tab.openWithDialog.hide()
+                                        onDismissRequest()
                                     }
                                 )
                         ) {

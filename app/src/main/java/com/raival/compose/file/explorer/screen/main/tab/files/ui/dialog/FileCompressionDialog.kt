@@ -42,8 +42,12 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @Composable
-fun FileCompressionDialog(tab: FilesTab) {
-    if (tab.newZipFileDialog.show) {
+fun FileCompressionDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val listContent by remember(tab.activeFolderContent) {
             mutableStateOf(tab.activeFolderContent.map { it.displayName }.toTypedArray())
         }
@@ -64,7 +68,7 @@ fun FileCompressionDialog(tab: FilesTab) {
         }
 
         Dialog(
-            onDismissRequest = { tab.newZipFileDialog.hide() },
+            onDismissRequest = onDismissRequest,
         ) {
             Card(
                 shape = RoundedCornerShape(6.dp),
@@ -122,7 +126,7 @@ fun FileCompressionDialog(tab: FilesTab) {
                         OutlinedButton(
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                tab.newZipFileDialog.hide()
+                                onDismissRequest()
                             },
                             shape = RoundedCornerShape(6.dp)
                         ) {
@@ -139,10 +143,10 @@ fun FileCompressionDialog(tab: FilesTab) {
                                         newNameInput
                                     )
                                 ) {
-                                    tab.newZipFileDialog.hide()
+                                    onDismissRequest()
                                     CoroutineScope(IO).launch {
                                         globalClass.taskManager.runTask(
-                                            tab.newZipFileDialog.task!!.id,
+                                            tab.compressTaskHolder!!.id,
                                             CompressTaskParameters(
                                                 File(
                                                     (tab.activeFolder as LocalFileHolder).file,

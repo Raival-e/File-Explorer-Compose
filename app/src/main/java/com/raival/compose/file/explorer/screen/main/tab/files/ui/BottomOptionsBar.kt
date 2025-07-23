@@ -21,6 +21,7 @@ import androidx.compose.material.icons.rounded.SelectAll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -34,10 +35,11 @@ import com.raival.compose.file.explorer.common.block
 import com.raival.compose.file.explorer.common.detectVerticalSwipe
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileSortingMenuDialog
 
 @Composable
 fun BottomOptionsBar(tab: FilesTab) {
+    val state = tab.bottomOptionsBarState.collectAsState().value
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -47,36 +49,36 @@ fun BottomOptionsBar(tab: FilesTab) {
             )
             .detectVerticalSwipe(
                 onSwipeUp = {
-                    tab.showBookmarkDialog = true
+                    tab.toggleBookmarksDialog(true)
                 }
             )
     ) {
-        if (tab.showEmptyRecycleBin) {
+        if (state.showEmptyRecycleBinButton) {
             BottomOptionsBarButton(Icons.Rounded.DeleteSweep, stringResource(R.string.empty)) {
                 tab.unselectAllFiles(false)
                 tab.activeFolderContent.forEach {
                     tab.selectedFiles[it.uniquePath] = it
                 }
                 tab.quickReloadFiles()
-                tab.showConfirmDeleteDialog = true
+                tab.toggleDeleteConfirmationDialog(true)
             }
         } else {
             BottomOptionsBarButton(Icons.Rounded.AddTask, stringResource(R.string.task)) {
-                tab.showTasksPanel = true
+                tab.toggleTasksPanel(true)
             }
         }
 
         BottomOptionsBarButton(Icons.Rounded.Search, stringResource(R.string.search)) {
-            tab.showSearchPenal = true
+            tab.toggleSearchPenal(true)
         }
 
-        if (!tab.showEmptyRecycleBin && tab.canCreateNewContent) {
+        if (!state.showEmptyRecycleBinButton && state.showCreateNewContentButton) {
             BottomOptionsBarButton(Icons.Rounded.Add, stringResource(R.string.create)) {
-                tab.showCreateNewFileDialog = true
+                tab.toggleCreateNewFileDialog(true)
             }
         }
 
-        if (tab.showMoreOptionsButton && tab.selectedFiles.isNotEmpty()) {
+        if (state.showMoreOptionsButton && tab.selectedFiles.isNotEmpty()) {
             BottomOptionsBarButton(Icons.Rounded.SelectAll, stringResource(R.string.select_all)) {
                 if (tab.selectedFiles.size == tab.activeFolderContent.size) {
                     tab.unselectAllFiles()
@@ -90,23 +92,16 @@ fun BottomOptionsBar(tab: FilesTab) {
             }
 
             BottomOptionsBarButton(Icons.Rounded.MoreVert, stringResource(R.string.options)) {
-                tab.fileOptionsDialog.show(tab.selectedFiles[tab.selectedFiles.keys.first()]!!)
+                tab.toggleFileOptionsMenu(tab.selectedFiles[tab.selectedFiles.keys.first()]!!)
                 tab.quickReloadFiles()
             }
         } else {
-            BottomOptionsBarButton(Icons.AutoMirrored.Rounded.Sort, stringResource(R.string.sort), {
-                if (tab.showSortingMenu) {
-                    FileSortingMenuDialog(
-                        tab = tab,
-                        reloadFiles = { tab.reloadFiles() }
-                    ) { tab.showSortingMenu = false }
-                }
-            }) {
-                tab.showSortingMenu = true
+            BottomOptionsBarButton(Icons.AutoMirrored.Rounded.Sort, stringResource(R.string.sort)) {
+                tab.toggleSortingMenu(true)
             }
 
             BottomOptionsBarButton(Icons.Rounded.Bookmark, stringResource(R.string.bookmarks)) {
-                tab.showBookmarkDialog = true
+                tab.toggleBookmarksDialog(true)
             }
         }
     }

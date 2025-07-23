@@ -79,8 +79,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun FilePropertiesDialog(tab: FilesTab) {
-    if (tab.showFileProperties) {
+fun FilePropertiesDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val selection = tab.selectedFiles.map { it.value }.toList()
         val contentPropertiesProvider = remember { ContentPropertiesProvider(selection) }
         val uiState by contentPropertiesProvider.uiState.collectAsState()
@@ -98,7 +102,7 @@ fun FilePropertiesDialog(tab: FilesTab) {
         }
 
         BottomSheetDialog(
-            onDismissRequest = { tab.showFileProperties = false }
+            onDismissRequest = onDismissRequest
         ) {
             Column(
                 modifier = Modifier
@@ -161,7 +165,7 @@ fun FilePropertiesDialog(tab: FilesTab) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(6.dp),
-                    onClick = { tab.showFileProperties = false }
+                    onClick = onDismissRequest
                 ) {
                     Text(stringResource(R.string.close))
                 }

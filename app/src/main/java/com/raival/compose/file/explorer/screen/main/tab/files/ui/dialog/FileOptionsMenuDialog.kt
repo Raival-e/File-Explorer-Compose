@@ -55,17 +55,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun FileOptionsMenuDialog(tab: FilesTab) {
-    if (tab.fileOptionsDialog.showFileOptionsDialog
-        && tab.fileOptionsDialog.targetFile != null
-    ) {
+fun FileOptionsMenuDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val context = LocalContext.current
 
         val targetFiles by remember {
             mutableStateOf(tab.selectedFiles.map { it.value }.toList())
         }
 
-        val targetContentHolder = tab.fileOptionsDialog.targetFile!!
+        val targetContentHolder = tab.targetFile!!
 
         val selectedFilesCount = targetFiles.size
         val isMultipleSelection = selectedFilesCount > 1
@@ -80,7 +82,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
             }
         }
 
-        BottomSheetDialog(onDismissRequest = { tab.fileOptionsDialog.hide() }) {
+        BottomSheetDialog(onDismissRequest = { tab.toggleFileOptionsMenu(null) }) {
             val details by remember {
                 mutableStateOf(
                     if (selectedFilesCount > 1) {
@@ -108,8 +110,8 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 IconButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        tab.hideDocumentOptionsMenu()
-                        tab.showConfirmDeleteDialog = true
+                        onDismissRequest()
+                        tab.toggleDeleteConfirmationDialog(true)
                     }
                 ) {
                     Icon(
@@ -123,7 +125,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 IconButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        tab.hideDocumentOptionsMenu()
+                        onDismissRequest()
                         CoroutineScope(Dispatchers.IO).launch {
                             globalClass.taskManager.addTask(
                                 CopyTask(
@@ -142,7 +144,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 IconButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        tab.hideDocumentOptionsMenu()
+                        onDismissRequest()
                         CoroutineScope(Dispatchers.IO).launch {
                             globalClass.taskManager.addTask(
                                 CopyTask(
@@ -161,8 +163,8 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 IconButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        tab.hideDocumentOptionsMenu()
-                        tab.renameDialog.show(targetContentHolder)
+                        onDismissRequest()
+                        tab.toggleRenameDialog(true)
                     }
                 ) {
                     Icon(
@@ -176,7 +178,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     IconButton(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            tab.hideDocumentOptionsMenu()
+                            onDismissRequest()
                             tab.shareSelectedFiles(context)
                         }
                     ) {
@@ -188,8 +190,8 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 IconButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        tab.hideDocumentOptionsMenu()
-                        tab.showFileProperties = true
+                        onDismissRequest()
+                        tab.toggleFilePropertiesDialog(true)
                     }
                 ) {
                     Icon(imageVector = Icons.Rounded.Info, contentDescription = null)
@@ -204,7 +206,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     Icons.AutoMirrored.Rounded.OpenInNew,
                     stringResource(R.string.open_in_new_tab)
                 ) {
-                    tab.hideDocumentOptionsMenu()
+                    onDismissRequest()
                     tab.requestNewTab(FilesTab(targetContentHolder))
                     tab.unselectAllFiles()
                 }
@@ -215,8 +217,8 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                     Icons.AutoMirrored.Rounded.OpenInNew,
                     stringResource(R.string.open_with)
                 ) {
-                    tab.hideDocumentOptionsMenu()
-                    tab.openWithDialog.show(targetContentHolder)
+                    onDismissRequest()
+                    tab.toggleOpenWithDialog(true)
                 }
             }
 
@@ -224,7 +226,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                 (tab.activeFolder is VirtualFileHolder && (tab.activeFolder as VirtualFileHolder).type != VirtualFileHolder.BOOKMARKS)
             ) {
                 FileOption(Icons.Rounded.BookmarkAdd, stringResource(R.string.add_to_bookmarks)) {
-                    tab.hideDocumentOptionsMenu()
+                    onDismissRequest()
                     globalClass.preferencesManager.bookmarks += targetFiles.map { it.uniquePath }
                         .distinct()
                     globalClass.showMsg(R.string.added_to_bookmarks)
@@ -234,7 +236,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
 
             if (isRequestPinShortcutSupported(context) && tab.activeFolder is LocalFileHolder && (isSingleFile || isSingleFolder)) {
                 FileOption(Icons.Rounded.Home, stringResource(R.string.add_to_home_screen)) {
-                    tab.hideDocumentOptionsMenu()
+                    onDismissRequest()
                     tab.addToHomeScreen(context, targetContentHolder as LocalFileHolder)
                     tab.unselectAllFiles()
                 }
@@ -242,14 +244,14 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
 
             if (isSingleFile && targetContentHolder is LocalFileHolder) {
                 FileOption(Icons.Rounded.EditNote, stringResource(R.string.edit_with_text_editor)) {
-                    tab.hideDocumentOptionsMenu()
+                    onDismissRequest()
                     globalClass.textEditorManager.openTextEditor(targetContentHolder, context)
                     tab.unselectAllFiles()
                 }
 
                 if (apkBundleFileType.contains(targetContentHolder.file.extension)) {
                     FileOption(Icons.Rounded.Merge, stringResource(R.string.convert_to_apk)) {
-                        tab.hideDocumentOptionsMenu()
+                        onDismissRequest()
                         CoroutineScope(Dispatchers.IO).launch {
                             globalClass.taskManager.addTaskAndRun(
                                 ApksMergeTask(targetContentHolder),
@@ -270,7 +272,7 @@ fun FileOptionsMenuDialog(tab: FilesTab) {
                             CompressTask(targetFiles)
                         )
                     }
-                    tab.hideDocumentOptionsMenu()
+                    onDismissRequest()
                     tab.unselectAllFiles()
                 }
             }

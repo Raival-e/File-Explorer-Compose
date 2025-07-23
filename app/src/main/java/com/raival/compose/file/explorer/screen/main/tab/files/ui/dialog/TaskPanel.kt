@@ -87,8 +87,12 @@ import kotlin.math.max
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun TaskPanel(tab: FilesTab) {
-    if (tab.showTasksPanel) {
+fun TaskPanel(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val coroutineScope = rememberCoroutineScope()
         val context = LocalContext.current
 
@@ -101,7 +105,7 @@ fun TaskPanel(tab: FilesTab) {
         LaunchedEffect(Unit) {
             globalClass.taskManager.validateTasks()
 
-            while (tab.showTasksPanel) {
+            while (tab.dialogsState.value.showTasksPanel) {
                 if (globalClass.taskManager.runningTasks != runningTasks) {
                     runningTasks.clear()
                     runningTasks.addAll(globalClass.taskManager.runningTasks)
@@ -127,7 +131,7 @@ fun TaskPanel(tab: FilesTab) {
         }
 
         BottomSheetDialog(
-            onDismissRequest = { tab.showTasksPanel = false }
+            onDismissRequest = onDismissRequest
         ) {
             Row(
                 modifier = Modifier
@@ -176,7 +180,7 @@ fun TaskPanel(tab: FilesTab) {
                             RunningTaskItem(
                                 task = task,
                                 onClick = {
-                                    tab.showTasksPanel = false
+                                    tab.toggleTasksPanel(false)
                                     globalClass.taskManager.bringToForeground(task)
                                 }
                             )
@@ -209,7 +213,7 @@ fun TaskPanel(tab: FilesTab) {
                                     coroutineScope.launch {
                                         globalClass.taskManager.continueTask(task.id)
                                     }
-                                    tab.showTasksPanel = false
+                                    tab.toggleTasksPanel(false)
                                 }
                             )
                         }
@@ -241,7 +245,7 @@ fun TaskPanel(tab: FilesTab) {
                                     coroutineScope.launch {
                                         globalClass.taskManager.continueTask(task.id)
                                     }
-                                    tab.showTasksPanel = false
+                                    tab.toggleTasksPanel(false)
                                 }
                             )
                         }
@@ -273,7 +277,7 @@ fun TaskPanel(tab: FilesTab) {
                                         globalClass.showMsg(globalClass.getString(R.string.can_not_run_tasks))
                                         return@SwipeableTaskItem
                                     }
-                                    tab.showTasksPanel = false
+                                    tab.toggleTasksPanel(false)
                                     when (task) {
                                         is CopyTask -> {
                                             coroutineScope.launch {
@@ -284,7 +288,7 @@ fun TaskPanel(tab: FilesTab) {
                                             }
                                         }
 
-                                        is CompressTask -> tab.newZipFileDialog.show(task)
+                                        is CompressTask -> tab.toggleCompressTaskDialog(task)
                                     }
                                 }
                             )

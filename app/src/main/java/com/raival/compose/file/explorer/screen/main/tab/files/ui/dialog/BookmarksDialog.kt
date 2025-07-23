@@ -48,8 +48,12 @@ import java.io.File
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun BookmarksDialog(tab: FilesTab) {
-    if (tab.showBookmarkDialog) {
+fun BookmarksDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val context = LocalContext.current
         val bookmarks = remember {
             mutableStateListOf<LocalFileHolder>()
@@ -67,7 +71,7 @@ fun BookmarksDialog(tab: FilesTab) {
         }
 
         BottomSheetDialog(
-            onDismissRequest = { tab.showBookmarkDialog = false }
+            onDismissRequest = onDismissRequest
         ) {
             Row(
                 modifier = Modifier
@@ -129,7 +133,7 @@ fun BookmarksDialog(tab: FilesTab) {
                                             } else {
                                                 tab.requestNewTab(FilesTab(item))
                                             }
-                                            tab.showBookmarkDialog = false
+                                            onDismissRequest()
                                         },
                                         onLongClick = { }
                                     )

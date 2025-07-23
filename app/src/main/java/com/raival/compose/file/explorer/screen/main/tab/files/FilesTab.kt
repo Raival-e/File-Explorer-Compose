@@ -31,10 +31,14 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHold
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.state.BottomOptionsBarState
+import com.raival.compose.file.explorer.screen.main.tab.files.state.DialogsState
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.reandroid.archive.ZipAlign
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.lingala.zip4j.ZipFile
@@ -45,54 +49,48 @@ class FilesTab(
     val source: ContentHolder,
     context: Context? = null
 ) : Tab() {
-
-    override val id = globalClass.generateUid()
-
     companion object {
         fun isValidLocalPath(path: String) = File(path).exists()
     }
 
-    val search = Search()
-    val apkDialog = ApkDialog()
-    val fileOptionsDialog = FileOptionsDialog()
-    val openWithDialog = OpenWithDialog()
-    val renameDialog = RenameDialog()
-    val newZipFileDialog = NewZipFileDialog()
+    override val id = globalClass.generateUid()
+    private val scope = CoroutineScope(Dispatchers.IO)
+
+    val searcher = Searcher()
 
     val homeDir: ContentHolder =
         if (source is VirtualFileHolder || source.isFolder) source else source.getParent()
             ?: StorageProvider.getPrimaryInternalStorage(globalClass).contentHolder
-    var activeFolder: ContentHolder = homeDir
 
+    var activeFolder: ContentHolder = homeDir
     val activeFolderContent = mutableStateListOf<ContentHolder>()
     val contentListStates = hashMapOf<String, LazyGridState>()
     var activeListState by mutableStateOf(LazyGridState())
 
-    val currentPathSegments = mutableStateListOf<ContentHolder>()
-    val currentPathSegmentsListState = LazyListState()
-
+    val highlightedFiles = arrayListOf<String>()
     val selectedFiles = linkedMapOf<String, ContentHolder>()
     var lastSelectedFileIndex = -1
 
-    var highlightedFiles = arrayListOf<String>()
+    val currentPathSegments = mutableStateListOf<ContentHolder>()
+    val currentPathSegmentsListState = LazyListState()
 
-    var showSortingMenu by mutableStateOf(false)
-    var showCreateNewFileDialog by mutableStateOf(false)
-    var showConfirmDeleteDialog by mutableStateOf(false)
-    var showFileProperties by mutableStateOf(false)
-    var showTasksPanel by mutableStateOf(false)
-    var showSearchPenal by mutableStateOf(false)
-    var showBookmarkDialog by mutableStateOf(false)
-    var showMoreOptionsButton by mutableStateOf(false)
-    var showEmptyRecycleBin by mutableStateOf(false)
-    var canCreateNewContent by mutableStateOf(true)
+    // Holds the file that has been long-clicked
+    var targetFile: ContentHolder? = null
+    var compressTaskHolder: CompressTask? = null
+
+    private val _dialogsState = MutableStateFlow(DialogsState())
+    val dialogsState = _dialogsState.asStateFlow()
+
+    private val _bottomOptionsBarState = MutableStateFlow(BottomOptionsBarState())
+    val bottomOptionsBarState = _bottomOptionsBarState.asStateFlow()
+
     var handleBackGesture by mutableStateOf(activeFolder.hasParent() || selectedFiles.isNotEmpty())
     var tabViewLabel by mutableStateOf(emptyString)
 
     var isLoading by mutableStateOf(false)
 
-    var foldersCount = 0
-    var filesCount = 0
+    private var foldersCount = 0
+    private var filesCount = 0
 
     override fun onTabStarted() {
         super.onTabStarted()
@@ -207,7 +205,7 @@ class FilesTab(
 
     fun openFile(context: Context, item: ContentHolder) {
         if (item is LocalFileHolder && item.isApk()) {
-            apkDialog.show(item)
+            toggleApkDialog(item)
         } else {
             item.open(context, anonymous = false, skipSupportedExtensions = false, null)
         }
@@ -229,19 +227,16 @@ class FilesTab(
             if (selectedFiles.isEmpty()) lastSelectedFileIndex = -1
         }
 
-        showMoreOptionsButton = selectedFiles.isNotEmpty()
-
         activeFolder = item
 
         listFiles { newContent ->
-            showEmptyRecycleBin = if (activeFolder is LocalFileHolder) {
-                ((activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir)
-                        || activeFolder.uniquePath == globalClass.recycleBinDir.uniquePath)
-            } else {
-                false
-            }
-
-            canCreateNewContent = activeFolder.canAddNewContent
+            _bottomOptionsBarState.value = _bottomOptionsBarState.value.copy(
+                showCreateNewContentButton = activeFolder.canAddNewContent,
+                showMoreOptionsButton = selectedFiles.isNotEmpty(),
+                showEmptyRecycleBinButton = activeFolder is LocalFileHolder &&
+                        ((activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir) ||
+                                activeFolder.uniquePath == globalClass.recycleBinDir.uniquePath)
+            )
 
 
             handleBackGesture = activeFolder.hasParent() || selectedFiles.isNotEmpty()
@@ -284,7 +279,7 @@ class FilesTab(
             }
         } else if (activeFolder is ZipFileHolder) {
             if (globalClass.zipManager.checkForSourceChanges()) {
-                CoroutineScope(Dispatchers.IO).launch {
+                scope.launch {
                     val zipTree = (activeFolder as ZipFileHolder).zipTree
                     val changedFiles = zipTree.checkExtractedFiles()
                     if (changedFiles.isNotEmpty()) {
@@ -331,13 +326,12 @@ class FilesTab(
 
         requestHomeToolbarUpdate()
 
-        showMoreOptionsButton = selectedFiles.size > 0
-
-        if (activeFolder is LocalFileHolder) {
-            showEmptyRecycleBin =
-                (activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir)
-                        || activeFolder.uniquePath == globalClass.recycleBinDir.uniquePath
-        }
+        _bottomOptionsBarState.value = _bottomOptionsBarState.value.copy(
+            showMoreOptionsButton = selectedFiles.isNotEmpty(),
+            showEmptyRecycleBinButton = activeFolder is LocalFileHolder &&
+                    ((activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir) ||
+                            activeFolder.uniquePath == globalClass.recycleBinDir.uniquePath)
+        )
     }
 
     fun reloadFiles(postEvent: () -> Unit = {}) {
@@ -345,7 +339,7 @@ class FilesTab(
     }
 
     private fun listFiles(onReady: (ArrayList<out ContentHolder>) -> Unit) {
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             isLoading = true
 
             val result = activeFolder.listSortedContent()
@@ -416,10 +410,6 @@ class FilesTab(
         globalClass.mainActivityManager.addTabAndSelect(tab)
     }
 
-    fun hideDocumentOptionsMenu() {
-        fileOptionsDialog.hide()
-    }
-
     /**
      * Shares the selected files.
      * Only local content can be shared, other types must create a local copy first.
@@ -488,94 +478,87 @@ class FilesTab(
 
     fun extractZipHolderForPreview(zipFileHolder: ZipFileHolder, onDone: (String) -> Unit) {
         isLoading = true
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             val newFilePath = zipFileHolder.extractForPreview()
             isLoading = false
             onDone(newFilePath)
         }
     }
 
-    class ApkDialog {
-        var showApkDialog by mutableStateOf(false)
-            private set
-        var apkFile: LocalFileHolder? = null
-            private set
-
-        fun show(file: LocalFileHolder) {
-            apkFile = file
-            showApkDialog = true
-        }
-
-        fun hide() {
-            showApkDialog = false
-        }
-    }
-
-    class FileOptionsDialog {
-        var showFileOptionsDialog by mutableStateOf(false)
-            private set
-        var targetFile: ContentHolder? = null
-            private set
-
-        fun show(file: ContentHolder) {
+    fun toggleApkDialog(file: LocalFileHolder?) {
+        if (file != null) {
             targetFile = file
-            showFileOptionsDialog = true
-        }
-
-        fun hide() {
-            showFileOptionsDialog = false
+            _dialogsState.value = _dialogsState.value.copy(showApkDialog = true)
+        } else {
+            targetFile = null
+            _dialogsState.value = _dialogsState.value.copy(showApkDialog = false)
         }
     }
 
-    class OpenWithDialog {
-        var showOpenWithDialog by mutableStateOf(false)
-            private set
-        var targetFile: LocalFileHolder? = null
-            private set
-
-        fun show(file: LocalFileHolder) {
+    fun toggleFileOptionsMenu(file: ContentHolder?, clear: Boolean = true) {
+        if (file != null) {
             targetFile = file
-            showOpenWithDialog = true
-        }
-
-        fun hide() {
-            showOpenWithDialog = false
-        }
-    }
-
-    class NewZipFileDialog {
-        var show by mutableStateOf(false)
-            private set
-        var task: CompressTask? = null
-            private set
-
-        fun show(task: CompressTask) {
-            this.task = task
-            show = true
-        }
-
-        fun hide() {
-            show = false
+            _dialogsState.value = _dialogsState.value.copy(showFileOptionsDialog = true)
+        } else {
+            if (clear) targetFile = null
+            _dialogsState.value = _dialogsState.value.copy(showFileOptionsDialog = false)
         }
     }
 
-    class RenameDialog {
-        var show by mutableStateOf(false)
-            private set
-        var targetContent: ContentHolder? = null
-            private set
-
-        fun show(content: ContentHolder) {
-            targetContent = content
-            show = true
-        }
-
-        fun hide() {
-            show = false
+    fun toggleCompressTaskDialog(task: CompressTask?) {
+        if (task != null) {
+            compressTaskHolder = task
+            _dialogsState.value = _dialogsState.value.copy(showNewZipFileDialog = true)
+        } else {
+            compressTaskHolder = null
+            _dialogsState.value = _dialogsState.value.copy(showNewZipFileDialog = false)
         }
     }
 
-    class Search {
+    fun toggleBookmarksDialog(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showBookmarkDialog = show)
+    }
+
+    fun toggleDeleteConfirmationDialog(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showConfirmDeleteDialog = show)
+    }
+
+    fun toggleCreateNewFileDialog(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showCreateNewFileDialog = show)
+    }
+
+    fun toggleTasksPanel(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showTasksPanel = show)
+    }
+
+    fun toggleSortingMenu(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showSortingMenu = show)
+    }
+
+    fun toggleSearchPenal(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showSearchPenal = show)
+    }
+
+    fun toggleRenameDialog(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showRenameDialog = show)
+    }
+
+    fun toggleOpenWithDialog(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showOpenWithDialog = show)
+    }
+
+    fun toggleFilePropertiesDialog(show: Boolean) {
+        _dialogsState.value = _dialogsState.value.copy(showFileProperties = show)
+    }
+
+    fun highlight(vararg paths: String) {
+        highlightedFiles.apply {
+            clear()
+            addAll(paths)
+        }
+    }
+
+    class Searcher {
         var searchQuery by mutableStateOf(emptyString)
         var searchResults = mutableStateListOf<ContentHolder>()
     }

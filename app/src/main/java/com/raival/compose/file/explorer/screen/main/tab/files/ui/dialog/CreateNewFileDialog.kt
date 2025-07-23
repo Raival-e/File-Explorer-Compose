@@ -39,8 +39,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun CreateNewFileDialog(tab: FilesTab) {
-    if (tab.showCreateNewFileDialog) {
+fun CreateNewFileDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         var isOpenFileDirectly by remember { mutableStateOf(false) }
         val listContent by remember(tab.activeFolderContent) {
             mutableStateOf(tab.activeFolderContent.map { it.displayName }.toTypedArray())
@@ -61,7 +65,7 @@ fun CreateNewFileDialog(tab: FilesTab) {
         }
 
         Dialog(
-            onDismissRequest = { tab.showCreateNewFileDialog = false },
+            onDismissRequest = onDismissRequest,
         ) {
             Card(
                 shape = RoundedCornerShape(6.dp),
@@ -129,7 +133,7 @@ fun CreateNewFileDialog(tab: FilesTab) {
                                 if (newNameInput.isValidAsFileName()) {
                                     val similarFile = tab.activeFolder.findFile(newNameInput)
                                     if (similarFile == null) {
-                                        tab.showCreateNewFileDialog = false
+                                        onDismissRequest()
                                         tab.isLoading = true
                                         CoroutineScope(Dispatchers.IO).launch {
                                             tab.activeFolder.createSubFile(newNameInput) { newFile ->
@@ -163,7 +167,7 @@ fun CreateNewFileDialog(tab: FilesTab) {
                                 if (newNameInput.isValidAsFileName()) {
                                     val similarFile = tab.activeFolder.findFile(newNameInput)
                                     if (similarFile == null) {
-                                        tab.showCreateNewFileDialog = false
+                                        onDismissRequest()
                                         tab.isLoading = true
                                         CoroutineScope(Dispatchers.IO).launch {
                                             tab.activeFolder.createSubFolder(newNameInput) { newFile ->

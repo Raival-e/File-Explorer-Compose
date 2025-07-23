@@ -70,15 +70,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun RenameDialog(tab: FilesTab) {
-    if (tab.renameDialog.show
-        && tab.selectedFiles.isNotEmpty()
-        && tab.renameDialog.targetContent != null
-    ) {
+fun RenameDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         if (tab.selectedFiles.size == 1) {
-            val target by remember {
-                mutableStateOf(tab.renameDialog.targetContent!!)
-            }
+            val target by remember { mutableStateOf(tab.targetFile!!) }
             val listContent by remember {
                 mutableStateOf(tab.activeFolderContent.map { it.displayName }.toTypedArray())
             }
@@ -99,7 +98,7 @@ fun RenameDialog(tab: FilesTab) {
             }
 
             Dialog(
-                onDismissRequest = { tab.renameDialog.hide() },
+                onDismissRequest = onDismissRequest,
             ) {
                 Card(
                     shape = RoundedCornerShape(6.dp),
@@ -157,7 +156,7 @@ fun RenameDialog(tab: FilesTab) {
                             OutlinedButton(
                                 modifier = Modifier.weight(1f),
                                 onClick = {
-                                    tab.renameDialog.hide()
+                                    onDismissRequest()
                                 },
                                 shape = RoundedCornerShape(6.dp)
                             ) {
@@ -173,7 +172,7 @@ fun RenameDialog(tab: FilesTab) {
                                     if (newNameInput.isValidAsFileName()) {
                                         val similarFile = tab.activeFolder.findFile(newNameInput)
                                         if (similarFile == null) {
-                                            tab.renameDialog.hide()
+                                            onDismissRequest()
                                             CoroutineScope(Dispatchers.IO).launch {
                                                 globalClass.taskManager.addTaskAndRun(
                                                     task = RenameTask(sourceContent = tab.selectedFiles.values.toList()),
@@ -205,13 +204,19 @@ fun RenameDialog(tab: FilesTab) {
                 }
             }
         } else {
-            AdvanceRenameDialog(tab)
+            AdvanceRenameDialog(
+                tab = tab,
+                onDismissRequest = onDismissRequest
+            )
         }
     }
 }
 
 @Composable
-fun AdvanceRenameDialog(tab: FilesTab) {
+fun AdvanceRenameDialog(
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
     val useDarkIcons = !isSystemInDarkTheme()
     val originalList =
         remember { tab.selectedFiles.values.map { it.displayName to it }.toTypedArray() }
@@ -269,7 +274,7 @@ fun AdvanceRenameDialog(tab: FilesTab) {
     }
 
     Dialog(
-        onDismissRequest = { tab.renameDialog.hide() },
+        onDismissRequest = onDismissRequest,
         properties = DialogProperties(
             dismissOnClickOutside = true,
             decorFitsSystemWindows = false,
@@ -547,7 +552,7 @@ fun AdvanceRenameDialog(tab: FilesTab) {
                 ) {
                     OutlinedButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { tab.renameDialog.hide() },
+                        onClick = onDismissRequest,
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Text(
@@ -560,7 +565,7 @@ fun AdvanceRenameDialog(tab: FilesTab) {
                         modifier = Modifier.weight(1f),
                         onClick = {
                             if (isReady && conflicts.isEmpty()) {
-                                tab.renameDialog.hide()
+                                onDismissRequest()
                                 CoroutineScope(Dispatchers.IO).launch {
                                     globalClass.taskManager.addTaskAndRun(
                                         task = RenameTask(tab.selectedFiles.values.toList()),

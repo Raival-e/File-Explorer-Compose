@@ -47,206 +47,209 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod
 
 @Composable
 fun FileSortingMenuDialog(
+    show: Boolean,
     tab: FilesTab,
     reloadFiles: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
-    val prefs = globalClass.preferencesManager
-    val specificOptions = prefs.getSortingPrefsFor(tab.activeFolder)
+    if (show) {
+        val prefs = globalClass.preferencesManager
+        val specificOptions = prefs.getSortingPrefsFor(tab.activeFolder)
 
-    var applyForThisFileOnly by remember(tab.activeFolder.uniquePath) {
-        mutableStateOf(specificOptions.applyForThisFileOnly)
-    }
-    var sortingMethod by remember(tab.activeFolder.uniquePath) {
-        mutableIntStateOf(specificOptions.sortMethod)
-    }
-    var showFoldersFirst by remember(tab.activeFolder.uniquePath) {
-        mutableStateOf(specificOptions.showFoldersFirst)
-    }
-    var reverseOrder by remember(tab.activeFolder.uniquePath) {
-        mutableStateOf(specificOptions.reverseSorting)
-    }
+        var applyForThisFileOnly by remember(tab.activeFolder.uniquePath) {
+            mutableStateOf(specificOptions.applyForThisFileOnly)
+        }
+        var sortingMethod by remember(tab.activeFolder.uniquePath) {
+            mutableIntStateOf(specificOptions.sortMethod)
+        }
+        var showFoldersFirst by remember(tab.activeFolder.uniquePath) {
+            mutableStateOf(specificOptions.showFoldersFirst)
+        }
+        var reverseOrder by remember(tab.activeFolder.uniquePath) {
+            mutableStateOf(specificOptions.reverseSorting)
+        }
 
-    fun updateForThisFolder() {
-        prefs.setSortingPrefsFor(
-            content = tab.activeFolder,
-            prefs = FileSortingPrefs(
-                sortMethod = sortingMethod,
-                showFoldersFirst = showFoldersFirst,
-                reverseSorting = reverseOrder,
-                applyForThisFileOnly = true
+        fun updateForThisFolder() {
+            prefs.setSortingPrefsFor(
+                content = tab.activeFolder,
+                prefs = FileSortingPrefs(
+                    sortMethod = sortingMethod,
+                    showFoldersFirst = showFoldersFirst,
+                    reverseSorting = reverseOrder,
+                    applyForThisFileOnly = true
+                )
             )
-        )
-    }
+        }
 
-    BottomSheetDialog(
-        onDismissRequest = { onDismissRequest() }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp)
+        BottomSheetDialog(
+            onDismissRequest = { onDismissRequest() }
         ) {
-            // Header
-            Row(
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 16.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.SortByAlpha,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(24.dp)
-                )
-                Space(8.dp)
-                Text(
-                    text = stringResource(R.string.sort_by),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
-            // Scope Selection Card
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                SwitchSettingItem(
-                    icon = Icons.Rounded.ArrowDownward,
-                    title = stringResource(R.string.apply_to_this_folder_only),
-                    checked = applyForThisFileOnly,
-                    onCheckedChange = { applyForThisFileOnly = it }
-                )
-            }
-
-            Space(size = 24.dp)
-
-            // Sort Method Section
-            Text(
-                text = "Sort Method",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(
+                // Header
+                Row(
                     modifier = Modifier
-                        .selectableGroup()
-                        .padding(8.dp),
-                    //verticalArrangement = Arrangement.spacedBy(8.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RadioButtonItem(
-                        icon = Icons.Rounded.SortByAlpha,
-                        text = stringResource(R.string.name_a_z),
-                        selected = sortingMethod == SortingMethod.SORT_BY_NAME,
-                        onClick = { sortingMethod = SortingMethod.SORT_BY_NAME }
+                    Icon(
+                        imageVector = Icons.Rounded.SortByAlpha,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
                     )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
-                    )
-
-                    RadioButtonItem(
-                        icon = Icons.Rounded.DateRange,
-                        text = stringResource(R.string.date_newer),
-                        selected = sortingMethod == SortingMethod.SORT_BY_DATE,
-                        onClick = { sortingMethod = SortingMethod.SORT_BY_DATE }
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
-                    )
-
-                    RadioButtonItem(
-                        icon = Icons.AutoMirrored.Rounded.Sort,
-                        text = stringResource(R.string.size_smaller),
-                        selected = sortingMethod == SortingMethod.SORT_BY_SIZE,
-                        onClick = { sortingMethod = SortingMethod.SORT_BY_SIZE }
+                    Space(8.dp)
+                    Text(
+                        text = stringResource(R.string.sort_by),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Medium
                     )
                 }
-            }
 
-            Space(size = 24.dp)
-
-            // Display Options Section
-            Text(
-                text = "Display Options",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(modifier = Modifier.padding(8.dp)) {
+                // Scope Selection Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
                     SwitchSettingItem(
-                        icon = Icons.Rounded.Folder,
-                        title = stringResource(R.string.folders_first),
-                        checked = showFoldersFirst,
-                        onCheckedChange = { showFoldersFirst = it }
-                    )
-
-                    HorizontalDivider(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
-                    )
-
-                    SwitchSettingItem(
-                        icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
-                        title = stringResource(R.string.reverse),
-                        checked = reverseOrder,
-                        onCheckedChange = { reverseOrder = it }
+                        icon = Icons.Rounded.ArrowDownward,
+                        title = stringResource(R.string.apply_to_this_folder_only),
+                        checked = applyForThisFileOnly,
+                        onCheckedChange = { applyForThisFileOnly = it }
                     )
                 }
-            }
 
-            Space(size = 32.dp)
+                Space(size = 24.dp)
 
-            // Apply Button
-            FilledTonalButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    if (applyForThisFileOnly) {
-                        updateForThisFolder()
-                    } else {
-                        prefs.showFoldersFirst = showFoldersFirst
-                        prefs.reverse = reverseOrder
-                        prefs.defaultSortMethod = sortingMethod
-                    }
-
-                    reloadFiles()
-                    onDismissRequest()
-                }
-            ) {
+                // Sort Method Section
                 Text(
-                    text = stringResource(R.string.apply),
-                    style = MaterialTheme.typography.labelLarge
+                    text = "Sort Method",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 12.dp)
                 )
-            }
 
-            Space(size = 8.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .selectableGroup()
+                            .padding(8.dp),
+                        //verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        RadioButtonItem(
+                            icon = Icons.Rounded.SortByAlpha,
+                            text = stringResource(R.string.name_a_z),
+                            selected = sortingMethod == SortingMethod.SORT_BY_NAME,
+                            onClick = { sortingMethod = SortingMethod.SORT_BY_NAME }
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+                        )
+
+                        RadioButtonItem(
+                            icon = Icons.Rounded.DateRange,
+                            text = stringResource(R.string.date_newer),
+                            selected = sortingMethod == SortingMethod.SORT_BY_DATE,
+                            onClick = { sortingMethod = SortingMethod.SORT_BY_DATE }
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+                        )
+
+                        RadioButtonItem(
+                            icon = Icons.AutoMirrored.Rounded.Sort,
+                            text = stringResource(R.string.size_smaller),
+                            selected = sortingMethod == SortingMethod.SORT_BY_SIZE,
+                            onClick = { sortingMethod = SortingMethod.SORT_BY_SIZE }
+                        )
+                    }
+                }
+
+                Space(size = 24.dp)
+
+                // Display Options Section
+                Text(
+                    text = "Display Options",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        SwitchSettingItem(
+                            icon = Icons.Rounded.Folder,
+                            title = stringResource(R.string.folders_first),
+                            checked = showFoldersFirst,
+                            onCheckedChange = { showFoldersFirst = it }
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+                        )
+
+                        SwitchSettingItem(
+                            icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
+                            title = stringResource(R.string.reverse),
+                            checked = reverseOrder,
+                            onCheckedChange = { reverseOrder = it }
+                        )
+                    }
+                }
+
+                Space(size = 32.dp)
+
+                // Apply Button
+                FilledTonalButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (applyForThisFileOnly) {
+                            updateForThisFolder()
+                        } else {
+                            prefs.showFoldersFirst = showFoldersFirst
+                            prefs.reverse = reverseOrder
+                            prefs.defaultSortMethod = sortingMethod
+                        }
+
+                        reloadFiles()
+                        onDismissRequest()
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.apply),
+                        style = MaterialTheme.typography.labelLarge
+                    )
+                }
+
+                Space(size = 8.dp)
+            }
         }
     }
 }

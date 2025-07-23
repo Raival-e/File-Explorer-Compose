@@ -6,6 +6,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,8 +29,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
-fun DeleteConfirmationDialog(tab: FilesTab) {
-    if (tab.showConfirmDeleteDialog) {
+fun DeleteConfirmationDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val preferencesManager = globalClass.preferencesManager
 
         var moveToRecycleBin by remember {
@@ -46,9 +51,7 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
             mutableStateOf(tab.selectedFiles.map { it.value }.toList())
         }
 
-        fun onDismissRequest() {
-            tab.showConfirmDeleteDialog = false
-        }
+        val bottomOptionsBarState = tab.bottomOptionsBarState.collectAsState()
 
         AlertDialog(
             onDismissRequest = { onDismissRequest() },
@@ -63,7 +66,7 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
                                 moveToRecycleBin
                         }
                         coroutineScope.launch {
-                            if (!tab.showEmptyRecycleBin && moveToRecycleBin) {
+                            if (!bottomOptionsBarState.value.showEmptyRecycleBinButton && moveToRecycleBin) {
                                 globalClass.recycleBinDir.createSubFolder(
                                     System.currentTimeMillis().toString()
                                 ) { newDir ->
@@ -104,7 +107,7 @@ fun DeleteConfirmationDialog(tab: FilesTab) {
                         text = stringResource(id = R.string.delete_confirmation_message)
                     )
 
-                    if (!tab.showEmptyRecycleBin) {
+                    if (!bottomOptionsBarState.value.showEmptyRecycleBinButton) {
                         Space(size = 8.dp)
 
                         CheckableText(

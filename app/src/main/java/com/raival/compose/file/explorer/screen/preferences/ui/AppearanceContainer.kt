@@ -65,6 +65,16 @@ fun AppearanceContainer() {
             "yyyy-MM-dd",
             "dd-MM-yyyy HH:mm:ss",
             "dd-MM-yyyy",
+            "MM/dd/yyyy HH:mm:ss",
+            "MM/dd/yyyy",
+            "dd/MM/yyyy HH:mm:ss",
+            "dd/MM/yyyy",
+            "MMM dd, yyyy HH:mm:ss",
+            "MMM dd, yyyy",
+            "MMMM dd, yyyy",
+            "EEE, MMM dd, yyyy",
+            "yyyy/MM/dd HH:mm:ss",
+            "yyyy/MM/dd"
         )
 
         PreferenceItem(

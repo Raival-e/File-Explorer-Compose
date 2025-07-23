@@ -20,7 +20,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
-import java.io.File
 import java.io.FileInputStream
 import java.math.BigInteger
 import java.nio.file.Files
@@ -111,7 +110,7 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
             it.copy(
                 details = PropertiesState.SingleContentProperties(
                     name = file.displayName.ifEmpty { globalClass.getString(R.string.root) },
-                    path = file.getParent()?.uniquePath ?: File.separator,
+                    path = file.uniquePath,
                     type = determineFileType(file),
                     lastModified = file.lastModified.toFormattedDate(),
                     size = if (file.isFolder) globalClass.getString(R.string.calculating) else file.size.toFormattedSize(),

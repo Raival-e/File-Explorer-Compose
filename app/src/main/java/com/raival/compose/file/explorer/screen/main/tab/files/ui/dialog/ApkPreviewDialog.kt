@@ -79,12 +79,14 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.ApkInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ApkPreviewDialog(tab: FilesTab) {
-    val apkDialog = tab.apkDialog
-
-    if (apkDialog.showApkDialog && apkDialog.apkFile != null) {
+fun ApkPreviewDialog(
+    show: Boolean,
+    tab: FilesTab,
+    onDismissRequest: () -> Unit
+) {
+    if (show) {
         val context = LocalContext.current
-        val apkFile = apkDialog.apkFile!!
+        val apkFile = tab.targetFile!!
         val packageManager = globalClass.packageManager
 
         var apkInfo by remember { mutableStateOf<ApkInfo?>(null) }
@@ -153,7 +155,7 @@ fun ApkPreviewDialog(tab: FilesTab) {
             }
         }
 
-        BottomSheetDialog(onDismissRequest = { apkDialog.hide() }) {
+        BottomSheetDialog(onDismissRequest = onDismissRequest) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -259,13 +261,13 @@ fun ApkPreviewDialog(tab: FilesTab) {
                         ) {
                             OutlinedButton(
                                 onClick = {
-                                    apkDialog.hide()
                                     apkFile.open(
                                         context = context,
                                         anonymous = false,
                                         skipSupportedExtensions = false,
                                         customMimeType = "application/zip"
                                     )
+                                    onDismissRequest()
                                 },
                                 modifier = Modifier.weight(1f)
                             ) {
@@ -280,13 +282,13 @@ fun ApkPreviewDialog(tab: FilesTab) {
 
                             Button(
                                 onClick = {
-                                    apkDialog.hide()
                                     apkFile.open(
                                         context,
                                         anonymous = false,
                                         skipSupportedExtensions = true,
                                         customMimeType = null
                                     )
+                                    onDismissRequest()
                                 },
                                 modifier = Modifier.weight(1f)
                             ) {
