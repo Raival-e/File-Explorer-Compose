@@ -41,6 +41,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import org.eclipse.tm4e.core.registry.IThemeSource
 import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.exitProcess
 
 class App : Application(), coil3.SingletonImageLoader.Factory {
@@ -70,8 +71,8 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
                 Environment.getExternalStorageDirectory(),
                 ".prism/bin"
             ).apply { mkdirs() })
-    @Volatile
-    private var uid = 0
+
+    private var uid = AtomicInteger(0)
 
     val cleanOnExitDir
         get() = LocalFileHolder(
@@ -169,7 +170,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     }
 
 
-    fun generateUid() = uid++
+    fun generateUid() = uid.andIncrement
 
     override fun newImageLoader(context: PlatformContext): ImageLoader {
         return ImageLoader(context)

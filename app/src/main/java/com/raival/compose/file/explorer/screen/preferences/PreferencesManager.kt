@@ -48,7 +48,7 @@ class PreferencesManager {
 
     var dateTimeFormat by prefMutableState(
         keyName = "dateTimeFormat",
-        defaultValue = "MMM dd, yyyy HH:mm:ss",
+        defaultValue = "MMM dd, yyyy HH:mm",
         getPreferencesKey = { stringPreferencesKey(it) }
     )
 

@@ -652,8 +652,17 @@ fun Int.isMultipleOf100(): Boolean {
 }
 
 @SuppressLint("SimpleDateFormat")
-fun Long.toFormattedDate(): String =
-    SimpleDateFormat(globalClass.preferencesManager.dateTimeFormat).format(this)
+fun Long.toFormattedDate(
+    hideSeconds: Boolean = false,
+    customFormat: String? = null
+): String {
+    val format = when {
+        customFormat != null -> customFormat
+        hideSeconds -> globalClass.preferencesManager.dateTimeFormat.replace(":ss", "")
+        else -> globalClass.preferencesManager.dateTimeFormat
+    }
+    return SimpleDateFormat(format).format(this)
+}
 
 fun Long.toFormattedSize(): String {
     if (this <= 0) return "0 B"

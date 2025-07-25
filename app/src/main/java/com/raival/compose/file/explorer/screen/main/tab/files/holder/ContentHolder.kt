@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.aiFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
@@ -161,6 +162,10 @@ abstract class ContentHolder {
                 }
             }
         }
+    }
+
+    fun getLastModifiedDate(): String {
+        return lastModified.toFormattedDate(hideSeconds = true)
     }
 
     @DrawableRes

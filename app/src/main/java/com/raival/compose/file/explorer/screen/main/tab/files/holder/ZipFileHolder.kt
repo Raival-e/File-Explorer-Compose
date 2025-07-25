@@ -6,7 +6,6 @@ import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.showMsg
-import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
@@ -187,7 +186,7 @@ class ZipFileHolder(
     private suspend fun createDetails(): String {
         val separator = " | "
         return buildString {
-            append(node.lastModified.toFormattedDate())
+            append(getLastModifiedDate())
             if (node.isDirectory) {
                 if (globalClass.preferencesManager.showFolderContentCount) {
                     append(separator)

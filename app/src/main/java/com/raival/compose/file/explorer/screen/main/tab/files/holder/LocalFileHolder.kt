@@ -13,7 +13,6 @@ import com.raival.compose.file.explorer.common.conditions
 import com.raival.compose.file.explorer.common.drawableToBitmap
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.hasParent
-import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType
@@ -63,7 +62,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         if (details.isNotEmpty()) return details
 
         return buildString {
-            append(lastModified.toFormattedDate())
+            append(getLastModifiedDate())
             if (file.isDirectory) {
                 if (globalClass.preferencesManager.showFolderContentCount && file.canRead()) {
                     append(separator)
