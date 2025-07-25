@@ -31,7 +31,7 @@ class AudioFileDecoder(
                     )
                 } else null
             } else null
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             null
         }
     }

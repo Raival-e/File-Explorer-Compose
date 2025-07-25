@@ -45,6 +45,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.fromJson
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.screen.main.startup.StartupTab
@@ -120,7 +121,7 @@ fun TabLayout(
             itemsIndexed(list, key = { _, item -> item }) { index, id ->
                 tabs.find { it.id == id }?.let { tab ->
                     ReorderableItem(reorderableLazyListState, key = tab.id) { isDragged ->
-                        if (isDragged && draggedItem != id) {
+                        if (isDragged && draggedItem isNot id) {
                             draggedItem = id
                         } else if (!isDragged && draggedItem == id) {
                             draggedItem = -1

@@ -156,7 +156,7 @@ class TextEditorManager {
                 onFileNotFound()
             }
 
-            if (activeFile.lastModified != getFileInstance()?.lastModified) {
+            if (activeFile.lastModified isNot getFileInstance()?.lastModified) {
                 scope.launch {
                     val newText = activeFile.readText()
                     showSourceFileWarningDialog { onSourceReload(newText) }
@@ -439,8 +439,8 @@ class TextEditorManager {
             val fileInstance = getFileInstance(bringToTop = true)
 
             if (fileInstance isNot null) {
-                val isSourceChanged = fileInstance!!.lastModified != activeFile.lastModified
-                val isUnsaved = fileInstance.content.toString() != text
+                val isSourceChanged = fileInstance!!.lastModified isNot activeFile.lastModified
+                val isUnsaved = fileInstance.content.toString() isNot text
 
                 fileInstance.requireSave = isSourceChanged || isUnsaved
                 requireSaveCurrentFile = fileInstance.requireSave

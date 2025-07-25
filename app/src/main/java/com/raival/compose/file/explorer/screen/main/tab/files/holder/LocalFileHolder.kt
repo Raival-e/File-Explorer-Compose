@@ -9,14 +9,16 @@ import com.anggrayudi.storage.file.getBasePath
 import com.anggrayudi.storage.file.mimeType
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.conditions
 import com.raival.compose.file.explorer.common.drawableToBitmap
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.hasParent
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.codeFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.editableFileType
 import kotlinx.coroutines.runBlocking
 import java.io.File
 
@@ -177,7 +179,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
     fun exists() = runBlocking { isValid() }
 
-    fun hasSourceChanged() = timestamp != -1L && lastModified != timestamp
+    fun hasSourceChanged() = timestamp isNot -1L && lastModified isNot timestamp
 
     fun resetCachedTimestamp() {
         timestamp = lastModified
@@ -246,11 +248,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
     fun readText() = file.readText()
 
     private fun handleSupportedFiles(context: Context): Boolean {
-        if (FileMimeType.conditions {
-                codeFileType.contains(extension) || editableFileType.contains(
-                    extension
-                )
-            }) {
+        if (codeFileType.contains(extension) || editableFileType.contains(extension)) {
             globalClass.textEditorManager.openTextEditor(
                 this,
                 context

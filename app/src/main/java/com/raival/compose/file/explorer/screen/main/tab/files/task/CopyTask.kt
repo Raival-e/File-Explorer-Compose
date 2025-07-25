@@ -4,6 +4,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.listFilesAndEmptyDirs
 import com.raival.compose.file.explorer.common.orIf
 import com.raival.compose.file.explorer.common.toFormattedDate
@@ -335,9 +336,9 @@ class CopyTask(
                 return
             }
 
-            if (item.status != TaskContentStatus.PENDING
-                && item.status != TaskContentStatus.REPLACE
-                && item.status != TaskContentStatus.CONFLICT
+            if (item.status isNot TaskContentStatus.PENDING
+                && item.status isNot TaskContentStatus.REPLACE
+                && item.status isNot TaskContentStatus.CONFLICT
             ) {
                 return@forEachIndexed
             }
@@ -449,9 +450,9 @@ class CopyTask(
                         return
                     }
 
-                    if (item.status != TaskContentStatus.PENDING
-                        && item.status != TaskContentStatus.REPLACE
-                        && item.status != TaskContentStatus.CONFLICT
+                    if (item.status isNot TaskContentStatus.PENDING
+                        && item.status isNot TaskContentStatus.REPLACE
+                        && item.status isNot TaskContentStatus.CONFLICT
                     ) {
                         return@forEachIndexed
                     }
@@ -541,9 +542,9 @@ class CopyTask(
                         return
                     }
 
-                    if (item.status != TaskContentStatus.PENDING
-                        && item.status != TaskContentStatus.REPLACE
-                        && item.status != TaskContentStatus.CONFLICT
+                    if (item.status isNot TaskContentStatus.PENDING
+                        && item.status isNot TaskContentStatus.REPLACE
+                        && item.status isNot TaskContentStatus.CONFLICT
                     ) {
                         return@forEachIndexed
                     }
@@ -634,9 +635,9 @@ class CopyTask(
                             return
                         }
 
-                        if (item.status != TaskContentStatus.PENDING
-                            && item.status != TaskContentStatus.REPLACE
-                            && item.status != TaskContentStatus.CONFLICT
+                        if (item.status isNot TaskContentStatus.PENDING
+                            && item.status isNot TaskContentStatus.REPLACE
+                            && item.status isNot TaskContentStatus.CONFLICT
                         ) {
                             return@forEachIndexed
                         }

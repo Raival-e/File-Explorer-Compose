@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.screen.main.tab.files.service.ContentOperationService.Companion.startNewBackgroundTask
 import kotlinx.coroutines.CoroutineScope
@@ -81,7 +82,7 @@ class TaskManager {
             return
         }
 
-        if (task.getCurrentStatus() != TaskStatus.PENDING) {
+        if (task.getCurrentStatus() isNot TaskStatus.PENDING) {
             showMsg(globalClass.getString(R.string.task_is_not_in_pending_state))
             return
         }
@@ -101,9 +102,9 @@ class TaskManager {
 
         val currentStatus = task.getCurrentStatus()
 
-        if (currentStatus != TaskStatus.CONFLICT
-            && currentStatus != TaskStatus.FAILED
-            && currentStatus != TaskStatus.PAUSED
+        if (currentStatus isNot TaskStatus.CONFLICT
+            && currentStatus isNot TaskStatus.FAILED
+            && currentStatus isNot TaskStatus.PAUSED
         ) {
             showMsg(
                 globalClass.getString(

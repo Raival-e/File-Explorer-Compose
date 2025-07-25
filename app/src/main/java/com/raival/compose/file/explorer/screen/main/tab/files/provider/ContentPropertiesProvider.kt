@@ -3,6 +3,7 @@ package com.raival.compose.file.explorer.screen.main.tab.files.provider
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
@@ -364,7 +365,7 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                 FileInputStream(file.file).use { fis ->
                     val buffer = ByteArray(8192)
                     var read: Int
-                    while (fis.read(buffer).also { read = it } != -1) {
+                    while (fis.read(buffer).also { read = it } isNot -1) {
                         if (!currentCoroutineContext().isActive) break
                         md.update(buffer, 0, read)
                         bytesProcessed += read
@@ -400,7 +401,7 @@ class ContentPropertiesProvider(private val contentHolders: List<ContentHolder>)
                 FileInputStream(file.file).use { fis ->
                     val buffer = ByteArray(8192)
                     var read: Int
-                    while (fis.read(buffer).also { read = it } != -1) {
+                    while (fis.read(buffer).also { read = it } isNot -1) {
                         if (!currentCoroutineContext().isActive) break
                         md.update(buffer, 0, read)
                         bytesProcessed += read

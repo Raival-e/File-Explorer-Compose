@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.screen.viewer.pdf.PdfViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.pdf.misc.PdfPageHolder
 import my.nanihadesuka.compose.InternalLazyColumnScrollbar
@@ -109,7 +110,7 @@ fun PdfViewerContent(instance: PdfViewerInstance, onBackPress: () -> Unit) {
 
         when {
             isLoading -> LoadingScreen()
-            errorMessage != null -> ErrorScreen(
+            errorMessage isNot null -> ErrorScreen(
                 message = errorMessage!!,
                 onClose = onBackPress
             )

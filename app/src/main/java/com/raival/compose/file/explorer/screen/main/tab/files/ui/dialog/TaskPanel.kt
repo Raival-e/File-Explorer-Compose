@@ -69,6 +69,7 @@ import com.kevinnzou.compose.swipebox.SwipeBox
 import com.kevinnzou.compose.swipebox.SwipeDirection
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
@@ -105,23 +106,23 @@ fun TaskPanel(
             globalClass.taskManager.validateTasks()
 
             while (tab.dialogsState.value.showTasksPanel) {
-                if (globalClass.taskManager.runningTasks != runningTasks) {
+                if (globalClass.taskManager.runningTasks isNot runningTasks) {
                     runningTasks.clear()
                     runningTasks.addAll(globalClass.taskManager.runningTasks)
                 }
-                if (globalClass.taskManager.pausedTasks != pausedTasks) {
+                if (globalClass.taskManager.pausedTasks isNot pausedTasks) {
                     pausedTasks.clear()
                     pausedTasks.addAll(globalClass.taskManager.pausedTasks)
                 }
-                if (globalClass.taskManager.failedTasks != failedTasks) {
+                if (globalClass.taskManager.failedTasks isNot failedTasks) {
                     failedTasks.clear()
                     failedTasks.addAll(globalClass.taskManager.failedTasks)
                 }
-                if (globalClass.taskManager.pendingTasks != pendingTasks) {
+                if (globalClass.taskManager.pendingTasks isNot pendingTasks) {
                     pendingTasks.clear()
                     pendingTasks.addAll(globalClass.taskManager.pendingTasks)
                 }
-                if (globalClass.taskManager.invalidTasks != invalidTasks) {
+                if (globalClass.taskManager.invalidTasks isNot invalidTasks) {
                     invalidTasks.clear()
                     invalidTasks.addAll(globalClass.taskManager.invalidTasks)
                 }

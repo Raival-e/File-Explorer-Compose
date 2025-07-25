@@ -58,6 +58,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.isValidAsFileName
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
@@ -190,7 +191,7 @@ fun RenameDialog(
                                         }
                                     }
                                 },
-                                enabled = error.isEmpty() && newNameInput.isNotBlank() && newNameInput != target.displayName,
+                                enabled = error.isEmpty() && newNameInput.isNotBlank() && newNameInput isNot target.displayName,
                                 shape = RoundedCornerShape(6.dp)
                             ) {
                                 Text(
@@ -535,7 +536,7 @@ fun AdvanceRenameDialog(
                                         }
                                     }
                                 }
-                                if (index != currentList.lastIndex) {
+                                if (index isNot currentList.lastIndex) {
                                     Space(8.dp)
                                     HorizontalDivider()
                                 }

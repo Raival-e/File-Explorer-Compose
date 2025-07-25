@@ -137,7 +137,7 @@ fun Modifier.block(
         .padding(padding)
 }
 
-fun ColorScheme.outlineVariant(
+private fun ColorScheme.outlineVariant(
     luminance: Float = 0.3f,
     onTopOf: Color = surfaceColorAtElevation(3.dp)
 ) = onSecondaryContainer
@@ -173,16 +173,6 @@ fun String.isValidAsFileName() = !conditions {
             || contains("\"") || contains("<") || contains(">")
             || contains("|")
 } && isNotBlank()
-
-fun String.equals(vararg condition: String): Boolean {
-    condition.forEach { if (this == it) return true }
-    return false
-}
-
-fun String.endsWithOneOf(vararg condition: String): Boolean {
-    condition.forEach { if (this.endsWith(it)) return true }
-    return false
-}
 
 fun String.copyToClipboard() {
     (globalClass.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(
@@ -261,21 +251,6 @@ fun String.asCodeEditorCursorCoordinates(): Pair<Int, Int> {
 // COLLECTION EXTENSIONS
 // =============================================================================
 
-fun <T> ArrayList<T>.addIf(item: T, condition: T.() -> Boolean) {
-    if (condition(item)) {
-        add(item)
-    }
-}
-
-fun <T> List<T>.getIf(condition: T.() -> Boolean): T? {
-    forEach {
-        if (condition(it)) {
-            return it
-        }
-    }
-    return null
-}
-
 fun <T> List<T>.getIndexIf(condition: T.() -> Boolean): Int {
     forEachIndexed { index, item ->
         if (condition(item)) {
@@ -283,10 +258,6 @@ fun <T> List<T>.getIndexIf(condition: T.() -> Boolean): Int {
         }
     }
     return -1
-}
-
-fun ArrayList<String>.addIfAbsent(toAdd: String) {
-    if (!contains(toAdd)) add(toAdd)
 }
 
 fun <A, B> HashMap<A, B>.removeIf(condition: (A, B) -> Boolean) {
@@ -506,7 +477,7 @@ fun Uri.lastModified(context: Context): Long {
             cursor?.use {
                 if (it.moveToFirst()) {
                     val lastModifiedIndex = it.getColumnIndex(MediaStore.MediaColumns.DATE_MODIFIED)
-                    if (lastModifiedIndex != -1) {
+                    if (lastModifiedIndex isNot -1) {
                         it.getLong(lastModifiedIndex) * 1000L
                     } else {
                         0L
@@ -540,19 +511,19 @@ fun Uri.getUriInfo(context: Context): UriInfo {
             if (it.moveToFirst()) {
                 // Get Display Name
                 val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                if (nameIndex != -1) {
+                if (nameIndex isNot -1) {
                     name = it.getString(nameIndex)
                 }
 
                 // Get Size
                 val sizeIndex = it.getColumnIndex(OpenableColumns.SIZE)
-                if (sizeIndex != -1) {
+                if (sizeIndex isNot -1) {
                     size = it.getLong(sizeIndex)
                 }
 
                 // Get Last Modified (might not be available for all providers)
                 val lastModifiedIndex = it.getColumnIndex(MediaStore.MediaColumns.DATE_MODIFIED)
-                if (lastModifiedIndex != -1) {
+                if (lastModifiedIndex isNot -1) {
                     // The value is in seconds, convert to milliseconds
                     lastModified = it.getLong(lastModifiedIndex) * 1000L
                 }
@@ -561,10 +532,10 @@ fun Uri.getUriInfo(context: Context): UriInfo {
                 // It's most likely to work for MediaStore URIs.
                 try {
                     val pathIndex = it.getColumnIndex(MediaStore.Images.Media.DATA)
-                    if (pathIndex != -1) {
+                    if (pathIndex isNot -1) {
                         path = it.getString(pathIndex)
                     }
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     // The DATA column might not exist for this URI, which is normal.
                     path = null
                 }
@@ -646,10 +617,6 @@ fun Uri.read(): ByteArray {
 // =============================================================================
 // NUMERIC EXTENSIONS
 // =============================================================================
-
-fun Int.isMultipleOf100(): Boolean {
-    return this % 100 == 0
-}
 
 @SuppressLint("SimpleDateFormat")
 fun Long.toFormattedDate(

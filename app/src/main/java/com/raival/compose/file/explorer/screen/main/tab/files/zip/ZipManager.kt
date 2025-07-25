@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.zip
 
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 
@@ -10,7 +11,7 @@ class ZipManager {
     fun checkForSourceChanges(): Boolean {
         var foundChanges = false
         archiveList.values.forEach { zipTree ->
-            if (zipTree.source.lastModified != zipTree.timeStamp || zipTree.checkExtractedFiles()
+            if (zipTree.source.lastModified isNot zipTree.timeStamp || zipTree.checkExtractedFiles()
                     .isNotEmpty()
             ) {
                 foundChanges = true

@@ -8,6 +8,7 @@ import com.anggrayudi.storage.extension.toDocumentFile
 import com.raival.compose.file.explorer.App
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.name
 import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
@@ -107,7 +108,7 @@ class PdfViewerInstance(
         page.recycle()
     }
 
-    fun isValid(): Boolean = pdfRenderer != null
+    fun isValid(): Boolean = pdfRenderer isNot null
 
     override fun onClose() {
         runBlocking {

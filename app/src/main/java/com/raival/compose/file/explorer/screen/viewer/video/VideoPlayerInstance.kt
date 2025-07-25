@@ -8,6 +8,7 @@ import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.name
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.video.model.VideoPlayerState
@@ -86,7 +87,7 @@ class VideoPlayerInstance(
                     _playerState.update { currentState ->
                         currentState.copy(
                         currentPosition = player.currentPosition,
-                        duration = player.duration.takeIf { it != TIME_UNSET } ?: 0L
+                            duration = player.duration.takeIf { it isNot TIME_UNSET } ?: 0L
                         )
                     }
                 }

@@ -82,7 +82,7 @@ class MainActivityManager {
             index
         }.also {
             // Call the proper callbacks on the new selected tab (if it's not the already selected one)
-            if (index != it) {
+            if (index isNot it) {
                 val newSelectedTab = _state.value.tabs[it]
                 if (newSelectedTab.isCreated) newSelectedTab.onTabResumed() else newSelectedTab.onTabStarted()
             }
@@ -92,7 +92,7 @@ class MainActivityManager {
         _state.update {
             it.copy(
                 tabs = _state.value.tabs.filterIndexed { i, _ ->
-                    i != index
+                    i isNot index
                 },
                 selectedTabIndex = newSelectedTabIndex
             )

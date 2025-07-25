@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.block
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 
@@ -73,7 +74,7 @@ fun AppsTabContentView(tab: AppsTab) {
     }
 
     // App Info Dialog
-    if (tab.previewAppDialog != null) {
+    if (tab.previewAppDialog isNot null) {
         AppInfoBottomSheet(
             app = tab.previewAppDialog!!,
             onDismiss = { tab.previewAppDialog = null }

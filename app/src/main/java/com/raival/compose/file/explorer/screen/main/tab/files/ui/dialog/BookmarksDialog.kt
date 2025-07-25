@@ -38,6 +38,7 @@ import com.kevinnzou.compose.swipebox.SwipeDirection
 import com.kevinnzou.compose.swipebox.widget.SwipeIcon
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.trimToLastTwoSegments
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
@@ -65,7 +66,7 @@ fun BookmarksDialog(
                 originalList.map { LocalFileHolder(File(it)) }.filter { it.isValid() }
             )
 
-            if (bookmarks.size != originalList.size) {
+            if (bookmarks.size isNot originalList.size) {
                 globalClass.preferencesManager.bookmarks = bookmarks.map { it.uniquePath }.toSet()
             }
         }

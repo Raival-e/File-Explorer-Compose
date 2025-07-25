@@ -25,6 +25,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.base.BaseActivity
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
@@ -150,14 +151,14 @@ class MainActivity : BaseActivity() {
             }
 
             LaunchedEffect(state.selectedTabIndex) {
-                if (pagerState.currentPage != state.selectedTabIndex) {
+                if (pagerState.currentPage isNot state.selectedTabIndex) {
                     pagerState.scrollToPage(state.selectedTabIndex)
                 }
             }
 
             LaunchedEffect(pagerState.currentPage) {
                 snapshotFlow { pagerState.currentPage }.collect { page ->
-                    if (page != state.selectedTabIndex) {
+                    if (page isNot state.selectedTabIndex) {
                         manager.selectTabAt(page, true)
                     }
                     state.tabLayoutState.animateScrollToItem(
@@ -201,7 +202,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun hasIntent(): Boolean {
-        return intent != null && intent!!.hasExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)
+        return intent isNot null && intent!!.hasExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)
     }
 
     private fun handleIntent() {

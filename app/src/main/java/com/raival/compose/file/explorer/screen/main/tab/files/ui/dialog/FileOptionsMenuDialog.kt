@@ -40,6 +40,7 @@ import androidx.core.content.pm.ShortcutManagerCompat.isRequestPinShortcutSuppor
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
@@ -223,7 +224,7 @@ fun FileOptionsMenuDialog(
             }
 
             if (tab.activeFolder is LocalFileHolder ||
-                (tab.activeFolder is VirtualFileHolder && (tab.activeFolder as VirtualFileHolder).type != VirtualFileHolder.BOOKMARKS)
+                (tab.activeFolder is VirtualFileHolder && (tab.activeFolder as VirtualFileHolder).type isNot VirtualFileHolder.BOOKMARKS)
             ) {
                 FileOption(Icons.Rounded.BookmarkAdd, stringResource(R.string.add_to_bookmarks)) {
                     onDismissRequest()

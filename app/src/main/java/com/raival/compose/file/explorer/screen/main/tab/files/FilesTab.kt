@@ -20,6 +20,7 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.getMimeType
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.orIf
 import com.raival.compose.file.explorer.common.removeIf
 import com.raival.compose.file.explorer.screen.main.MainActivity
@@ -581,7 +582,7 @@ class FilesTab(
     }
 
     fun toggleApkDialog(file: LocalFileHolder?) {
-        if (file != null) {
+        if (file isNot null) {
             targetFile = file
             _dialogsState.update { it.copy(showApkDialog = true) }
         } else {
@@ -591,7 +592,7 @@ class FilesTab(
     }
 
     fun toggleFileOptionsMenu(file: ContentHolder?, clear: Boolean = true) {
-        if (file != null) {
+        if (file isNot null) {
             targetFile = file
             _dialogsState.update { it.copy(showFileOptionsDialog = true) }
         } else {
@@ -601,7 +602,7 @@ class FilesTab(
     }
 
     fun toggleCompressTaskDialog(task: CompressTask?) {
-        if (task != null) {
+        if (task isNot null) {
             compressTaskHolder = task
             _dialogsState.update { it.copy(showNewZipFileDialog = true) }
         } else {

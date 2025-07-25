@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.dp
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.ui.Isolate
 import com.raival.compose.file.explorer.screen.viewer.pdf.PdfViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.pdf.misc.PdfPageHolder
@@ -85,7 +86,7 @@ fun PdfPageItem(
             contentAlignment = Alignment.Center
         ) {
             when {
-                bitmap != null -> {
+                bitmap isNot null -> {
                     AsyncImage(
                         modifier = Modifier.fillMaxSize(),
                         model = bitmap!!,

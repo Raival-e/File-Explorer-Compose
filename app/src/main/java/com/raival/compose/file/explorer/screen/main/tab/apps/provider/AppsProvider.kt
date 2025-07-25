@@ -7,6 +7,7 @@ import android.os.Build
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
 import java.io.File
 import java.util.Date
@@ -49,7 +50,7 @@ private fun createAppHolder(
             packageInfo.versionCode
         },
         size = appFile.length(),
-        isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
+        isSystemApp = (appInfo.flags and ApplicationInfo.FLAG_SYSTEM) isNot 0,
         installDate = Date(packageInfo.firstInstallTime),
         lastUpdateDate = Date(packageInfo.lastUpdateTime),
         targetSdkVersion = appInfo.targetSdkVersion,
@@ -60,7 +61,7 @@ private fun createAppHolder(
         dataDir = appInfo.dataDir,
         uid = appInfo.uid,
         enabled = appInfo.enabled,
-        debuggable = (appInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        debuggable = (appInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) isNot 0
     )
 }
 

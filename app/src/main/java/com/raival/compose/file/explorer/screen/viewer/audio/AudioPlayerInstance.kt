@@ -13,6 +13,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioMetadata
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioPlayerColorScheme
@@ -153,7 +154,7 @@ class AudioPlayerInstance(
                     _playerState.update {
                         it.copy(
                             currentPosition = player.currentPosition,
-                            duration = player.duration.takeIf { it != TIME_UNSET } ?: 0L
+                            duration = player.duration.takeIf { it isNot TIME_UNSET } ?: 0L
                         )
                     }
                 }

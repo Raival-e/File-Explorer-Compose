@@ -134,7 +134,7 @@ abstract class ContentHolder {
         }
     }
 
-    fun isApk(): Boolean = extension.endsWith(apkFileType)
+    fun isApk(): Boolean = extension == apkFileType
 
     fun isHidden(): Boolean = displayName.startsWith(".")
 

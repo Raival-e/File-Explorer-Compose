@@ -25,6 +25,7 @@ import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.exists
 import com.raival.compose.file.explorer.common.getUriInfo
 import com.raival.compose.file.explorer.common.isDarkTheme
+import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.lastModified
 import com.raival.compose.file.explorer.common.whiteSpace
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
@@ -220,7 +221,7 @@ class TextViewerInstance(
             return
         }
 
-        if (uri.lastModified(globalClass) != lastModified) {
+        if (uri.lastModified(globalClass) isNot lastModified) {
             scope.launch {
                 val newText = readSourceFile(this)
                 showSourceFileWarningDialog { onSourceReload(newText) }
