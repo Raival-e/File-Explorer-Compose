@@ -93,8 +93,6 @@ fun BottomOptionsBar(tab: FilesTab) {
 
             BottomOptionsBarButton(Icons.Rounded.MoreVert, stringResource(R.string.options)) {
                 tab.toggleFileOptionsMenu(tab.selectedFiles[tab.selectedFiles.keys.first()]!!)
-                //TODO: why?
-                //tab.quickReloadFiles()
             }
         } else {
             BottomOptionsBarButton(Icons.AutoMirrored.Rounded.Sort, stringResource(R.string.sort)) {

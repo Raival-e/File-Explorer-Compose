@@ -164,7 +164,6 @@ fun FilesListGrid(tab: FilesTab) {
             key = { index, item -> item.uid }
         ) { index, item ->
             val currentItemPath = item.uniquePath
-            val itemDetailsCoroutine = rememberCoroutineScope()
             val isAlreadySelected = tab.selectedFiles.containsKey(currentItemPath)
             var isSelectedItem by remember(isAlreadySelected) { mutableStateOf(isAlreadySelected) }
 
