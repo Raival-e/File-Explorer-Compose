@@ -84,21 +84,11 @@ fun TabLayout(
             to = new.index
 
             list.add(new.index, list.removeAt(old.index))
-            android.util.Log.i("Blob", "preview: $from to $to")
-        } else {
-            android.util.Log.i("Blob", "error: $from to $to")
         }
     }
 
     LaunchedEffect(draggedItem) {
-        if (draggedItem > -1) {
-            android.util.Log.i("Blob", "Start Dragging")
-        } else {
-            android.util.Log.i("Blob", "Stop Dragging")
-        }
-
         if (draggedItem < 0 && from > -1 && to > -1) {
-            android.util.Log.i("Blob", "Reordering $from to $to")
             onReorder(from, to)
             from = -1
             to = -1
