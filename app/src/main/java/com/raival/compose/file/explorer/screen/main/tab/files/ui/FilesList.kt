@@ -51,6 +51,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.ui.Isolate
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
@@ -165,22 +166,26 @@ fun FilesListGrid(tab: FilesTab) {
             val currentItemPath = item.uniquePath
             val itemDetailsCoroutine = rememberCoroutineScope()
             val isAlreadySelected = tab.selectedFiles.containsKey(currentItemPath)
+            var isSelectedItem by remember(isAlreadySelected) { mutableStateOf(isAlreadySelected) }
 
             fun toggleSelection() {
                 if (tab.selectedFiles.containsKey(currentItemPath)) {
                     tab.selectedFiles.remove(currentItemPath)
                     tab.lastSelectedFileIndex = -1
+                    isSelectedItem = false
                 } else {
                     tab.selectedFiles[currentItemPath] = item
                     tab.lastSelectedFileIndex = index
+                    isSelectedItem = true
                 }
+                tab.onSelectionChange()
             }
 
             Column(
                 Modifier
                     .fillMaxWidth()
                     .background(
-                        color = if (isAlreadySelected) {
+                        color = if (isSelectedItem) {
                             documentHolderSelectionHighlightColor
                         } else if (tab.highlightedFiles.contains(currentItemPath)) {
                             documentHolderHighlightColor
@@ -192,7 +197,6 @@ fun FilesListGrid(tab: FilesTab) {
                         onClick = {
                             if (tab.selectedFiles.isNotEmpty()) {
                                 toggleSelection()
-                                tab.quickReloadFiles()
                             } else {
                                 if (item.isFile()) {
                                     tab.openFile(context, item)
@@ -252,7 +256,6 @@ fun FilesListGrid(tab: FilesTab) {
                                         .clip(RoundedCornerShape(4.dp))
                                         .clickable {
                                             toggleSelection()
-                                            tab.quickReloadFiles()
                                         },
                                     model = ImageRequest.Builder(globalClass).data(item)
                                         .build(),
@@ -269,7 +272,6 @@ fun FilesListGrid(tab: FilesTab) {
                                         .clip(RoundedCornerShape(4.dp))
                                         .clickable {
                                             toggleSelection()
-                                            tab.quickReloadFiles()
                                         }
                                         .alpha(if (item.isHidden()) 0.4f else 1f),
                                     imageVector = Icons.Rounded.Folder,
@@ -312,17 +314,15 @@ fun FilesListGrid(tab: FilesTab) {
                             var details by remember(
                                 key1 = currentItemPath,
                                 key2 = item.lastModified
-                            ) { mutableStateOf(item.details) }
+                            ) { mutableStateOf(emptyString) }
 
                             LaunchedEffect(
                                 key1 = currentItemPath,
                                 key2 = item.lastModified
                             ) {
                                 if (details.isEmpty()) {
-                                    itemDetailsCoroutine.launch(Dispatchers.IO) {
-                                        val det = item.details
-                                        withContext(Dispatchers.Main) { details = det }
-                                    }
+                                    val det = item.getDetails()
+                                    withContext(Dispatchers.Main) { details = det }
                                 }
                             }
 

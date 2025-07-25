@@ -25,6 +25,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -63,18 +64,24 @@ class AudioPlayerInstance(
 
                 addListener(object : Player.Listener {
                     override fun onIsPlayingChanged(isPlaying: Boolean) {
-                        _playerState.value = _playerState.value.copy(isPlaying = isPlaying)
+                        _playerState.update {
+                            it.copy(isPlaying = isPlaying)
+                        }
                     }
 
                     override fun onPlaybackStateChanged(playbackState: Int) {
-                        _playerState.value = _playerState.value.copy(
-                            isLoading = playbackState == Player.STATE_BUFFERING
-                        )
+                        _playerState.update {
+                            it.copy(
+                                isLoading = playbackState == Player.STATE_BUFFERING
+                            )
+                        }
 
                         if (playbackState == Player.STATE_READY) {
-                            _playerState.value = _playerState.value.copy(
-                                duration = duration
-                            )
+                            _playerState.update {
+                                it.copy(
+                                    duration = duration
+                                )
+                            }
                         }
                     }
                 })
@@ -143,10 +150,12 @@ class AudioPlayerInstance(
         positionTrackingJob = CoroutineScope(Dispatchers.Main).launch {
             while (true) {
                 exoPlayer?.let { player ->
-                    _playerState.value = _playerState.value.copy(
-                        currentPosition = player.currentPosition,
-                        duration = player.duration.takeIf { it != TIME_UNSET } ?: 0L
-                    )
+                    _playerState.update {
+                        it.copy(
+                            currentPosition = player.currentPosition,
+                            duration = player.duration.takeIf { it != TIME_UNSET } ?: 0L
+                        )
+                    }
                 }
                 delay(100)
             }
@@ -177,7 +186,7 @@ class AudioPlayerInstance(
 
     fun setPlaybackSpeed(speed: Float) {
         exoPlayer?.setPlaybackSpeed(speed)
-        _playerState.value = _playerState.value.copy(playbackSpeed = speed)
+        _playerState.update { it.copy(playbackSpeed = speed) }
     }
 
     fun toggleRepeatMode() {
@@ -186,12 +195,12 @@ class AudioPlayerInstance(
             else -> Player.REPEAT_MODE_OFF
         }
         exoPlayer?.repeatMode = newMode
-        _playerState.value = _playerState.value.copy(repeatMode = newMode)
+        _playerState.update { it.copy(repeatMode = newMode) }
     }
 
     fun setVolume(volume: Float) {
         exoPlayer?.volume = volume
-        _playerState.value = _playerState.value.copy(volume = volume)
+        _playerState.update { it.copy(volume = volume) }
     }
 
     fun toggleEqualizer() {

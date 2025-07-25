@@ -93,7 +93,6 @@ fun TaskPanel(
     onDismissRequest: () -> Unit
 ) {
     if (show) {
-        val coroutineScope = rememberCoroutineScope()
         val context = LocalContext.current
 
         val runningTasks = remember { mutableStateListOf<Task>() }
@@ -204,15 +203,11 @@ fun TaskPanel(
                                 iconTint = MaterialTheme.colorScheme.tertiary,
                                 onSwipeToDelete = {
                                     pausedTasks.remove(task)
-                                    coroutineScope.launch {
-                                        globalClass.taskManager.removeTask(task.id)
-                                        removeBackgroundTask(context, task.id)
-                                    }
+                                    globalClass.taskManager.removeTask(task.id)
+                                    removeBackgroundTask(context, task.id)
                                 },
                                 onClick = {
-                                    coroutineScope.launch {
-                                        globalClass.taskManager.continueTask(task.id)
-                                    }
+                                    globalClass.taskManager.continueTask(task.id)
                                     tab.toggleTasksPanel(false)
                                 }
                             )
@@ -236,15 +231,11 @@ fun TaskPanel(
                                 iconTint = MaterialTheme.colorScheme.error,
                                 onSwipeToDelete = {
                                     failedTasks.remove(task)
-                                    coroutineScope.launch {
-                                        globalClass.taskManager.removeTask(task.id)
-                                        removeBackgroundTask(context, task.id)
-                                    }
+                                    globalClass.taskManager.removeTask(task.id)
+                                    removeBackgroundTask(context, task.id)
                                 },
                                 onClick = {
-                                    coroutineScope.launch {
-                                        globalClass.taskManager.continueTask(task.id)
-                                    }
+                                    globalClass.taskManager.continueTask(task.id)
                                     tab.toggleTasksPanel(false)
                                 }
                             )
@@ -268,9 +259,7 @@ fun TaskPanel(
                                 iconTint = MaterialTheme.colorScheme.secondary,
                                 onSwipeToDelete = {
                                     pendingTasks.remove(task)
-                                    coroutineScope.launch {
-                                        globalClass.taskManager.removeTask(task.id)
-                                    }
+                                    globalClass.taskManager.removeTask(task.id)
                                 },
                                 onClick = {
                                     if (tab.activeFolder is VirtualFileHolder || tab !is FilesTab) {
@@ -280,12 +269,10 @@ fun TaskPanel(
                                     tab.toggleTasksPanel(false)
                                     when (task) {
                                         is CopyTask -> {
-                                            coroutineScope.launch {
-                                                globalClass.taskManager.runTask(
-                                                    task.id,
-                                                    CopyTaskParameters(tab.activeFolder)
-                                                )
-                                            }
+                                            globalClass.taskManager.runTask(
+                                                task.id,
+                                                CopyTaskParameters(tab.activeFolder)
+                                            )
                                         }
 
                                         is CompressTask -> tab.toggleCompressTaskDialog(task)
@@ -312,9 +299,7 @@ fun TaskPanel(
                                 iconTint = MaterialTheme.colorScheme.outline,
                                 onSwipeToDelete = {
                                     invalidTasks.remove(task)
-                                    coroutineScope.launch {
-                                        globalClass.taskManager.removeTask(task.id)
-                                    }
+                                    globalClass.taskManager.removeTask(task.id)
                                 },
                                 onClick = { }
                             )

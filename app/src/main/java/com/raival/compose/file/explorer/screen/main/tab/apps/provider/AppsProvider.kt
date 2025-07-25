@@ -11,7 +11,7 @@ import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
 import java.io.File
 import java.util.Date
 
-fun getInstalledApps(context: Context): List<AppHolder> {
+suspend fun getInstalledApps(context: Context): List<AppHolder> {
     val packageManager = context.packageManager
     val apps = packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
 

@@ -42,7 +42,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,7 +60,6 @@ import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeLayout
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionConfig
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionType
 import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
-import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -72,7 +70,6 @@ fun HomeLayoutSettingsScreen(
     onBackClick: (List<HomeSectionConfig>) -> Unit
 ) {
     val useDarkIcons = !isSystemInDarkTheme()
-    val coroutineScope = rememberCoroutineScope()
     val sections = remember { mutableStateListOf<HomeSectionConfig>() }
     val lazyListState = rememberLazyListState()
     val reorderableState = rememberReorderableLazyListState(
@@ -134,10 +131,8 @@ fun HomeLayoutSettingsScreen(
                     actions = {
                         IconButton(
                             onClick = {
-                                coroutineScope.launch {
-                                    sections.clear()
-                                    sections.addAll(getDefaultHomeLayout().sections)
-                                }
+                                sections.clear()
+                                sections.addAll(getDefaultHomeLayout().sections)
                             }
                         ) {
                             Icon(

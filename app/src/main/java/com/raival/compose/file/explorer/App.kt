@@ -103,7 +103,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     }
 
     fun cleanOnExitDir() {
-        CoroutineScope(IO).launch {
+        applicationScope.launch {
             if (cleanOnExitDir.file.exists()) {
                 cleanOnExitDir.file.deleteRecursively()
             }
@@ -121,7 +121,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     }
 
     private fun setupTextMate() {
-        CoroutineScope(IO).launch {
+        applicationScope.launch {
             FileProviderRegistry.getInstance().addFileProvider(
                 AssetsFileResolver(
                     appContext.assets

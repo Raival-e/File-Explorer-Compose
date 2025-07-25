@@ -18,6 +18,7 @@ import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 class LocalFileHolder(val file: File) : ContentHolder() {
@@ -27,23 +28,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
     override val displayName: String by lazy { file.name }
 
-    override val details by lazy {
-        val separator = " | "
-        buildString {
-            append(lastModified.toFormattedDate())
-            if (file.isDirectory) {
-                if (globalClass.preferencesManager.showFolderContentCount && file.canRead()) {
-                    append(separator)
-                    append(getFormattedFileCount())
-                }
-            } else {
-                append(separator)
-                append(file.length().toFormattedSize())
-                append(separator)
-                append(file.extension)
-            }
-        }
-    }
+    var details = emptyString
 
     override val isFolder: Boolean by lazy { file.isDirectory }
 
@@ -72,7 +57,30 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
     val basePath by lazy { file.getBasePath(globalClass) }
 
-    override fun isValid(): Boolean = file.exists()
+    override suspend fun getDetails(): String {
+        val separator = " | "
+
+        if (details.isNotEmpty()) return details
+
+        return buildString {
+            append(lastModified.toFormattedDate())
+            if (file.isDirectory) {
+                if (globalClass.preferencesManager.showFolderContentCount && file.canRead()) {
+                    append(separator)
+                    append(getFormattedFileCount())
+                }
+            } else {
+                append(separator)
+                append(file.length().toFormattedSize())
+                append(separator)
+                append(file.extension)
+            }
+        }.also {
+            details = it
+        }
+    }
+
+    override suspend fun isValid(): Boolean = file.exists()
 
     override suspend fun listContent(): ArrayList<LocalFileHolder> {
         folderCount = 0
@@ -83,7 +91,8 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         }
     }
 
-    override fun getParent(): LocalFileHolder? = file.parentFile?.let { LocalFileHolder(it) }
+    override suspend fun getParent(): LocalFileHolder? =
+        file.parentFile?.let { LocalFileHolder(it) }
 
     override fun open(
         context: Context,
@@ -126,7 +135,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         }
     }
 
-    override fun getContentCount(): ContentCount {
+    override suspend fun getContentCount(): ContentCount {
         if (fileCount == 0 && folderCount == 0) {
             file.listFiles()?.let { list ->
                 list.forEach {
@@ -138,7 +147,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         return ContentCount(fileCount, folderCount)
     }
 
-    override fun createSubFile(name: String, onCreated: (ContentHolder?) -> Unit) {
+    override suspend fun createSubFile(name: String, onCreated: (ContentHolder?) -> Unit) {
         File(file, name).let { newFile ->
             if (newFile.createNewFile()) {
                 onCreated(LocalFileHolder(newFile))
@@ -148,7 +157,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         onCreated(null)
     }
 
-    override fun createSubFolder(name: String, onCreated: (ContentHolder?) -> Unit) {
+    override suspend fun createSubFolder(name: String, onCreated: (ContentHolder?) -> Unit) {
         File(file, name).let { newFolder ->
             if (newFolder.exists() || newFolder.mkdir()) {
                 onCreated(LocalFileHolder(newFolder))
@@ -158,7 +167,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         onCreated(null)
     }
 
-    override fun findFile(name: String): LocalFileHolder? {
+    override suspend fun findFile(name: String): LocalFileHolder? {
         File(file, name).let {
             if (it.exists()) {
                 return LocalFileHolder(it)
@@ -167,7 +176,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         return null
     }
 
-    fun exists() = isValid()
+    fun exists() = runBlocking { isValid() }
 
     fun hasSourceChanged() = timestamp != -1L && lastModified != timestamp
 
@@ -235,10 +244,6 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         file.writeText(text)
     }
 
-    fun appendText(text: String) {
-        file.appendText(text)
-    }
-
     fun readText() = file.readText()
 
     private fun handleSupportedFiles(context: Context): Boolean {
@@ -271,7 +276,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
     fun hasParent(parent: LocalFileHolder): Boolean =
         file.absolutePath.hasParent(parent.file.absolutePath)
 
-    fun getFormattedFileCount(): String {
+    suspend fun getFormattedFileCount(): String {
         val contentCount = getContentCount()
 
         return getFormattedFileCount(

@@ -34,8 +34,6 @@ import com.raival.compose.file.explorer.common.isValidAsFileName
 import com.raival.compose.file.explorer.common.ui.CheckableText
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -130,12 +128,12 @@ fun CreateNewFileDialog(
                         Button(
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                if (newNameInput.isValidAsFileName()) {
-                                    val similarFile = tab.activeFolder.findFile(newNameInput)
-                                    if (similarFile == null) {
-                                        onDismissRequest()
-                                        tab.isLoading = true
-                                        CoroutineScope(Dispatchers.IO).launch {
+                                tab.scope.launch {
+                                    if (newNameInput.isValidAsFileName()) {
+                                        val similarFile = tab.activeFolder.findFile(newNameInput)
+                                        if (similarFile == null) {
+                                            onDismissRequest()
+                                            tab.isLoading = true
                                             tab.activeFolder.createSubFile(newNameInput) { newFile ->
                                                 tab.isLoading = false
                                                 if (newFile == null) {
@@ -144,12 +142,12 @@ fun CreateNewFileDialog(
                                                     tab.onNewFileCreated(newFile)
                                                 }
                                             }
+                                        } else {
+                                            globalClass.showMsg(R.string.similar_file_exists)
                                         }
                                     } else {
-                                        globalClass.showMsg(R.string.similar_file_exists)
+                                        globalClass.showMsg(R.string.invalid_file_name)
                                     }
-                                } else {
-                                    globalClass.showMsg(R.string.invalid_file_name)
                                 }
                             },
                             enabled = error.isEmpty() && newNameInput.isNotBlank(),
@@ -164,12 +162,13 @@ fun CreateNewFileDialog(
                         Button(
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                if (newNameInput.isValidAsFileName()) {
-                                    val similarFile = tab.activeFolder.findFile(newNameInput)
-                                    if (similarFile == null) {
-                                        onDismissRequest()
-                                        tab.isLoading = true
-                                        CoroutineScope(Dispatchers.IO).launch {
+                                tab.scope.launch {
+                                    if (newNameInput.isValidAsFileName()) {
+                                        val similarFile = tab.activeFolder.findFile(newNameInput)
+                                        if (similarFile == null) {
+                                            onDismissRequest()
+                                            tab.isLoading = true
+
                                             tab.activeFolder.createSubFolder(newNameInput) { newFile ->
                                                 tab.isLoading = false
                                                 if (newFile == null) {
@@ -181,12 +180,12 @@ fun CreateNewFileDialog(
                                                     )
                                                 }
                                             }
+                                        } else {
+                                            globalClass.showMsg(R.string.similar_file_exists)
                                         }
                                     } else {
-                                        globalClass.showMsg(R.string.similar_file_exists)
+                                        globalClass.showMsg(R.string.invalid_folder_name)
                                     }
-                                } else {
-                                    globalClass.showMsg(R.string.invalid_folder_name)
                                 }
                             },
                             enabled = error.isEmpty() && newNameInput.isNotBlank(),

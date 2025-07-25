@@ -59,10 +59,12 @@ import io.github.rosemoe.sora.widget.subscribeAlways
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.io.File
 
 class TextEditorManager {
+    val scope = CoroutineScope(Dispatchers.IO)
     var showSearchPanel by mutableStateOf(false)
     val warningDialogProperties = WarningDialogProperties()
     val recentFileDialog = RecentFileDialog()
@@ -155,7 +157,7 @@ class TextEditorManager {
             }
 
             if (activeFile.lastModified != getFileInstance()?.lastModified) {
-                CoroutineScope(Dispatchers.IO).launch {
+                scope.launch {
                     val newText = activeFile.readText()
                     showSourceFileWarningDialog { onSourceReload(newText) }
                 }
@@ -229,7 +231,7 @@ class TextEditorManager {
 
     private fun save(fileInstance: FileInstance, onSaved: () -> Unit) {
         isSaving = true
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             fileInstance.apply {
                 file.writeText(fileInstance.content.toString())
                 lastModified = fileInstance.file.lastModified
@@ -243,7 +245,7 @@ class TextEditorManager {
 
     fun save(onSaved: () -> Unit, onFailed: () -> Unit) {
         isSaving = true
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             getFileInstance()?.let { instance ->
                 activeFile.writeText(instance.content.toString())
                 instance.lastModified = activeFile.lastModified
@@ -430,7 +432,7 @@ class TextEditorManager {
     ) {
         analyseFile()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             isReading = true
 
             val text = activeFile.readText()
@@ -466,7 +468,7 @@ class TextEditorManager {
      * return true if the file exists, false otherwise
      */
     fun openTextEditor(localFileHolder: LocalFileHolder, context: Context): Boolean {
-        if (!localFileHolder.isValid()) {
+        if (runBlocking { !localFileHolder.isValid() }) {
             globalClass.showMsg(R.string.file_not_found)
             return false
         }

@@ -19,7 +19,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDevice
 import java.io.File
 
 object StorageProvider {
-    fun getStorageDevices(context: Context): List<StorageDevice> {
+    suspend fun getStorageDevices(context: Context): List<StorageDevice> {
         val storageDevices = mutableListOf<StorageDevice>()
 
         storageDevices.add(getPrimaryInternalStorage(context))

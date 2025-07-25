@@ -51,9 +51,7 @@ fun OpenWithAppListDialog(
         val context = LocalContext.current
 
         val appsList = remember {
-            mutableStateListOf<OpenWithActivityHolder>().apply {
-                addAll(contentHolder.getAppsHandlingFile())
-            }
+            mutableStateListOf<OpenWithActivityHolder>()
         }
 
         val loading = remember {

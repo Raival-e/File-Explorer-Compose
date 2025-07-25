@@ -59,6 +59,7 @@ class TextViewerInstance(
     override val id: String
 ) : ViewerInstance {
     val uriContent = uri.getUriInfo(globalClass)
+    val scope = CoroutineScope(Dispatchers.IO)
 
     val warningDialogProperties = WarningDialogProperties()
     val searcher = Searcher()
@@ -220,7 +221,7 @@ class TextViewerInstance(
         }
 
         if (uri.lastModified(globalClass) != lastModified) {
-            CoroutineScope(Dispatchers.IO).launch {
+            scope.launch {
                 val newText = readSourceFile(this)
                 showSourceFileWarningDialog { onSourceReload(newText) }
             }
@@ -266,7 +267,7 @@ class TextViewerInstance(
 
     fun save(onSaved: () -> Unit, onFailed: () -> Unit) {
         isSaving = true
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             globalClass.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
                 BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
                     writer.write(content)

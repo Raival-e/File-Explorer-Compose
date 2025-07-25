@@ -36,9 +36,6 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTaskParameters
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
 import java.io.File
 
 @Composable
@@ -144,17 +141,15 @@ fun FileCompressionDialog(
                                     )
                                 ) {
                                     onDismissRequest()
-                                    CoroutineScope(IO).launch {
-                                        globalClass.taskManager.runTask(
-                                            tab.compressTaskHolder!!.id,
-                                            CompressTaskParameters(
-                                                File(
-                                                    (tab.activeFolder as LocalFileHolder).file,
-                                                    newNameInput
-                                                ).absolutePath
-                                            )
+                                    globalClass.taskManager.runTask(
+                                        tab.compressTaskHolder!!.id,
+                                        CompressTaskParameters(
+                                            File(
+                                                (tab.activeFolder as LocalFileHolder).file,
+                                                newNameInput
+                                            ).absolutePath
                                         )
-                                    }
+                                    )
                                 } else {
                                     globalClass.showMsg(R.string.invalid_file_name)
                                 }

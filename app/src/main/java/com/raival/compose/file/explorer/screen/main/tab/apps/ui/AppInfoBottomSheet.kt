@@ -44,7 +44,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +67,6 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.apps.holder.AppHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
-import kotlinx.coroutines.launch
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -154,21 +152,18 @@ fun AppInfoBottomSheet(
                         )
                     }
                     VerticalDivider(Modifier.height(20.dp))
-                    val coroutineScope = rememberCoroutineScope()
                     AssistChip(
                         onClick = {
-                            coroutineScope.launch {
-                                globalClass.taskManager.addTask(
-                                    task = CopyTask(
-                                        sourceFiles = arrayListOf(
-                                            LocalFileHolder(
-                                                file = File(app.path)
-                                            )
-                                        ),
-                                        false
-                                    )
+                            globalClass.taskManager.addTask(
+                                task = CopyTask(
+                                    sourceFiles = arrayListOf(
+                                        LocalFileHolder(
+                                            file = File(app.path)
+                                        )
+                                    ),
+                                    false
                                 )
-                            }
+                            )
                         },
                         label = { Text(stringResource(R.string.extract)) },
                         leadingIcon = {

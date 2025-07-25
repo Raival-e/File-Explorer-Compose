@@ -11,6 +11,7 @@ import com.raival.compose.file.explorer.common.toRelativeString
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
+import kotlinx.coroutines.runBlocking
 import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.model.ZipParameters
 import java.io.ByteArrayInputStream
@@ -34,7 +35,7 @@ class CopyTask(
     )
 
     override fun getCurrentStatus() = progressMonitor.status
-    override fun validate() = sourceFiles.all { it.isValid() && it.canRead }
+    override suspend fun validate() = sourceFiles.all { it.isValid() && it.canRead }
 
     override suspend fun run() {
         if (parameters == null) {
@@ -154,7 +155,7 @@ class CopyTask(
     private fun executeTaskBasedOnSourceType() {
         val sample = sourceFiles.first()
         val destHolder = parameters!!.destHolder
-        val sourcePath = sample.getParent()?.uniquePath ?: emptyString
+        val sourcePath = runBlocking { sample.getParent()?.uniquePath ?: emptyString }
 
         when {
             sample is LocalFileHolder && destHolder is LocalFileHolder ->

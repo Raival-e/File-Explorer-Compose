@@ -17,9 +17,9 @@ import kotlinx.coroutines.launch
 
 class AppsTab : Tab() {
     override val id = globalClass.generateUid()
-    override val title = globalClass.getString(R.string.apps_tab_title)
-    override val subtitle = emptyString
     override val header = globalClass.getString(R.string.apps_tab_header)
+
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     val appsList = mutableStateListOf<AppHolder>()
     val systemApps = ArrayList<AppHolder>()
@@ -36,6 +36,10 @@ class AppsTab : Tab() {
     enum class SortOption {
         NAME, SIZE, INSTALL_DATE, UPDATE_DATE
     }
+
+    override suspend fun getSubtitle() = emptyString
+
+    override suspend fun getTitle() = globalClass.getString(R.string.apps_tab_title)
 
     override fun onTabResumed() {
         super.onTabResumed()
@@ -59,7 +63,7 @@ class AppsTab : Tab() {
 
     fun fetchInstalledApps() {
         isLoading = true
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             try {
                 val apps = getInstalledApps(globalClass)
                 apps.forEach { app ->
@@ -101,7 +105,7 @@ class AppsTab : Tab() {
         }
 
         isSearching = true
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             try {
                 val baseList = when (selectedChoice) {
                     0 -> userApps

@@ -55,6 +55,7 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.BOOKMARKS
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.RECENT
@@ -341,6 +342,12 @@ private fun CategoriesSection(
 private fun StorageSection(
     mainActivityManager: MainActivityManager
 ) {
+    val storageList = remember { mutableStateListOf<StorageDevice>() }
+
+    LaunchedEffect(Unit) {
+        storageList.addAll(StorageProvider.getStorageDevices(globalClass))
+    }
+
     // Storage options
     Text(
         modifier = Modifier
@@ -350,7 +357,7 @@ private fun StorageSection(
         style = MaterialTheme.typography.titleMedium
     )
 
-    StorageProvider.getStorageDevices(globalClass).forEach {
+    storageList.forEach {
         StorageDeviceView(storageDevice = it) {
             mainActivityManager.replaceCurrentTabWith(FilesTab(it.contentHolder))
         }

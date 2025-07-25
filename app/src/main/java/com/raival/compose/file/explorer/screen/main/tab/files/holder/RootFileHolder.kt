@@ -22,7 +22,6 @@ class RootFileHolder : ContentHolder() {
 
     override val uniquePath = rootDir
     override val displayName = globalClass.getString(R.string.root_dir)
-    override val details = emptyString
     override val icon = R.drawable.baseline_folder_24
     override val iconPlaceholder = R.drawable.baseline_folder_24
     override val isFolder = true
@@ -49,11 +48,8 @@ class RootFileHolder : ContentHolder() {
         return content
     }
 
-    override fun getParent() = null
-
-    override fun getContentCount() = contentsCount
-
-    override fun findFile(name: String) = content.find { it.displayName == name }
-
-    override fun isValid() = true
+    override suspend fun getParent() = null
+    override suspend fun getContentCount() = contentsCount
+    override suspend fun findFile(name: String) = content.find { it.displayName == name }
+    override suspend fun isValid() = true
 }

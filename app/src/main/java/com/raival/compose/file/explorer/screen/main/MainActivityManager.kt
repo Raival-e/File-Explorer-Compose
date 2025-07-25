@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.max
@@ -31,9 +32,11 @@ class MainActivityManager {
      */
     fun setup() {
         managerScope.launch {
-            _state.value = _state.value.copy(
-                storageDevices = StorageProvider.getStorageDevices(globalClass)
-            )
+            _state.update {
+                it.copy(
+                    storageDevices = StorageProvider.getStorageDevices(globalClass)
+                )
+            }
         }
     }
 
@@ -50,14 +53,16 @@ class MainActivityManager {
         if (tabIndex isNot _state.value.selectedTabIndex) return
 
         val tabToKeep = _state.value.tabs[tabIndex]
-        _state.value = _state.value.copy(
-            tabs = _state.value.tabs.filter {
-                val toKeep = it == tabToKeep
-                if (!toKeep) it.onTabRemoved()
-                toKeep
-            },
-            selectedTabIndex = 0
-        )
+        _state.update {
+            it.copy(
+                tabs = _state.value.tabs.filter { item ->
+                    val toKeep = item == tabToKeep
+                    if (!toKeep) item.onTabRemoved()
+                    toKeep
+                },
+                selectedTabIndex = 0
+            )
+        }
     }
 
     fun removeTabAt(index: Int) {
@@ -84,12 +89,14 @@ class MainActivityManager {
         }
 
         // Update the state
-        _state.value = _state.value.copy(
-            tabs = _state.value.tabs.filterIndexed { i, _ ->
-                i != index
-            },
-            selectedTabIndex = newSelectedTabIndex
-        )
+        _state.update {
+            it.copy(
+                tabs = _state.value.tabs.filterIndexed { i, _ ->
+                    i != index
+                },
+                selectedTabIndex = newSelectedTabIndex
+            )
+        }
     }
 
     fun addTabAndSelect(tab: Tab, index: Int = -1) {
@@ -107,13 +114,15 @@ class MainActivityManager {
         }
 
         // Update the state
-        _state.value = _state.value.copy(
-            tabs = _state.value.tabs + tab,
-            selectedTabIndex = validatedIndex
-        )
+        _state.update {
+            it.copy(
+                tabs = _state.value.tabs + tab,
+                selectedTabIndex = validatedIndex
+            )
+        }
     }
 
-    fun selectTabAt(index: Int) {
+    fun selectTabAt(index: Int, skipTabRefresh: Boolean = false) {
         // Validate the index
         val validatedIndex = if (index isNot -1) {
             max(0, min(index, _state.value.tabs.lastIndex))
@@ -121,9 +130,9 @@ class MainActivityManager {
             _state.value.tabs.lastIndex
         }
 
-        // If the tab is already selected, resume that tab
+        // If the tab is already selected, resume that tab (kind of refreshing the tab)
         if (validatedIndex == _state.value.selectedTabIndex) {
-            getActiveTab()?.onTabResumed()
+            if (!skipTabRefresh) getActiveTab()?.onTabResumed()
         } else {
             // Stop the active tab
             getActiveTab()?.onTabStopped()
@@ -131,10 +140,12 @@ class MainActivityManager {
             // Start the new tab
             val newSelectedTab = _state.value.tabs[validatedIndex]
             if (newSelectedTab.isCreated) newSelectedTab.onTabResumed() else newSelectedTab.onTabStarted()
-        }
 
-        // Update the state
-        _state.value = _state.value.copy(selectedTabIndex = validatedIndex)
+            // Update the state
+            _state.update {
+                it.copy(selectedTabIndex = validatedIndex)
+            }
+        }
     }
 
     fun replaceCurrentTabWith(tab: Tab) {
@@ -148,11 +159,13 @@ class MainActivityManager {
         if (tab.isCreated) tab.onTabResumed() else tab.onTabStarted()
 
         // update the state
-        _state.value = _state.value.copy(
-            tabs = _state.value.tabs.mapIndexed { index, oldTab ->
-                if (index == _state.value.selectedTabIndex) tab else oldTab
-            }
-        )
+        _state.update {
+            it.copy(
+                tabs = _state.value.tabs.mapIndexed { index, oldTab ->
+                    if (index == _state.value.selectedTabIndex) tab else oldTab
+                }
+            )
+        }
     }
 
     fun jumpToFile(file: LocalFileHolder, context: Context) {
@@ -228,9 +241,11 @@ class MainActivityManager {
 
         // Check TextEditor files
         if (tabs.size == 1 && !allTextEditorFileInstancesSaved()) {
-            _state.value = _state.value.copy(
-                showSaveEditorFilesDialog = true
-            )
+            _state.update {
+                it.copy(
+                    showSaveEditorFilesDialog = true
+                )
+            }
             return false
         }
 
@@ -245,9 +260,11 @@ class MainActivityManager {
     }
 
     fun saveTextEditorFiles(onFinish: () -> Unit) {
-        _state.value = _state.value.copy(
-            isSavingFiles = true
-        )
+        _state.update {
+            it.copy(
+                isSavingFiles = true
+            )
+        }
 
         managerScope.launch {
             globalClass.textEditorManager.fileInstanceList.forEach {
@@ -256,9 +273,11 @@ class MainActivityManager {
                 }
             }
 
-            _state.value = _state.value.copy(
-                isSavingFiles = false
-            )
+            _state.update {
+                it.copy(
+                    isSavingFiles = false
+                )
+            }
 
             onFinish()
         }
@@ -285,50 +304,61 @@ class MainActivityManager {
                 tabs.add(newTab)
             }
 
-            _state.value = _state.value.copy(
-                tabs = tabs,
-                selectedTabIndex = index
-            )
+            _state.update {
+                it.copy(
+                    tabs = tabs,
+                    selectedTabIndex = index
+                )
+            }
         }
     }
 
     fun toggleJumpToPathDialog(show: Boolean) {
-        _state.value = _state.value.copy(
-            showJumpToPathDialog = show
-        )
+        _state.update {
+            it.copy(
+                showJumpToPathDialog = show
+            )
+        }
     }
 
     fun toggleAppInfoDialog(show: Boolean) {
-        _state.value = _state.value.copy(
-            showAppInfoDialog = show
-        )
+        _state.update {
+            it.copy(
+                showAppInfoDialog = show
+            )
+        }
     }
 
     fun toggleSaveEditorFilesDialog(show: Boolean) {
-        _state.value = _state.value.copy(
-            showSaveEditorFilesDialog = show
-        )
+        _state.update {
+            it.copy(
+                showSaveEditorFilesDialog = show
+            )
+        }
     }
 
     fun toggleStartupTabsDialog(show: Boolean) {
-        _state.value = _state.value.copy(
-            showStartupTabsDialog = show
-        )
+        _state.update {
+            it.copy(
+                showStartupTabsDialog = show
+            )
+        }
     }
 
     fun reorderTabs(from: Int, to: Int) {
-        _state.value = _state.value.copy(
-            tabs = _state.value.tabs.toMutableList().apply {
-                add(to, removeAt(from))
-            },
-            selectedTabIndex = _state.value.tabs.indexOf(getActiveTab())
-        )
+        _state.update {
+            it.copy(
+                tabs = _state.value.tabs.toMutableList().apply {
+                    add(to, removeAt(from))
+                },
+                selectedTabIndex = _state.value.tabs.indexOf(getActiveTab())
+            )
+        }
     }
 
     fun updateHomeToolbar(title: String, subtitle: String) {
-        _state.value = _state.value.copy(
-            title = title,
-            subtitle = subtitle
-        )
+        _state.update {
+            it.copy(title = title, subtitle = subtitle)
+        }
     }
 }

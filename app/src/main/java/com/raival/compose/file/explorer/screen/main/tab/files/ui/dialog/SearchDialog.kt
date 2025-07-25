@@ -58,15 +58,12 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.block
 import com.raival.compose.file.explorer.common.copyToClipboard
 import com.raival.compose.file.explorer.common.emptyString
-import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileItemRow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -137,7 +134,7 @@ fun SearchDialog(
                     }
                 }
 
-                CoroutineScope(Dispatchers.IO).launch {
+                tab.scope.launch {
                     if (tab.activeFolder is VirtualFileHolder) {
                         searchInList()
                     } else {
@@ -240,7 +237,7 @@ fun SearchDialog(
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                         keyboardActions = KeyboardActions(
                             onSearch = {
-                                CoroutineScope(Dispatchers.Default).launch {
+                                tab.scope.launch {
                                     if (isSearching) {
                                         isSearching = false
                                         delay(200)
@@ -323,17 +320,11 @@ fun SearchDialog(
                                         },
                                         onClick = {
                                             onDismissRequest()
-                                            if (item.hasParent()) {
-                                                tab.highlight(item.uniquePath)
-                                                tab.openFolder(item.getParent()!!) {
-                                                    CoroutineScope(Dispatchers.Main).launch {
-                                                        tab.getFileListState().scrollToItem(
-                                                            tab.activeFolderContent.getIndexIf { uniquePath == item.uniquePath },
-                                                            0
-                                                        )
-                                                    }
-                                                }
-                                            }
+                                            globalClass.mainActivityManager.replaceCurrentTabWith(
+                                                tab = FilesTab(
+                                                    source = item
+                                                )
+                                            )
                                             showMoreOptionsMenu = false
                                         }
                                     )

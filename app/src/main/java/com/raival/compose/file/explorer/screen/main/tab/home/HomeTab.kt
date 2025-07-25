@@ -36,8 +36,7 @@ import java.io.File
 
 class HomeTab : Tab() {
     override val id = globalClass.generateUid()
-    override val title = globalClass.getString(R.string.home_tab_title)
-    override val subtitle = emptyString
+    val scope = CoroutineScope(Dispatchers.IO)
     override val header = globalClass.getString(R.string.home_tab_header)
     val recentFiles = mutableStateListOf<RecentFile>()
 
@@ -53,10 +52,14 @@ class HomeTab : Tab() {
         requestHomeToolbarUpdate()
     }
 
+    override suspend fun getSubtitle() = emptyString
+
+    override suspend fun getTitle() = globalClass.getString(R.string.home_tab_title)
+
     fun fetchRecentFiles() {
         if (recentFiles.isNotEmpty()) return
 
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             recentFiles.addAll(getRecentFiles())
         }
     }

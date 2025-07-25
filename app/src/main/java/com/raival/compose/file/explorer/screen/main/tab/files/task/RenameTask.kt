@@ -45,7 +45,7 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
 
     override fun getCurrentStatus() = progressMonitor.status
 
-    override fun validate() = sourceContent.find { !it.isValid() } == null
+    override suspend fun validate() = sourceContent.find { !it.isValid() } == null
 
     private fun markAsFailed(info: String) {
         progressMonitor.apply {

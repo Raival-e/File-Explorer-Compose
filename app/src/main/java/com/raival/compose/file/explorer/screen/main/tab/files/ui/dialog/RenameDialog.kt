@@ -65,8 +65,6 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHold
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTask.Companion.transformFileName
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTaskParameters
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @Composable
@@ -169,11 +167,12 @@ fun RenameDialog(
                             Button(
                                 modifier = Modifier.weight(1f),
                                 onClick = {
-                                    if (newNameInput.isValidAsFileName()) {
-                                        val similarFile = tab.activeFolder.findFile(newNameInput)
-                                        if (similarFile == null) {
-                                            onDismissRequest()
-                                            CoroutineScope(Dispatchers.IO).launch {
+                                    tab.scope.launch {
+                                        if (newNameInput.isValidAsFileName()) {
+                                            val similarFile =
+                                                tab.activeFolder.findFile(newNameInput)
+                                            if (similarFile == null) {
+                                                onDismissRequest()
                                                 globalClass.taskManager.addTaskAndRun(
                                                     task = RenameTask(sourceContent = tab.selectedFiles.values.toList()),
                                                     parameters = RenameTaskParameters(
@@ -183,12 +182,12 @@ fun RenameDialog(
                                                         useRegex = false
                                                     )
                                                 )
+                                            } else {
+                                                globalClass.showMsg(R.string.similar_file_exists)
                                             }
                                         } else {
-                                            globalClass.showMsg(R.string.similar_file_exists)
+                                            globalClass.showMsg(R.string.invalid_file_name)
                                         }
-                                    } else {
-                                        globalClass.showMsg(R.string.invalid_file_name)
                                     }
                                 },
                                 enabled = error.isEmpty() && newNameInput.isNotBlank() && newNameInput != target.displayName,
@@ -566,17 +565,15 @@ fun AdvanceRenameDialog(
                         onClick = {
                             if (isReady && conflicts.isEmpty()) {
                                 onDismissRequest()
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    globalClass.taskManager.addTaskAndRun(
-                                        task = RenameTask(tab.selectedFiles.values.toList()),
-                                        parameters = RenameTaskParameters(
-                                            newName = newNameInput.text,
-                                            toFind = findInput,
-                                            toReplace = replaceInput,
-                                            useRegex = useRegex
-                                        )
+                                globalClass.taskManager.addTaskAndRun(
+                                    task = RenameTask(tab.selectedFiles.values.toList()),
+                                    parameters = RenameTaskParameters(
+                                        newName = newNameInput.text,
+                                        toFind = findInput,
+                                        toReplace = replaceInput,
+                                        useRegex = useRegex
                                     )
-                                }
+                                )
                             } else {
                                 preview()
                                 isReady = true

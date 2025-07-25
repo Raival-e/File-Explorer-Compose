@@ -24,9 +24,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.pm.ShortcutManagerCompat.isRequestPinShortcutSupported
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
@@ -50,9 +53,6 @@ import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileIcon
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRow
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun FileOptionsMenuDialog(
@@ -83,14 +83,18 @@ fun FileOptionsMenuDialog(
         }
 
         BottomSheetDialog(onDismissRequest = { tab.toggleFileOptionsMenu(null) }) {
-            val details by remember {
+            var details by remember {
                 mutableStateOf(
                     if (selectedFilesCount > 1) {
                         "and %d more".format(selectedFilesCount - 1)
                     } else {
-                        targetContentHolder.details
+                        emptyString
                     }
                 )
+            }
+
+            LaunchedEffect(Unit) {
+                details = targetContentHolder.getDetails()
             }
 
             ItemRow(
@@ -126,15 +130,13 @@ fun FileOptionsMenuDialog(
                     modifier = Modifier.weight(1f),
                     onClick = {
                         onDismissRequest()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            globalClass.taskManager.addTask(
-                                CopyTask(
-                                    targetFiles,
-                                    deleteSourceFiles = true
-                                )
-                            )
-                        }
                         tab.unselectAllFiles()
+                        globalClass.taskManager.addTask(
+                            CopyTask(
+                                targetFiles,
+                                deleteSourceFiles = true
+                            )
+                        )
                     }
                 ) {
                     Icon(imageVector = Icons.Rounded.ContentCut, contentDescription = null)
@@ -145,15 +147,13 @@ fun FileOptionsMenuDialog(
                     modifier = Modifier.weight(1f),
                     onClick = {
                         onDismissRequest()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            globalClass.taskManager.addTask(
-                                CopyTask(
-                                    targetFiles,
-                                    deleteSourceFiles = false
-                                )
-                            )
-                        }
                         tab.unselectAllFiles()
+                        globalClass.taskManager.addTask(
+                            CopyTask(
+                                targetFiles,
+                                deleteSourceFiles = false
+                            )
+                        )
                     }
                 ) {
                     Icon(imageVector = Icons.Rounded.FileCopy, contentDescription = null)
@@ -252,14 +252,12 @@ fun FileOptionsMenuDialog(
                 if (apkBundleFileType.contains(targetContentHolder.file.extension)) {
                     FileOption(Icons.Rounded.Merge, stringResource(R.string.convert_to_apk)) {
                         onDismissRequest()
-                        CoroutineScope(Dispatchers.IO).launch {
-                            globalClass.taskManager.addTaskAndRun(
-                                ApksMergeTask(targetContentHolder),
-                                ApksMergeTaskParameters(
-                                    globalClass.preferencesManager.signMergedApkBundleFiles
-                                )
+                        globalClass.taskManager.addTaskAndRun(
+                            ApksMergeTask(targetContentHolder),
+                            ApksMergeTaskParameters(
+                                globalClass.preferencesManager.signMergedApkBundleFiles
                             )
-                        }
+                        )
                         tab.unselectAllFiles()
                     }
                 }
@@ -267,11 +265,9 @@ fun FileOptionsMenuDialog(
 
             if (tab.activeFolder !is ZipFileHolder) {
                 FileOption(Icons.Rounded.Compress, stringResource(R.string.compress)) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        globalClass.taskManager.addTask(
-                            CompressTask(targetFiles)
-                        )
-                    }
+                    globalClass.taskManager.addTask(
+                        CompressTask(targetFiles)
+                    )
                     onDismissRequest()
                     tab.unselectAllFiles()
                 }

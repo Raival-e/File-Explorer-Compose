@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.DrawableRes
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.aiFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
@@ -45,7 +46,6 @@ abstract class ContentHolder {
     abstract val uniquePath: String
 
     abstract val displayName: String
-    abstract val details: String
     abstract val icon: Any
 
     @get:DrawableRes
@@ -64,18 +64,23 @@ abstract class ContentHolder {
      * Returns unsorted content list, use listSortedContent() to get sorted list.
      */
     abstract suspend fun listContent(): ArrayList<out ContentHolder>
-    abstract fun getParent(): ContentHolder?
 
-    open fun createSubFile(name: String, onCreated: (ContentHolder?) -> Unit) {
+    abstract suspend fun getParent(): ContentHolder?
+
+    open suspend fun createSubFile(name: String, onCreated: (ContentHolder?) -> Unit) {
         onCreated(null)
     }
 
-    open fun createSubFolder(name: String, onCreated: (ContentHolder?) -> Unit) {
+    open suspend fun createSubFolder(name: String, onCreated: (ContentHolder?) -> Unit) {
         onCreated(null)
     }
 
-    abstract fun getContentCount(): ContentCount
-    abstract fun findFile(name: String): ContentHolder?
+    abstract suspend fun getContentCount(): ContentCount
+    abstract suspend fun findFile(name: String): ContentHolder?
+
+    open suspend fun getDetails(): String {
+        return emptyString
+    }
 
     /**
      * Checks if the content holder is a valid content.
@@ -83,7 +88,7 @@ abstract class ContentHolder {
      *
      * @return `true` if the content holder is valid, `false` otherwise.
      */
-    abstract fun isValid(): Boolean
+    abstract suspend fun isValid(): Boolean
 
     open fun open(
         context: Context,
@@ -97,7 +102,7 @@ abstract class ContentHolder {
         return !isFolder
     }
 
-    open fun hasParent(onlyReadable: Boolean = true): Boolean {
+    open suspend fun hasParent(onlyReadable: Boolean = true): Boolean {
         val parent = getParent()
         return parent != null && parent.isValid() && (!onlyReadable || parent.canRead)
     }
@@ -132,7 +137,7 @@ abstract class ContentHolder {
 
     fun isHidden(): Boolean = displayName.startsWith(".")
 
-    fun getFormattedFileCount(filesCount: Int, foldersCount: Int): String {
+    suspend fun getFormattedFileCount(filesCount: Int, foldersCount: Int): String {
         return buildString {
             if (foldersCount == 0 && filesCount == 0) {
                 append(globalClass.getString(R.string.empty_folder))

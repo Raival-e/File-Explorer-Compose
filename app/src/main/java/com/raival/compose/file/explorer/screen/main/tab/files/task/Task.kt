@@ -25,10 +25,12 @@ abstract class Task(
 
     abstract val metadata: TaskMetadata
     abstract val progressMonitor: TaskProgressMonitor
+
     abstract fun getCurrentStatus(): TaskStatus
-    abstract fun validate(): Boolean
+    abstract fun setParameters(params: TaskParameters)
+
+    abstract suspend fun validate(): Boolean
     abstract suspend fun run(params: TaskParameters)
     abstract suspend fun run()
     abstract suspend fun continueTask()
-    abstract fun setParameters(params: TaskParameters)
 }

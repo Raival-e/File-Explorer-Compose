@@ -25,7 +25,10 @@ data class LogHolder(
     val id: String = UUID.randomUUID().toString()
 )
 
-class FileExplorerLogger(private val context: Context, private val scope: CoroutineScope) {
+class FileExplorerLogger(
+    private val context: Context,
+    private val scope: CoroutineScope
+) {
 
     companion object {
         private val ERRORS_KEY = stringPreferencesKey("error_logs")

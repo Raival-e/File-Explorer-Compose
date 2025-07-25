@@ -46,7 +46,7 @@ class ApksMergeTask(
 
     override fun getCurrentStatus() = progressMonitor.status
 
-    override fun validate() = sourceContent.isValid()
+    override suspend fun validate() = sourceContent.isValid()
 
     private fun markAsFailed(info: String) {
         progressMonitor.apply {

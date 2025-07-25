@@ -53,6 +53,7 @@ fun PathHistoryRow(tab: FilesTab) {
         }
 
         val animationScope = rememberCoroutineScope()
+
         LaunchedEffect(key1 = tab.currentPathSegments.size) {
             animationScope.launch { tab.currentPathSegmentsListState.scrollToItem(tab.currentPathSegments.size) }
         }
@@ -61,9 +62,8 @@ fun PathHistoryRow(tab: FilesTab) {
             Modifier.weight(1f),
             tab.currentPathSegmentsListState,
         ) {
-            itemsIndexed(tab.currentPathSegments, key = { _, it -> it.uniquePath }) { index, item ->
+            itemsIndexed(tab.currentPathSegments, key = { _, it -> it.uid }) { index, item ->
                 val isHighlighted = index == tab.currentPathSegments.size - 1
-
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically

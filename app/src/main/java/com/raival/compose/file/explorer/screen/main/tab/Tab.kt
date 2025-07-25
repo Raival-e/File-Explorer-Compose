@@ -9,8 +9,6 @@ abstract class Tab {
     var isCreated = false
 
     abstract val id: Int
-    abstract val title: String
-    abstract val subtitle: String
     abstract val header: String
 
     open fun onTabRemoved() {}
@@ -20,13 +18,16 @@ abstract class Tab {
         isCreated = true
     }
 
+    abstract suspend fun getTitle(): String
+    abstract suspend fun getSubtitle(): String
+
     open fun onBackPressed(): Boolean = false
 
     fun requestHomeToolbarUpdate() {
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             globalClass.mainActivityManager.updateHomeToolbar(
-                title = title,
-                subtitle = subtitle
+                title = getTitle(),
+                subtitle = getSubtitle()
             )
         }
     }

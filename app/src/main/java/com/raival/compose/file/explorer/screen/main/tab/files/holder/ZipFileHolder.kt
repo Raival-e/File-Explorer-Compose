@@ -24,7 +24,7 @@ class ZipFileHolder(
 ) : ContentHolder() {
     override val uniquePath = node.path
     override val displayName = node.name
-    override val details by lazy { createDetails() }
+    var details = emptyString
 
     override val icon = if (node.isDirectory)
         R.drawable.baseline_folder_24 else R.drawable.unknown_file_extension
@@ -44,6 +44,14 @@ class ZipFileHolder(
     private var foldersCount = 0
 
     private var contentListCount = ContentCount()
+
+    override suspend fun getDetails(): String {
+        if (details.isNotEmpty()) return details
+
+        return createDetails().also {
+            details = it
+        }
+    }
 
     override suspend fun listContent(): ArrayList<ZipFileHolder> {
         filesCount = 0
@@ -72,7 +80,7 @@ class ZipFileHolder(
             }
     }
 
-    override fun getParent(): ContentHolder? {
+    override suspend fun getParent(): ContentHolder? {
         if (!node.path.contains(File.separator) && node.path.isNotEmpty()) {
             return ZipFileHolder(zipTree, zipTree.getRootNode())
         }
@@ -92,7 +100,7 @@ class ZipFileHolder(
         return zipTree.source.getParent()
     }
 
-    override fun createSubFile(name: String, onCreated: (ContentHolder?) -> Unit) {
+    override suspend fun createSubFile(name: String, onCreated: (ContentHolder?) -> Unit) {
         val path = "${if (uniquePath.isEmpty()) emptyString else "$uniquePath/"}$name"
         val params = ZipParameters().apply {
             fileNameInZip = path
@@ -110,7 +118,7 @@ class ZipFileHolder(
         } ?: onCreated(null)
     }
 
-    override fun createSubFolder(name: String, onCreated: (ContentHolder?) -> Unit) {
+    override suspend fun createSubFolder(name: String, onCreated: (ContentHolder?) -> Unit) {
         val path = "${if (uniquePath.isEmpty()) emptyString else "$uniquePath/"}$name/"
         val params = ZipParameters().apply {
             fileNameInZip = path
@@ -128,13 +136,13 @@ class ZipFileHolder(
         } ?: onCreated(null)
     }
 
-    override fun getContentCount() = contentListCount
+    override suspend fun getContentCount() = contentListCount
 
-    override fun findFile(name: String) = node.children.find { it.name == name }?.let {
+    override suspend fun findFile(name: String) = node.children.find { it.name == name }?.let {
         ZipFileHolder(zipTree, it)
     }
 
-    override fun isValid() = true
+    override suspend fun isValid() = true
 
     override fun open(
         context: Context,
@@ -176,7 +184,7 @@ class ZipFileHolder(
         return path
     }
 
-    private fun createDetails(): String {
+    private suspend fun createDetails(): String {
         val separator = " | "
         return buildString {
             append(node.lastModified.toFormattedDate())
@@ -194,7 +202,7 @@ class ZipFileHolder(
         }
     }
 
-    private fun getFormattedFileCount(): String {
+    private suspend fun getFormattedFileCount(): String {
         if (filesCount == 0 && foldersCount == 0) {
             runBlocking {
                 listContent().forEach {

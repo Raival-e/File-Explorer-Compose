@@ -78,10 +78,13 @@ class MainActivity : BaseActivity() {
                     }
 
                     LaunchedEffect(Unit) {
-                        if (mainActivityState.tabs.isEmpty()) {
-                            mainActivityManager.loadStartupTabs()
+                        if (hasIntent()) {
+                            handleIntent()
+                        } else {
+                            if (mainActivityState.tabs.isEmpty()) {
+                                mainActivityManager.loadStartupTabs()
+                            }
                         }
-                        handleIntent()
                     }
 
                     JumpToPathDialog(
@@ -152,10 +155,10 @@ class MainActivity : BaseActivity() {
                 }
             }
 
-            LaunchedEffect(pagerState) {
+            LaunchedEffect(pagerState.currentPage) {
                 snapshotFlow { pagerState.currentPage }.collect { page ->
                     if (page != state.selectedTabIndex) {
-                        manager.selectTabAt(page)
+                        manager.selectTabAt(page, true)
                     }
                     state.tabLayoutState.animateScrollToItem(
                         state.selectedTabIndex
@@ -195,6 +198,10 @@ class MainActivity : BaseActivity() {
     override fun onDestroy() {
         super.onDestroy()
         globalClass.cleanOnExitDir()
+    }
+
+    private fun hasIntent(): Boolean {
+        return intent != null && intent!!.hasExtra(HOME_SCREEN_SHORTCUT_EXTRA_KEY)
     }
 
     private fun handleIntent() {

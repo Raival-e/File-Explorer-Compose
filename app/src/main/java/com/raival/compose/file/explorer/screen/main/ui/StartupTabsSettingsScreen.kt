@@ -39,7 +39,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,7 +56,6 @@ import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.screen.main.startup.StartupTab
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
-import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -70,7 +68,6 @@ fun StartupTabsSettingsScreen(
 ) {
     if (show) {
         val useDarkIcons = !isSystemInDarkTheme()
-        val coroutineScope = rememberCoroutineScope()
         val tabs = remember { mutableStateListOf<StartupTab>() }
         val lazyListState = rememberLazyListState()
         val reorderableState = rememberReorderableLazyListState(
@@ -132,10 +129,8 @@ fun StartupTabsSettingsScreen(
                         actions = {
                             IconButton(
                                 onClick = {
-                                    coroutineScope.launch {
-                                        tabs.clear()
-                                        tabs.addAll(StartupTabs.default().tabs)
-                                    }
+                                    tabs.clear()
+                                    tabs.addAll(StartupTabs.default().tabs)
                                 }
                             ) {
                                 Icon(

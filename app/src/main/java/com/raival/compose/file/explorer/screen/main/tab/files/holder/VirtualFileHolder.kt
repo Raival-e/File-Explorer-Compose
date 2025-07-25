@@ -28,8 +28,6 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
         else -> globalClass.getString(R.string.unknown)
     }
 
-    override val details = emptyString
-
     override val icon = emptyString
 
     override val isFolder = true
@@ -42,9 +40,9 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
 
     override val extension = emptyString
 
-    override fun isValid() = true
+    override suspend fun isValid() = true
 
-    override fun getParent() = null
+    override suspend fun getParent() = null
 
     override val iconPlaceholder = R.drawable.baseline_folder_24
 
@@ -65,7 +63,7 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
         fileCount = it.size
     }
 
-    override fun findFile(name: String): ContentHolder? {
+    override suspend fun findFile(name: String): ContentHolder? {
         if (contentList.isEmpty()) {
             runBlocking {
                 listContent()
@@ -81,7 +79,7 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
 
     override val canWrite = false
 
-    override fun getContentCount() = ContentCount(files = fileCount)
+    override suspend fun getContentCount() = ContentCount(files = fileCount)
 
     companion object {
         const val BOOKMARKS = 0

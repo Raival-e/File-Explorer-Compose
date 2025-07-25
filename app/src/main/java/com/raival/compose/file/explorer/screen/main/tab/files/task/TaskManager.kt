@@ -13,50 +13,42 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
+import java.util.Collections
 import java.util.concurrent.ConcurrentHashMap
 
 class TaskManager {
     private val taskScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val taskMutex = Mutex()
+    private var isMonitoring = false
 
-    // Use thread-safe collections
     private val allTasks = ConcurrentHashMap<String, Task>()
 
-    val pendingTasks = mutableListOf<Task>()
-    val runningTasks = mutableListOf<Task>()
-    val pausedTasks = mutableListOf<Task>()
-    val failedTasks = mutableListOf<Task>()
-    val invalidTasks = mutableListOf<Task>()
-    val completedTasks = mutableListOf<Task>()
-
-    private var isMonitoring = false
+    val pendingTasks: MutableCollection<Task> = Collections.synchronizedList(mutableListOf<Task>())
+    val runningTasks: MutableCollection<Task> = Collections.synchronizedList(mutableListOf<Task>())
+    val pausedTasks: MutableCollection<Task> = Collections.synchronizedList(mutableListOf<Task>())
+    val failedTasks: MutableCollection<Task> = Collections.synchronizedList(mutableListOf<Task>())
+    val invalidTasks: MutableCollection<Task> = Collections.synchronizedList(mutableListOf<Task>())
+    val completedTasks: MutableCollection<Task> =
+        Collections.synchronizedList(mutableListOf<Task>())
 
     @Volatile
     var runningTaskDialogInfo = RunningTaskDialogInfo()
     val taskInterceptor = TaskConflict()
 
-    suspend fun addTask(task: Task, notifyUser: Boolean = true) = taskMutex.withLock {
-        if (task.validate()) {
-            allTasks[task.id] = task
-            pendingTasks.add(task)
-            if (notifyUser)
-                globalClass.showMsg(globalClass.resources.getString(R.string.new_task_has_been_added))
-        } else {
-            invalidTasks.add(task)
-            globalClass.showMsg(globalClass.getString(R.string.task_validation_failed))
-        }
+    fun addTask(
+        task: Task,
+        notifyUser: Boolean = true
+    ) {
+        allTasks[task.id] = task
+        pendingTasks.add(task)
+        if (notifyUser) globalClass.showMsg(globalClass.resources.getString(R.string.new_task_has_been_added))
     }
 
-    suspend fun addTaskAndRun(task: Task, parameters: TaskParameters) {
+    fun addTaskAndRun(task: Task, parameters: TaskParameters) {
         addTask(task, false)
-        if (allTasks.containsKey(task.id)) {
-            runTask(task.id, parameters)
-        }
+        runTask(task.id, parameters)
     }
 
-    suspend fun removeTask(id: String) = taskMutex.withLock {
+    fun removeTask(id: String) {
         allTasks[id]?.abortTask()
         allTasks.remove(id)
 
@@ -68,7 +60,7 @@ class TaskManager {
         completedTasks.removeIf { it.id == id }
     }
 
-    suspend fun validateTasks() = taskMutex.withLock {
+    suspend fun validateTasks(onFinished: (() -> Unit)? = null) {
         val iterator = pendingTasks.iterator()
         while (iterator.hasNext()) {
             val task = iterator.next()
@@ -78,18 +70,20 @@ class TaskManager {
                 iterator.remove()
             }
         }
+        onFinished?.invoke()
     }
 
-    suspend fun runTask(id: String, taskParameters: TaskParameters) = taskMutex.withLock {
+    fun runTask(id: String, taskParameters: TaskParameters) {
         val task = allTasks[id]
+
         if (task == null) {
             showMsg(globalClass.getString(R.string.task_not_found))
-            return@withLock
+            return
         }
 
         if (task.getCurrentStatus() != TaskStatus.PENDING) {
             showMsg(globalClass.getString(R.string.task_is_not_in_pending_state))
-            return@withLock
+            return
         }
 
         moveTaskToRunning(task)
@@ -98,11 +92,11 @@ class TaskManager {
         startNewBackgroundTask(globalClass, task.id)
     }
 
-    suspend fun continueTask(taskId: String) = taskMutex.withLock {
+    fun continueTask(taskId: String) {
         val task = allTasks[taskId]
         if (task == null) {
             showMsg(globalClass.getString(R.string.task_not_found))
-            return@withLock
+            return
         }
 
         val currentStatus = task.getCurrentStatus()
@@ -117,7 +111,7 @@ class TaskManager {
                     currentStatus
                 )
             )
-            return@withLock
+            return
         }
 
         // Move task back to running
@@ -142,7 +136,7 @@ class TaskManager {
         }
     }
 
-    suspend fun handleTaskStatusChange(task: Task, newStatus: TaskStatus) = taskMutex.withLock {
+    fun handleTaskStatusChange(task: Task, newStatus: TaskStatus) {
         when (newStatus) {
             TaskStatus.SUCCESS -> {
                 runningTasks.removeIf { it.id == task.id }
@@ -257,9 +251,7 @@ class TaskManager {
             hide()
 
             // Continue the task
-            CoroutineScope(Dispatchers.IO).launch {
-                globalClass.taskManager.continueTask(currentTask.id)
-            }
+            globalClass.taskManager.continueTask(currentTask.id)
         }
     }
 
