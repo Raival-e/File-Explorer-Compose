@@ -58,6 +58,7 @@ class CopyTask(
             if (deleteSourceFiles) {
                 performSourceDeletion()
             }
+            alignApkIfNecessary()
             finalizeTask()
         } catch (e: Exception) {
             handleTaskError(e)
@@ -75,6 +76,23 @@ class CopyTask(
     }
 
     // Private helper methods
+
+    private fun alignApkIfNecessary() {
+        val destinationHolder = parameters!!.destHolder
+
+        if (destinationHolder !is ZipFileHolder) return
+
+        if (progressMonitor.status == TaskStatus.RUNNING) {
+            if (destinationHolder.zipTree.source.extension == apkFileType) {
+                progressMonitor.apply {
+                    processName = globalClass.resources.getString(R.string.aligning_apk)
+                    progress = -1f
+                    contentName = emptyString
+                }
+                ZipAlign.alignApk(destinationHolder.zipTree.source.file)
+            }
+        }
+    }
 
     private fun createTaskMetadata(): TaskMetadata {
         val time = System.currentTimeMillis().toFormattedDate()
@@ -139,15 +157,11 @@ class CopyTask(
             val destFile = destHolder.zipTree.source.file.canonicalPath
 
             if (sourceFile == destFile) {
-                val destPath = destHolder.node.path
-                val hasInvalidNesting = sourceFiles
-                    .filterIsInstance<ZipFileHolder>()
-                    .filter { !it.isFile() }
-                    .any { destPath.startsWith(it.node.path) }
-
-                if (hasInvalidNesting) {
-                    markAsFailed(globalClass.resources.getString(R.string.task_summary_invalid_dest))
-                    return false
+                runBlocking {
+                    if (firstSource.getParent()?.uniquePath == destHolder.uniquePath) {
+                        markAsFailed(globalClass.resources.getString(R.string.task_summary_invalid_dest))
+                        return@runBlocking false
+                    }
                 }
             }
         }
@@ -209,9 +223,32 @@ class CopyTask(
     }
 
     private fun preparePendingFiles(sourcePath: String) {
+        val destHolder = parameters!!.destHolder
+        var hasInvalidNesting = false
+        val isSameZipFiles = (sourceFiles.first() is ZipFileHolder && destHolder is ZipFileHolder)
+                && (sourceFiles.first() as ZipFileHolder).zipTree.source.uniquePath == destHolder.zipTree.source.uniquePath
+
         if (pendingFiles.isEmpty()) {
             sourceFiles.forEach { source ->
-                pendingFiles.addAll(listFilesWithRelativePath(sourcePath, source))
+                // Prevent moving into source subdirectories
+                if (deleteSourceFiles
+                    && source.isFolder
+                    && (((source is ZipFileHolder && destHolder is ZipFileHolder) && (isSameZipFiles))
+                            || (source is LocalFileHolder && destHolder is LocalFileHolder))
+                ) {
+                    val destPath = destHolder.uniquePath
+                    if (!hasInvalidNesting && destPath.startsWith(source.uniquePath)) {
+                        hasInvalidNesting = true
+                    } else {
+                        pendingFiles.addAll(listFilesWithRelativePath(sourcePath, source))
+                    }
+                } else {
+                    pendingFiles.addAll(listFilesWithRelativePath(sourcePath, source))
+                }
+            }
+
+            if (hasInvalidNesting) {
+                markAsFailed(globalClass.getString(R.string.some_files_are_moved_into_their_subdirectories_those_will_be_excluded))
             }
         }
     }
@@ -326,6 +363,8 @@ class CopyTask(
         progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
         preparePendingFiles(sourcePath)
 
+        if (progressMonitor.status == TaskStatus.FAILED) return
+
         progressMonitor.apply {
             totalContent = pendingFiles.size
             processName = if (deleteSourceFiles)
@@ -438,6 +477,8 @@ class CopyTask(
         progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
         preparePendingFiles(sourcePath)
 
+        if (progressMonitor.status == TaskStatus.FAILED) return
+
         progressMonitor.apply {
             totalContent = pendingFiles.size
             processName = if (deleteSourceFiles)
@@ -496,16 +537,6 @@ class CopyTask(
                         }
                     }
                 }
-                if (progressMonitor.status == TaskStatus.RUNNING) {
-                    if (destinationHolder.zipTree.source.extension == apkFileType) {
-                        progressMonitor.apply {
-                            processName = globalClass.resources.getString(R.string.aligning_apk)
-                            progress = -1f
-                            contentName = emptyString
-                        }
-                        ZipAlign.alignApk(destinationHolder.zipTree.source.file)
-                    }
-                }
             }
         } catch (e: Exception) {
             throw RuntimeException(globalClass.getString(R.string.failed_to_copy_files_to_zip), e)
@@ -540,6 +571,8 @@ class CopyTask(
     private fun copyZipFilesToLocal(sourcePath: String, destinationHolder: LocalFileHolder) {
         progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
         preparePendingFiles(sourcePath)
+
+        if (progressMonitor.status == TaskStatus.FAILED) return
 
         progressMonitor.apply {
             totalContent = pendingFiles.size
@@ -629,6 +662,8 @@ class CopyTask(
         progressMonitor.processName = globalClass.resources.getString(R.string.counting_files)
         preparePendingFiles(sourcePath)
 
+        if (progressMonitor.status == TaskStatus.FAILED) return
+
         progressMonitor.apply {
             totalContent = pendingFiles.size
             processName = if (deleteSourceFiles)
@@ -695,16 +730,6 @@ class CopyTask(
 
                             else -> { /* Already handled */
                             }
-                        }
-                    }
-                    if (progressMonitor.status == TaskStatus.RUNNING) {
-                        if (destinationHolder.zipTree.source.extension == apkFileType) {
-                            progressMonitor.apply {
-                                processName = globalClass.resources.getString(R.string.aligning_apk)
-                                progress = -1f
-                                contentName = emptyString
-                            }
-                            ZipAlign.alignApk(destinationHolder.zipTree.source.file)
                         }
                     }
                 }

@@ -371,4 +371,5 @@
     <string name="navigate_and_manage_your_files_and_folders">Navegar e gerenciar seus arquivos e pastas</string>
     <string name="aligning_apk">Alinhando o arquivo APK</string>
     <string name="invalid_apk_file">Arquivo APK inválido</string>
+    <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">Alguns arquivos são movidos para seus subdiretórios, eles serão excluídos.</string>
 </resources>

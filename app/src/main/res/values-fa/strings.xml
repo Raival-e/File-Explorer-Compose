@@ -371,4 +371,5 @@
     <string name="navigate_and_manage_your_files_and_folders">ناوبری و مدیریت فایل‌ها و پوشه‌های شما</string>
     <string name="aligning_apk">در حال هم‌ترازی فایل APK</string>
     <string name="invalid_apk_file">فایل APK نامعتبر</string>
+    <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">برخی از فایل‌ها به زیرشاخه‌های خود منتقل می‌شوند، آنها مستثنی خواهند شد.</string>
 </resources>

@@ -370,5 +370,6 @@
     <string name="browse_and_manage_installed_applications">Обзор и управление установленными приложениями</string>
     <string name="navigate_and_manage_your_files_and_folders">Навигация и управление файлами и папками</string>
     <string name="aligning_apk">Выравнивание файла APK</string>
-    <string name="invalid_apk_file">Недопустимый APK</string>
+    <string name="invalid_apk_file">Неверный файл APK</string>
+    <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">Некоторые файлы перемещены в их подкаталоги, они будут исключены.</string>
 </resources>

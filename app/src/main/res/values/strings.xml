@@ -372,4 +372,5 @@
     <string name="navigate_and_manage_your_files_and_folders">Navigate and manage your files and folders</string>
     <string name="aligning_apk">Aligning APK file</string>
     <string name="invalid_apk_file">Invalid APK</string>
+    <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">Some files are moved into their subdirectories, those will be excluded.</string>
 </resources>
