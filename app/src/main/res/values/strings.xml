@@ -370,4 +370,5 @@
     <string name="quick_access_to_common_folders_and_shortcuts">Quick access to common folders and shortcuts</string>
     <string name="browse_and_manage_installed_applications">Browse and manage installed applications</string>
     <string name="navigate_and_manage_your_files_and_folders">Navigate and manage your files and folders</string>
+    <string name="aligning_apk">Aligning APK file</string>
 </resources>

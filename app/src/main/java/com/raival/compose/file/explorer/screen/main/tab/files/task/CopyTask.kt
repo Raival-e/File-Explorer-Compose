@@ -12,6 +12,8 @@ import com.raival.compose.file.explorer.common.toRelativeString
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
+import com.reandroid.archive.ZipAlign
 import kotlinx.coroutines.runBlocking
 import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.model.ZipParameters
@@ -53,7 +55,7 @@ class CopyTask(
 
         try {
             executeTaskBasedOnSourceType()
-            if (deleteSourceFiles && progressMonitor.status == TaskStatus.RUNNING) {
+            if (deleteSourceFiles) {
                 performSourceDeletion()
             }
             finalizeTask()
@@ -247,6 +249,7 @@ class CopyTask(
 
     private fun performSourceDeletion() {
         if (!deleteSourceFiles) return
+        if (progressMonitor.status != TaskStatus.RUNNING) return
 
         progressMonitor.processName =
             globalClass.resources.getString(R.string.deleting_source_files)
@@ -493,6 +496,16 @@ class CopyTask(
                         }
                     }
                 }
+                if (progressMonitor.status == TaskStatus.RUNNING) {
+                    if (destinationHolder.zipTree.source.extension == apkFileType) {
+                        progressMonitor.apply {
+                            processName = globalClass.resources.getString(R.string.aligning_apk)
+                            progress = -1f
+                            contentName = emptyString
+                        }
+                        ZipAlign.alignApk(destinationHolder.zipTree.source.file)
+                    }
+                }
             }
         } catch (e: Exception) {
             throw RuntimeException(globalClass.getString(R.string.failed_to_copy_files_to_zip), e)
@@ -682,6 +695,16 @@ class CopyTask(
 
                             else -> { /* Already handled */
                             }
+                        }
+                    }
+                    if (progressMonitor.status == TaskStatus.RUNNING) {
+                        if (destinationHolder.zipTree.source.extension == apkFileType) {
+                            progressMonitor.apply {
+                                processName = globalClass.resources.getString(R.string.aligning_apk)
+                                progress = -1f
+                                contentName = emptyString
+                            }
+                            ZipAlign.alignApk(destinationHolder.zipTree.source.file)
                         }
                     }
                 }

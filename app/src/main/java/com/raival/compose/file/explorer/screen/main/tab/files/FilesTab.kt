@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.core.app.ShareCompat
 import androidx.core.content.FileProvider.getUriForFile
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.getIndexIf
@@ -80,6 +81,9 @@ class FilesTab(
     // Holds the file that has been long-clicked
     var targetFile: ContentHolder? = null
     var compressTaskHolder: CompressTask? = null
+
+    // Used to detect changes to an already updated ZipTree in ZipManager
+    var zipSourceTimestamp = -1L
 
     private val _dialogsState = MutableStateFlow(DialogsState())
     val dialogsState = _dialogsState.asStateFlow()
@@ -293,6 +297,11 @@ class FilesTab(
         // Update the path list
         updatePathList()
 
+        // Update the zipSourceTimestamp if the active folder is a zip file
+        if (activeFolder is ZipFileHolder) {
+            zipSourceTimestamp = (activeFolder as ZipFileHolder).zipTree.timeStamp
+        }
+
         // Get the content of the new folder
         listFiles { newContent -> // Main thread
             // Update the active folder content
@@ -341,12 +350,12 @@ class FilesTab(
                 return true
             }
         } else if (activeFolder is ZipFileHolder) {
+            // Check if the source any of the files that have been extracted has changed
             if (globalClass.zipManager.checkForSourceChanges()) {
                 val zipTree = (activeFolder as ZipFileHolder).zipTree
                 val changedFiles = zipTree.checkExtractedFiles()
                 if (changedFiles.isNotEmpty()) {
                     isLoading = true
-
                     ZipFile(zipTree.source.file).use { zipFile ->
                         changedFiles.forEach { changedFile ->
                             zipTree.getRelatedNode(changedFile)?.let { node ->
@@ -362,12 +371,18 @@ class FilesTab(
                         }
                     }
                     if (zipTree.source.extension == apkFileType) {
-                        ZipAlign.alignApk(zipTree.source.file)
+                        try {
+                            ZipAlign.alignApk(zipTree.source.file)
+                        } catch (e: Exception) {
+                            logger.logError(e)
+                        }
                     }
                     isLoading = false
-
                 }
                 zipTree.reset()
+                reloadFiles()
+                return true
+            } else if (zipSourceTimestamp isNot (activeFolder as ZipFileHolder).zipTree.timeStamp) {
                 reloadFiles()
                 return true
             }

@@ -8,6 +8,8 @@ import com.raival.compose.file.explorer.common.toFormattedDate
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
+import com.reandroid.archive.ZipAlign
 import net.lingala.zip4j.ZipFile
 import java.io.File
 import java.text.SimpleDateFormat
@@ -127,7 +129,7 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
                         itemToRename.source.file.renameTo(File(itemToRename.newPath))
                     } else if (itemToRename.source is ZipFileHolder) {
                         ZipFile(itemToRename.source.zipTree.source.file).renameFile(
-                            itemToRename.source.uniquePath,
+                            itemToRename.source.uniquePath + if (itemToRename.source.isFolder) "/" else emptyString,
                             itemToRename.newPath
                         )
                     }
@@ -141,6 +143,20 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
                         )
                     )
                     return
+                }
+            }
+        }
+
+        if (progressMonitor.status == TaskStatus.RUNNING) {
+            val sample = sourceContent.first()
+            if (sample is ZipFileHolder) {
+                if (sample.zipTree.source.extension == apkFileType) {
+                    progressMonitor.apply {
+                        processName = globalClass.resources.getString(R.string.aligning_apk)
+                        progress = -1f
+                        contentName = emptyString
+                    }
+                    ZipAlign.alignApk(sample.zipTree.source.file)
                 }
             }
         }

@@ -369,4 +369,5 @@
     <string name="quick_access_to_common_folders_and_shortcuts">دسترسی سریع به پوشه‌ها و میانبرهای رایج</string>
     <string name="browse_and_manage_installed_applications">مرور و مدیریت برنامه‌های نصب‌شده</string>
     <string name="navigate_and_manage_your_files_and_folders">ناوبری و مدیریت فایل‌ها و پوشه‌های شما</string>
+    <string name="aligning_apk">در حال هم‌ترازی فایل APK</string>
 </resources>
