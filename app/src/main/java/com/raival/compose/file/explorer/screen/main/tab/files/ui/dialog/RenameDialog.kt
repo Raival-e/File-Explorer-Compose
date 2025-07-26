@@ -22,6 +22,7 @@ import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
@@ -581,7 +582,9 @@ fun AdvanceRenameDialog(
                             }
                         },
                         enabled = !isReady || conflicts.isEmpty(),
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        border = if (isReady) null else ButtonDefaults.outlinedButtonBorder(),
+                        colors = if (isReady) ButtonDefaults.buttonColors() else ButtonDefaults.outlinedButtonColors()
                     ) {
                         Text(
                             text = stringResource(if (isReady) R.string.rename else R.string.preview),
