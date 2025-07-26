@@ -131,6 +131,7 @@ class CompressTask(
                     append(content.content.displayName)
                     append(" -> ")
                     append(content.status.name)
+                    append("\n")
                 }
             }
         }

@@ -373,4 +373,6 @@
     <string name="aligning_apk">Aligning APK file</string>
     <string name="invalid_apk_file">Invalid APK</string>
     <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">Some files are moved into their subdirectories, those will be excluded.</string>
+    <string name="failed_to_replace_original_zip_file">Failed to replace original zip file</string>
+    <string name="failed_to_delete_original_zip_file">Failed to delete original zip file</string>
 </resources>

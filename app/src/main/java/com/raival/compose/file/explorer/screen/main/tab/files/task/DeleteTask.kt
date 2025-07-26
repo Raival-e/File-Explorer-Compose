@@ -152,6 +152,7 @@ class DeleteTask(
                     append(content.source.displayName)
                     append(" -> ")
                     append(content.status.name)
+                    append("\n")
                 }
             }
         }

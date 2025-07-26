@@ -372,4 +372,6 @@
     <string name="aligning_apk">对齐APK文件</string>
     <string name="invalid_apk_file">无效的APK文件</string>
     <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">一些文件被移动到它们的子目录中，这些文件将被排除。</string>
+    <string name="failed_to_replace_original_zip_file">替换原始zip文件失败</string>
+    <string name="failed_to_delete_original_zip_file">删除原始zip文件失败</string>
 </resources>

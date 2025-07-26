@@ -216,7 +216,8 @@ class CopyTask(
                 pendingFiles.forEach { content ->
                     append(content.content.displayName)
                     append(" -> ")
-                    appendLine(content.status.name)
+                    append(content.status.name)
+                    append("\n")
                 }
             }
         }

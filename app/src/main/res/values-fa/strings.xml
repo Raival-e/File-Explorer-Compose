@@ -372,4 +372,6 @@
     <string name="aligning_apk">در حال هم‌ترازی فایل APK</string>
     <string name="invalid_apk_file">فایل APK نامعتبر</string>
     <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">برخی از فایل‌ها به زیرشاخه‌های خود منتقل می‌شوند، آنها مستثنی خواهند شد.</string>
+    <string name="failed_to_replace_original_zip_file">ناموفق در جایگزینی فایل zip اصلی</string>
+    <string name="failed_to_delete_original_zip_file">ناموفق در حذف فایل zip اصلی</string>
 </resources>
