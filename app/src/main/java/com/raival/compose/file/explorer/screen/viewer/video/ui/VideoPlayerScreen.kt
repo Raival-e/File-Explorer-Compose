@@ -42,7 +42,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -339,28 +338,34 @@ fun BottomControls(
                 .padding(16.dp)
                 .padding(bottom = 24.dp),
         ) {
-            var manualPosition by remember { mutableLongStateOf(0L) }
-            var manualSeek by remember { mutableFloatStateOf(0f) }
             var isDragging by remember { mutableStateOf(false) }
-            val progress = if (duration > 0) {
-                if (abs(currentPosition - manualPosition) < 1000) {
-                    (currentPosition.toFloat() / duration.toFloat()).also {
-                        manualPosition = currentPosition
-                    }
-                } else manualSeek
-            } else 0f
+            var pendingSeekPosition by remember { mutableLongStateOf(0L) }
+            var hasUncommittedSeek by remember { mutableStateOf(false) }
+
+            // Only show media player position when not actively seeking
+            val displayPosition = when {
+                isDragging || hasUncommittedSeek -> pendingSeekPosition
+                else -> currentPosition
+            }
+
+            val progress = if (duration > 0) displayPosition.toFloat() / duration.toFloat() else 0f
+
+            LaunchedEffect(currentPosition) {
+                // Reset uncommitted seek flag when media player catches up
+                if (hasUncommittedSeek && abs(currentPosition - pendingSeekPosition) < 1000) {
+                    hasUncommittedSeek = false
+                }
+            }
 
             Slider(
-                value = if (isDragging) manualSeek else progress,
-                onValueChange = {
+                value = progress,
+                onValueChange = { value ->
                     isDragging = true
-                    manualSeek = it
+                    pendingSeekPosition = (value * duration).toLong()
                 },
                 onValueChangeFinished = {
-                    (manualSeek * duration).toLong().let { newPosition ->
-                        manualPosition = newPosition
-                        onSeek(newPosition)
-                    }
+                    hasUncommittedSeek = true
+                    onSeek(pendingSeekPosition)
                     isDragging = false
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -377,7 +382,7 @@ fun BottomControls(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = (if (isDragging) (manualSeek * duration).toLong() else manualPosition).toFormattedTime(),
+                    text = displayPosition.toFormattedTime(),
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.onSurface
                 )
