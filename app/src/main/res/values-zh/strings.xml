@@ -370,4 +370,5 @@
     <string name="browse_and_manage_installed_applications">浏览和管理已安装的应用程序</string>
     <string name="navigate_and_manage_your_files_and_folders">浏览和管理您的文件和文件夹</string>
     <string name="aligning_apk">对齐APK文件</string>
+    <string name="invalid_apk_file">无效的APK文件</string>
 </resources>

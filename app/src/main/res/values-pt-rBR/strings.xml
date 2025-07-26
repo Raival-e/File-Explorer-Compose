@@ -369,5 +369,6 @@
     <string name="quick_access_to_common_folders_and_shortcuts">Acesso rápido a pastas e atalhos comuns</string>
     <string name="browse_and_manage_installed_applications">Navegar e gerenciar aplicativos instalados</string>
     <string name="navigate_and_manage_your_files_and_folders">Navegar e gerenciar seus arquivos e pastas</string>
-    <string name="aligning_apk">Alinhando arquivo APK</string>
+    <string name="aligning_apk">Alinhando o arquivo APK</string>
+    <string name="invalid_apk_file">Arquivo APK inválido</string>
 </resources>

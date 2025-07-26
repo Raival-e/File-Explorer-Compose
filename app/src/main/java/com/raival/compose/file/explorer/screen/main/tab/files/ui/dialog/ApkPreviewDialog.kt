@@ -170,6 +170,47 @@ fun ApkPreviewDialog(
                     ) {
                         CircularProgressIndicator()
                     }
+                } else if (apkInfo == null) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Android,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(RoundedCornerShape(20.dp)),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                        Space(12.dp)
+                        Text(
+                            text = stringResource(R.string.invalid_apk_file),
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Space(12.dp)
+                        OutlinedButton(
+                            onClick = {
+                                apkFile.open(
+                                    context = context,
+                                    anonymous = false,
+                                    skipSupportedExtensions = false,
+                                    customMimeType = "application/zip"
+                                )
+                                onDismissRequest()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Icon(
+                                Icons.Default.FolderOpen,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Space(size = 8.dp)
+                            Text(stringResource(R.string.explore))
+                        }
+                    }
                 } else {
                     apkInfo?.let { info ->
                         // App Header
