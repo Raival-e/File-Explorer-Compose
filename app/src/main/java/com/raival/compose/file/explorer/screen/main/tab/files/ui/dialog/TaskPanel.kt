@@ -79,6 +79,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTaskParameters
 import com.raival.compose.file.explorer.screen.main.tab.files.task.Task
+import com.raival.compose.file.explorer.screen.main.tab.files.task.TaskStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -673,7 +674,7 @@ private fun TaskItem(
                     exit = scaleOut(targetScale = 0.5f) + slideOutVertically { -it / 4 } + fadeOut()
                 ) {
                     Text(
-                        text = task.metadata.displayDetails,
+                        text = if (task.progressMonitor.status == TaskStatus.FAILED) task.progressMonitor.summary else task.metadata.displayDetails,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                         maxLines = 3
