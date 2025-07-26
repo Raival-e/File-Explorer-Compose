@@ -95,7 +95,7 @@ fun FileOptionsMenuDialog(
             }
 
             LaunchedEffect(Unit) {
-                details = targetContentHolder.getDetails()
+                if (details.isEmpty()) details = targetContentHolder.getDetails()
             }
 
             ItemRow(
