@@ -161,7 +161,7 @@ with:
 This project is licensed under the **GNU General Public License v3.0**.
 
 ```
-File Explorer Compose - A modern Android file manager
+Prism File Explorer - A modern Android file manager
 Copyright (C) 2024 Raival-e
 
 This program is free software: you can redistribute it and/or modify
