@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,9 +38,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -55,6 +54,7 @@ import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.ui.Isolate
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListFontSize
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListIconSize
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListSpace
@@ -244,38 +244,31 @@ fun FilesListGrid(tab: FilesTab) {
                 ) {
                     Isolate {
                         val iconSize = getFileListIconSize()
-
                         Box(
-                            modifier = Modifier.size(iconSize.dp),
+                            modifier = Modifier
+                                .size(iconSize.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .clickable { toggleSelection() }
+                                .graphicsLayer { alpha = if (item.isHidden()) 0.4f else 1f },
                         ) {
-                            if (item.isFile()) {
+                            var useCoil by remember(item.uid) {
+                                mutableStateOf(canUseCoil(item))
+                            }
+
+                            if (useCoil) {
                                 AsyncImage(
-                                    modifier = Modifier
-                                        .size(iconSize.dp)
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .clickable {
-                                            toggleSelection()
-                                        },
-                                    model = ImageRequest.Builder(globalClass).data(item)
+                                    modifier = Modifier.size(iconSize.dp),
+                                    model = ImageRequest
+                                        .Builder(globalClass)
+                                        .data(item)
                                         .build(),
                                     filterQuality = FilterQuality.Low,
-                                    error = painterResource(id = item.iconPlaceholder),
                                     contentScale = ContentScale.Fit,
-                                    alpha = if (item.isHidden()) 0.4f else 1f,
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    onError = { useCoil = false }
                                 )
                             } else {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(iconSize.dp)
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .clickable {
-                                            toggleSelection()
-                                        }
-                                        .alpha(if (item.isHidden()) 0.4f else 1f),
-                                    imageVector = Icons.Rounded.Folder,
-                                    contentDescription = null
-                                )
+                                FileContentIcon(item)
                             }
 
                             if (!item.canRead) {

@@ -224,7 +224,7 @@ fun ApkPreviewDialog(
                                     .clip(RoundedCornerShape(20.dp)),
                                 model = info.icon,
                                 filterQuality = FilterQuality.Low,
-                                error = painterResource(id = R.drawable.apk_file_extension),
+                                error = painterResource(id = R.drawable.apk_file_placeholder),
                                 contentScale = ContentScale.Fit,
                                 contentDescription = null
                             )

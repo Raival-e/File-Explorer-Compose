@@ -142,10 +142,12 @@ fun OpenWithAppListDialog(
                             ItemRow(
                                 title = item.label,
                                 subtitle = item.name,
+                                ignoreSizePreferences = true,
                                 icon = {
                                     ItemRowIcon(
                                         icon = item.icon,
-                                        placeholder = R.drawable.unknown_file_extension
+                                        placeholder = R.drawable.apk_file_placeholder,
+                                        ignoreSizePreferences = true
                                     )
                                 }
                             )

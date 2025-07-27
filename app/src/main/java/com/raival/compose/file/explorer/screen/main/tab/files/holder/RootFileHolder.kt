@@ -22,8 +22,6 @@ class RootFileHolder : ContentHolder() {
 
     override val uniquePath = rootDir
     override val displayName = globalClass.getString(R.string.root_dir)
-    override val icon = R.drawable.baseline_folder_24
-    override val iconPlaceholder = R.drawable.baseline_folder_24
     override val isFolder = true
     override val lastModified = 0L
     override val size = 0L

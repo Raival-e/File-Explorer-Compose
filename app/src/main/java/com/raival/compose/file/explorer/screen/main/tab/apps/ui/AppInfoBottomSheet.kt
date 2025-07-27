@@ -94,7 +94,7 @@ fun AppInfoBottomSheet(
                         .clip(RoundedCornerShape(12.dp)),
                     model = app.path,
                     filterQuality = FilterQuality.Low,
-                    error = painterResource(id = R.drawable.apk_file_extension),
+                    error = painterResource(id = R.drawable.apk_file_placeholder),
                     contentScale = ContentScale.Fit,
                     contentDescription = null
                 )

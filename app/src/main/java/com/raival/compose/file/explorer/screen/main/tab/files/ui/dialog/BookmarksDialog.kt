@@ -142,7 +142,8 @@ fun BookmarksDialog(
                                 Space(size = 4.dp)
                                 FileItemRow(
                                     item = item,
-                                    fileDetails = item.uniquePath.trimToLastTwoSegments()
+                                    fileDetails = item.uniquePath.trimToLastTwoSegments(),
+                                    ignoreSizePreferences = true
                                 )
                                 Space(size = 4.dp)
                                 HorizontalDivider(

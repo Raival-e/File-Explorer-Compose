@@ -40,10 +40,6 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
     override val size: Long by lazy { file.length() }
 
-    override val icon: Any = file
-
-    override val iconPlaceholder: Int by lazy { getContentIconPlaceholderResource() }
-
     override val uniquePath: String by lazy { file.absolutePath }
 
     override val extension: String by lazy { file.extension.lowercase() }

@@ -25,12 +25,6 @@ class ZipFileHolder(
     override val displayName = node.name
     var details = emptyString
 
-    override val icon = if (node.isDirectory)
-        R.drawable.baseline_folder_24 else R.drawable.unknown_file_extension
-
-    override val iconPlaceholder = if (node.isDirectory)
-        R.drawable.baseline_folder_24 else R.drawable.unknown_file_extension
-
     override val isFolder = node.isDirectory
     override val lastModified = node.lastModified
     override val size = node.size

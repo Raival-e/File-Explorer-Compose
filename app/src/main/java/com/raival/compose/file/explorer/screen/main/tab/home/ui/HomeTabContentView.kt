@@ -1,7 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.tab.home.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,20 +30,23 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.cheonjaeung.compose.grid.SimpleGridCells
 import com.cheonjaeung.compose.grid.VerticalGrid
 import com.google.gson.Gson
@@ -60,6 +62,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFile
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.BOOKMARKS
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.RECENT
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
+import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileContentIcon
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeLayout
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionConfig
@@ -231,28 +234,25 @@ private fun RecentFilesSection(
                             }
                         )
                 ) {
-                    if (canUseCoil(it.file)) {
-                        AsyncImage(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(2f),
-                            model = it.file,
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                            filterQuality = FilterQuality.Low
-                        )
-                    } else {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(2f),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                modifier = Modifier.size(48.dp),
-                                painter = painterResource(id = it.file.iconPlaceholder),
-                                contentDescription = null
+                    var useCoil by remember(it.file.uid) {
+                        mutableStateOf(canUseCoil(it.file))
+                    }
+
+                    Box(modifier = Modifier.weight(2f)) {
+                        if (useCoil) {
+                            AsyncImage(
+                                modifier = Modifier.fillMaxSize(),
+                                model = ImageRequest
+                                    .Builder(globalClass)
+                                    .data(it.file)
+                                    .build(),
+                                filterQuality = FilterQuality.Low,
+                                contentScale = ContentScale.Crop,
+                                contentDescription = null,
+                                onError = { useCoil = false }
                             )
+                        } else {
+                            FileContentIcon(it.file)
                         }
                     }
 

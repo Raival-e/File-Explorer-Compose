@@ -28,8 +28,6 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
         else -> globalClass.getString(R.string.unknown)
     }
 
-    override val icon = emptyString
-
     override val isFolder = true
 
     override val lastModified = 0L
@@ -43,8 +41,6 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
     override suspend fun isValid() = true
 
     override suspend fun getParent() = null
-
-    override val iconPlaceholder = R.drawable.baseline_folder_24
 
     override suspend fun listContent() = when (type) {
         BOOKMARKS -> getBookmarks()

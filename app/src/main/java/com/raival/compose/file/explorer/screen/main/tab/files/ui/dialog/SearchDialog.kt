@@ -303,8 +303,9 @@ fun SearchDialog(
                             ) {
                                 Space(size = 4.dp)
                                 FileItemRow(
-                                    item = item, fileDetails = if (item is LocalFileHolder)
-                                        item.basePath else item.uniquePath
+                                    item = item,
+                                    fileDetails = if (item is LocalFileHolder) item.basePath else item.uniquePath,
+                                    ignoreSizePreferences = true
                                 )
                                 Space(size = 4.dp)
                                 HorizontalDivider(

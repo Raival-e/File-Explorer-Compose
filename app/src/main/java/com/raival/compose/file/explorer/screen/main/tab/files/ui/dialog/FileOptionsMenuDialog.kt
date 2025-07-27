@@ -101,8 +101,12 @@ fun FileOptionsMenuDialog(
             ItemRow(
                 title = targetContentHolder.displayName,
                 subtitle = details,
+                ignoreSizePreferences = true,
                 icon = {
-                    FileIcon(contentHolder = targetContentHolder)
+                    FileIcon(
+                        contentHolder = targetContentHolder,
+                        ignoreSizePreferences = true
+                    )
                 }
             )
 
