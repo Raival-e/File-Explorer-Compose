@@ -6,10 +6,10 @@
 
 [![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android)](https://www.android.com/)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Release](https://img.shields.io/github/v/release/Raival-e/File-Explorer-Compose?label=Release)](https://github.com/Raival-e/File-Explorer-Compose/releases)
-[![APK Downloads](https://img.shields.io/github/downloads/Raival-e/File-Explorer-Compose/total.svg?label=APK%20Downloads)](https://github.com/Raival-e/File-Explorer-Compose/releases)
-[![Stars](https://img.shields.io/github/stars/Raival-e/File-Explorer-Compose?style=flat&logo=github)](https://github.com/Raival-e/File-Explorer-Compose/stargazers)
-[![Forks](https://img.shields.io/github/forks/Raival-e/File-Explorer-Compose?style=flat&logo=github)](https://github.com/Raival-e/File-Explorer-Compose/network/members)
+[![Release](https://img.shields.io/github/v/release/Raival-e/Prism-File-Explorer?label=Release)](https://github.com/Raival-e/Prism-File-Explorer/releases)
+[![APK Downloads](https://img.shields.io/github/downloads/Raival-e/Prism-File-Explorer/total.svg?label=APK%20Downloads)](https://github.com/Raival-e/Prism-File-Explorer/releases)
+[![Stars](https://img.shields.io/github/stars/Raival-e/Prism-File-Explorer?style=flat&logo=github)](https://github.com/Raival-e/Prism-File-Explorer/stargazers)
+[![Forks](https://img.shields.io/github/forks/Raival-e/Prism-File-Explorer?style=flat&logo=github)](https://github.com/Raival-e/Prism-File-Explorer/network/members)
 
 **A modern, feature-rich, and lightweight file manager for Android, built entirely with Kotlin and Jetpack Compose.**
 
@@ -86,11 +86,11 @@
 
 ## 📥 Download Options
 
-| Platform            | Link                                                                                                                                                                                                                                                                                                                                                                          | Auto-Updates |
-|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| **GitHub Releases** | [![GitHub](https://img.shields.io/badge/GitHub-Download-black?style=for-the-badge&logo=github)](https://github.com/Raival-e/File-Explorer-Compose/releases)                                                                                                                                                                                                                   | Manual       |
-| **IzzyOnDroid**     | [![IzzyOnDroid](https://img.shields.io/badge/IzzyOnDroid-Download-green?style=for-the-badge)](https://apt.izzysoft.de/fdroid/index/apk/com.raival.compose.file.explorer)                                                                                                                                                                                                      | Automatic    |
-| **Obtainium**       | [![Obtainium](https://img.shields.io/badge/Obtainium-Download-blue?style=for-the-badge)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.raival.compose.file.explorer%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FRaival-e%2FFile-Explorer-Compose%22%2C%22author%22%3A%22Raival-e%22%2C%22name%22%3A%22File%20Explorer%20Compose%22%7D) | Automatic    |
+| Platform            | Link                                                                                                                                                                                                                                                                                                                                                                        | Auto-Updates |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| **GitHub Releases** | [![GitHub](https://img.shields.io/badge/GitHub-Download-black?style=for-the-badge&logo=github)](https://github.com/Raival-e/Prism-File-Explorer/releases)                                                                                                                                                                                                                   | Manual       |
+| **IzzyOnDroid**     | [![IzzyOnDroid](https://img.shields.io/badge/IzzyOnDroid-Download-green?style=for-the-badge)](https://apt.izzysoft.de/fdroid/index/apk/com.raival.compose.file.explorer)                                                                                                                                                                                                    | Automatic    |
+| **Obtainium**       | [![Obtainium](https://img.shields.io/badge/Obtainium-Download-blue?style=for-the-badge)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.raival.compose.file.explorer%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FRaival-e%2FPrism-File-Explorer%22%2C%22author%22%3A%22Raival-e%22%2C%22name%22%3A%22File%20Explorer%20Compose%22%7D) | Automatic    |
 
 ### 📋 System Requirements
 
@@ -118,7 +118,7 @@ We welcome contributions from the community! Here's how you can help:
 ### 🐛 **Bug Reports**
 
 Found a bug?
-Please [open an issue](https://github.com/Raival-e/File-Explorer-Compose/issues/new?assignees=&labels=bug&template=bug_report.md)
+Please [open an issue](https://github.com/Raival-e/Prism-File-Explorer/issues/new?assignees=&labels=bug&template=bug_report.md)
 with:
 
 - Device information
@@ -129,7 +129,7 @@ with:
 ### 💡 **Feature Requests**
 
 Have an
-idea? [Submit a feature request](https://github.com/Raival-e/File-Explorer-Compose/issues/new?assignees=&labels=enhancement&template=feature_request.md)
+idea? [Submit a feature request](https://github.com/Raival-e/Prism-File-Explorer/issues/new?assignees=&labels=enhancement&template=feature_request.md)
 with:
 
 - Detailed description
@@ -152,7 +152,7 @@ with:
 
 ## 📊 Project Stats
 
-![GitHub stats](https://github-readme-stats.vercel.app/api?username=Raival-e&repo=File-Explorer-Compose&show_icons=true&theme=default)
+![GitHub stats](https://github-readme-stats.vercel.app/api?username=Raival-e&repo=Prism-File-Explorer&show_icons=true&theme=default)
 
 ---
 
@@ -184,7 +184,7 @@ See the [LICENSE](LICENSE) file for the full license text.
 
 **⭐ If you find this project useful, please consider giving it a star!**
 
-[![Star History](https://img.shields.io/github/stars/Raival-e/File-Explorer-Compose?style=social)](https://github.com/Raival-e/File-Explorer-Compose/stargazers)
+[![Star History](https://img.shields.io/github/stars/Raival-e/Prism-File-Explorer?style=social)](https://github.com/Raival-e/Prism-File-Explorer/stargazers)
 
 ---
 
