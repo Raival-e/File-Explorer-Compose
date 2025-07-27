@@ -621,7 +621,6 @@ class FilesTab(
             compressTaskHolder = task
             _dialogsState.update { it.copy(showNewZipFileDialog = true) }
         } else {
-            compressTaskHolder = null
             _dialogsState.update { it.copy(showNewZipFileDialog = false) }
         }
     }

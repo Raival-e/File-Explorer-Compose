@@ -13,6 +13,5 @@ fun canUseCoil(contentHolder: ContentHolder): Boolean {
             || videoFileType.contains(contentHolder.extension)
             || audioFileType.contains(contentHolder.extension)
             || contentHolder.extension == apkFileType
-            || contentHolder.extension == pdfFileType
-            )
+            || contentHolder.extension == pdfFileType)
 }
