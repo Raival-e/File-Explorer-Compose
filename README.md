@@ -1,12 +1,8 @@
 <div align="center">
 
-# Prism File Explorer
-
-</div>
-
-<div align="center">
-
 <img src="assets/app_icon.png" width="120" alt="Prism File Explorer Logo"/>
+
+# Prism File Explorer
 
 [![Platform](https://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android)](https://www.android.com/)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
