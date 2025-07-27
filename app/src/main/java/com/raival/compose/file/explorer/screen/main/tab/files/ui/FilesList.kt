@@ -274,8 +274,8 @@ fun FilesListGrid(tab: FilesTab) {
                             if (!item.canRead) {
                                 Icon(
                                     modifier = Modifier
-                                        .size(18.dp)
-                                        .align(Alignment.Center)
+                                        .size(14.dp)
+                                        .align(Alignment.BottomEnd)
                                         .alpha(if (item.isHidden()) 0.4f else 1f),
                                     imageVector = Icons.Rounded.Lock,
                                     tint = Color.Red,

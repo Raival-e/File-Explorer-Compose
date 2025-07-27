@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.BugReport
-import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -41,6 +40,8 @@ import androidx.core.net.toUri
 import coil3.compose.AsyncImage
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.icons.Github
+import com.raival.compose.file.explorer.common.icons.PrismIcons
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.logs.LogsActivity
 
@@ -104,7 +105,7 @@ fun AppInfoDialog(
 
                 // Action buttons with improved styling
                 ActionButton(
-                    icon = Icons.Outlined.Code,
+                    icon = PrismIcons.Github,
                     text = stringResource(R.string.github),
                     description = stringResource(R.string.view_source_code),
                     onClick = {

@@ -6,16 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.AudioFile
-import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.Audiotrack
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Image
-import androidx.compose.material.icons.filled.ImagesearchRoller
 import androidx.compose.material.icons.filled.QuestionMark
 import androidx.compose.material.icons.filled.Slideshow
 import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material.icons.filled.TextFields
-import androidx.compose.material.icons.filled.VideoFile
+import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -24,6 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.raival.compose.file.explorer.common.icons.Code
+import com.raival.compose.file.explorer.common.icons.Iso
+import com.raival.compose.file.explorer.common.icons.Java
+import com.raival.compose.file.explorer.common.icons.Kotlin
+import com.raival.compose.file.explorer.common.icons.Markdown
+import com.raival.compose.file.explorer.common.icons.Pdf
+import com.raival.compose.file.explorer.common.icons.PrismIcons
+import com.raival.compose.file.explorer.common.icons.Sql
+import com.raival.compose.file.explorer.common.icons.Vector
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.archiveFileType
@@ -34,7 +41,13 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.excelFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.fontFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.imageFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.isoFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.javaFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.kotlinFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.markdownFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.pdfFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.pptFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.sqlFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.vectorFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.videoFileType
 
@@ -54,17 +67,24 @@ private fun getContentIcon(content: ContentHolder): FileContentIcon {
 
     val extension = content.extension
 
-    if (videoFileType.contains(extension)) return FileContentIcon(Icons.Default.VideoFile)
+    if (extension == javaFileType) return FileContentIcon(PrismIcons.Java)
+    if (extension == kotlinFileType) return FileContentIcon(PrismIcons.Kotlin)
+    if (extension == markdownFileType) return FileContentIcon(PrismIcons.Markdown)
+    if (extension == isoFileType) return FileContentIcon(PrismIcons.Iso)
+    if (extension == sqlFileType) return FileContentIcon(PrismIcons.Sql)
+    if (extension == pdfFileType) return FileContentIcon(PrismIcons.Pdf)
+    if (extension == apkFileType) return FileContentIcon(Icons.Default.Android)
+
+    if (videoFileType.contains(extension)) return FileContentIcon(Icons.Default.Videocam)
     if (imageFileType.contains(extension)) return FileContentIcon(Icons.Default.Image)
     if (docFileType.contains(extension)) return FileContentIcon(Icons.Default.Description)
     if (excelFileType.contains(extension)) return FileContentIcon(Icons.Default.TableChart)
     if (pptFileType.contains(extension)) return FileContentIcon(Icons.Default.Slideshow)
     if (fontFileType.contains(extension)) return FileContentIcon(Icons.Default.TextFields)
-    if (vectorFileType.contains(extension)) return FileContentIcon(Icons.Default.ImagesearchRoller)
-    if (audioFileType.contains(extension)) return FileContentIcon(Icons.Default.AudioFile)
-    if (codeFileType.contains(extension)) return FileContentIcon(Icons.Default.DataObject)
+    if (vectorFileType.contains(extension)) return FileContentIcon(PrismIcons.Vector)
+    if (audioFileType.contains(extension)) return FileContentIcon(Icons.Default.Audiotrack)
+    if (codeFileType.contains(extension)) return FileContentIcon(PrismIcons.Code)
     if (editableFileType.contains(extension)) return FileContentIcon(Icons.Default.Description)
-    if (apkFileType == extension) return FileContentIcon(Icons.Default.Android)
     if (archiveFileType.contains(extension)) return FileContentIcon(Icons.Default.Archive)
 
     return FileContentIcon(Icons.Default.QuestionMark)

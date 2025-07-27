@@ -1,20 +1,15 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.misc
 
 object FileMimeType {
-    const val aiFileType = "ai"
     const val apkFileType = "apk"
-    const val cssFileType = "css"
     const val isoFileType = "iso"
-    const val jsFileType = "js"
     const val pdfFileType = "pdf"
-    const val psdFileType = "psd"
     const val sqlFileType = "sql"
     const val svgFileType = "svg"
-    const val vcfFileType = "vcf"
     const val javaFileType = "java"
     const val kotlinFileType = "kt"
     const val jsonFileType = "json"
-
+    const val markdownFileType = "md"
     const val xmlFileType = "xml"
     const val anyFileType = "*/*"
 
