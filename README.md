@@ -22,16 +22,16 @@
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="assets/image1.png" width="18%" alt="Main Interface"/>
-  <img src="assets/image2.png" width="18%" alt="File Operations"/>
-  <img src="assets/image3.png" width="18%" alt="Apps Extractor"/>
-  <img src="assets/image4.png" width="18%" alt="Text Editor"/>
-  <img src="assets/image5.png" width="18%" alt="PDF Viewer"/>
+  <img src="assets/image1.png" width="22%" alt="Main Interface"/>
+  <img src="assets/image2.png" width="22%" alt="File Operations"/>
+  <img src="assets/image3.png" width="22%" alt="Apps Extractor"/>
+  <img src="assets/image4.png" width="22%" alt="Text Editor"/>
 </div>
 
 <div align="center">
-  <img src="assets/image6.png" width="27%" alt="Audio Player"/>
-  <img src="assets/image7.png" width="27%" alt="Image Viewer"/>
+  <img src="assets/image6.png" width="21%" alt="Audio Player"/>
+  <img src="assets/image7.png" width="21%" alt="Image Viewer"/>
+  <img src="assets/image5.png" width="21%" alt="PDF Viewer"/>
 </div>
 
 ---
@@ -84,7 +84,7 @@
 
 ---
 
-## ?? Download Options
+## 📥 Download Options
 
 | Platform            | Link                                                                                                                                                                                                                                                                                                                                                                          | Auto-Updates |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
