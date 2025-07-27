@@ -83,6 +83,7 @@ dependencies {
     implementation(libs.coil.gif)
     implementation(libs.coil.svg)
     implementation(libs.coil.video)
+    implementation(libs.okio)
 
     // Third-Party UI/Compose Utilities
     implementation(libs.accompanist.systemuicontroller)

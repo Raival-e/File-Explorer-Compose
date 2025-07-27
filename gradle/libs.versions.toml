@@ -12,6 +12,7 @@ lazycolumnscrollbar = "2.2.0"
 material = "1.12.0"
 androidxComposeBom = "2025.07.00"
 media3Exoplayer = "1.7.1"
+okio = "3.15.0"
 paletteKtx = "1.0.0"
 soraEditor = "0.23.6"
 gson = "2.13.1"
@@ -56,6 +57,7 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-lifecycle-runtime-compose-android = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose-android", version.ref = "lifecycle_runtime_compose_android" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity_compose" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 sora-editor = { group = "io.github.Rosemoe.sora-editor", name = "editor", version.ref = "soraEditor" }
 sora-editor-language-java = { group = "io.github.Rosemoe.sora-editor", name = "language-java", version.ref = "soraEditor" }
 sora-editor-language-textmate = { group = "io.github.Rosemoe.sora-editor", name = "language-textmate", version.ref = "soraEditor" }

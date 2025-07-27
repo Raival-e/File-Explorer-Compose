@@ -5,6 +5,7 @@ import coil3.request.Options
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.aiFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.archiveFileType
@@ -31,6 +32,7 @@ class DocumentFileMapper : Mapper<ContentHolder, Any> {
         return when {
             data.isFolder -> R.drawable.baseline_folder_24
             data is LocalFileHolder && canUseCoil(data) -> data.icon
+            data is ZipFileHolder && !data.isFolder -> data
             data.extension == aiFileType -> R.drawable.ai_file_extension
             data.extension == cssFileType -> R.drawable.css_file_extension
             data.extension == isoFileType -> R.drawable.iso_file_extension

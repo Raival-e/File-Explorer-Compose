@@ -66,8 +66,7 @@ object FileMimeType {
 
     @JvmField
     val imageFileType = arrayOf(
-        "png", "jpeg", "jpg", "heic", "tiff", "gif", "webp", svgFileType,
-        "bmp", "raw", "cr2", "nef", "orf", "sr2", "psd", "ai", "eps"
+        "png", "jpeg", "jpg", "heic", "tiff", "gif", "webp", svgFileType, "bmp", "raw"
     )
 
     @JvmField

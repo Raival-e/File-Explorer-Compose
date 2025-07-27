@@ -20,6 +20,8 @@ import coil3.video.VideoFrameDecoder
 import com.raival.compose.file.explorer.coil.apk.ApkFileDecoder
 import com.raival.compose.file.explorer.coil.audio.AudioFileDecoder
 import com.raival.compose.file.explorer.coil.pdf.PdfFileDecoder
+import com.raival.compose.file.explorer.coil.zip.ZipFileFetcher
+import com.raival.compose.file.explorer.coil.zip.ZipFileKeyer
 import com.raival.compose.file.explorer.common.FileExplorerLogger
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper
@@ -195,6 +197,8 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
                 add(ApkFileDecoder.Factory())
                 add(PdfFileDecoder.Factory())
                 add(AudioFileDecoder.Factory())
+                add(ZipFileFetcher.Factory())
+                add(ZipFileKeyer())
             }
             .build()
     }
