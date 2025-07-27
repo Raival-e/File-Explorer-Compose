@@ -1,4 +1,8 @@
+<div align="center">
+
 # Prism File Explorer
+
+</div>
 
 <div align="center">
 
@@ -22,16 +26,16 @@
 ## 📱 Screenshots
 
 <div align="center">
-  <img src="assets/image1" width="18%" alt="Main Interface"/>
-  <img src="assets/image2" width="18%" alt="File Operations"/>
-  <img src="assets/image3" width="18%" alt="Apps Extractor"/>
-  <img src="assets/image4" width="18%" alt="Text Editor"/>
-  <img src="assets/image5" width="18%" alt="PDF Viewer"/>
+  <img src="assets/image1.png" width="18%" alt="Main Interface"/>
+  <img src="assets/image2.png" width="18%" alt="File Operations"/>
+  <img src="assets/image3.png" width="18%" alt="Apps Extractor"/>
+  <img src="assets/image4.png" width="18%" alt="Text Editor"/>
+  <img src="assets/image5.png" width="18%" alt="PDF Viewer"/>
 </div>
 
 <div align="center">
-  <img src="assets/image6" width="27%" alt="Audio Player"/>
-  <img src="assets/image7" width="27%" alt="Image Viewer"/>
+  <img src="assets/image6.png" width="27%" alt="Audio Player"/>
+  <img src="assets/image7.png" width="27%" alt="Image Viewer"/>
 </div>
 
 ---
@@ -86,15 +90,11 @@
 
 ## ?? Download Options
 
-<div align="center">
-
 | Platform            | Link                                                                                                                                                                                                                                                                                                                                                                          | Auto-Updates |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
 | **GitHub Releases** | [![GitHub](https://img.shields.io/badge/GitHub-Download-black?style=for-the-badge&logo=github)](https://github.com/Raival-e/File-Explorer-Compose/releases)                                                                                                                                                                                                                   | Manual       |
 | **IzzyOnDroid**     | [![IzzyOnDroid](https://img.shields.io/badge/IzzyOnDroid-Download-green?style=for-the-badge)](https://apt.izzysoft.de/fdroid/index/apk/com.raival.compose.file.explorer)                                                                                                                                                                                                      | Automatic    |
 | **Obtainium**       | [![Obtainium](https://img.shields.io/badge/Obtainium-Download-blue?style=for-the-badge)](https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22com.raival.compose.file.explorer%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FRaival-e%2FFile-Explorer-Compose%22%2C%22author%22%3A%22Raival-e%22%2C%22name%22%3A%22File%20Explorer%20Compose%22%7D) | Automatic    |
-
-</div>
 
 ### 📋 System Requirements
 
@@ -105,8 +105,6 @@
 
 ## 🛠️ Built With
 
-<div align="center">
-
 | Technology                                                                                                               | Purpose                  | Version       |
 |--------------------------------------------------------------------------------------------------------------------------|--------------------------|---------------|
 | ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat&logo=kotlin&logoColor=white)                             | **Programming Language** | Latest        |
@@ -114,7 +112,6 @@
 | ![Android](https://img.shields.io/badge/Android-3DDC84?style=flat&logo=android&logoColor=white)                          | **Platform**             | SDK 34+       |
 | ![Material Design](https://img.shields.io/badge/Material%20Design-757575?style=flat&logo=materialdesign&logoColor=white) | **Design System**        | Material 3    |
 
-</div>
 
 ---
 
@@ -159,11 +156,7 @@ with:
 
 ## 📊 Project Stats
 
-<div align="center">
-
 ![GitHub stats](https://github-readme-stats.vercel.app/api?username=Raival-e&repo=File-Explorer-Compose&show_icons=true&theme=default)
-
-</div>
 
 ---
 
@@ -187,8 +180,6 @@ See the [LICENSE](LICENSE) file for the full license text.
 
 ## 💬 Support & Community
 
-<div align="center">
-
 | Platform               | Purpose                       |
 |------------------------|-------------------------------|
 | **GitHub Issues**      | Bug reports, feature requests |
@@ -198,8 +189,6 @@ See the [LICENSE](LICENSE) file for the full license text.
 **⭐ If you find this project useful, please consider giving it a star!**
 
 [![Star History](https://img.shields.io/github/stars/Raival-e/File-Explorer-Compose?style=social)](https://github.com/Raival-e/File-Explorer-Compose/stargazers)
-
-</div>
 
 ---
 
