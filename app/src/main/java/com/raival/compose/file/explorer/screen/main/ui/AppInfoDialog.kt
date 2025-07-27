@@ -112,7 +112,7 @@ fun AppInfoDialog(
                         context.startActivity(
                             Intent(
                                 Intent.ACTION_VIEW,
-                                "https://github.com/Raival-e/File-Explorer-Compose".toUri()
+                                "https://github.com/Raival-e/Prism-File-Explorer".toUri()
                             )
                         )
                     }

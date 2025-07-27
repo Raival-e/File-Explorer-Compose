@@ -13,8 +13,8 @@ android {
         applicationId = "com.raival.compose.file.explorer"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "1.2.1"
+        versionCode = 8
+        versionName = "1.3.0"
     }
 
     dependenciesInfo {
