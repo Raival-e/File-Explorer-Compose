@@ -156,6 +156,17 @@ with:
 
 ---
 
+## ☕ Support the Project
+
+If you find **Prism File Explorer** useful and would like to support its development, consider
+buying me a coffee! Your support helps me maintain and improve this project.
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://www.buymeacoffee.com/Raival-R)
+
+*Every contribution, no matter how small, helps keep this project alive and growing! ❤️*
+
+---
+
 ## 📄 License
 
 This project is licensed under the **GNU General Public License v3.0**.
@@ -185,11 +196,3 @@ See the [LICENSE](LICENSE) file for the full license text.
 **⭐ If you find this project useful, please consider giving it a star!**
 
 [![Star History](https://img.shields.io/github/stars/Raival-e/Prism-File-Explorer?style=social)](https://github.com/Raival-e/Prism-File-Explorer/stargazers)
-
----
-
-<div align="center">
-
-**Made with ❤️ by [Raival-e](https://github.com/Raival-e)**
-
-</div>
