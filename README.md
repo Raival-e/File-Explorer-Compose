@@ -111,31 +111,37 @@
 
 ---
 
+## 🔨 Building from Source
+
+### Prerequisites
+
+- **JDK**: 17 or higher
+- **Android SDK**: API level 34+
+- **Git**: For cloning the repository
+
+### Build Instructions
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Raival-e/Prism-File-Explorer.git
+   cd Prism-File-Explorer
+   ```
+
+2. **Build the project**:
+   ```bash
+   ./gradlew assembleRelease
+   ```
+
+3. **Find the APK**:
+    - Generated APK will be in `app/build/outputs/apk/release/`
+
+### Release Information
+
+Official releases are built using **Android Studio** with **JetBrains Runtime 21.0.6**.
+
+---
+
 ## 🤝 Contributing
-
-We welcome contributions from the community! Here's how you can help:
-
-### 🐛 **Bug Reports**
-
-Found a bug?
-Please [open an issue](https://github.com/Raival-e/Prism-File-Explorer/issues/new?assignees=&labels=bug&template=bug_report.md)
-with:
-
-- Device information
-- Android version
-- Steps to reproduce
-- Expected vs actual behavior
-
-### 💡 **Feature Requests**
-
-Have an
-idea? [Submit a feature request](https://github.com/Raival-e/Prism-File-Explorer/issues/new?assignees=&labels=enhancement&template=feature_request.md)
-with:
-
-- Detailed description
-- Use cases
-
-### 🔧 **Code Contributions**
 
 1. **Fork** the repository
 2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
