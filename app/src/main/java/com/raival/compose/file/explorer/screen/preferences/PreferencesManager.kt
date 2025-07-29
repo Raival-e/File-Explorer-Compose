@@ -110,12 +110,6 @@ class PreferencesManager {
     )
 
     //---------- File Operation -------------//
-    var searchInFilesLimit by prefMutableState(
-        keyName = "searchInFilesLimit",
-        defaultValue = 150,
-        getPreferencesKey = { intPreferencesKey(it) }
-    )
-
     var signMergedApkBundleFiles by prefMutableState(
         keyName = "signMergedApkBundleFiles",
         defaultValue = true,

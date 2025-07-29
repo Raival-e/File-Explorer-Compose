@@ -26,6 +26,7 @@ import com.raival.compose.file.explorer.common.FileExplorerLogger
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.DocumentFileMapper
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.search.SearchManager
 import com.raival.compose.file.explorer.screen.main.tab.files.task.TaskManager
 import com.raival.compose.file.explorer.screen.main.tab.files.zip.ZipManager
 import com.raival.compose.file.explorer.screen.preferences.PreferencesManager
@@ -93,6 +94,7 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
     }
     val taskManager: TaskManager by lazy { TaskManager() }
     val zipManager: ZipManager by lazy { ZipManager() }
+    val searchManager: SearchManager by lazy { SearchManager() }
 
     override fun onCreate() {
         super.onCreate()

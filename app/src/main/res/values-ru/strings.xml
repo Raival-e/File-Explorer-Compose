@@ -374,4 +374,14 @@
     <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">Некоторые файлы перемещены в их подкаталоги, они будут исключены.</string>
     <string name="failed_to_replace_original_zip_file">Не удалось заменить исходный zip-файл</string>
     <string name="failed_to_delete_original_zip_file">Не удалось удалить исходный zip-файл</string>
+    <string name="advanced_options">Расширенные настройки</string>
+    <string name="ignore_case">Игнорировать регистр</string>
+    <string name="by_extension">По расширению</string>
+    <string name="in_content">В содержимом</string>
+    <string name="max_results">Макс. результатов: %1$d</string>
+    <string name="searching">Поиск…</string>
+    <string name="search_results">Результаты (%1$d)</string>
+    <string name="expand">Развернуть</string>
+    <string name="something_went_wrong">Что-то пошло не так, проверьте логи</string>
+    <string name="line">Строка %1$d</string>
 </resources>

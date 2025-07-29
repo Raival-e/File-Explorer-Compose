@@ -198,7 +198,7 @@
     <string name="new_name">New Name</string>
     <string name="text_to_find">Text to find</string>
     <string name="replace_with">Replace with</string>
-    <string name="use_regex">Regex</string>
+    <string name="use_regex">Use Regex</string>
     <string name="preview">Preview</string>
     <string name="extension">Extension</string>
     <string name="last_modified">Last modified</string>
@@ -375,4 +375,14 @@
     <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">Some files are moved into their subdirectories, those will be excluded.</string>
     <string name="failed_to_replace_original_zip_file">Failed to replace original zip file</string>
     <string name="failed_to_delete_original_zip_file">Failed to delete original zip file</string>
+    <string name="advanced_options">Advanced Options</string>
+    <string name="ignore_case">Ignore Case</string>
+    <string name="by_extension">By Extension</string>
+    <string name="in_content">In Content</string>
+    <string name="max_results">Max Results: %1$s</string>
+    <string name="searching">Searching…</string>
+    <string name="search_results">Results (%1$d)</string>
+    <string name="expand">Expand</string>
+    <string name="something_went_wrong">Something went wrong, check logs</string>
+    <string name="line">Line %1$d</string>
 </resources>

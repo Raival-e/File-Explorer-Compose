@@ -10,12 +10,13 @@ import com.raival.compose.file.explorer.screen.main.tab.files.provider.StoragePr
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getDocumentFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getImageFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getRecentFiles
+import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getSearchResult
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getVideoFiles
 import kotlinx.coroutines.runBlocking
 
 class VirtualFileHolder(val type: Int) : ContentHolder() {
     private var fileCount = 0
-    private val contentList = arrayListOf<LocalFileHolder>()
+    private val contentList = arrayListOf<ContentHolder>()
 
     override val displayName = when (type) {
         BOOKMARKS -> globalClass.getString(R.string.bookmarks)
@@ -25,6 +26,7 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
         ARCHIVE -> globalClass.getString(R.string.archives)
         DOCUMENT -> globalClass.getString(R.string.documents)
         RECENT -> globalClass.getString(R.string.recent_files)
+        SEARCH -> globalClass.getString(R.string.search)
         else -> globalClass.getString(R.string.unknown)
     }
 
@@ -50,6 +52,7 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
         ARCHIVE -> getArchiveFiles()
         DOCUMENT -> getDocumentFiles()
         RECENT -> getRecentFiles()
+        SEARCH -> getSearchResult()
         else -> arrayListOf()
     }.also {
         contentList.apply {
@@ -85,5 +88,6 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
         const val ARCHIVE = 4
         const val DOCUMENT = 5
         const val RECENT = 6
+        const val SEARCH = 7
     }
 }

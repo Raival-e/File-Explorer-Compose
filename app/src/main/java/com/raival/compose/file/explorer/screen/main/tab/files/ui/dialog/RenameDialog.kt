@@ -417,7 +417,7 @@ fun AdvanceRenameDialog(
                             onClick = { useRegex = !useRegex.also { isReady = false } },
                             label = {
                                 Text(
-                                    text = stringResource(R.string.use_regex),
+                                    text = stringResource(R.string.regex),
                                     style = MaterialTheme.typography.labelMedium
                                 )
                             },

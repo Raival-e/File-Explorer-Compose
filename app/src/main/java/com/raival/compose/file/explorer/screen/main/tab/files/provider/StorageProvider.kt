@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.RootFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
@@ -324,5 +325,9 @@ object StorageProvider {
         }
 
         return recentFiles
+    }
+
+    fun getSearchResult(): ArrayList<ContentHolder> {
+        return globalClass.searchManager.searchResults.map { it.file } as ArrayList<ContentHolder>
     }
 }

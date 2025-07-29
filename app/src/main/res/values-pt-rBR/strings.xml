@@ -374,4 +374,14 @@
     <string name="some_files_are_moved_into_their_subdirectories_those_will_be_excluded">Alguns arquivos são movidos para seus subdiretórios, eles serão excluídos.</string>
     <string name="failed_to_replace_original_zip_file">Falha ao substituir o arquivo zip original</string>
     <string name="failed_to_delete_original_zip_file">Falha ao excluir o arquivo zip original</string>
+    <string name="advanced_options">Opções Avançadas</string>
+    <string name="ignore_case">Ignorar Maiúsculas/Minúsculas</string>
+    <string name="by_extension">Por Extensão</string>
+    <string name="in_content">No Conteúdo</string>
+    <string name="max_results">Resultados Máximos: %1$d</string>
+    <string name="searching">Pesquisando…</string>
+    <string name="search_results">Resultados (%1$d)</string>
+    <string name="expand">Expandir</string>
+    <string name="something_went_wrong">Algo deu errado, verifique os logs</string>
+    <string name="line">Linha %1$d</string>
 </resources>
