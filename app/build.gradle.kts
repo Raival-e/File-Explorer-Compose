@@ -42,6 +42,10 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
         apiVersion = "1.9"
     }
+
+    baselineProfile {
+        dexLayoutOptimization = true
+    }
 }
 
 dependencies {
