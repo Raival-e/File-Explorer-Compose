@@ -18,7 +18,6 @@ import androidx.core.content.FileProvider.getUriForFile
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
-import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.getMimeType
 import com.raival.compose.file.explorer.common.isNot
@@ -59,8 +58,6 @@ class FilesTab(
 
     override val id = globalClass.generateUid()
     val scope = CoroutineScope(Dispatchers.IO)
-
-    val searcher = Searcher()
 
     val homeDir: ContentHolder =
         if (source is VirtualFileHolder || source.isFolder) source else runBlocking { source.getParent() }
@@ -659,17 +656,5 @@ class FilesTab(
 
     fun toggleFilePropertiesDialog(show: Boolean) {
         _dialogsState.update { it.copy(showFileProperties = show) }
-    }
-
-    fun highlight(vararg paths: String) {
-        highlightedFiles.apply {
-            clear()
-            addAll(paths)
-        }
-    }
-
-    class Searcher {
-        var searchQuery by mutableStateOf(emptyString)
-        var searchResults = mutableStateListOf<ContentHolder>()
     }
 }
