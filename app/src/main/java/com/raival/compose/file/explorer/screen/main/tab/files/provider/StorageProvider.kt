@@ -91,12 +91,73 @@ object StorageProvider {
 
     private fun getExternalStorageDirectories(context: Context): List<File> {
         val directories = mutableListOf<File>()
+        val addedPaths = mutableSetOf<String>()
 
-        // I'm sure that there are better ways to do this :)
+        // Method 1: Using ContextCompat.getExternalFilesDirs ()
         ContextCompat.getExternalFilesDirs(context, null).forEach { directory ->
             val volume = directory?.parentFile?.parentFile?.parentFile?.parentFile
-            if (volume != null && volume.exists()) {
+            if (volume != null && volume.exists() && addedPaths.add(volume.absolutePath)) {
                 directories.add(volume)
+            }
+        }
+
+        // Method 2: Parse /proc/mounts for additional storage devices
+        try {
+            val mountsFile = File("/proc/mounts")
+            if (mountsFile.exists()) {
+                mountsFile.readLines().forEach { line ->
+                    val parts = line.split(" ")
+                    if (parts.size >= 2) {
+                        val mountPoint = parts[1]
+                        val fsType = if (parts.size >= 3) parts[2] else ""
+
+                        // Look for common removable storage mount points and file systems
+                        if ((mountPoint.contains("/storage/") || mountPoint.contains("/mnt/")) &&
+                            !mountPoint.contains("emulated") &&
+                            (fsType in listOf("vfat", "exfat", "ntfs", "ext4", "ext3", "ext2")) &&
+                            mountPoint != "/storage/self"
+                        ) {
+
+                            val storageDir = File(mountPoint)
+                            if (storageDir.exists() && storageDir.canRead() &&
+                                addedPaths.add(storageDir.absolutePath)
+                            ) {
+                                directories.add(storageDir)
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // Ignore errors reading /proc/mounts
+        }
+
+        // Method 3: Check common OTG/USB mount points
+        val commonOtgPaths = listOf(
+            "/storage/usb",
+            "/storage/usbotg",
+            "/storage/usb1",
+            "/storage/usb2",
+            "/mnt/usb",
+            "/mnt/usbdisk",
+            "/mnt/usb_storage"
+        )
+
+        commonOtgPaths.forEach { path ->
+            val dir = File(path)
+            if (dir.exists() && dir.canRead() && addedPaths.add(dir.absolutePath)) {
+                directories.add(dir)
+            }
+
+            // Also check subdirectories
+            if (dir.exists() && dir.isDirectory) {
+                dir.listFiles()?.forEach { subDir ->
+                    if (subDir.isDirectory && subDir.canRead() &&
+                        addedPaths.add(subDir.absolutePath)
+                    ) {
+                        directories.add(subDir)
+                    }
+                }
             }
         }
 
