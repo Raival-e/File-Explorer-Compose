@@ -169,7 +169,7 @@
     <string name="apps_tab_header">برنامه‌ها</string>
     <string name="apps">برنامه‌ها</string>
     <string name="user_apps">کاربر</string>
-    <string name="system_apps">سیستم</string>
+    <string name="system_apps">برنامه های سیستم</string>
     <string name="more">بیشتر</string>
     <string name="github">گیت‌هاب</string>
     <string name="apply">اعمال</string>
@@ -236,7 +236,7 @@
     <string name="appearance">ظاهر</string>
     <string name="disable_pull_down_to_refresh">غیرفعال کردن کشیدن پایین برای تازه‌سازی</string>
     <string name="skip_home_when_tab_closed">رد کردن صفحه اصلی هنگام بستن تب‌ها</string>
-    <string name="file_list">فهرست فایل</string>
+    <string name="file_list">لیست فایل ها</string>
     <string name="behavior">رفتار</string>
     <string name="unlimited">نامحدود</string>
     <string name="extra_small">خیلی کوچک</string>
@@ -384,5 +384,5 @@
     <string name="expand">گسترش</string>
     <string name="something_went_wrong">مشکلی پیش آمد، گزارش‌ها را بررسی کنید</string>
     <string name="line">خط %1$d</string>
-    <string name="file_too_large_to_edit">فایل خیلی بزرگ است، به جای آن از یک ویرایشگر متن اختصاصی استفاده کنید.</string>
+    <string name="file_too_large_to_edit">حجم این فایل خیلی زیاد است ممکن است برنامه نتواند به خوبی ان را اجرارکند شما میتوانید از یک ویرایشگر حرفه ای کمک بگیرید</string>
 </resources>
