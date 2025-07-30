@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -255,16 +256,18 @@ private fun RecentFilesSection(
                             FileContentIcon(it.file)
                         }
                     }
-
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .padding(8.dp),
-                        text = it.name,
-                        style = MaterialTheme.typography.labelSmall,
-                        maxLines = 2
-                    )
+                    Box(modifier = Modifier
+                        .weight(1f)
+                        .padding(8.dp)) {
+                        Text(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            text = it.name,
+                            style = MaterialTheme.typography.labelSmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
             item {
