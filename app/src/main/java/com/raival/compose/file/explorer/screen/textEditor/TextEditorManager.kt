@@ -473,6 +473,13 @@ class TextEditorManager {
             return false
         }
 
+        // Temporary solution to prevent OOM exception. Text Editor needs to be refactored to handle large files.
+        val maxFileSizeBytes = 15 * 1024 * 1024 // 15 MB limit
+        if (localFileHolder.size > maxFileSizeBytes) {
+            globalClass.showMsg(globalClass.getString(R.string.file_too_large_to_edit))
+            return false
+        }
+
         activeFile = getFileInstance(localFileHolder)?.file ?: localFileHolder
 
         context.startActivity(Intent(context, TextEditorActivity::class.java))

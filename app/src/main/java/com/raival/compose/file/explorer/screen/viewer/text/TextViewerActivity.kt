@@ -68,6 +68,23 @@ class TextViewerActivity : ViewerActivity() {
                         val activityScope = rememberCoroutineScope()
 
                         LaunchedEffect(Unit) {
+                            // Temporary solution to prevent OOM exception. Text Editor needs to be refactored to handle large files.
+                            val maxFileSizeBytes = 15 * 1024 * 1024 // 15 MB limit
+                            val fileSize = try {
+                                contentResolver.openFileDescriptor(textViewerInstance.uri, "r")
+                                    ?.use { pfd ->
+                                        pfd.statSize
+                                    } ?: 0L
+                            } catch (_: Exception) {
+                                0L
+                            }
+
+                            if (fileSize > maxFileSizeBytes) {
+                                globalClass.showMsg(globalClass.getString(R.string.file_too_large_to_edit))
+                                finish()
+                                return@LaunchedEffect
+                            }
+
                             textViewerInstance.readContent(scope = activityScope) {
                                 codeEditor.apply {
                                     setText(textViewerInstance.content, false, null)
