@@ -257,15 +257,17 @@ private fun RecentFilesSection(
                         }
                     }
                     Box(modifier = Modifier
-                        .weight(1f)
-                        .padding(8.dp)) {
+                        .weight(1.2f)
+                        .padding(6.dp)
+                    ) {
                         Text(
                             modifier = Modifier
                                 .fillMaxSize(),
                             text = it.name,
                             style = MaterialTheme.typography.labelSmall,
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            softWrap = true
                         )
                     }
                 }
