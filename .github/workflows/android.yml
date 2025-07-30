@@ -32,11 +32,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up JetBrains Runtime 21.0.6
+      - name: Set up Eclipse Temurin JDK 21.0.6
         uses: actions/setup-java@v4
         with:
           java-version: '21.0.6'
-          distribution: 'jetbrains'
+          distribution: 'temurin'
           cache: gradle
 
       - name: Grant execute permissions for gradlew
