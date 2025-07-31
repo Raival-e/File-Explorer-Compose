@@ -85,6 +85,7 @@ class DeleteTask(
         progressMonitor.apply {
             totalContent = pendingContent.size
             processName = globalClass.getString(R.string.deleting)
+            progress = -1f
         }
 
         pendingContent.forEachIndexed { index, itemToDelete ->
@@ -97,7 +98,6 @@ class DeleteTask(
                 progressMonitor.apply {
                     contentName = itemToDelete.source.displayName
                     remainingContent = pendingContent.size - (index + 1)
-                    progress = (index + 1f) / pendingContent.size
                 }
 
                 try {
