@@ -6,6 +6,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
 import android.os.StatFs
+import android.os.storage.StorageManager
 import android.provider.MediaStore
 import androidx.core.content.ContextCompat
 import com.raival.compose.file.explorer.App.Companion.globalClass
@@ -25,10 +26,10 @@ object StorageProvider {
 
         storageDevices.add(getPrimaryInternalStorage(context))
 
-        val externalDirs = getExternalStorageDirectories(context)
+        val externalStoragePairs = getExternalStorageDirectories(context)
 
-        for (externalDir in externalDirs) {
-            if (externalDir.path == Environment.getExternalStorageDirectory().path) {
+        for ((label, externalDir) in externalStoragePairs) {
+            if (externalDir.absolutePath == Environment.getExternalStorageDirectory().absolutePath) {
                 continue
             }
 
@@ -36,11 +37,12 @@ object StorageProvider {
             val totalSize = statFs.totalBytes
             val availableSize = statFs.availableBytes
             val usedSize = totalSize - availableSize
+            val storageLabel = label.ifEmpty { "${externalDir.name}" }
 
             storageDevices.add(
                 StorageDevice(
                     LocalFileHolder(externalDir),
-                    "External Storage (${externalDir.name})",
+                    storageLabel,
                     totalSize,
                     usedSize,
                     EXTERNAL_STORAGE
@@ -89,15 +91,30 @@ object StorageProvider {
         )
     }
 
-    private fun getExternalStorageDirectories(context: Context): List<File> {
-        val directories = mutableListOf<File>()
+    private fun getExternalStorageDirectories(context: Context): List<Pair<String, File>> {
+        val storageList = mutableListOf<Pair<String, File>>()
         val addedPaths = mutableSetOf<String>()
+        val storageManager = context.getSystemService(Context.STORAGE_SERVICE) as StorageManager
 
         // Method 1: Using ContextCompat.getExternalFilesDirs ()
         ContextCompat.getExternalFilesDirs(context, null).forEach { directory ->
             val volume = directory?.parentFile?.parentFile?.parentFile?.parentFile
             if (volume != null && volume.exists() && addedPaths.add(volume.absolutePath)) {
-                directories.add(volume)
+                var label = ""
+                try {
+                    val storageVolume = storageManager.getStorageVolume(volume)
+                    if (storageVolume != null) {
+                        label =
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                                storageVolume.getDescription(context) ?: volume.name
+                            } else {
+                                @Suppress("DEPRECATION")
+                                storageVolume.getDescription(context) ?: volume.name
+                            }
+                    }
+                } catch (_: Exception) { /* Ignore */
+                }
+                storageList.add(Pair(label.ifEmpty { volume.name }, volume))
             }
         }
 
@@ -122,13 +139,13 @@ object StorageProvider {
                             if (storageDir.exists() && storageDir.canRead() &&
                                 addedPaths.add(storageDir.absolutePath)
                             ) {
-                                directories.add(storageDir)
+                                storageList.add(Pair(storageDir.name, storageDir))
                             }
                         }
                     }
                 }
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             // Ignore errors reading /proc/mounts
         }
 
@@ -146,7 +163,7 @@ object StorageProvider {
         commonOtgPaths.forEach { path ->
             val dir = File(path)
             if (dir.exists() && dir.canRead() && addedPaths.add(dir.absolutePath)) {
-                directories.add(dir)
+                storageList.add(Pair(dir.name, dir))
             }
 
             // Also check subdirectories
@@ -155,13 +172,13 @@ object StorageProvider {
                     if (subDir.isDirectory && subDir.canRead() &&
                         addedPaths.add(subDir.absolutePath)
                     ) {
-                        directories.add(subDir)
+                        storageList.add(Pair(subDir.name, subDir))
                     }
                 }
             }
         }
 
-        return directories
+        return storageList
     }
 
     fun getDocumentFiles(): ArrayList<LocalFileHolder> {
