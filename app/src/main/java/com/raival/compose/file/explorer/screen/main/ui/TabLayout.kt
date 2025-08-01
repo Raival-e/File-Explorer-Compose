@@ -314,5 +314,15 @@ fun OptionsMenu(
                 onDismiss()
             }
         )
+
+        if (tab !is HomeTab) {
+            DropdownMenuItem(
+                text = { Text(text = stringResource(R.string.home_tab_title)) },
+                onClick = {
+                    globalClass.mainActivityManager.replaceCurrentTabWith(HomeTab())
+                    onDismiss()
+                }
+            )
+        }
     }
 }
