@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.Settings
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.theme.FileExplorerTheme
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -59,6 +61,7 @@ abstract class BaseActivity : AppCompatActivity() {
             onPermissionGranted()
             return
         } else {
+            enableEdgeToEdge()
             setContent {
                 FileExplorerTheme {
                     StoragePermissionScreen(
@@ -121,74 +124,76 @@ abstract class BaseActivity : AppCompatActivity() {
         onGrantPermission: () -> Unit = {},
         onSkip: () -> Unit = {}
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.weight(1f))
-
-            Icon(
-                imageVector = Icons.Outlined.FolderOpen,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(80.dp)
-                    .padding(bottom = 24.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Text(
-                text = stringResource(R.string.storage_access_required),
-                style = MaterialTheme.typography.headlineMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            Text(
-                text = stringResource(R.string.storage_access_description),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp,
-                modifier = Modifier.padding(bottom = 32.dp)
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
+        SafeSurface {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Button(
-                    onClick = onGrantPermission,
+                Spacer(modifier = Modifier.weight(1f))
+
+                Icon(
+                    imageVector = Icons.Outlined.FolderOpen,
+                    contentDescription = null,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
+                        .size(80.dp)
+                        .padding(bottom = 24.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+
+                Text(
+                    text = stringResource(R.string.storage_access_required),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Text(
+                    text = stringResource(R.string.storage_access_description),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 24.sp,
+                    modifier = Modifier.padding(bottom = 32.dp)
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(
-                        text = stringResource(R.string.grant_access),
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    Button(
+                        onClick = onGrantPermission,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(R.string.grant_access),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+
+                    TextButton(
+                        onClick = onSkip,
+                        modifier = Modifier.padding(top = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.skip_for_now),
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
 
-                TextButton(
-                    onClick = onSkip,
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.skip_for_now),
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

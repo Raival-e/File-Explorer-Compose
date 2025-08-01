@@ -33,7 +33,7 @@ fun FileExplorerTheme(
 ) {
     val context = LocalContext.current
     val manager = globalClass.preferencesManager
-    val darkTheme: Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    val darkTheme: Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
         if (manager.theme == ThemePreference.SYSTEM.ordinal) {
             isSystemInDarkTheme()
         } else manager.theme == ThemePreference.DARK.ordinal
