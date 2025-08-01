@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -17,10 +20,20 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
@@ -44,6 +57,8 @@ import com.raival.compose.file.explorer.screen.main.ui.Toolbar
 import com.raival.compose.file.explorer.theme.FileExplorerTheme
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.math.abs
+import kotlin.math.exp
 
 class MainActivity : BaseActivity() {
     private val HOME_SCREEN_SHORTCUT_EXTRA_KEY = "filePath"
@@ -167,13 +182,128 @@ class MainActivity : BaseActivity() {
                 }
             }
 
+            var overscrollAmount by remember { mutableFloatStateOf(0f) }
+            val threshold = 100f
+            val animationScope = rememberCoroutineScope()
+            var isAnimatingBack by remember { mutableStateOf(false) }
+
+            fun applyExponentialTension(current: Float, addition: Float, threshold: Float): Float {
+                return if (current < threshold) {
+                    current + addition
+                } else {
+                    val excess = current - threshold
+                    val decayFactor =
+                        exp(-excess / threshold * 2f) // Adjust multiplier for steepness
+                    current + (addition * decayFactor)
+                }
+            }
+
+            val nestedScrollConnection = remember {
+                object : NestedScrollConnection {
+                    override fun onPreScroll(
+                        available: Offset,
+                        source: NestedScrollSource
+                    ): Offset {
+                        // Smoothly animate overscroll back to zero when scrolling in opposite direction
+                        if (available.x > 0 && overscrollAmount > 0 && !isAnimatingBack) {
+                            isAnimatingBack = true
+                            animationScope.launch {
+                                animate(
+                                    initialValue = overscrollAmount,
+                                    targetValue = 0f,
+                                    animationSpec = tween(
+                                        durationMillis = 150,
+                                        easing = FastOutSlowInEasing
+                                    )
+                                ) { value, _ ->
+                                    overscrollAmount = value
+                                }
+                                isAnimatingBack = false
+                            }
+                        }
+                        return Offset.Zero
+                    }
+
+                    override fun onPostScroll(
+                        consumed: Offset,
+                        available: Offset,
+                        source: NestedScrollSource
+                    ): Offset {
+                        // Check if we're on the last page and there's leftover scroll
+                        val isLastPage = pagerState.currentPage == pagerState.pageCount - 1
+                        if (isLastPage && available.x < 0 && source == NestedScrollSource.UserInput) {
+                            val availableAmount = abs(available.x)
+
+                            overscrollAmount = applyExponentialTension(
+                                overscrollAmount,
+                                availableAmount,
+                                threshold
+                            )
+                            return Offset(available.x, 0f) // Consume the scroll
+                        }
+                        return Offset.Zero
+                    }
+
+                    override suspend fun onPreFling(available: Velocity): Velocity {
+                        val isLastPage = pagerState.currentPage == pagerState.pageCount - 1
+
+                        if (isLastPage && overscrollAmount > 0 && !isAnimatingBack) {
+                            // Trigger action when releasing overscroll
+                            if (overscrollAmount > threshold) {
+                                manager.addTabAndSelect(HomeTab())
+                            }
+
+                            // Animate overscroll back to 0 to prevent page jumping
+                            // This helps avoid the pager shooting to previous page
+                            // Animate overscroll back to 0 to prevent page jumping
+                            isAnimatingBack = true
+                            animationScope.launch {
+                                animate(
+                                    initialValue = overscrollAmount,
+                                    targetValue = 0f,
+                                    animationSpec = tween(
+                                        durationMillis = 200,
+                                        easing = FastOutSlowInEasing
+                                    )
+                                ) { value, _ ->
+                                    overscrollAmount = value
+                                }
+                                isAnimatingBack = false
+                            }
+
+                            // Don't consume velocity if we're not overscrolling significantly
+                            // This prevents interfering with normal pager fling behavior
+                            return if (overscrollAmount > 10f) {
+                                Velocity(
+                                    available.x * 0.3f,
+                                    available.y
+                                ) // Reduce horizontal velocity
+                            } else {
+                                Velocity.Zero
+                            }
+                        }
+
+                        overscrollAmount = 0f
+                        return Velocity.Zero
+                    }
+                }
+            }
+
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .nestedScroll(nestedScrollConnection),
                 key = { state.tabs[it].id }
             ) { index ->
                 key(index) {
-                    Column(modifier = Modifier.weight(1f)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .graphicsLayer {
+                                translationX = -overscrollAmount
+                            }
+                    ) {
                         if (state.tabs.isNotEmpty()) {
                             val currentTab = state.tabs[index]
                             when (currentTab) {
