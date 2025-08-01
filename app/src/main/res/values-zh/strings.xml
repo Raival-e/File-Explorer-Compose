@@ -385,4 +385,5 @@
     <string name="something_went_wrong">出错了，请检查日志</string>
     <string name="line">行 %1$d</string>
     <string name="file_too_large_to_edit">文件过大，请考虑使用专用文本编辑器。</string>
+    <string name="title_activity_video_player">视频播放器</string>
 </resources>

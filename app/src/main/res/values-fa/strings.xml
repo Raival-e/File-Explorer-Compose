@@ -385,4 +385,5 @@
     <string name="something_went_wrong">مشکلی پیش آمد، گزارش‌ها را بررسی کنید</string>
     <string name="line">خط %1$d</string>
     <string name="file_too_large_to_edit">حجم این فایل خیلی زیاد است ممکن است برنامه نتواند به خوبی ان را اجرارکند شما میتوانید از یک ویرایشگر حرفه ای کمک بگیرید</string>
+    <string name="title_activity_video_player">پخش‌کننده ویدیو</string>
 </resources>

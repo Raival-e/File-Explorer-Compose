@@ -126,7 +126,7 @@
         <activity
             android:name=".screen.viewer.video.VideoPlayerActivity"
             android:exported="true"
-            android:label="@string/title_activity_audio_player"
+            android:label="@string/title_activity_video_player"
             android:theme="@style/Theme.FileExplorer"
             android:windowSoftInputMode="adjustResize"
             android:documentLaunchMode="intoExisting"

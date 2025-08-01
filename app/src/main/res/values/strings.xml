@@ -386,4 +386,5 @@
     <string name="something_went_wrong">Something went wrong, check logs</string>
     <string name="line">Line %1$d</string>
     <string name="file_too_large_to_edit">File too large, consider using a dedicated text editor instead.</string>
+    <string name="title_activity_video_player">Vidoe Player</string>
 </resources>

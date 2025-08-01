@@ -33,7 +33,12 @@ class VideoPlayerInstance(
     private var positionTrackingJob: Job? = null
 
     suspend fun initializePlayer(context: Context, uri: Uri) {
-        _playerState.update { it.copy(isLoading = true) }
+        _playerState.update {
+            it.copy(
+                isLoading = true,
+                isReady = false
+            )
+        }
 
         withContext(Dispatchers.Main) {
             exoPlayer = ExoPlayer.Builder(context).build().apply {
@@ -67,8 +72,9 @@ class VideoPlayerInstance(
                         if (playbackState == Player.STATE_READY) {
                             _playerState.update { currentState ->
                                 currentState.copy(
-                                duration = duration,
-                                isLoading = false
+                                    duration = duration,
+                                    isLoading = false,
+                                    isReady = true
                                 )
                             }
                         }

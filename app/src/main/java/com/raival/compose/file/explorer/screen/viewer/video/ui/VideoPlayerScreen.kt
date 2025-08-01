@@ -89,7 +89,7 @@ fun VideoPlayerScreen(
             modifier = Modifier.fillMaxSize()
         ) {
             // Video Player View
-            if (!playerState.isLoading) {
+            if (playerState.isReady) {
                 AndroidView(
                     factory = { ctx ->
                         PlayerView(ctx).apply {

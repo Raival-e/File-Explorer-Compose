@@ -3,6 +3,7 @@ package com.raival.compose.file.explorer.screen.viewer.video.model
 import androidx.media3.common.Player
 
 data class VideoPlayerState(
+    val isReady: Boolean = false,
     val isPlaying: Boolean = false,
     val isLoading: Boolean = true,
     val currentPosition: Long = 0L,
