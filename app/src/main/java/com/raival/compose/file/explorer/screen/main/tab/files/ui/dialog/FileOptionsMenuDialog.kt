@@ -283,7 +283,10 @@ fun FileOptionsMenuDialog(
             }
 
             if (isSingleFile && targetContentHolder is LocalFileHolder) {
-                FileOption(Icons.Rounded.OpenInNewOff, "Remove default opening method") {
+                FileOption(
+                    Icons.Rounded.OpenInNewOff,
+                    stringResource(R.string.remove_default_opening_method)
+                ) {
                     fromJson<DefaultOpeningMethods>(globalClass.preferencesManager.defaultOpeningMethods)?.let {
                         globalClass.preferencesManager.defaultOpeningMethods =
                             DefaultOpeningMethods(

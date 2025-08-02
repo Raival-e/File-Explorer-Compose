@@ -388,4 +388,5 @@
     <string name="file_too_large_to_edit">File too large, consider using a dedicated text editor instead.</string>
     <string name="title_activity_video_player">Vidoe Player</string>
     <string name="set_as_default_for_this_type">Set as default for this type</string>
+    <string name="remove_default_opening_method">Remove default opening method</string>
 </resources>

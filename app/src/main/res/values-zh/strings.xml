@@ -387,4 +387,5 @@
     <string name="file_too_large_to_edit">文件过大，请考虑使用专用文本编辑器。</string>
     <string name="title_activity_video_player">视频播放器</string>
     <string name="set_as_default_for_this_type">设置为此类型的默认应用</string>
+    <string name="remove_default_opening_method">移除默认打开方式</string>
 </resources>
