@@ -14,6 +14,7 @@ import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.DefaultOpeningMethods
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
 import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
@@ -120,6 +121,12 @@ class PreferencesManager {
         keyName = "moveToRecycleBin",
         defaultValue = true,
         getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
+    var defaultOpeningMethods by prefMutableState(
+        keyName = "defaultOpeningMethods",
+        defaultValue = DefaultOpeningMethods().toJson(),
+        getPreferencesKey = { stringPreferencesKey(it) }
     )
 
     //---------- Text Editor -------------//

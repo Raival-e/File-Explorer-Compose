@@ -386,4 +386,5 @@
     <string name="line">Linha %1$d</string>
     <string name="file_too_large_to_edit">Arquivo muito grande, considere usar um editor de texto dedicado em vez disso.</string>
     <string name="title_activity_video_player">Player de Vídeo</string>
+    <string name="set_as_default_for_this_type">Definir como padrão para este tipo</string>
 </resources>

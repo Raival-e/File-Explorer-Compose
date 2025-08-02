@@ -17,6 +17,7 @@ import androidx.compose.material.icons.rounded.FormatColorText
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Merge
+import androidx.compose.material.icons.rounded.OpenInNewOff
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -40,13 +41,16 @@ import androidx.core.content.pm.ShortcutManagerCompat.isRequestPinShortcutSuppor
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.common.isNot
+import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.DefaultOpeningMethods
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkBundleFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.task.ApksMergeTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.ApksMergeTaskParameters
@@ -275,6 +279,18 @@ fun FileOptionsMenuDialog(
                     )
                     onDismissRequest()
                     tab.unselectAllFiles()
+                }
+            }
+
+            if (isSingleFile && targetContentHolder is LocalFileHolder) {
+                FileOption(Icons.Rounded.OpenInNewOff, "Remove default opening method") {
+                    fromJson<DefaultOpeningMethods>(globalClass.preferencesManager.defaultOpeningMethods)?.let {
+                        globalClass.preferencesManager.defaultOpeningMethods =
+                            DefaultOpeningMethods(
+                                it.openingMethods.filter { it.extension != targetContentHolder.file.extension }
+                            ).toJson()
+                    }
+                    onDismissRequest()
                 }
             }
         }

@@ -11,10 +11,12 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.drawableToBitmap
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.common.hasParent
 import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.toFormattedSize
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.DefaultOpeningMethods
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.codeFileType
@@ -97,6 +99,16 @@ class LocalFileHolder(val file: File) : ContentHolder() {
         skipSupportedExtensions: Boolean,
         customMimeType: String?
     ) {
+        val defaultOpeningMethods =
+            fromJson<DefaultOpeningMethods>(globalClass.preferencesManager.defaultOpeningMethods)
+                ?: DefaultOpeningMethods()
+        defaultOpeningMethods.openingMethods.forEach {
+            if (it.extension == extension) {
+                openFileWithPackage(context, it.packageName, it.className)
+                return
+            }
+        }
+
         if (!skipSupportedExtensions && handleSupportedFiles(context)) {
             return
         }
