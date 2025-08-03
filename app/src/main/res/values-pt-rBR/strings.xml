@@ -205,6 +205,7 @@
     <string name="number_increment">Incremento numérico</string>
     <string name="zero_number_increment">Incremento numérico com zeros</string>
     <string name="find_n_replace">Encontrar e substituir</string>
+    <string name="batch_rename_info"><![CDATA[{p} -> nome do ficheiro sem extensão (p. ex., \"documento\" de \"documento.txt\")\n\n{s} -> extensão do ficheiro (p. ex., \"txt\" de \"documento.txt\")\n\n{e} -> extensão do ficheiro com um ponto (p. ex., \".txt\" de \"documento.txt\")\n\n{t} -> hora da última modificação do ficheiro (formatada como \"yyyyMMdd_HHmmss\")\n\n{n} -> incremento numérico (p. ex., {0} -> 0, 1, 2…; {1} -> 1, 2, 3…)\n\n{zn} -> incremento numérico com preenchimento de zeros (p. ex., {z0} -> 0, 1…; {zz0} -> 00, 01…; {zzz1} -> 001, 002…)]]></string>
     <string name="syntax">Sintaxe</string>
     <string name="extension_with_dot">Extensão com ponto</string>
     <string name="unable_to_move_to_recycle_bin">Erro ao criar pasta da lixeira</string>

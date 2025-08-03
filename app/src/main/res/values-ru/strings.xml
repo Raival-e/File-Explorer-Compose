@@ -205,6 +205,7 @@
     <string name="number_increment">Числовой инкремент</string>
     <string name="zero_number_increment">Числовой инкремент с нулями</string>
     <string name="find_n_replace">Найти и заменить</string>
+    <string name="batch_rename_info"><![CDATA[{p} -> имя файла без расширения (например, \"document\" из \"document.txt\")\n\n{s} -> расширение файла (например, \"txt\" из \"document.txt\")\n\n{e} -> расширение файла с точкой (например, \".txt\" из \"document.txt\")\n\n{t} -> время последнего изменения файла (в формате \"yyyyMMdd_HHmmss\")\n\n{n} -> инкремент числа (например, {0} -> 0, 1, 2…; {1} -> 1, 2, 3…)\n\n{zn} -> инкремент числа с дополнением нулями (например, {z0} -> 0, 1…; {zz0} -> 00, 01…; {zzz1} -> 001, 002…)]]></string>
     <string name="syntax">Синтаксис</string>
     <string name="extension_with_dot">Расширение с точкой</string>
     <string name="unable_to_move_to_recycle_bin">Ошибка создания папки корзины</string>
