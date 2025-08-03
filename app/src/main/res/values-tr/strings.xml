@@ -1,6 +1,5 @@
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<resources>
 <!--Created by The Translator <https://play.google.com/store/apps/details?id=com.sunilpaulmathew.translator>-->
-
 <string name="app_name">"Prism File Explorer"</string>
 <string name="root_dir">"Kök"</string>
 <string name="internal_storage">"Dahili Depolama"</string>
@@ -386,5 +385,8 @@
 <string name="expand">"Genişlet"</string>
 <string name="something_went_wrong">"Bir sorun oluştu, günlükleri kontrol edin"</string>
 <string name="line">"Satır %1$d"</string>
-<string name="file_too_large_to_edit">"Dosya çok büyük, özel bir metin düzenleyici kullanmanız daha uygun olur."</string>
+    <string name="file_too_large_to_edit">"Dosya çok büyük, özel bir metin düzenleyici kullanmanız daha uygun olur."</string>
+    <string name="title_activity_video_player">"Video Oynatıcı"</string>
+    <string name="set_as_default_for_this_type">"Bu tür için varsayılan olarak ayarla"</string>
+    <string name="remove_default_opening_method">"Varsayılan açma yöntemini kaldır"</string>
 </resources>
