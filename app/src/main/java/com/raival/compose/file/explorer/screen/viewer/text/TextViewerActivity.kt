@@ -3,6 +3,11 @@ package com.raival.compose.file.explorer.screen.viewer.text
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -167,11 +172,15 @@ class TextViewerActivity : ViewerActivity() {
                         )
                         HorizontalDivider()
                         BottomBarView(codeEditor, symbols)
-                        SearchPanel(
-                            codeEditor,
-                            textViewerInstance.searcher,
-                            textViewerInstance.showSearchPanel
-                        )
+                        AnimatedVisibility(
+                            visible = textViewerInstance.showSearchPanel,
+                            enter = expandIn(expandFrom = Alignment.TopCenter) + slideInVertically(
+                                initialOffsetY = { it }),
+                            exit = shrinkOut(shrinkTowards = Alignment.BottomCenter) + slideOutVertically(
+                                targetOffsetY = { it })
+                        ) {
+                            SearchPanel(codeEditor, textViewerInstance.searcher)
+                        }
                     }
                 }
             }

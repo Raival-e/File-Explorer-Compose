@@ -4,6 +4,11 @@ import android.os.Bundle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -116,11 +121,15 @@ class TextEditorActivity : BaseActivity() {
                                 )
                             }
                         }
-                        SearchPanel(
-                            codeEditor,
-                            textEditorManager.getFileInstance()!!.searcher,
-                            textEditorManager.showSearchPanel
-                        )
+                        AnimatedVisibility(
+                            visible = textEditorManager.showSearchPanel && textEditorManager.getFileInstance() != null,
+                            enter = expandIn(expandFrom = Alignment.TopCenter) + slideInVertically(
+                                initialOffsetY = { it }),
+                            exit = shrinkOut(shrinkTowards = Alignment.BottomCenter) + slideOutVertically(
+                                targetOffsetY = { it })
+                        ) {
+                            SearchPanel(codeEditor, textEditorManager.getFileInstance()!!.searcher)
+                        }
                     }
                 }
             }

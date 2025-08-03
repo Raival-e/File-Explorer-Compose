@@ -435,7 +435,11 @@ class TextEditorManager {
         scope.launch {
             isReading = true
 
-            val text = activeFile.readText()
+            val text = activeFile.file.inputStream().use {
+                it.bufferedReader().use { reader ->
+                    reader.readText()
+                }
+            }
             val fileInstance = getFileInstance(bringToTop = true)
 
             if (fileInstance isNot null) {

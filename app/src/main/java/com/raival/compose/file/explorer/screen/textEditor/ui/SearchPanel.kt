@@ -1,10 +1,5 @@
 package com.raival.compose.file.explorer.screen.textEditor.ui
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.shrinkOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +13,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -32,154 +26,147 @@ import io.github.rosemoe.sora.widget.EditorSearcher
 @Composable
 fun SearchPanel(
     codeEditor: CodeEditor,
-    searcher: Searcher,
-    show: Boolean
+    searcher: Searcher
 ) {
-    AnimatedVisibility(
-        visible = show,
-        enter = expandIn(expandFrom = Alignment.TopCenter) + slideInVertically(initialOffsetY = { it }),
-        exit = shrinkOut(shrinkTowards = Alignment.BottomCenter) + slideOutVertically(targetOffsetY = { it })
-    ) {
-        fun codeEditorSearcher() = codeEditor.searcher
-        fun hasQuery() =
-            searcher.query.isNotEmpty() && codeEditorSearcher().matchedPositionCount > 0
+    fun codeEditorSearcher() = codeEditor.searcher
+    fun hasQuery() =
+        searcher.query.isNotEmpty() && codeEditorSearcher().matchedPositionCount > 0
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(colorScheme.surfaceContainer)
-                .padding(8.dp)
-        ) {
-            LaunchedEffect(Unit) {
-                if (searcher.query.isNotEmpty()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorScheme.surfaceContainer)
+            .padding(8.dp)
+    ) {
+        LaunchedEffect(Unit) {
+            if (searcher.query.isNotEmpty()) {
+                codeEditor.searcher.search(
+                    searcher.query,
+                    EditorSearcher.SearchOptions(!searcher.caseSensitive, searcher.useRegex)
+                )
+            }
+        }
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = searcher.query,
+            onValueChange = {
+                searcher.query = it
+                if (it.isEmpty()) {
+                    codeEditor.searcher.stopSearch()
+                    codeEditor.invalidate()
+                } else {
                     codeEditor.searcher.search(
-                        searcher.query,
+                        it,
                         EditorSearcher.SearchOptions(!searcher.caseSensitive, searcher.useRegex)
                     )
                 }
-            }
+            },
+            label = { Text(text = stringResource(R.string.find)) },
+        )
 
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = searcher.query,
-                onValueChange = {
-                    searcher.query = it
-                    if (it.isEmpty()) {
+        Space(size = 4.dp)
+
+        TextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = searcher.replace,
+            onValueChange = { searcher.replace = it },
+            label = { Text(text = stringResource(R.string.replace)) },
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            CheckableText(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(12.dp),
+                checked = searcher.useRegex,
+                onCheckedChange = {
+                    searcher.useRegex = it
+                    if (searcher.query.isEmpty()) {
                         codeEditor.searcher.stopSearch()
                         codeEditor.invalidate()
                     } else {
                         codeEditor.searcher.search(
-                            it,
-                            EditorSearcher.SearchOptions(!searcher.caseSensitive, searcher.useRegex)
+                            searcher.query,
+                            EditorSearcher.SearchOptions(
+                                !searcher.caseSensitive,
+                                searcher.useRegex
+                            )
                         )
                     }
                 },
-                label = { Text(text = stringResource(R.string.find)) },
+                uncheckedBoxBackgroundColor = colorScheme.surfaceColorAtElevation(8.dp),
+                text = { Text(text = stringResource(R.string.regex)) }
             )
 
-            Space(size = 4.dp)
-
-            TextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = searcher.replace,
-                onValueChange = { searcher.replace = it },
-                label = { Text(text = stringResource(R.string.replace)) },
-            )
-
-            Row(
+            CheckableText(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                CheckableText(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(12.dp),
-                    checked = searcher.useRegex,
-                    onCheckedChange = {
-                        searcher.useRegex = it
-                        if (searcher.query.isEmpty()) {
-                            codeEditor.searcher.stopSearch()
-                            codeEditor.invalidate()
-                        } else {
-                            codeEditor.searcher.search(
-                                searcher.query,
-                                EditorSearcher.SearchOptions(
-                                    !searcher.caseSensitive,
-                                    searcher.useRegex
-                                )
+                    .weight(1f)
+                    .padding(12.dp),
+                checked = searcher.caseSensitive,
+                onCheckedChange = {
+                    searcher.caseSensitive = it
+                    if (searcher.query.isEmpty()) {
+                        codeEditor.searcher.stopSearch()
+                        codeEditor.invalidate()
+                    } else {
+                        codeEditor.searcher.search(
+                            searcher.query,
+                            EditorSearcher.SearchOptions(
+                                !searcher.caseSensitive,
+                                searcher.useRegex
                             )
-                        }
-                    },
-                    uncheckedBoxBackgroundColor = colorScheme.surfaceColorAtElevation(8.dp),
-                    text = { Text(text = stringResource(R.string.regex)) }
-                )
+                        )
+                    }
+                },
+                uncheckedBoxBackgroundColor = colorScheme.surfaceColorAtElevation(8.dp),
+                text = { Text(text = stringResource(R.string.case_sensitive)) }
+            )
+        }
 
-                CheckableText(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(12.dp),
-                    checked = searcher.caseSensitive,
-                    onCheckedChange = {
-                        searcher.caseSensitive = it
-                        if (searcher.query.isEmpty()) {
-                            codeEditor.searcher.stopSearch()
-                            codeEditor.invalidate()
-                        } else {
-                            codeEditor.searcher.search(
-                                searcher.query,
-                                EditorSearcher.SearchOptions(
-                                    !searcher.caseSensitive,
-                                    searcher.useRegex
-                                )
-                            )
-                        }
-                    },
-                    uncheckedBoxBackgroundColor = colorScheme.surfaceColorAtElevation(8.dp),
-                    text = { Text(text = stringResource(R.string.case_sensitive)) }
-                )
-            }
-
-            Row(
-                modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Space(size = 8.dp)
+            OutlinedButton(
+                onClick = {
+                    if (hasQuery()) codeEditorSearcher().replaceCurrentMatch(searcher.replace)
+                }
             ) {
-                Space(size = 8.dp)
-                OutlinedButton(
-                    onClick = {
-                        if (hasQuery()) codeEditorSearcher().replaceCurrentMatch(searcher.replace)
-                    }
-                ) {
-                    Text(text = stringResource(R.string.rep))
-                }
-                Space(size = 8.dp)
-                OutlinedButton(
-                    onClick = {
-                        if (hasQuery()) codeEditorSearcher().replaceAll(searcher.replace)
-                    }
-                ) {
-                    Text(text = stringResource(R.string.all))
-                }
-                Space(size = 8.dp)
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (hasQuery()) codeEditorSearcher().gotoPrevious()
-                    }
-                ) {
-                    Text(text = stringResource(R.string.prev))
-                }
-                Space(size = 8.dp)
-                OutlinedButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        if (hasQuery()) codeEditorSearcher().gotoNext()
-                    }
-                ) {
-                    Text(text = stringResource(R.string.next))
-                }
-                Space(size = 8.dp)
+                Text(text = stringResource(R.string.rep))
             }
+            Space(size = 8.dp)
+            OutlinedButton(
+                onClick = {
+                    if (hasQuery()) codeEditorSearcher().replaceAll(searcher.replace)
+                }
+            ) {
+                Text(text = stringResource(R.string.all))
+            }
+            Space(size = 8.dp)
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    if (hasQuery()) codeEditorSearcher().gotoPrevious()
+                }
+            ) {
+                Text(text = stringResource(R.string.prev))
+            }
+            Space(size = 8.dp)
+            OutlinedButton(
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    if (hasQuery()) codeEditorSearcher().gotoNext()
+                }
+            ) {
+                Text(text = stringResource(R.string.next))
+            }
+            Space(size = 8.dp)
         }
     }
 }
