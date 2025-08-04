@@ -50,7 +50,6 @@ abstract class BaseActivity : AppCompatActivity() {
                 onPermissionGranted()
             } else {
                 globalClass.showMsg(R.string.storage_permission_required)
-                finish()
             }
         }
 
