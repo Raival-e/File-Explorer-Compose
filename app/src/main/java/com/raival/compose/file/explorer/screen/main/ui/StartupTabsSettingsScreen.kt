@@ -59,6 +59,7 @@ import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,6 +105,12 @@ fun StartupTabsSettingsScreen(
                     logger.logError(e)
                     StartupTabs.default()
                 }.tabs
+
+                config.forEach {
+                    if (it.id == null) {
+                        it.id = UUID.randomUUID()
+                    }
+                }
 
                 tabs.addAll(config)
             }
@@ -159,10 +166,10 @@ fun StartupTabsSettingsScreen(
                             .fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(tabs, key = { "${it.type}_${it.extra}" }) { tab ->
+                        items(tabs, key = { it.id }) { tab ->
                             ReorderableItem(
                                 state = reorderableState,
-                                key = "${tab.type}_${tab.extra}"
+                                key = tab.id
                             ) { isDragging ->
                                 StartupTabItem(
                                     reorderableScope = this,
