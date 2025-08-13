@@ -389,4 +389,5 @@
     <string name="title_activity_video_player">视频播放器</string>
     <string name="set_as_default_for_this_type">设置为此类型的默认应用</string>
     <string name="remove_default_opening_method">移除默认打开方式</string>
+    <string name="toggle_hidden_files">切换隐藏文件</string>
 </resources>

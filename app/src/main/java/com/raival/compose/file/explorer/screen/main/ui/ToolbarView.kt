@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
 
@@ -100,6 +101,26 @@ fun Toolbar(
                 onDismissRequest = { showOptionsMenu = false },
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             ) {
+                if (mainActivityManager.getActiveTab() is FilesTab) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(R.string.toggle_hidden_files))
+                        },
+                        onClick = {
+                            globalClass.preferencesManager.showHiddenFiles =
+                                !globalClass.preferencesManager.showHiddenFiles
+                            (mainActivityManager.getActiveTab() as FilesTab).onTabResumed()
+                            showOptionsMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.EditAttributes,
+                                contentDescription = null
+                            )
+                        }
+                    )
+                }
+
                 if (mainActivityManager.getActiveTab() is HomeTab) {
                     DropdownMenuItem(
                         text = { Text(text = stringResource(R.string.customize_home_tab)) },

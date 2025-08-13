@@ -389,4 +389,5 @@
     <string name="title_activity_video_player">Видеоплеер</string>
     <string name="set_as_default_for_this_type">Установить по умолчанию для этого типа</string>
     <string name="remove_default_opening_method">Удалить стандартный метод открытия</string>
+    <string name="toggle_hidden_files">Показать/скрыть скрытые файлы</string>
 </resources>

@@ -390,4 +390,5 @@
     <string name="title_activity_video_player">"Video Oynatıcı"</string>
     <string name="set_as_default_for_this_type">"Bu tür için varsayılan olarak ayarla"</string>
     <string name="remove_default_opening_method">"Varsayılan açma yöntemini kaldır"</string>
+    <string name="toggle_hidden_files">Gizli dosyaları aç/kapat</string>
 </resources>
