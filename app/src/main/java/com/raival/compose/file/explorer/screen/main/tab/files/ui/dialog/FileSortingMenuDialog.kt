@@ -17,7 +17,6 @@ import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.SortByAlpha
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,7 +48,6 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod
 fun FileSortingMenuDialog(
     show: Boolean,
     tab: FilesTab,
-    reloadFiles: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
     if (show) {
@@ -82,7 +80,16 @@ fun FileSortingMenuDialog(
         }
 
         BottomSheetDialog(
-            onDismissRequest = { onDismissRequest() }
+            onDismissRequest = {
+                if (applyForThisFileOnly) {
+                    updateForThisFolder()
+                } else {
+                    prefs.showFoldersFirst = showFoldersFirst
+                    prefs.reverse = reverseOrder
+                    prefs.defaultSortMethod = sortingMethod
+                }
+                onDismissRequest()
+            }
         ) {
             Column(
                 modifier = Modifier
@@ -149,8 +156,7 @@ fun FileSortingMenuDialog(
                     Column(
                         modifier = Modifier
                             .selectableGroup()
-                            .padding(8.dp),
-                        //verticalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(8.dp)
                     ) {
                         RadioButtonItem(
                             icon = Icons.Rounded.SortByAlpha,
@@ -181,6 +187,18 @@ fun FileSortingMenuDialog(
                             text = stringResource(R.string.size_smaller),
                             selected = sortingMethod == SortingMethod.SORT_BY_SIZE,
                             onClick = { sortingMethod = SortingMethod.SORT_BY_SIZE }
+                        )
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+                        )
+
+                        RadioButtonItem(
+                            icon = Icons.AutoMirrored.Rounded.InsertDriveFile,
+                            text = stringResource(R.string.type),
+                            selected = sortingMethod == SortingMethod.SORT_BY_TYPE,
+                            onClick = { sortingMethod = SortingMethod.SORT_BY_TYPE }
                         )
                     }
                 }
@@ -223,32 +241,6 @@ fun FileSortingMenuDialog(
                         )
                     }
                 }
-
-                Space(size = 32.dp)
-
-                // Apply Button
-                FilledTonalButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        if (applyForThisFileOnly) {
-                            updateForThisFolder()
-                        } else {
-                            prefs.showFoldersFirst = showFoldersFirst
-                            prefs.reverse = reverseOrder
-                            prefs.defaultSortMethod = sortingMethod
-                        }
-
-                        reloadFiles()
-                        onDismissRequest()
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.apply),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-
-                Space(size = 8.dp)
             }
         }
     }

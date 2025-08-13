@@ -64,8 +64,10 @@ fun Dialogs(tab: FilesTab) {
     FileSortingMenuDialog(
         show = dialogsState.value.showSortingMenu,
         tab = tab,
-        reloadFiles = { tab.reloadFiles() },
-        onDismissRequest = { tab.toggleSortingMenu(false) }
+        onDismissRequest = {
+            tab.toggleSortingMenu(false)
+            tab.reloadFiles()
+        }
     )
 
     DeleteConfirmationDialog(

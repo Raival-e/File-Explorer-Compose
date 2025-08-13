@@ -46,3 +46,11 @@ val sortSmallerFirst = Comparator.comparingLong { obj: ContentHolder -> obj.size
 val sortLargerFirst = Comparator { file1: ContentHolder, file2: ContentHolder ->
     file2.size.compareTo(file1.size)
 }
+
+val sortType = Comparator.comparing { file: ContentHolder ->
+    file.extension
+}
+
+val sortTypeRev = Comparator { file1: ContentHolder, file2: ContentHolder ->
+    file2.extension.compareTo(file1.extension)
+}

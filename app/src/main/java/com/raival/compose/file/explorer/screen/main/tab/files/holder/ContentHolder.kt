@@ -10,6 +10,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_DATE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_SIZE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_TYPE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortFoldersFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortLargerFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortName
@@ -17,6 +18,8 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortNameRev
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortNewerFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortOlderFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortSmallerFirst
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortTypeRev
 
 /**
  * Abstract class representing a content holder.
@@ -99,6 +102,10 @@ abstract class ContentHolder {
 
                 SORT_BY_SIZE -> {
                     sortWith(if (sortingPrefs.reverseSorting) sortLargerFirst else sortSmallerFirst)
+                }
+
+                SORT_BY_TYPE -> {
+                    sortWith(if (sortingPrefs.reverseSorting) sortTypeRev else sortType)
                 }
             }
 
