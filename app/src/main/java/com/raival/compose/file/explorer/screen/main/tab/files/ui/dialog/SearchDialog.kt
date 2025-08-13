@@ -584,7 +584,6 @@ private fun SearchResultItem(
                 item = searchResult.file,
                 fileDetails = if (searchResult.file is LocalFileHolder)
                     searchResult.file.basePath else searchResult.file.uniquePath,
-                ignoreSizePreferences = true
             )
 
             // Content preview for content matches
