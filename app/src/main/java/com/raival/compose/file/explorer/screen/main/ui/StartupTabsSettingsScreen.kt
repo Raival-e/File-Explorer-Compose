@@ -107,6 +107,7 @@ fun StartupTabsSettingsScreen(
                 }.tabs
 
                 config.forEach {
+                    // Gson can actually make this null
                     if (it.id == null) {
                         it.id = UUID.randomUUID()
                     }
