@@ -391,4 +391,8 @@
     <string name="remove_default_opening_method">Удалить стандартный метод открытия</string>
     <string name="toggle_hidden_files">Показать/скрыть скрытые файлы</string>
     <string name="custom">Пользовательский</string>
+    <string name="file_list_display_mode">Режим отображения файлов</string>
+    <string name="columns">Столбцы</string>
+    <string name="grid">Сетка</string>
+    <string name="choose_display_mode">Выберите режим отображения</string>
 </resources>

@@ -391,4 +391,8 @@
     <string name="remove_default_opening_method">Remove default opening method</string>
     <string name="toggle_hidden_files">Toggle hidden files</string>
     <string name="custom">Custom</string>
+    <string name="file_list_display_mode">Files display mode</string>
+    <string name="columns">Columns</string>
+    <string name="grid">Grid</string>
+    <string name="choose_display_mode">Choose display mode</string>
 </resources>

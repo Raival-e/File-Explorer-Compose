@@ -17,6 +17,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHold
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.DefaultOpeningMethods
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewType
 import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
@@ -67,6 +68,12 @@ class PreferencesManager {
         getPreferencesKey = { intPreferencesKey(it) }
     )
 
+    var viewType by prefMutableState(
+        keyName = "fileListViewType",
+        defaultValue = ViewType.COLUMNS.ordinal,
+        getPreferencesKey = { intPreferencesKey(it) }
+    )
+
     var showFolderContentCount by prefMutableState(
         keyName = "showFolderContentCount",
         defaultValue = false,
@@ -82,7 +89,7 @@ class PreferencesManager {
     //---------- Behavior -------------//
     var showFileOptionMenuOnLongClick by prefMutableState(
         keyName = "showFileOptionMenuOnLongClick",
-        defaultValue = true,
+        defaultValue = false,
         getPreferencesKey = { booleanPreferencesKey(it) }
     )
 

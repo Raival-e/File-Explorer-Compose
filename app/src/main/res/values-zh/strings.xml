@@ -391,4 +391,8 @@
     <string name="remove_default_opening_method">移除默认打开方式</string>
     <string name="toggle_hidden_files">切换隐藏文件</string>
     <string name="custom">自定义</string>
+    <string name="file_list_display_mode">文件显示模式</string>
+    <string name="columns">列</string>
+    <string name="grid">网格</string>
+    <string name="choose_display_mode">选择显示模式</string>
 </resources>

@@ -391,4 +391,8 @@
     <string name="remove_default_opening_method">Remover método de abertura padrão</string>
     <string name="toggle_hidden_files">Alternar arquivos ocultos</string>
     <string name="custom">Personalizado</string>
+    <string name="file_list_display_mode">Modo de exibição de arquivos</string>
+    <string name="columns">Colunas</string>
+    <string name="grid">Grade</string>
+    <string name="choose_display_mode">Escolher modo de exibição</string>
 </resources>

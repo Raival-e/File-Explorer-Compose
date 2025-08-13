@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.preferences.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.automirrored.rounded.ManageSearch
 import androidx.compose.material.icons.rounded.Height
 import androidx.compose.material.icons.rounded.HideSource
@@ -13,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewType
 import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
 
 @Composable
@@ -52,28 +54,52 @@ fun FileListContainer() {
             thickness = 3.dp
         )
 
-        val columnCount = arrayListOf(
-            "1", "2", "3", "4", "Auto"
+        PreferenceItem(
+            label = stringResource(R.string.file_list_display_mode),
+            supportingText = if (prefs.viewType == ViewType.COLUMNS.ordinal) stringResource(R.string.columns) else stringResource(
+                R.string.grid
+            ),
+            icon = Icons.AutoMirrored.Rounded.ListAlt,
+            onClick = {
+                prefs.singleChoiceDialog.show(
+                    title = globalClass.getString(R.string.file_list_display_mode),
+                    description = globalClass.getString(R.string.choose_display_mode),
+                    choices = listOf(
+                        globalClass.getString(R.string.columns),
+                        globalClass.getString(R.string.grid)
+                    ),
+                    selectedChoice = prefs.viewType,
+                    onSelect = {
+                        prefs.viewType = it
+                        if (it == ViewType.COLUMNS.ordinal) {
+                            prefs.columnCount = 1
+                        } else {
+                            prefs.columnCount = 4
+                        }
+                    }
+                )
+            }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
         )
 
         PreferenceItem(
             label = stringResource(R.string.files_list_column_count),
-            supportingText = if (prefs.columnCount == -1) columnCount[4] else prefs.columnCount.toString(),
+            supportingText = prefs.columnCount.toString(),
             icon = Icons.AutoMirrored.Rounded.ManageSearch,
             onClick = {
                 prefs.singleChoiceDialog.show(
                     title = globalClass.getString(R.string.files_list_column_count),
                     description = globalClass.getString(R.string.choose_number_of_columns),
-                    choices = columnCount,
-                    selectedChoice = if (prefs.columnCount == -1) 4 else columnCount.indexOf(
-                        prefs.columnCount.toString()
-                    ),
+                    choices = (if (prefs.viewType == ViewType.COLUMNS.ordinal) (1..3) else (3..6)).toList()
+                        .map { it.toString() },
+                    selectedChoice = prefs.columnCount - if (prefs.viewType == ViewType.COLUMNS.ordinal) 1 else 3,
                     onSelect = {
-                        val limit = when (columnCount[it]) {
-                            columnCount[4] -> -1
-                            else -> columnCount[it].toIntOrNull() ?: -1
-                        }
-                        prefs.columnCount = limit
+                        prefs.columnCount =
+                            it + if (prefs.viewType == ViewType.COLUMNS.ordinal) 1 else 3
                     }
                 )
             }

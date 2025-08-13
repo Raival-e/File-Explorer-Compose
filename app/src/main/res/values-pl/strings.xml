@@ -391,4 +391,8 @@
     <string name="remove_default_opening_method">Usuń domyślną metodę otwierania</string>
     <string name="toggle_hidden_files">Przełącz ukryte pliki</string>
     <string name="custom">Niestandardowy</string>
+    <string name="file_list_display_mode">Tryb wyświetlania plików</string>
+    <string name="columns">Kolumny</string>
+    <string name="grid">Siatka</string>
+    <string name="choose_display_mode">Wybierz tryb wyświetlania</string>
 </resources>
