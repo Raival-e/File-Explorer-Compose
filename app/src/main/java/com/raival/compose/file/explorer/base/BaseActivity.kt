@@ -184,7 +184,7 @@ abstract class BaseActivity : AppCompatActivity() {
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.skip_for_now),
+                            text = stringResource(R.string.close),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
