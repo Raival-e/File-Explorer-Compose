@@ -3,6 +3,7 @@ package com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,9 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -52,8 +51,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
@@ -62,6 +64,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
@@ -70,10 +74,12 @@ import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.isValidAsFileName
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTask.Companion.transformFileName
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTaskParameters
+import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileContentIcon
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -628,16 +634,32 @@ fun AdvanceRenameDialog(
                                             ),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            imageVector = if (item.second.isFolder)
-                                                Icons.Rounded.Folder
-                                            else Icons.AutoMirrored.Rounded.InsertDriveFile,
-                                            contentDescription = null,
-                                            tint = if (conflicts.contains(item.first))
-                                                MaterialTheme.colorScheme.error
-                                            else MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(20.dp)
-                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .size(30.dp)
+                                                .clip(
+                                                    RoundedCornerShape(6.dp)
+                                                )
+                                        ) {
+                                            var useCoil by remember(item.second.uid) {
+                                                mutableStateOf(canUseCoil(item.second))
+                                            }
+                                            if (useCoil) {
+                                                AsyncImage(
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    model = ImageRequest
+                                                        .Builder(globalClass)
+                                                        .data(item.second)
+                                                        .build(),
+                                                    filterQuality = FilterQuality.Low,
+                                                    contentScale = ContentScale.Fit,
+                                                    contentDescription = null,
+                                                    onError = { useCoil = false }
+                                                )
+                                            } else {
+                                                FileContentIcon(item.second)
+                                            }
+                                        }
                                         Space(12.dp)
                                         Column(modifier = Modifier.weight(1f)) {
                                             Text(
@@ -645,7 +667,8 @@ fun AdvanceRenameDialog(
                                                 style = MaterialTheme.typography.bodyMedium,
                                                 color = if (conflicts.contains(item.first))
                                                     MaterialTheme.colorScheme.error
-                                                else MaterialTheme.colorScheme.onSurfaceVariant
+                                                else MaterialTheme.colorScheme.onSurfaceVariant,
+                                                maxLines = 2,
                                             )
                                             Row(
                                                 verticalAlignment = Alignment.CenterVertically
@@ -665,7 +688,8 @@ fun AdvanceRenameDialog(
                                                     fontWeight = FontWeight.Medium,
                                                     color = if (conflicts.contains(item.first))
                                                         MaterialTheme.colorScheme.error
-                                                    else MaterialTheme.colorScheme.onSurface
+                                                    else MaterialTheme.colorScheme.onSurface,
+                                                    maxLines = 2
                                                 )
                                             }
                                         }
