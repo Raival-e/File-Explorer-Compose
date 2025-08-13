@@ -390,4 +390,5 @@
     <string name="set_as_default_for_this_type">Set as default for this type</string>
     <string name="remove_default_opening_method">Remove default opening method</string>
     <string name="toggle_hidden_files">Toggle hidden files</string>
+    <string name="custom">Custom</string>
 </resources>

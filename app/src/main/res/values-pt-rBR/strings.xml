@@ -390,4 +390,5 @@
     <string name="set_as_default_for_this_type">Definir como padrão para este tipo</string>
     <string name="remove_default_opening_method">Remover método de abertura padrão</string>
     <string name="toggle_hidden_files">Alternar arquivos ocultos</string>
+    <string name="custom">Personalizado</string>
 </resources>

@@ -390,4 +390,5 @@
     <string name="set_as_default_for_this_type">تنظیم به عنوان پیش فرض برای این نوع</string>
     <string name="remove_default_opening_method">حذف روش باز کردن پیش فرض</string>
     <string name="toggle_hidden_files">نمایش/پنهان کردن فایل‌های مخفی</string>
+    <string name="custom">سفارشی</string>
 </resources>

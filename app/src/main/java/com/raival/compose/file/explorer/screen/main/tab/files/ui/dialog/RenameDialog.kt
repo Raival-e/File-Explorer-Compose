@@ -1,5 +1,6 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,10 +15,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
+import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.AlertDialog
@@ -25,11 +28,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -68,6 +75,8 @@ import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTask.Companion.transformFileName
 import com.raival.compose.file.explorer.screen.main.tab.files.task.RenameTaskParameters
 import kotlinx.coroutines.launch
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun RenameDialog(
@@ -213,6 +222,7 @@ fun RenameDialog(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdvanceRenameDialog(
     tab: FilesTab,
@@ -220,7 +230,9 @@ fun AdvanceRenameDialog(
 ) {
     val useDarkIcons = !isSystemInDarkTheme()
     val originalList =
-        remember { tab.selectedFiles.values.map { it.displayName to it }.toTypedArray() }
+        remember {
+            tab.selectedFiles.values.map { it.displayName to it }.toCollection(arrayListOf())
+        }
     val remainingFiles = tab.activeFolderContent.map { it.displayName }
         .filter { !originalList.map { it.first }.contains(it) }.toList()
     val currentList = remember { mutableStateListOf<Pair<String, ContentHolder>>() }
@@ -242,6 +254,28 @@ fun AdvanceRenameDialog(
     var newNameInput by remember { mutableStateOf(TextFieldValue("{p}{e}")) }
     var findInput by remember { mutableStateOf(emptyString) }
     var replaceInput by remember { mutableStateOf(emptyString) }
+
+    var showSortingOptions by remember { mutableStateOf(false) }
+    var currentSortingOption by remember { mutableStateOf(globalClass.getString(R.string.custom)) }
+
+    val lazyListState = rememberLazyListState()
+    val reorderableState = rememberReorderableLazyListState(
+        lazyListState = lazyListState,
+        onMove = { from, to ->
+            originalList.add(
+                to.index,
+                originalList.removeAt(from.index)
+            )
+
+            currentList.add(
+                to.index,
+                currentList.removeAt(from.index)
+            )
+
+            isReady = false
+            currentSortingOption = globalClass.getString(R.string.custom)
+        }
+    )
 
     LaunchedEffect(Unit) {
         currentList.clear()
@@ -465,12 +499,101 @@ fun AdvanceRenameDialog(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Text(
-                        text = stringResource(R.string.preview),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(R.string.preview),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        TextButton(onClick = {
+                            originalList.reverse()
+                            currentList.clear()
+                            currentList.addAll(originalList)
+                            isReady = false
+                        }) {
+                            Text(stringResource(R.string.reverse))
+                        }
+                        ExposedDropdownMenuBox(
+                            expanded = showSortingOptions,
+                            onExpandedChange = { showSortingOptions = it }
+                        ) {
+                            TextButton(
+                                onClick = {},
+                                modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.Sort,
+                                    contentDescription = null
+                                )
+                                Space(8.dp)
+                                Text(currentSortingOption)
+                            }
+                            ExposedDropdownMenu(
+                                matchTextFieldWidth = false,
+                                expanded = showSortingOptions,
+                                onDismissRequest = { showSortingOptions = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(R.string.name_a_z)) },
+                                    onClick = {
+                                        currentSortingOption =
+                                            globalClass.getString(R.string.name_a_z)
+                                        originalList.sortBy { it.first }
+                                        currentList.clear()
+                                        currentList.addAll(originalList)
+                                        isReady = false
+                                        showSortingOptions = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(R.string.date_newer)) },
+                                    onClick = {
+                                        currentSortingOption =
+                                            globalClass.getString(R.string.date_newer)
+                                        originalList.sortByDescending { it.second.lastModified }
+                                        currentList.clear()
+                                        currentList.addAll(originalList)
+                                        isReady = false
+                                        showSortingOptions = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(R.string.size_smaller)) },
+                                    onClick = {
+                                        currentSortingOption =
+                                            globalClass.getString(R.string.size_smaller)
+                                        originalList.sortBy { it.second.size }
+                                        currentList.clear()
+                                        currentList.addAll(originalList)
+                                        isReady = false
+                                        showSortingOptions = false
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(R.string.type)) },
+                                    onClick = {
+                                        currentSortingOption = globalClass.getString(R.string.type)
+                                        originalList.sortWith { a, b ->
+                                            when {
+                                                a.second.isFolder && !b.second.isFolder -> -1
+                                                !a.second.isFolder && b.second.isFolder -> 1
+                                                else -> a.second.extension.compareTo(b.second.extension)
+                                            }
+                                        }
+                                        currentList.clear()
+                                        currentList.addAll(originalList)
+                                        isReady = false
+                                        showSortingOptions = false
+                                    }
+                                )
+                            }
+                        }
+                    }
 
                     Card(
                         modifier = Modifier
@@ -482,6 +605,7 @@ fun AdvanceRenameDialog(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         LazyColumn(
+                            state = lazyListState,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(16.dp),
@@ -490,50 +614,60 @@ fun AdvanceRenameDialog(
                             itemsIndexed(
                                 items = currentList,
                                 key = { index, item -> item.first + item.second.displayName }) { index, item ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = if (item.second.isFolder)
-                                            Icons.Rounded.Folder
-                                        else Icons.AutoMirrored.Rounded.InsertDriveFile,
-                                        contentDescription = null,
-                                        tint = if (conflicts.contains(item.first))
-                                            MaterialTheme.colorScheme.error
-                                        else MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                    Space(12.dp)
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = item.second.displayName,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = if (conflicts.contains(item.first))
+                                ReorderableItem(
+                                    state = reorderableState,
+                                    key = item.first + item.second.displayName
+                                ) { isDragging ->
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .longPressDraggableHandle()
+                                            .background(
+                                                color = if (isDragging) MaterialTheme.colorScheme.surfaceVariant
+                                                else MaterialTheme.colorScheme.surfaceContainer,
+                                            ),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = if (item.second.isFolder)
+                                                Icons.Rounded.Folder
+                                            else Icons.AutoMirrored.Rounded.InsertDriveFile,
+                                            contentDescription = null,
+                                            tint = if (conflicts.contains(item.first))
                                                 MaterialTheme.colorScheme.error
-                                            else MaterialTheme.colorScheme.onSurfaceVariant
+                                            else MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(20.dp)
                                         )
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(16.dp),
-                                                tint = if (conflicts.contains(item.first))
-                                                    MaterialTheme.colorScheme.error
-                                                else MaterialTheme.colorScheme.primary
-                                            )
-                                            Space(8.dp)
+                                        Space(12.dp)
+                                        Column(modifier = Modifier.weight(1f)) {
                                             Text(
-                                                text = item.first,
+                                                text = item.second.displayName,
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                fontWeight = FontWeight.Medium,
                                                 color = if (conflicts.contains(item.first))
                                                     MaterialTheme.colorScheme.error
-                                                else MaterialTheme.colorScheme.onSurface
+                                                else MaterialTheme.colorScheme.onSurfaceVariant
                                             )
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(16.dp),
+                                                    tint = if (conflicts.contains(item.first))
+                                                        MaterialTheme.colorScheme.error
+                                                    else MaterialTheme.colorScheme.primary
+                                                )
+                                                Space(8.dp)
+                                                Text(
+                                                    text = item.first,
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    fontWeight = FontWeight.Medium,
+                                                    color = if (conflicts.contains(item.first))
+                                                        MaterialTheme.colorScheme.error
+                                                    else MaterialTheme.colorScheme.onSurface
+                                                )
+                                            }
                                         }
                                     }
                                 }
