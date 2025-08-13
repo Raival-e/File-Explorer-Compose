@@ -83,7 +83,7 @@ fun Dialogs(tab: FilesTab) {
     )
 
     RenameDialog(
-        show = dialogsState.value.showRenameDialog && tab.selectedFiles.isNotEmpty() && tab.targetFile != null,
+        show = dialogsState.value.showRenameDialog && tab.selectedFiles.isNotEmpty(),
         tab = tab,
         onDismissRequest = { tab.toggleRenameDialog(false) }
     )
@@ -101,7 +101,7 @@ fun Dialogs(tab: FilesTab) {
     )
 
     FilePropertiesDialog(
-        show = dialogsState.value.showFileProperties && tab.targetFile != null,
+        show = dialogsState.value.showFileProperties,
         tab = tab,
         onDismissRequest = { tab.toggleFilePropertiesDialog(false) }
     )

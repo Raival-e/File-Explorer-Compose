@@ -280,6 +280,7 @@ class FilesTab(
         // Update the bottom bar options to fit the new folder
         _bottomOptionsBarState.update {
             it.copy(
+                showQuickOptions = selectedFiles.isNotEmpty(),
                 showCreateNewContentButton = activeFolder.canAddNewContent,
                 showMoreOptionsButton = selectedFiles.isNotEmpty(),
                 showEmptyRecycleBinButton = activeFolder is LocalFileHolder &&
@@ -401,6 +402,7 @@ class FilesTab(
             // Update the bottom bar options
             _bottomOptionsBarState.update {
                 it.copy(
+                    showQuickOptions = selectedFiles.isNotEmpty(),
                     showMoreOptionsButton = selectedFiles.isNotEmpty(),
                     showEmptyRecycleBinButton = activeFolder is LocalFileHolder &&
                             ((activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir) ||
@@ -427,6 +429,7 @@ class FilesTab(
             // Update the bottom bar options
             _bottomOptionsBarState.update {
                 it.copy(
+                    showQuickOptions = selectedFiles.isNotEmpty(),
                     showMoreOptionsButton = selectedFiles.isNotEmpty(),
                     showEmptyRecycleBinButton = activeFolder is LocalFileHolder &&
                             ((activeFolder as LocalFileHolder).hasParent(globalClass.recycleBinDir) ||

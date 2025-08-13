@@ -77,7 +77,7 @@ fun RenameDialog(
 ) {
     if (show) {
         if (tab.selectedFiles.size == 1) {
-            val target by remember { mutableStateOf(tab.targetFile!!) }
+            val target by remember { mutableStateOf(tab.selectedFiles.values.first()) }
             val listContent by remember {
                 mutableStateOf(tab.activeFolderContent.map { it.displayName }.toTypedArray())
             }

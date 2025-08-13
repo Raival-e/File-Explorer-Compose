@@ -302,7 +302,8 @@ class MainActivity : BaseActivity() {
                             .weight(1f)
                             .graphicsLayer {
                                 translationX = -overscrollAmount
-                            }
+                            },
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         if (state.tabs.isNotEmpty()) {
                             val currentTab = state.tabs[index]
