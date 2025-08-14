@@ -395,4 +395,9 @@
     <string name="columns">Columns</string>
     <string name="grid">Grid</string>
     <string name="choose_display_mode">Choose display mode</string>
+    <string name="new_update_available">New update available!</string>
+    <string name="check_for_updates_failed_no_internet_connection">Check for updates failed: No internet connection</string>
+    <string name="check_for_updates_failed_failed_to_connect_to_server">Check for updates failed: Failed to connect to server</string>
+    <string name="title_upgrade">Upgrade</string>
+    <string name="download_new_update">Download new update</string>
 </resources>

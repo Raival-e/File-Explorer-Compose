@@ -94,6 +94,7 @@ class MainActivity : BaseActivity() {
                     }
 
                     LaunchedEffect(Unit) {
+                        mainActivityManager.checkForUpdate()
                         if (hasIntent()) {
                             handleIntent()
                         } else {
@@ -110,6 +111,7 @@ class MainActivity : BaseActivity() {
 
                     AppInfoDialog(
                         show = mainActivityState.showAppInfoDialog,
+                        hasNewUpdate = mainActivityState.hasNewUpdate,
                         onDismiss = { mainActivityManager.toggleAppInfoDialog(false) }
                     )
 
@@ -130,6 +132,7 @@ class MainActivity : BaseActivity() {
                         Toolbar(
                             title = mainActivityState.title,
                             subtitle = mainActivityState.subtitle,
+                            hasNewUpdate = mainActivityState.hasNewUpdate,
                             onToggleAppInfoDialog = { mainActivityManager.toggleAppInfoDialog(it) }
                         )
                         TabLayout(

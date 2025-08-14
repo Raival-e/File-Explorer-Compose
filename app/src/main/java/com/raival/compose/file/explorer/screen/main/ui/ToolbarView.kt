@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.icons.PrismIcons
+import com.raival.compose.file.explorer.common.icons.Upgrade
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.home.HomeTab
 import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
@@ -44,7 +46,8 @@ import com.raival.compose.file.explorer.screen.preferences.PreferencesActivity
 fun Toolbar(
     title: String,
     subtitle: String,
-    onToggleAppInfoDialog: (Boolean) -> Unit
+    onToggleAppInfoDialog: (Boolean) -> Unit,
+    hasNewUpdate: Boolean
 ) {
     val mainActivityManager = globalClass.mainActivityManager
     val context = LocalContext.current
@@ -60,10 +63,21 @@ fun Toolbar(
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(
-            onClick = { onToggleAppInfoDialog(true) }
-        ) {
-            Icon(imageVector = Icons.Rounded.Menu, contentDescription = null)
+        Box {
+            IconButton(
+                onClick = { onToggleAppInfoDialog(true) }
+            ) {
+                if (hasNewUpdate) {
+                    Icon(
+                        imageVector = PrismIcons.Upgrade,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                } else {
+                    Icon(imageVector = Icons.Rounded.Menu, contentDescription = null)
+                }
+
+            }
         }
 
         Column(

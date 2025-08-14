@@ -18,5 +18,6 @@ data class MainActivityState(
     val selectedTabIndex: Int = 0,
     val storageDevices: List<StorageDevice> = emptyList(),
     val tabs: List<Tab> = emptyList(),
-    val tabLayoutState: LazyListState = LazyListState()
+    val tabLayoutState: LazyListState = LazyListState(),
+    val hasNewUpdate: Boolean = false
 )
