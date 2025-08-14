@@ -400,4 +400,6 @@
     <string name="check_for_updates_failed_failed_to_connect_to_server">بررسی به‌روزرسانی ناموفق بود: اتصال به سرور ناموفق بود</string>
     <string name="title_upgrade">ارتقا</string>
     <string name="download_new_update">دانلود به‌روزرسانی جدید</string>
+    <string name="use_builtin_viewers">استفاده از نمایشگرهای داخلی</string>
+    <string name="use_builtin_viewers_desc">باز کردن خودکار فایل‌های پشتیبانی شده با نمایشگرهای داخلی</string>
 </resources>

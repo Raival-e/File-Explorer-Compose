@@ -401,4 +401,6 @@
     <string name="check_for_updates_failed_failed_to_connect_to_server">Güncellemeler kontrol edilemedi: Sunucuya bağlanılamadı</string>
     <string name="title_upgrade">Yükselt</string>
     <string name="download_new_update">Yeni güncellemeyi indir</string>
+    <string name="use_builtin_viewers">Yerleşik görüntüleyicileri kullan</string>
+    <string name="use_builtin_viewers_desc">Desteklenen dosyaları yerleşik görüntüleyicilerle otomatik olarak aç</string>
 </resources>

@@ -400,4 +400,6 @@
     <string name="check_for_updates_failed_failed_to_connect_to_server">Check for updates failed: Failed to connect to server</string>
     <string name="title_upgrade">Upgrade</string>
     <string name="download_new_update">Download new update</string>
+    <string name="use_builtin_viewers">Use built-in viewers</string>
+    <string name="use_builtin_viewers_desc">Automatically open supported files with built-in viewers</string>
 </resources>

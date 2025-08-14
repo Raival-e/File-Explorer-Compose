@@ -400,4 +400,6 @@
     <string name="check_for_updates_failed_failed_to_connect_to_server">Проверка обновлений не удалась: Не удалось подключиться к серверу</string>
     <string name="title_upgrade">Обновить</string>
     <string name="download_new_update">Загрузить новое обновление</string>
+    <string name="use_builtin_viewers">Использовать встроенные просмотрщики</string>
+    <string name="use_builtin_viewers_desc">Автоматически открывать поддерживаемые файлы с помощью встроенных просмотрщиков</string>
 </resources>

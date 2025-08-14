@@ -21,6 +21,10 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.codeFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.editableFileType
+import com.raival.compose.file.explorer.screen.viewer.audio.AudioPlayerActivity
+import com.raival.compose.file.explorer.screen.viewer.image.ImageViewerActivity
+import com.raival.compose.file.explorer.screen.viewer.pdf.PdfViewerActivity
+import com.raival.compose.file.explorer.screen.viewer.video.VideoPlayerActivity
 import kotlinx.coroutines.runBlocking
 import java.io.File
 
@@ -266,6 +270,42 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
         if (FileMimeType.supportedArchiveFileType.contains(extension)) {
             globalClass.zipManager.openArchive(this)
+            return true
+        }
+
+        if (FileMimeType.videoFileType.contains(extension)) {
+            openFileWithPackage(
+                context,
+                context.packageName,
+                VideoPlayerActivity::class.java.name
+            )
+            return true
+        }
+
+        if (FileMimeType.audioFileType.contains(extension)) {
+            openFileWithPackage(
+                context,
+                context.packageName,
+                AudioPlayerActivity::class.java.name
+            )
+            return true
+        }
+
+        if (FileMimeType.imageFileType.contains(extension)) {
+            openFileWithPackage(
+                context,
+                context.packageName,
+                ImageViewerActivity::class.java.name
+            )
+            return true
+        }
+
+        if (FileMimeType.pdfFileType.contains(extension)) {
+            openFileWithPackage(
+                context,
+                context.packageName,
+                PdfViewerActivity::class.java.name
+            )
             return true
         }
 

@@ -400,4 +400,6 @@
     <string name="check_for_updates_failed_failed_to_connect_to_server">Sprawdzanie aktualizacji nie powiodło się: Nie udało się połączyć z serwerem</string>
     <string name="title_upgrade">Aktualizacja</string>
     <string name="download_new_update">Pobierz nową aktualizację</string>
+    <string name="use_builtin_viewers">Użyj wbudowanych przeglądarek</string>
+    <string name="use_builtin_viewers_desc">Automatycznie otwieraj obsługiwane pliki za pomocą wbudowanych przeglądarek</string>
 </resources>

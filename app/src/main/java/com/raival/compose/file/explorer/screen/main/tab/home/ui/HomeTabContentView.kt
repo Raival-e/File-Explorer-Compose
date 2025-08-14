@@ -226,7 +226,12 @@ private fun RecentFilesSection(
                         .clip(RoundedCornerShape(8.dp))
                         .combinedClickable(
                             onClick = {
-                                it.file.open(context, false, false, null)
+                                it.file.open(
+                                    context = context,
+                                    anonymous = false,
+                                    skipSupportedExtensions = !globalClass.preferencesManager.useBuiltInViewer,
+                                    customMimeType = null
+                                )
                             },
                             onLongClick = {
                                 mainActivityManager.replaceCurrentTabWith(

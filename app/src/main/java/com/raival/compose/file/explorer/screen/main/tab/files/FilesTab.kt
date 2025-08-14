@@ -235,7 +235,12 @@ class FilesTab(
         if (item is LocalFileHolder && item.isApk()) {
             toggleApkDialog(item)
         } else {
-            item.open(context, anonymous = false, skipSupportedExtensions = false, null)
+            item.open(
+                context = context,
+                anonymous = false,
+                skipSupportedExtensions = !globalClass.preferencesManager.useBuiltInViewer,
+                customMimeType = null
+            )
         }
     }
 

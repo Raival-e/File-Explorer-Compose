@@ -105,6 +105,12 @@ class PreferencesManager {
         getPreferencesKey = { booleanPreferencesKey(it) }
     )
 
+    var useBuiltInViewer by prefMutableState(
+        keyName = "useBuiltInViewer",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
     var startupTabs by prefMutableState(
         keyName = "startupTabs",
         defaultValue = StartupTabs.default().toJson(),

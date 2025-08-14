@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.preferences.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.OpenInBrowser
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material3.HorizontalDivider
@@ -49,6 +50,19 @@ fun BehaviorContainer() {
             icon = Icons.Rounded.TouchApp,
             switchState = prefs.skipHomeWhenTabClosed,
             onSwitchChange = { prefs.skipHomeWhenTabClosed = it }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
+        )
+
+        PreferenceItem(
+            label = stringResource(R.string.use_builtin_viewers),
+            supportingText = stringResource(R.string.use_builtin_viewers_desc),
+            icon = Icons.Rounded.OpenInBrowser,
+            switchState = prefs.useBuiltInViewer,
+            onSwitchChange = { prefs.useBuiltInViewer = it }
         )
     }
 }

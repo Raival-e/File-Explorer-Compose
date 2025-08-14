@@ -400,4 +400,6 @@
     <string name="check_for_updates_failed_failed_to_connect_to_server">检查更新失败：无法连接到服务器</string>
     <string name="title_upgrade">升级</string>
     <string name="download_new_update">下载新更新</string>
+    <string name="use_builtin_viewers">使用内置查看器</string>
+    <string name="use_builtin_viewers_desc">自动使用内置查看器打开支持的文件</string>
 </resources>
