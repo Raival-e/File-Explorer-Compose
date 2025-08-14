@@ -6,8 +6,10 @@ import com.google.gson.reflect.TypeToken
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.common.isNot
+import com.raival.compose.file.explorer.common.padEnd
 import com.raival.compose.file.explorer.common.printFullStackTrace
 import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.screen.main.model.GithubRelease
@@ -329,19 +331,51 @@ class MainActivityManager {
 
     fun checkForUpdate() {
         fetchGithubReleases { releases ->
-            val latestRelease = releases.firstOrNull()
-            if (latestRelease != null && latestRelease.tagName != "v${
-                    globalClass.packageManager.getPackageInfo(
-                        globalClass.packageName,
-                        0
-                    ).versionName
-                }"
-            ) {
-                newUpdate = latestRelease
-                _state.update { it.copy(hasNewUpdate = true) }
-                showMsg(globalClass.getString(R.string.new_update_available))
+            val latestRelease = releases.firstOrNull() ?: return@fetchGithubReleases
+            val latestVersionName = latestRelease.tagName
+
+            try {
+                val currentVersionName = globalClass.packageManager.getPackageInfo(
+                    globalClass.packageName,
+                    0
+                ).versionName ?: emptyString
+
+                val latestVersion = parseVersion(latestVersionName)
+                val currentVersion = parseVersion(currentVersionName)
+
+                if (isNewerVersion(latestVersion, currentVersion)) {
+                    newUpdate = latestRelease
+                    _state.update { it.copy(hasNewUpdate = true) }
+                    showMsg(globalClass.getString(R.string.new_update_available))
+                }
+            } catch (_: Exception) {
             }
         }
+    }
+
+    private fun isNewerVersion(latestVersion: List<Int>, currentVersion: List<Int>): Boolean {
+        // Determine the length of the longest version array to pad the shorter one.
+        val componentCount = max(latestVersion.size, currentVersion.size)
+
+        // Pad both lists to the same size with zeros. This handles cases like "2.0" vs "2.0.1".
+        val latestPadded = latestVersion.padEnd(componentCount, 0)
+        val currentPadded = currentVersion.padEnd(componentCount, 0)
+
+        for (i in 0 until componentCount) {
+            if (latestPadded[i] > currentPadded[i]) {
+                return true // latest is newer (e.g., 1.10.0 vs 1.9.0)
+            }
+            if (latestPadded[i] < currentPadded[i]) {
+                return false // current is newer or same, so latest is not an update
+            }
+        }
+        return false // Versions are identical
+    }
+
+    private fun parseVersion(versionName: String): List<Int> {
+        return versionName.removePrefix("v")
+            .split(".")
+            .map { it.toIntOrNull() ?: 0 } // Use toIntOrNull for safety
     }
 
     fun fetchGithubReleases(

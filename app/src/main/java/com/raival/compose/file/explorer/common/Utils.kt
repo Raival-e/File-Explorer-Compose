@@ -268,6 +268,23 @@ fun <A, B> HashMap<A, B>.removeIf(condition: (A, B) -> Boolean) {
     }
 }
 
+/**
+ * Extends the List<T> class to include a padEnd function.
+ * If the list's size is less than the specified [size], it adds the [value]
+ * to the end until the list reaches the desired size.
+ *
+ * @param size The desired minimum size of the list.
+ * @param value The value to use for padding.
+ * @return The padded list.
+ */
+fun <T> List<T>.padEnd(size: Int, value: T): List<T> {
+    if (this.size >= size) {
+        return this
+    }
+    val padding = List(size - this.size) { value }
+    return this + padding
+}
+
 // =============================================================================
 // JSON EXTENSIONS
 // =============================================================================
