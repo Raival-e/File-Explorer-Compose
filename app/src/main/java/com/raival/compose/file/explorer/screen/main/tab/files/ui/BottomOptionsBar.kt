@@ -92,13 +92,13 @@ fun BottomOptionsBar(tab: FilesTab) {
                 IconButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        tab.unselectAllFiles()
                         globalClass.taskManager.addTask(
                             CopyTask(
                                 tab.selectedFiles.values.toList(),
                                 deleteSourceFiles = true
                             )
                         )
+                        tab.unselectAllFiles()
                     }
                 ) {
                     Icon(imageVector = Icons.Rounded.ContentCut, contentDescription = null)
@@ -108,13 +108,13 @@ fun BottomOptionsBar(tab: FilesTab) {
                 IconButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        tab.unselectAllFiles()
                         globalClass.taskManager.addTask(
                             CopyTask(
                                 tab.selectedFiles.values.toList(),
                                 deleteSourceFiles = false
                             )
                         )
+                        tab.unselectAllFiles()
                     }
                 ) {
                     Icon(imageVector = Icons.Rounded.FileCopy, contentDescription = null)
