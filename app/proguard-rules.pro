@@ -24,5 +24,6 @@
 -keep class org.eclipse.tm4e.** { *; }
 -keep class org.joni.** { *; }
 -keep class android.content.** { *; }
+-keep class com.android.apksig.** { *; }
 
 -keepnames interface * { *; }
