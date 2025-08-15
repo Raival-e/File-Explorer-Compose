@@ -71,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.max
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -184,7 +185,8 @@ fun FilesListColumns(tab: FilesTab) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         state = tab.activeListState,
-        columns = GridCells.Fixed(preferencesManager.columnCount),
+        // Backward compatibility for "auto" preset (-1)
+        columns = GridCells.Fixed(max(1, preferencesManager.columnCount)),
     ) {
         itemsIndexed(
             tab.activeFolderContent,
@@ -214,7 +216,8 @@ fun FilesListGrid(tab: FilesTab) {
     val preferencesManager = globalClass.preferencesManager
     val selectionHighlightColor = colorScheme.surfaceContainerHigh.copy(alpha = 1f)
     val highlightColor = colorScheme.primary.copy(alpha = 0.05f)
-    val columnCount = preferencesManager.columnCount
+    // Backward compatibility for "auto" preset (-1)
+    val columnCount = max(1, preferencesManager.columnCount)
 
     LazyVerticalGrid(
         state = tab.activeListState,
