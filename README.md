@@ -135,11 +135,6 @@
 
 3. **Find the APK**:
     - Generated APK will be in `app/build/outputs/apk/release/`
-
-### Release Information
-
-Official releases are built using **Android Studio** with **JetBrains Runtime 21.0.6**.
-
 ---
 
 ## 🤝 Contributing
