@@ -60,7 +60,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,7 +90,6 @@ import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.image.misc.ImageInfo
 import com.raival.compose.file.explorer.screen.viewer.image.misc.ImageInfo.Companion.extractImageInfo
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
-import net.engawapg.lib.zoomable.rememberZoomState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -116,8 +114,6 @@ fun ImageViewerScreen(instance: ViewerInstance) {
     var imageDimensions by remember { mutableStateOf("" to "") }
     var contentScale by remember { mutableStateOf(ContentScale.Fit) }
     val context = LocalContext.current
-    val zoomState = rememberZoomState()
-    val scope = rememberCoroutineScope()
 
     // Load image data
     LaunchedEffect(instance.uri) {
