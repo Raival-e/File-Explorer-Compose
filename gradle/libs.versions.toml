@@ -34,6 +34,7 @@ baselineprofile = "1.3.4"
 profileinstaller = "1.4.1"
 reorderable = "2.5.1"
 uiToolingPreviewAndroid = "1.8.3"
+zoomableImageCoil3 = "0.16.0"
 
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
@@ -78,6 +79,7 @@ androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchm
 androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profileinstaller", version.ref = "profileinstaller" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 androidx-ui-tooling-preview-android = { group = "androidx.compose.ui", name = "ui-tooling-preview-android", version.ref = "uiToolingPreviewAndroid" }
+zoomable-image-coil3 = { module = "me.saket.telephoto:zoomable-image-coil3", version.ref = "zoomableImageCoil3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
