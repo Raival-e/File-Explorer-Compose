@@ -413,4 +413,7 @@
     <string name="display_options">Параметры отображения</string>
     <string name="gallery_mode">Режим галереи</string>
     <string name="crop_in_thumbnails">Обрезка в миниатюрах</string>
+    <string name="pinned_files">Закрепленные файлы</string>
+    <string name="pinned_files_desc">Быстрый доступ к важным файлам</string>
+    <string name="pin_to_home_tab">Закрепить на главной вкладке</string>
 </resources>

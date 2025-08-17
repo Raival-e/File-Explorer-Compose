@@ -413,4 +413,7 @@
     <string name="display_options">显示选项</string>
     <string name="gallery_mode">画廊模式</string>
     <string name="crop_in_thumbnails">裁剪缩略图</string>
+    <string name="pinned_files">Pinned Files</string>
+    <string name="pinned_files_desc">快速访问重要文件</string>
+    <string name="pin_to_home_tab">固定到主页标签</string>
 </resources>

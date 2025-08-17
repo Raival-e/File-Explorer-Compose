@@ -413,4 +413,7 @@
     <string name="display_options">Display Options</string>
     <string name="gallery_mode">Gallery Mode</string>
     <string name="crop_in_thumbnails">Crop-in Thumbnails</string>
+    <string name="pinned_files">Pinned Files</string>
+    <string name="pinned_files_desc">Quick access important files</string>
+    <string name="pin_to_home_tab">Pin to home tab</string>
 </resources>

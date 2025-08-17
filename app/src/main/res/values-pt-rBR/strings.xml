@@ -413,4 +413,7 @@
     <string name="display_options">Opções de Exibição</string>
     <string name="gallery_mode">Modo Galeria</string>
     <string name="crop_in_thumbnails">Recortar Miniaturas</string>
+    <string name="pinned_files">Arquivos Fixados</string>
+    <string name="pinned_files_desc">Acesso rápido a arquivos importantes</string>
+    <string name="pin_to_home_tab">Fixar na guia inicial</string>
 </resources>

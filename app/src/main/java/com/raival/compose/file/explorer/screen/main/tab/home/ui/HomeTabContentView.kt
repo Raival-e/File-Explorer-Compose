@@ -1,5 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.home.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,11 +11,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -21,7 +27,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowOutward
-import androidx.compose.material.icons.rounded.Bookmarks
+import androidx.compose.material.icons.rounded.Bookmark
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -58,6 +65,7 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.MainActivityManager
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.BOOKMARKS
@@ -82,6 +90,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
 
     LaunchedEffect(tab.id) {
         tab.fetchRecentFiles()
+        tab.getPinnedFiles()
         val config = try {
             Gson().fromJson(
                 globalClass.preferencesManager.homeTabLayout,
@@ -90,7 +99,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
         } catch (e: Exception) {
             logger.logError(e)
             getDefaultHomeLayout()
-        }.sections.filter { it.isEnabled }.sortedBy { it.order }
+        }.getSections().filter { it.isEnabled }.sortedBy { it.order }
 
         enabledSections.addAll(config)
     }
@@ -112,7 +121,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
             enabledSections.apply {
                 clear()
                 if (isAllDisabled) {
-                    addAll(getDefaultHomeLayout(true).sections.filter { it.isEnabled }
+                    addAll(getDefaultHomeLayout(true).getSections().filter { it.isEnabled }
                         .sortedBy { it.order })
                 } else {
                     addAll(sections.filter { it.isEnabled }.sortedBy { it.order })
@@ -137,7 +146,8 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         enabledSections.forEach { section ->
             when (section.type) {
@@ -164,6 +174,142 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
                 HomeSectionType.JUMP_TO_PATH -> {
                     JumpToPathSection(mainActivityManager = mainActivityManager)
                 }
+
+                HomeSectionType.PINNED_FILES -> {
+                    PinnedFilesSection(tab = tab, mainActivityManager = mainActivityManager)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PinnedFilesSection(
+    tab: HomeTab,
+    mainActivityManager: MainActivityManager
+) {
+    val context = LocalContext.current
+    val pinnedFiles = remember {
+        mutableStateListOf<LocalFileHolder>().apply {
+            addAll(tab.pinnedFiles)
+        }
+    }
+
+    if (pinnedFiles.isNotEmpty()) {
+        // Pinned files
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .padding(top = 12.dp, bottom = 8.dp),
+            text = stringResource(R.string.pinned_files),
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+        )
+
+        Column(
+            modifier = Modifier
+                .animateContentSize()
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .background(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow
+                )
+                .border(
+                    width = 0.5.dp,
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .clip(RoundedCornerShape(12.dp))
+        ) {
+            pinnedFiles.forEachIndexed { index, it ->
+                var showDeleteOption by remember(it.uid) { mutableStateOf(false) }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(IntrinsicSize.Min),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .combinedClickable(
+                                onClick = {
+                                    if (showDeleteOption) {
+                                        showDeleteOption = false
+                                    } else if (it.isFile()) {
+                                        it.open(
+                                            context = context,
+                                            anonymous = false,
+                                            skipSupportedExtensions = !globalClass.preferencesManager.useBuiltInViewer,
+                                            customMimeType = null
+                                        )
+                                    } else {
+                                        mainActivityManager.replaceCurrentTabWith(FilesTab(it))
+                                    }
+                                },
+                                onLongClick = {
+                                    showDeleteOption = !showDeleteOption
+                                }
+                            )
+                            .padding(12.dp)
+                            .padding(end = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        var canUseCoil by remember(it.uid) {
+                            mutableStateOf(canUseCoil(it))
+                        }
+                        if (canUseCoil) {
+                            AsyncImage(
+                                modifier = Modifier
+                                    .size(45.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
+                                model = ImageRequest
+                                    .Builder(globalClass)
+                                    .data(it)
+                                    .build(),
+                                filterQuality = FilterQuality.Low,
+                                contentScale = ContentScale.Fit,
+                                contentDescription = null,
+                                onError = { canUseCoil = false }
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(45.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                FileContentIcon(it)
+                            }
+                        }
+                        Space(size = 8.dp)
+                        Text(text = it.displayName)
+                    }
+                    AnimatedVisibility(visible = showDeleteOption) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .width(60.dp)
+                                .background(color = MaterialTheme.colorScheme.errorContainer)
+                                .clickable {
+                                    pinnedFiles.remove(it)
+                                    tab.removePinnedFile(it)
+                                },
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .align(Alignment.Center),
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+                if (index != tab.pinnedFiles.lastIndex) HorizontalDivider(thickness = 0.5.dp)
             }
         }
     }
@@ -180,9 +326,11 @@ private fun RecentFilesSection(
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .padding(horizontal = 12.dp)
+            .padding(top = 12.dp),
         text = stringResource(R.string.recent_files),
-        style = MaterialTheme.typography.titleMedium
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
     )
 
     if (tab.recentFiles.isEmpty()) {
@@ -285,17 +433,13 @@ private fun RecentFilesSection(
                         )
                     }
                 ) {
-                    Text(
-                        text = stringResource(R.string.more)
-                    )
+                    Text(text = stringResource(R.string.more))
                 }
             }
 
             item { Space(6.dp) }
         }
     }
-
-    Space(12.dp)
 }
 
 @Composable
@@ -306,9 +450,11 @@ private fun CategoriesSection(
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .padding(horizontal = 12.dp)
+            .padding(top = 12.dp),
         text = stringResource(R.string.categories),
-        style = MaterialTheme.typography.titleMedium
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
     )
 
     VerticalGrid(
@@ -344,8 +490,6 @@ private fun CategoriesSection(
             }
         }
     }
-
-    Space(12.dp)
 }
 
 @Composable
@@ -362,16 +506,34 @@ private fun StorageSection(
     Text(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .padding(horizontal = 12.dp)
+            .padding(top = 12.dp),
         text = stringResource(R.string.storage),
-        style = MaterialTheme.typography.titleMedium
+        style = MaterialTheme.typography.titleMedium,
+        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
     )
 
-    storageList.forEach {
-        StorageDeviceView(storageDevice = it) {
-            mainActivityManager.replaceCurrentTabWith(FilesTab(it.contentHolder))
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .background(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow
+            )
+            .border(
+                width = 0.5.dp,
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clip(RoundedCornerShape(12.dp))
+    ) {
+        storageList.forEachIndexed { index, device ->
+            StorageDeviceView(storageDevice = device) {
+                mainActivityManager.replaceCurrentTabWith(FilesTab(device.contentHolder))
+            }
+            if (index != storageList.lastIndex) HorizontalDivider(thickness = 0.5.dp)
         }
-        HorizontalDivider()
     }
 }
 
@@ -380,15 +542,30 @@ private fun BookmarksSection(
     mainActivityManager: MainActivityManager
 ) {
     if (globalClass.preferencesManager.bookmarks.isNotEmpty()) {
-        SimpleNewTabViewItem(
-            title = stringResource(R.string.bookmarks),
-            imageVector = Icons.Rounded.Bookmarks
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+                .background(
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.surfaceContainerLow
+                )
+                .border(
+                    width = 0.5.dp,
+                    color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .clip(RoundedCornerShape(12.dp))
         ) {
-            mainActivityManager.replaceCurrentTabWith(
-                FilesTab(VirtualFileHolder(BOOKMARKS))
-            )
+            SimpleNewTabViewItem(
+                title = stringResource(R.string.bookmarks),
+                imageVector = Icons.Rounded.Bookmark
+            ) {
+                mainActivityManager.replaceCurrentTabWith(
+                    FilesTab(VirtualFileHolder(BOOKMARKS))
+                )
+            }
         }
-        HorizontalDivider()
     }
 }
 
@@ -396,23 +573,54 @@ private fun BookmarksSection(
 private fun RecycleBinSection(
     mainActivityManager: MainActivityManager
 ) {
-    SimpleNewTabViewItem(
-        title = stringResource(R.string.recycle_bin),
-        imageVector = Icons.Rounded.DeleteSweep
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .background(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow
+            )
+            .border(
+                width = 0.5.dp,
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clip(RoundedCornerShape(12.dp))
     ) {
-        mainActivityManager.replaceCurrentTabWith(FilesTab(globalClass.recycleBinDir))
+        SimpleNewTabViewItem(
+            title = stringResource(R.string.recycle_bin),
+            imageVector = Icons.Rounded.DeleteSweep
+        ) {
+            mainActivityManager.replaceCurrentTabWith(FilesTab(globalClass.recycleBinDir))
+        }
     }
-    HorizontalDivider()
 }
 
 @Composable
 private fun JumpToPathSection(
     mainActivityManager: MainActivityManager
 ) {
-    SimpleNewTabViewItem(
-        title = stringResource(R.string.jump_to_path),
-        imageVector = Icons.Rounded.ArrowOutward
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .background(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerLow
+            )
+            .border(
+                width = 0.5.dp,
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clip(RoundedCornerShape(12.dp))
     ) {
-        mainActivityManager.toggleJumpToPathDialog(true)
+        SimpleNewTabViewItem(
+            title = stringResource(R.string.jump_to_path),
+            imageVector = Icons.Rounded.ArrowOutward
+        ) {
+            mainActivityManager.toggleJumpToPathDialog(true)
+        }
     }
 }

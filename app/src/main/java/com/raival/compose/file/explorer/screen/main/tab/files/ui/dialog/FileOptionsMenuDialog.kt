@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Merge
 import androidx.compose.material.icons.rounded.OpenInNewOff
+import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -239,6 +240,14 @@ fun FileOptionsMenuDialog(
                     globalClass.preferencesManager.bookmarks += targetFiles.map { it.uniquePath }
                         .distinct()
                     globalClass.showMsg(R.string.added_to_bookmarks)
+                    tab.unselectAllFiles()
+                }
+                FileOption(Icons.Rounded.PushPin, stringResource(R.string.pin_to_home_tab)) {
+                    onDismissRequest()
+                    val oldSet = globalClass.preferencesManager.pinnedFiles
+                    globalClass.preferencesManager.pinnedFiles =
+                        oldSet + targetFiles.map { it.uniquePath }
+                    globalClass.showMsg(R.string.done)
                     tab.unselectAllFiles()
                 }
             }

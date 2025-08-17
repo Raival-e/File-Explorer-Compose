@@ -6,6 +6,7 @@ import android.text.format.Formatter
 import android.util.Size
 import com.anggrayudi.storage.extension.toDocumentFile
 import com.raival.compose.file.explorer.App
+import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.isNot
@@ -25,7 +26,7 @@ class PdfViewerInstance(
     override val id: String
 ) : ViewerInstance {
     private val fileDescriptor = try {
-        App.Companion.globalClass.contentResolver.openFileDescriptor(uri, "r")
+        globalClass.contentResolver.openFileDescriptor(uri, "r")
     } catch (e: Exception) {
         logger.logError(e)
         null
@@ -52,7 +53,7 @@ class PdfViewerInstance(
             name = uri.name ?: App.Companion.globalClass.getString(R.string.unknown),
             path = uri.toString(),
             size = fileDescriptor?.statSize ?: 0L,
-            lastModified = uri.toDocumentFile(App.Companion.globalClass)?.lastModified() ?: 0L,
+            lastModified = uri.toDocumentFile(globalClass)?.lastModified() ?: 0L,
             pages = pdfRenderer?.pageCount ?: 0
         )
     }

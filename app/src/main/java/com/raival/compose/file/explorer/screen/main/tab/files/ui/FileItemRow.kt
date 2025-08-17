@@ -45,7 +45,8 @@ fun FileItemRow(
     fileDetails: String,
     namePrefix: String = emptyString,
     ignoreSizePreferences: Boolean = false,
-    onFileIconClick: (() -> Unit)? = null
+    onFileIconClick: (() -> Unit)? = null,
+    onItemClick: (() -> Unit)? = null,
 ) {
     ItemRow(
         title = namePrefix + item.displayName,
@@ -57,7 +58,8 @@ fun FileItemRow(
                 onClickListener = onFileIconClick
             )
         },
-        ignoreSizePreferences = ignoreSizePreferences
+        ignoreSizePreferences = ignoreSizePreferences,
+        onItemClick = onItemClick
     )
 }
 
@@ -96,14 +98,16 @@ fun ItemRow(
                     lineHeight = (fontSize + 2).sp,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    modifier = Modifier.alpha(0.7f),
-                    text = subtitle,
-                    fontSize = (fontSize - 4).sp,
-                    maxLines = 1,
-                    lineHeight = (fontSize + 2).sp,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (subtitle.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier.alpha(0.7f),
+                        text = subtitle,
+                        fontSize = (fontSize - 4).sp,
+                        maxLines = 1,
+                        lineHeight = (fontSize + 2).sp,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
 

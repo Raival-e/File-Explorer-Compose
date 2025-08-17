@@ -413,4 +413,7 @@
     <string name="display_options">Opcje wyświetlania</string>
     <string name="gallery_mode">Tryb galerii</string>
     <string name="crop_in_thumbnails">Kadruj w miniaturach</string>
+    <string name="pinned_files">Przypięte pliki</string>
+    <string name="pinned_files_desc">Szybki dostęp do ważnych plików</string>
+    <string name="pin_to_home_tab">Przypnij do karty Start</string>
 </resources>

@@ -414,4 +414,7 @@
     <string name="display_options">Görüntüleme Seçenekleri</string>
     <string name="gallery_mode">Galeri Modu</string>
     <string name="crop_in_thumbnails">Küçük Resimleri Kırp</string>
+    <string name="pinned_files">Pinned Files</string>
+    <string name="pinned_files_desc">Önemli dosyalara hızlı erişim</string>
+    <string name="pin_to_home_tab">Ana ekrana sabitle</string>
 </resources>

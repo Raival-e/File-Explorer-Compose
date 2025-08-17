@@ -413,4 +413,7 @@
     <string name="display_options">گزینه‌های نمایش</string>
     <string name="gallery_mode">حالت گالری</string>
     <string name="crop_in_thumbnails">برش در تصاویر کوچک</string>
+    <string name="pinned_files">فایل‌های سنجاق‌شده</string>
+    <string name="pinned_files_desc">دسترسی سریع به فایل‌های مهم</string>
+    <string name="pin_to_home_tab">سنجاق کردن به تب خانه</string>
 </resources>

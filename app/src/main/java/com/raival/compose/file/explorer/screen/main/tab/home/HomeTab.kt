@@ -21,6 +21,7 @@ import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.Tab
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.ARCHIVE
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder.Companion.AUDIO
@@ -39,6 +40,7 @@ class HomeTab : Tab() {
     val scope = CoroutineScope(Dispatchers.IO)
     override val header = globalClass.getString(R.string.home_tab_header)
     val recentFiles = mutableStateListOf<RecentFile>()
+    val pinnedFiles = arrayListOf<LocalFileHolder>()
 
     var showCustomizeHomeTabDialog by mutableStateOf(false)
 
@@ -55,6 +57,13 @@ class HomeTab : Tab() {
     override suspend fun getSubtitle() = emptyString
 
     override suspend fun getTitle() = globalClass.getString(R.string.home_tab_title)
+
+    fun getPinnedFiles() {
+        pinnedFiles.clear()
+        pinnedFiles.addAll(
+            globalClass.preferencesManager.pinnedFiles.map { LocalFileHolder(File(it)) }
+        )
+    }
 
     fun fetchRecentFiles() {
         if (recentFiles.isNotEmpty()) return
@@ -193,5 +202,10 @@ class HomeTab : Tab() {
         }
 
         return recentFiles
+    }
+
+    fun removePinnedFile(file: LocalFileHolder) {
+        pinnedFiles.remove(file)
+        globalClass.preferencesManager.pinnedFiles = pinnedFiles.map { it.uniquePath }.toSet()
     }
 }

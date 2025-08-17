@@ -111,6 +111,12 @@ class PreferencesManager {
         getPreferencesKey = { stringSetPreferencesKey(it) }
     )
 
+    var pinnedFiles by prefMutableState(
+        keyName = "pinnedFiles",
+        defaultValue = emptySet(),
+        getPreferencesKey = { stringSetPreferencesKey(it) }
+    )
+
     //---------- File Operation -------------//
     var signMergedApkBundleFiles by prefMutableState(
         keyName = "signMergedApkBundleFiles",
