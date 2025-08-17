@@ -403,4 +403,15 @@
     <string name="download_new_update">Yeni güncellemeyi indir</string>
     <string name="use_builtin_viewers">Yerleşik görüntüleyicileri kullan</string>
     <string name="use_builtin_viewers_desc">Desteklenen dosyaları yerleşik görüntüleyicilerle otomatik olarak aç</string>
+    <string name="view_type">Görüntüleme modu</string>
+    <string name="view_configuration">Görünüm Yapılandırması</string>
+    <string name="grid_view">Izgara Görünümü</string>
+    <string name="list_view">Liste Görünümü</string>
+    <string name="cell_count">Hücre Sayısı: %1$d</string>
+    <string name="column_count">Sütun Sayısı: %1$d</string>
+    <string name="font_size">Yazı Boyutu</string>
+    <string name="item_size">Öğe Boyutu</string>
+    <string name="display_options">Görüntüleme Seçenekleri</string>
+    <string name="gallery_mode">Galeri Modu</string>
+    <string name="crop_in_thumbnails">Küçük Resimleri Kırp</string>
 </resources>

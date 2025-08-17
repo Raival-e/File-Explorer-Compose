@@ -15,6 +15,7 @@ import androidx.compose.material.icons.rounded.EditAttributes
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ViewComfy
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -129,6 +130,24 @@ fun Toolbar(
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Rounded.EditAttributes,
+                                contentDescription = null
+                            )
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = stringResource(R.string.view_type))
+                        },
+                        onClick = {
+                            (mainActivityManager.getActiveTab() as FilesTab).toggleViewConfigDialog(
+                                true
+                            )
+                            showOptionsMenu = false
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.ViewComfy,
                                 contentDescription = null
                             )
                         }

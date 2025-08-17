@@ -402,4 +402,15 @@
     <string name="download_new_update">Baixar nova atualização</string>
     <string name="use_builtin_viewers">Usar visualizadores integrados</string>
     <string name="use_builtin_viewers_desc">Abrir automaticamente arquivos suportados com visualizadores integrados</string>
+    <string name="view_type">Modo de exibição</string>
+    <string name="view_configuration">Configuração de Visualização</string>
+    <string name="grid_view">Visualização em Grade</string>
+    <string name="list_view">Visualização em Lista</string>
+    <string name="cell_count">Contagem de Células: %1$d</string>
+    <string name="column_count">Contagem de Colunas: %1$d</string>
+    <string name="font_size">Tamanho da Fonte</string>
+    <string name="item_size">Tamanho do Item</string>
+    <string name="display_options">Opções de Exibição</string>
+    <string name="gallery_mode">Modo Galeria</string>
+    <string name="crop_in_thumbnails">Recortar Miniaturas</string>
 </resources>

@@ -17,9 +17,9 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHold
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.DefaultOpeningMethods
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewConfigs
 import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSize
 import com.raival.compose.file.explorer.screen.preferences.constant.ThemePreference
 import com.raival.compose.file.explorer.screen.preferences.misc.prefDataStore
 import com.raival.compose.file.explorer.screen.preferences.misc.prefMutableState
@@ -58,19 +58,7 @@ class PreferencesManager {
     //---------- File List -------------//
     var itemSize by prefMutableState(
         keyName = "fileListSize",
-        defaultValue = FilesTabFileListSize.MEDIUM.ordinal,
-        getPreferencesKey = { intPreferencesKey(it) }
-    )
-
-    var columnCount by prefMutableState(
-        keyName = "fileListColumnCount",
-        defaultValue = 1,
-        getPreferencesKey = { intPreferencesKey(it) }
-    )
-
-    var viewType by prefMutableState(
-        keyName = "fileListViewType",
-        defaultValue = ViewType.COLUMNS.ordinal,
+        defaultValue = FileItemSize.MEDIUM.ordinal,
         getPreferencesKey = { intPreferencesKey(it) }
     )
 
@@ -232,6 +220,39 @@ class PreferencesManager {
                 showFoldersFirst = showFoldersFirst,
                 reverseSorting = reverse
             )
+        }
+    }
+
+    fun getDefaultViewConfigPrefs(): ViewConfigs {
+        return runBlocking {
+            fromJson(
+                globalClass.prefDataStore.data.first()[stringPreferencesKey("viewConfigPrefs")]
+            ) ?: ViewConfigs()
+        }
+    }
+
+    fun setDefaultViewConfigPrefs(prefs: ViewConfigs) {
+        runBlocking {
+            globalClass.prefDataStore.edit {
+                it[stringPreferencesKey("viewConfigPrefs")] = prefs.toJson()
+            }
+        }
+    }
+
+    fun getViewConfigPrefsFor(content: ContentHolder): ViewConfigs {
+        return runBlocking {
+            fromJson(
+                globalClass.prefDataStore.data.first()[stringPreferencesKey("viewConfigPrefs_${content.uniquePath}")]
+            ) ?: getDefaultViewConfigPrefs()
+        }
+    }
+
+    fun setViewConfigPrefsFor(content: ContentHolder, prefs: ViewConfigs) {
+        runBlocking {
+            globalClass.prefDataStore.edit {
+                it[stringPreferencesKey("viewConfigPrefs_${content.uniquePath}")] =
+                    prefs.toJson()
+            }
         }
     }
 

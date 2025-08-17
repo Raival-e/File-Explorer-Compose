@@ -402,4 +402,15 @@
     <string name="download_new_update">Загрузить новое обновление</string>
     <string name="use_builtin_viewers">Использовать встроенные просмотрщики</string>
     <string name="use_builtin_viewers_desc">Автоматически открывать поддерживаемые файлы с помощью встроенных просмотрщиков</string>
+    <string name="view_type">Режим отображения</string>
+    <string name="view_configuration">Настройка вида</string>
+    <string name="grid_view">Вид сетки</string>
+    <string name="list_view">Вид списка</string>
+    <string name="cell_count">Количество ячеек: %1$d</string>
+    <string name="column_count">Количество столбцов: %1$d</string>
+    <string name="font_size">Размер шрифта</string>
+    <string name="item_size">Размер элемента</string>
+    <string name="display_options">Параметры отображения</string>
+    <string name="gallery_mode">Режим галереи</string>
+    <string name="crop_in_thumbnails">Обрезка в миниатюрах</string>
 </resources>

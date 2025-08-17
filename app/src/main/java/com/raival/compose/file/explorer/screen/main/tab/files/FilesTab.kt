@@ -68,6 +68,10 @@ class FilesTab(
     val contentListStates = hashMapOf<String, LazyGridState>()
     var activeListState by mutableStateOf(LazyGridState())
 
+    var viewConfig by mutableStateOf(
+        globalClass.preferencesManager.getViewConfigPrefsFor(activeFolder)
+    )
+
     val highlightedFiles = arrayListOf<String>()
     val selectedFiles = linkedMapOf<String, ContentHolder>()
     var lastSelectedFileIndex = -1
@@ -145,6 +149,8 @@ class FilesTab(
             requestHomeToolbarUpdate()
             // Detect any content changes
             detectFileChanges()
+            // Check for display mode change
+            updateDisplayConfig()
         }
     }
 
@@ -323,6 +329,9 @@ class FilesTab(
             // Update the active list state
             activeListState = contentListStates[item.uniquePath] ?: LazyGridState()
                 .also { contentListStates[item.uniquePath] = it }
+
+            // Get display config for this folder
+            updateDisplayConfig()
 
             // Call any posted events
             postEvent()
@@ -520,6 +529,10 @@ class FilesTab(
         }
     }
 
+    fun updateDisplayConfig() {
+        viewConfig = globalClass.preferencesManager.getViewConfigPrefsFor(activeFolder)
+    }
+
     fun requestNewTab(tab: Tab) {
         globalClass.mainActivityManager.addTabAndSelect(tab)
     }
@@ -648,6 +661,10 @@ class FilesTab(
 
     fun toggleSortingMenu(show: Boolean) {
         _dialogsState.update { it.copy(showSortingMenu = show) }
+    }
+
+    fun toggleViewConfigDialog(show: Boolean) {
+        _dialogsState.update { it.copy(showViewConfigDialog = show) }
     }
 
     fun toggleSearchPenal(show: Boolean) {

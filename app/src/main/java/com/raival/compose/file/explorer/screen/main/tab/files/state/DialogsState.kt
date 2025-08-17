@@ -7,6 +7,7 @@ data class DialogsState(
     val showFileOptionsDialog: Boolean = false,
     val showApkDialog: Boolean = false,
     val showSortingMenu: Boolean = false,
+    val showViewConfigDialog: Boolean = false,
     val showCreateNewFileDialog: Boolean = false,
     val showConfirmDeleteDialog: Boolean = false,
     val showFileProperties: Boolean = false,

@@ -402,4 +402,15 @@
     <string name="download_new_update">下载新更新</string>
     <string name="use_builtin_viewers">使用内置查看器</string>
     <string name="use_builtin_viewers_desc">自动使用内置查看器打开支持的文件</string>
+    <string name="view_type">显示模式</string>
+    <string name="view_configuration">视图配置</string>
+    <string name="grid_view">网格视图</string>
+    <string name="list_view">列表视图</string>
+    <string name="cell_count">单元格数量：%1$d</string>
+    <string name="column_count">列数：%1$d</string>
+    <string name="font_size">字体大小</string>
+    <string name="item_size">项目大小</string>
+    <string name="display_options">显示选项</string>
+    <string name="gallery_mode">画廊模式</string>
+    <string name="crop_in_thumbnails">裁剪缩略图</string>
 </resources>
