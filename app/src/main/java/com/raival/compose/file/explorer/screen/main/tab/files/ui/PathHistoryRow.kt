@@ -33,6 +33,7 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.orIf
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
+import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.max
@@ -41,68 +42,73 @@ import kotlin.math.max
 @Composable
 fun PathHistoryRow(tab: FilesTab) {
     val highlightedPathListItemColor = MaterialTheme.colorScheme.primary
+    val showCategoriesRow = tab.activeFolder is VirtualFileHolder && tab.categories.isNotEmpty()
 
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(
-            onClick = {
-                tab.openFolder(tab.homeDir, false)
-            }
+    if (showCategoriesRow) {
+        CategoriesRow(tab)
+    } else if (tab.activeFolder !is VirtualFileHolder) {
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
-        }
-
-        val animationScope = rememberCoroutineScope()
-
-        LaunchedEffect(key1 = tab.highlightedPathSegment) {
-            val index =
-                tab.currentPathSegments.getIndexIf { uniquePath == tab.highlightedPathSegment.uniquePath }
-            animationScope.launch {
-                tab.currentPathSegmentsListState.scrollToItem(max(index, 0))
+            IconButton(
+                onClick = {
+                    tab.openFolder(tab.homeDir, false)
+                }
+            ) {
+                Icon(imageVector = Icons.Rounded.Home, contentDescription = null)
             }
-        }
 
-        LazyRow(
-            Modifier.weight(1f),
-            tab.currentPathSegmentsListState,
-        ) {
-            itemsIndexed(tab.currentPathSegments, key = { _, it -> it.uid }) { index, item ->
-                val isHighlighted = item.uniquePath == tab.highlightedPathSegment.uniquePath
-                Row(
-                    modifier = Modifier,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier.size(18.dp),
-                        imageVector = Icons.Rounded.PlayArrow,
-                        contentDescription = null
-                    )
-                    Text(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .combinedClickable(
-                                onClick = {
-                                    tab.openFolder(
-                                        item = item,
-                                        rememberSelectedFiles = true,
-                                    )
+            val animationScope = rememberCoroutineScope()
+
+            LaunchedEffect(key1 = tab.highlightedPathSegment) {
+                val index =
+                    tab.currentPathSegments.getIndexIf { uniquePath == tab.highlightedPathSegment.uniquePath }
+                animationScope.launch {
+                    tab.currentPathSegmentsListState.scrollToItem(max(index, 0))
+                }
+            }
+
+            LazyRow(
+                Modifier.weight(1f),
+                tab.currentPathSegmentsListState,
+            ) {
+                itemsIndexed(tab.currentPathSegments, key = { _, it -> it.uid }) { index, item ->
+                    val isHighlighted = item.uniquePath == tab.highlightedPathSegment.uniquePath
+                    Row(
+                        modifier = Modifier,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier.size(18.dp),
+                            imageVector = Icons.Rounded.PlayArrow,
+                            contentDescription = null
+                        )
+                        Text(
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .combinedClickable(
+                                    onClick = {
+                                        tab.openFolder(
+                                            item = item,
+                                            rememberSelectedFiles = true,
+                                        )
+                                    }
+                                )
+                                .padding(8.dp)
+                                .alpha(0.8f),
+                            text = item.displayName
+                                .orIf(stringResource(id = R.string.internal_storage)) {
+                                    item.uniquePath == Environment.getExternalStorageDirectory().absolutePath
                                 }
-                            )
-                            .padding(8.dp)
-                            .alpha(0.8f),
-                        text = item.displayName
-                            .orIf(stringResource(id = R.string.internal_storage)) {
-                                item.uniquePath == Environment.getExternalStorageDirectory().absolutePath
-                            }
-                            .orIf(stringResource(id = R.string.root)) {
-                                item.uniquePath == File.separator
-                            },
-                        fontSize = 14.sp,
-                        fontWeight = if (isHighlighted) FontWeight.Medium else FontWeight.Normal,
-                        color = if (isHighlighted) highlightedPathListItemColor else Color.Unspecified
-                    )
+                                .orIf(stringResource(id = R.string.root)) {
+                                    item.uniquePath == File.separator
+                                },
+                            fontSize = 14.sp,
+                            fontWeight = if (isHighlighted) FontWeight.Medium else FontWeight.Normal,
+                            color = if (isHighlighted) highlightedPathListItemColor else Color.Unspecified
+                        )
+                    }
                 }
             }
         }

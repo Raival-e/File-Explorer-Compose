@@ -30,6 +30,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHold
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileListCategory
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider
@@ -80,6 +81,9 @@ class FilesTab(
     var currentPathSegments by mutableStateOf(listOf<ContentHolder>())
     var highlightedPathSegment by mutableStateOf(activeFolder)
     val currentPathSegmentsListState = LazyListState()
+
+    var categories = mutableStateListOf<FileListCategory>()
+    var selectedCategory by mutableStateOf<FileListCategory?>(null)
 
     // Holds the file that has been long-clicked
     var targetFile: ContentHolder? = null
@@ -272,6 +276,11 @@ class FilesTab(
         // Block UI
         if (isLoading) return
 
+        // For virtual folders, update the category
+        if (item is VirtualFileHolder) {
+            item.selectedCategory = selectedCategory
+        }
+
         // Switch to the new folder
         activeFolder = item
 
@@ -334,6 +343,12 @@ class FilesTab(
 
             // Get display config for this folder
             updateDisplayConfig()
+
+            // Update the categories
+            if (activeFolder is VirtualFileHolder) {
+                categories.clear()
+                categories.addAll((activeFolder as VirtualFileHolder).getCategories())
+            }
 
             // Call any posted events
             postEvent()
