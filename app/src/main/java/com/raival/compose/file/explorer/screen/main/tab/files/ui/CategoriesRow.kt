@@ -1,6 +1,7 @@
 package com.raival.compose.file.explorer.screen.main.tab.files.ui
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -30,6 +31,7 @@ fun CategoriesRow(tab: FilesTab) {
         selectedTabIndex = selectedIndex,
         edgePadding = 0.dp,
         divider = {},
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
     ) {
         Tab(
             selected = selectedIndex == 0,
