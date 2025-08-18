@@ -283,6 +283,14 @@ class PreferencesManager {
         }
     }
 
+    fun deleteSortingPrefsFor(content: ContentHolder) {
+        runBlocking {
+            globalClass.prefDataStore.edit {
+                it.remove(stringPreferencesKey("fileSortingPrefs_${content.uniquePath}"))
+            }
+        }
+    }
+
     class SingleChoiceDialog {
         var show by mutableStateOf(false)
 
