@@ -402,4 +402,38 @@
     <string name="download_new_update">Baixar nova atualização</string>
     <string name="use_builtin_viewers">Usar visualizadores integrados</string>
     <string name="use_builtin_viewers_desc">Abrir automaticamente arquivos suportados com visualizadores integrados</string>
+
+<!--    playList-->
+    <string name="playlists">Playlists</string>
+    <string name="create_playlist">Criar playlist</string>
+    <string name="add_to_playlist">Adicionar à playlist</string>
+    <string name="no_playlists_created">Nenhuma playlist criada</string>
+    <string name="tap_to_create_first_playlist">Toque em + para criar sua primeira playlist</string>
+    <string name="playlist_name">Nome da playlist</string>
+    <string name="enter_playlist_name">Digite o nome da playlist</string>
+    <string name="playlist_created">Playlist criada com sucesso</string>
+    <string name="song_added_to_playlist">Música adicionada à playlist</string>
+    <string name="song_removed_from_playlist">Música removida da playlist</string>
+    <string name="current_playlist">Playlist atual</string>
+    <string name="shuffle_mode">Modo aleatório</string>
+    <string name="now_playing">Tocando agora</string>
+    <string name="songs_count">%d músicas</string>
+    <string name="play_all">Reproduzir tudo</string>
+    <string name="id">Identificador</string>
+    <string name="empty_playlist">Playlist vazia</string>
+    <string name="empty_playlist_description">Esta playlist está vazia</string>
+    <string name="play">Reproduzir</string>
+    <string name="remove_from_playlist">Remover da playlist</string>
+    <string name="remove_song">Remover música</string>
+    <string name="remove_song_confirmation">Deseja remover esta música?</string>
+    <string name="remove">Remover</string>
+    <string name="no_playlists_description">Nenhuma playlist disponível</string>
+    <string name="pause">Pausar</string>
+    <string name="delete_playlist">Excluir playlist</string>
+    <string name="delete_playlist_confirmation">Deseja excluir esta playlist?</string>
+    <string name="back">Voltar</string>
+    <string name="manage_playlists">Gerenciar playlists</string>
+    <string name="no_playlists">Nenhuma playlist</string>
+    <string name="song">Música</string>
+
 </resources>

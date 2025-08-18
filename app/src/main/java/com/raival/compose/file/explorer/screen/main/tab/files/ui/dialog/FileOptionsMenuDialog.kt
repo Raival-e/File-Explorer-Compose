@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.OpenInNew
+import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.Compress
 import androidx.compose.material.icons.rounded.ContentCut
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Merge
 import androidx.compose.material.icons.rounded.OpenInNewOff
+import androidx.compose.material.icons.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -52,12 +54,14 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFile
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ZipFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.DefaultOpeningMethods
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.apkBundleFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.audioFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.task.ApksMergeTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.ApksMergeTaskParameters
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CompressTask
 import com.raival.compose.file.explorer.screen.main.tab.files.task.CopyTask
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileIcon
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.ItemRow
+import com.raival.compose.file.explorer.screen.viewer.audio.ui.PlaylistBottomSheet
 
 @Composable
 fun FileOptionsMenuDialog(
@@ -78,6 +82,10 @@ fun FileOptionsMenuDialog(
         val isMultipleSelection = selectedFilesCount > 1
         val isSingleFile = !isMultipleSelection && targetContentHolder.isFile()
         val isSingleFolder = !isMultipleSelection && targetContentHolder.isFolder
+        val isAudioFile = isSingleFile && targetContentHolder is LocalFileHolder && 
+                         audioFileType.contains(targetContentHolder.file.extension)
+
+        var showPlaylistDialog by remember { mutableStateOf(false) }
 
         var hasFolders = false
         tab.selectedFiles.forEach {
@@ -258,6 +266,13 @@ fun FileOptionsMenuDialog(
                     tab.unselectAllFiles()
                 }
 
+                // Add to playlist option for audio files
+                if (isAudioFile) {
+                    FileOption(Icons.AutoMirrored.Rounded.PlaylistAdd, stringResource(R.string.add_to_playlist)) {
+                        showPlaylistDialog = true
+                    }
+                }
+
                 if (apkBundleFileType.contains(targetContentHolder.file.extension)) {
                     FileOption(Icons.Rounded.Merge, stringResource(R.string.convert_to_apk)) {
                         onDismissRequest()
@@ -296,6 +311,23 @@ fun FileOptionsMenuDialog(
                     onDismissRequest()
                 }
             }
+        }
+
+        // Playlist dialog for audio files
+        if (isAudioFile) {
+            PlaylistBottomSheet(
+                isVisible = showPlaylistDialog,
+                onDismiss = { 
+                    showPlaylistDialog = false 
+                    onDismissRequest()
+                },
+                onPlaylistSelected = { playlist ->
+                    showPlaylistDialog = false
+                    onDismissRequest()
+                    tab.unselectAllFiles()
+                },
+                selectedSong = if (targetContentHolder is LocalFileHolder) targetContentHolder else null
+            )
         }
     }
 }
