@@ -449,4 +449,12 @@
     <string name="pinned_files">Pinned Files</string>
     <string name="pinned_files_desc">Quick access important files</string>
     <string name="pin_to_home_tab">Pin to home tab</string>
+    <string name="extensive_recent_files_scan">Extensive recent files scan</string>
+    <string name="scan_hidden_files_and_folders">Scan hidden files and folders</string>
+    <string name="manage_excluded_paths">Manage excluded paths</string>
+    <string name="add_new_path">New Path</string>
+    <string name="excluded_paths">Excluded paths</string>
+    <string name="no_excluded_paths">No excluded paths</string>
+    <string name="add_paths_to_exclude_desc">Add new path to be excluded from the recent file scanner</string>
+    <string name="about">About</string>
 </resources>

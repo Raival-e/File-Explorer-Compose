@@ -417,4 +417,12 @@
     <string name="pinned_files">Pinned Files</string>
     <string name="pinned_files_desc">Önemli dosyalara hızlı erişim</string>
     <string name="pin_to_home_tab">Ana ekrana sabitle</string>
+    <string name="extensive_recent_files_scan">Kapsamlı son dosyalar taraması</string>
+    <string name="scan_hidden_files_and_folders">Gizli dosyaları ve klasörleri tara</string>
+    <string name="manage_excluded_paths">Hariç tutulan yolları yönet</string>
+    <string name="add_new_path">Yeni Yol</string>
+    <string name="excluded_paths">Hariç tutulan yollar</string>
+    <string name="no_excluded_paths">Hariç tutulan yol yok</string>
+    <string name="add_paths_to_exclude_desc">Son dosya tarayıcısından hariç tutulacak yeni yol ekle</string>
+    <string name="about">Hakkında</string>
 </resources>

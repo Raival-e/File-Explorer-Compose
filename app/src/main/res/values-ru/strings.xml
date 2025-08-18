@@ -416,4 +416,12 @@
     <string name="pinned_files">Закрепленные файлы</string>
     <string name="pinned_files_desc">Быстрый доступ к важным файлам</string>
     <string name="pin_to_home_tab">Закрепить на главной вкладке</string>
+    <string name="extensive_recent_files_scan">Расширенное сканирование недавних файлов</string>
+    <string name="scan_hidden_files_and_folders">Сканировать скрытые файлы и папки</string>
+    <string name="manage_excluded_paths">Управление исключенными путями</string>
+    <string name="add_new_path">Новый путь</string>
+    <string name="excluded_paths">Исключенные пути</string>
+    <string name="no_excluded_paths">Нет исключенных путей</string>
+    <string name="add_paths_to_exclude_desc">Добавить новый путь, который будет исключен из сканера недавних файлов</string>
+    <string name="about">О программе</string>
 </resources>

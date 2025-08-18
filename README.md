@@ -10,6 +10,7 @@
 [![APK Downloads](https://img.shields.io/github/downloads/Raival-e/Prism-File-Explorer/total.svg?label=APK%20Downloads)](https://github.com/Raival-e/Prism-File-Explorer/releases)
 [![Stars](https://img.shields.io/github/stars/Raival-e/Prism-File-Explorer?style=flat&logo=github)](https://github.com/Raival-e/Prism-File-Explorer/stargazers)
 [![Forks](https://img.shields.io/github/forks/Raival-e/Prism-File-Explorer?style=flat&logo=github)](https://github.com/Raival-e/Prism-File-Explorer/network/members)
+[<img src="https://shields.rbtlog.dev/simple/com.raival.compose.file.explorer" alt="RB shield">](https://shields.rbtlog.dev/com.raival.compose.file.explorer)
 
 **A modern, feature-rich, and lightweight file manager for Android, built entirely with Kotlin and Jetpack Compose.**
 

@@ -54,6 +54,12 @@ class PreferencesManager {
         getPreferencesKey = { stringPreferencesKey(it) }
     )
 
+    var hideToolbar by prefMutableState(
+        keyName = "hideToolbar",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
 
     //---------- File List -------------//
     var itemSize by prefMutableState(
@@ -115,6 +121,18 @@ class PreferencesManager {
         keyName = "pinnedFiles",
         defaultValue = emptySet(),
         getPreferencesKey = { stringSetPreferencesKey(it) }
+    )
+
+    var excludedPathsFromRecentFiles by prefMutableState(
+        keyName = "excludedPathFromRecentFiles",
+        defaultValue = emptySet(),
+        getPreferencesKey = { stringSetPreferencesKey(it) }
+    )
+
+    var removeHiddenPathsFromRecentFiles by prefMutableState(
+        keyName = "removeHiddenPathsFromRecentFiles",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
     )
 
     //---------- File Operation -------------//
@@ -254,10 +272,18 @@ class PreferencesManager {
     }
 
     fun setViewConfigPrefsFor(content: ContentHolder, prefs: ViewConfigs) {
-        runBlocking {
-            globalClass.prefDataStore.edit {
-                it[stringPreferencesKey("viewConfigPrefs_${content.uniquePath}")] =
-                    prefs.toJson()
+        if (prefs == getDefaultViewConfigPrefs()) {
+            runBlocking {
+                globalClass.prefDataStore.edit {
+                    it.remove(stringPreferencesKey("viewConfigPrefs_${content.uniquePath}"))
+                }
+            }
+        } else {
+            runBlocking {
+                globalClass.prefDataStore.edit {
+                    it[stringPreferencesKey("viewConfigPrefs_${content.uniquePath}")] =
+                        prefs.toJson()
+                }
             }
         }
     }
@@ -267,6 +293,14 @@ class PreferencesManager {
             globalClass.prefDataStore.edit {
                 it[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")] =
                     prefs.toJson()
+            }
+        }
+    }
+
+    fun deleteSortingPrefsFor(content: ContentHolder) {
+        runBlocking {
+            globalClass.prefDataStore.edit {
+                it.remove(stringPreferencesKey("fileSortingPrefs_${content.uniquePath}"))
             }
         }
     }

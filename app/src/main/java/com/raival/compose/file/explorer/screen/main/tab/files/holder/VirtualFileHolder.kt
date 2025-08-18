@@ -4,6 +4,7 @@ import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileListCategory
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getArchiveFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getAudioFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getBookmarks
@@ -13,10 +14,14 @@ import com.raival.compose.file.explorer.screen.main.tab.files.provider.StoragePr
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getSearchResult
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getVideoFiles
 import kotlinx.coroutines.runBlocking
+import java.io.File
 
 class VirtualFileHolder(val type: Int) : ContentHolder() {
     private var fileCount = 0
     private val contentList = arrayListOf<ContentHolder>()
+    private val categories = arrayListOf<String>()
+
+    var selectedCategory: FileListCategory? = null
 
     override val displayName = when (type) {
         BOOKMARKS -> globalClass.getString(R.string.bookmarks)
@@ -44,23 +49,42 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
 
     override suspend fun getParent() = null
 
-    override suspend fun listContent() = when (type) {
-        BOOKMARKS -> getBookmarks()
-        AUDIO -> getAudioFiles()
-        VIDEO -> getVideoFiles()
-        IMAGE -> getImageFiles()
-        ARCHIVE -> getArchiveFiles()
-        DOCUMENT -> getDocumentFiles()
-        RECENT -> getRecentFiles()
-        SEARCH -> getSearchResult()
-        else -> arrayListOf()
-    }.also {
-        contentList.apply {
-            clear()
-            addAll(it)
+    override suspend fun listContent() = (if (contentList.isEmpty()) {
+        when (type) {
+            BOOKMARKS -> getBookmarks()
+            AUDIO -> getAudioFiles()
+            VIDEO -> getVideoFiles()
+            IMAGE -> getImageFiles()
+            ARCHIVE -> getArchiveFiles()
+            DOCUMENT -> getDocumentFiles()
+            RECENT -> getRecentFiles()
+            SEARCH -> getSearchResult()
+            else -> arrayListOf()
+        }.also {
+            contentList.apply {
+                clear()
+                addAll(it)
+            }
+            if (type != BOOKMARKS) fetchCategories()
         }
-        fileCount = it.size
+    } else contentList).filter {
+        if (selectedCategory == null) return@filter true
+        it.uniquePath == (selectedCategory!!.data as File).path + File.separator + it.displayName
+    }.toCollection(arrayListOf()).also { fileCount = it.size }
+
+    private fun fetchCategories() {
+        categories.clear()
+        contentList.forEach { content ->
+            if (content is LocalFileHolder) {
+                val parentPath = content.file.parent
+                if (parentPath != null && !categories.contains(parentPath)) {
+                    categories.add(parentPath)
+                }
+            }
+        }
     }
+
+    fun getCategories() = categories.map { File(it).let { FileListCategory(it.name, it) } }
 
     override suspend fun findFile(name: String): ContentHolder? {
         if (contentList.isEmpty()) {

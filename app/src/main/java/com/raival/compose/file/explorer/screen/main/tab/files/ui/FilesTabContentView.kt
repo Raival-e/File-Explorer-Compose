@@ -28,6 +28,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.TaskRunn
 fun ColumnScope.FilesTabContentView(tab: FilesTab) {
     Dialogs(tab)
     PathHistoryRow(tab)
+    InfoRow()
     HorizontalDivider(modifier = Modifier, thickness = 1.dp)
     FilesList(tab)
     BottomOptionsBar(tab)

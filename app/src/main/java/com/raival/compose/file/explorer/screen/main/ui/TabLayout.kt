@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -48,6 +48,7 @@ import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.common.toJson
+import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.startup.StartupTab
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
@@ -68,9 +69,11 @@ fun TabLayout(
     onAddNewTab: () -> Unit
 ) {
     val selectedTabBackgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest
-    val unselectedTabBackgroundColor = MaterialTheme.colorScheme.surfaceContainerLow
+    val unselectedTabBackgroundColor =
+        MaterialTheme.colorScheme.surfaceContainerLowest.copy(alpha = 0.5f)
     val draggedTabBackgroundColor = MaterialTheme.colorScheme.primary
     val draggedTabTextColor = MaterialTheme.colorScheme.surfaceContainerLowest
+    val hideToolbar = globalClass.preferencesManager.hideToolbar
 
     val mainActivityManager = globalClass.mainActivityManager
 
@@ -104,20 +107,29 @@ fun TabLayout(
     Row(
         Modifier
             .fillMaxWidth()
-            .height(42.dp)
-            .background(color = MaterialTheme.colorScheme.surfaceContainer)
+            .height(if (hideToolbar) 50.dp else 42.dp)
+            .background(color = MaterialTheme.colorScheme.surfaceContainer),
+        verticalAlignment = Alignment.Bottom
     ) {
-        IconButton(
-            onClick = onAddNewTab
-        ) {
-            Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+        if (!hideToolbar) {
+            IconButton(
+                onClick = onAddNewTab
+            ) {
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+            }
         }
-
         LazyRow(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .weight(1f)
+                .heightIn(max = 42.dp),
             state = tabLayoutState,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (hideToolbar) {
+                item {
+                    Space(8.dp)
+                }
+            }
             itemsIndexed(list, key = { _, item -> item }) { index, id ->
                 tabs.find { it.id == id }?.let { tab ->
                     ReorderableItem(reorderableLazyListState, key = tab.id) { isDragged ->
@@ -200,6 +212,14 @@ fun TabLayout(
                     }
                 }
             }
+        }
+        if (globalClass.preferencesManager.hideToolbar) {
+            IconButton(
+                onClick = onAddNewTab
+            ) {
+                Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
+            }
+            MoreOptionsButton()
         }
     }
 }

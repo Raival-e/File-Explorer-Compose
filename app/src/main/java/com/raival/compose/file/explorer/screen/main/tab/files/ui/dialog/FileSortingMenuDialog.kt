@@ -82,7 +82,14 @@ fun FileSortingMenuDialog(
         BottomSheetDialog(
             onDismissRequest = {
                 if (applyForThisFileOnly) {
-                    updateForThisFolder()
+                    if (showFoldersFirst != prefs.showFoldersFirst
+                        || reverseOrder != prefs.reverse
+                        || sortingMethod != prefs.defaultSortMethod
+                    ) {
+                        updateForThisFolder()
+                    } else {
+                        prefs.deleteSortingPrefsFor(tab.activeFolder)
+                    }
                 } else {
                     prefs.showFoldersFirst = showFoldersFirst
                     prefs.reverse = reverseOrder

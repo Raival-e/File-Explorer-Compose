@@ -450,4 +450,12 @@
     <string name="pinned_files">Arquivos Fixados</string>
     <string name="pinned_files_desc">Acesso rápido a arquivos importantes</string>
     <string name="pin_to_home_tab">Fixar na guia inicial</string>
+    <string name="extensive_recent_files_scan">Verificação extensiva de arquivos recentes</string>
+    <string name="scan_hidden_files_and_folders">Verificar arquivos e pastas ocultas</string>
+    <string name="manage_excluded_paths">Gerenciar caminhos excluídos</string>
+    <string name="add_new_path">Novo Caminho</string>
+    <string name="excluded_paths">Caminhos excluídos</string>
+    <string name="no_excluded_paths">Nenhum caminho excluído</string>
+    <string name="add_paths_to_exclude_desc">Adicionar novo caminho a ser excluído do verificador de arquivos recentes</string>
+    <string name="about">Sobre</string>
 </resources>
