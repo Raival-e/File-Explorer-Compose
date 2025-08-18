@@ -416,4 +416,11 @@
     <string name="pinned_files">Przypięte pliki</string>
     <string name="pinned_files_desc">Szybki dostęp do ważnych plików</string>
     <string name="pin_to_home_tab">Przypnij do karty Start</string>
+    <string name="extensive_recent_files_scan">Obszerne skanowanie ostatnich plików</string>
+    <string name="scan_hidden_files_and_folders">Skanuj ukryte pliki i foldery</string>
+    <string name="manage_excluded_paths">Zarządzaj wykluczonymi ścieżkami</string>
+    <string name="add_new_path">Nowa ścieżka</string>
+    <string name="excluded_paths">Wykluczone ścieżki</string>
+    <string name="no_excluded_paths">Brak wykluczonych ścieżek</string>
+    <string name="add_paths_to_exclude_desc">Dodaj nową ścieżkę do wykluczenia ze skanera ostatnich plików</string>
 </resources>

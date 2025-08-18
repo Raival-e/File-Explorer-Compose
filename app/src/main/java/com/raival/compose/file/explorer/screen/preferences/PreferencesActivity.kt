@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,11 +29,11 @@ import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.ui.SafeSurface
-import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.preferences.ui.AppearanceContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.BehaviorContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.FileListContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.FileOperationContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.RecentFilesContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.SingleChoiceDialog
 import com.raival.compose.file.explorer.screen.preferences.ui.TextEditorContainer
 import com.raival.compose.file.explorer.theme.FileExplorerTheme
@@ -81,19 +82,15 @@ class PreferencesActivity : BaseActivity() {
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                            .verticalScroll(rememberScrollState()),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Space(size = 4.dp)
                         AppearanceContainer()
-                        Space(size = 4.dp)
                         FileListContainer()
-                        Space(size = 4.dp)
                         FileOperationContainer()
-                        Space(size = 4.dp)
                         BehaviorContainer()
-                        Space(size = 4.dp)
+                        RecentFilesContainer()
                         TextEditorContainer()
-                        Space(size = 4.dp)
                     }
                 }
             }

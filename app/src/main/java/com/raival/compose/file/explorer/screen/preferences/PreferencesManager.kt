@@ -117,6 +117,18 @@ class PreferencesManager {
         getPreferencesKey = { stringSetPreferencesKey(it) }
     )
 
+    var excludedPathsFromRecentFiles by prefMutableState(
+        keyName = "excludedPathFromRecentFiles",
+        defaultValue = emptySet(),
+        getPreferencesKey = { stringSetPreferencesKey(it) }
+    )
+
+    var removeHiddenPathsFromRecentFiles by prefMutableState(
+        keyName = "removeHiddenPathsFromRecentFiles",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
     //---------- File Operation -------------//
     var signMergedApkBundleFiles by prefMutableState(
         keyName = "signMergedApkBundleFiles",

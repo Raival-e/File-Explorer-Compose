@@ -416,4 +416,11 @@
     <string name="pinned_files">Fichiers épinglés</string>
     <string name="pinned_files_desc">Accès rapide aux fichiers importants</string>
     <string name="pin_to_home_tab">Épingler à l\'onglet d\'accueil</string>
+    <string name="extensive_recent_files_scan">Analyse approfondie des fichiers récents</string>
+    <string name="scan_hidden_files_and_folders">Analyser les fichiers et dossiers cachés</string>
+    <string name="manage_excluded_paths">Gérer les chemins exclus</string>
+    <string name="add_new_path">Nouveau chemin</string>
+    <string name="excluded_paths">Chemins exclus</string>
+    <string name="no_excluded_paths">Aucun chemin exclu</string>
+    <string name="add_paths_to_exclude_desc">Ajouter un nouveau chemin à exclure de l\'analyse des fichiers récents</string>
 </resources>

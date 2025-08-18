@@ -416,4 +416,11 @@
     <string name="pinned_files">فایل‌های سنجاق‌شده</string>
     <string name="pinned_files_desc">دسترسی سریع به فایل‌های مهم</string>
     <string name="pin_to_home_tab">سنجاق کردن به تب خانه</string>
+    <string name="extensive_recent_files_scan">اسکن گسترده فایل‌های اخیر</string>
+    <string name="scan_hidden_files_and_folders">اسکن فایل‌ها و پوشه‌های مخفی</string>
+    <string name="manage_excluded_paths">مدیریت مسیرهای مستثنی شده</string>
+    <string name="add_new_path">مسیر جدید</string>
+    <string name="excluded_paths">مسیرهای مستثنی شده</string>
+    <string name="no_excluded_paths">هیچ مسیر مستثنی شده‌ای وجود ندارد</string>
+    <string name="add_paths_to_exclude_desc">مسیر جدیدی را برای مستثنی شدن از اسکنر فایل‌های اخیر اضافه کنید</string>
 </resources>

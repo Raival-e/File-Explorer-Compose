@@ -416,4 +416,11 @@
     <string name="pinned_files">Pinned Files</string>
     <string name="pinned_files_desc">快速访问重要文件</string>
     <string name="pin_to_home_tab">固定到主页标签</string>
+    <string name="extensive_recent_files_scan">广泛扫描最近文件</string>
+    <string name="scan_hidden_files_and_folders">扫描隐藏文件和文件夹</string>
+    <string name="manage_excluded_paths">管理排除路径</string>
+    <string name="add_new_path">新路径</string>
+    <string name="excluded_paths">排除路径</string>
+    <string name="no_excluded_paths">没有排除路径</string>
+    <string name="add_paths_to_exclude_desc">添加新路径以从最近文件扫描器中排除</string>
 </resources>

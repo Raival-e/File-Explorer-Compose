@@ -18,6 +18,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevi
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.EXTERNAL_STORAGE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.INTERNAL_STORAGE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.ROOT
+import com.raival.compose.file.explorer.screen.main.tab.home.holder.RecentFile
 import java.io.File
 
 object StorageProvider {
@@ -360,11 +361,11 @@ object StorageProvider {
         return audioFiles
     }
 
-    fun getRecentFiles(
-        recentHours: Int = 48,
-        limit: Int = 25
-    ): ArrayList<LocalFileHolder> {
-        val recentFiles = ArrayList<LocalFileHolder>()
+    fun getRawRecentFiles(
+        recentHours: Int = 24 * 5,
+        limit: Int = 100
+    ): ArrayList<RecentFile> {
+        val recentFiles = ArrayList<RecentFile>()
         val contentResolver: ContentResolver = globalClass.contentResolver
         val showHiddenFiles = globalClass.preferencesManager.showHiddenFiles
 
@@ -372,7 +373,8 @@ object StorageProvider {
 
         val projection = arrayOf(
             MediaStore.Files.FileColumns.DATA,
-            MediaStore.Files.FileColumns.DATE_MODIFIED
+            MediaStore.Files.FileColumns.DATE_MODIFIED,
+            MediaStore.Files.FileColumns.DISPLAY_NAME
         )
 
         val time = (System.currentTimeMillis() / 1000) - (recentHours * 60 * 60)
@@ -392,17 +394,56 @@ object StorageProvider {
 
         cursor?.use {
             val columnIndexPath = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA)
+            val columnLastModified =
+                it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATE_MODIFIED)
+            val columnName = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DISPLAY_NAME)
 
             while (it.moveToNext() && recentFiles.size < limit) {
                 val filePath = it.getString(columnIndexPath)
+                val lastModified = it.getLong(columnLastModified)
+                val name = it.getString(columnName)
+                val excludedPaths = globalClass.preferencesManager.excludedPathsFromRecentFiles
+                val excludeHiddenPaths =
+                    globalClass.preferencesManager.removeHiddenPathsFromRecentFiles
+
                 val file = File(filePath)
-                if (file.isFile && (showHiddenFiles || !file.name.startsWith("."))) {
-                    recentFiles.add(LocalFileHolder(file))
+
+                // Check if file should be excluded based on path
+                val isPathExcluded = excludedPaths.any { excludedPath ->
+                    filePath.startsWith(excludedPath)
+                }
+
+                // Check if hidden files should be excluded
+                val isHiddenExcluded =
+                    excludeHiddenPaths && filePath.split(File.separator).any { it.startsWith(".") }
+
+                if (file.isFile && filePath != null && name != null &&
+                    !isPathExcluded && !isHiddenExcluded &&
+                    (showHiddenFiles || !file.name.startsWith("."))
+                ) {
+                    recentFiles.add(
+                        RecentFile(
+                            name,
+                            filePath,
+                            lastModified
+                        )
+                    )
                 }
             }
         }
 
         return recentFiles
+    }
+
+    fun getRecentFiles(
+        recentHours: Int = 24 * 5,
+        limit: Int = 100
+    ): ArrayList<LocalFileHolder> {
+        return arrayListOf<LocalFileHolder>().apply {
+            addAll(
+                getRawRecentFiles(recentHours, limit).map { LocalFileHolder(it.file.file) }
+            )
+        }
     }
 
     fun getSearchResult(): ArrayList<ContentHolder> {
