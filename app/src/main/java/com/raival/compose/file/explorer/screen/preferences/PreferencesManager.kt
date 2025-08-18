@@ -266,10 +266,18 @@ class PreferencesManager {
     }
 
     fun setViewConfigPrefsFor(content: ContentHolder, prefs: ViewConfigs) {
-        runBlocking {
-            globalClass.prefDataStore.edit {
-                it[stringPreferencesKey("viewConfigPrefs_${content.uniquePath}")] =
-                    prefs.toJson()
+        if (prefs == getDefaultViewConfigPrefs()) {
+            runBlocking {
+                globalClass.prefDataStore.edit {
+                    it.remove(stringPreferencesKey("viewConfigPrefs_${content.uniquePath}"))
+                }
+            }
+        } else {
+            runBlocking {
+                globalClass.prefDataStore.edit {
+                    it[stringPreferencesKey("viewConfigPrefs_${content.uniquePath}")] =
+                        prefs.toJson()
+                }
             }
         }
     }
