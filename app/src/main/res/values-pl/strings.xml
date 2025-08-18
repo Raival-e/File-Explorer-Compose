@@ -423,4 +423,5 @@
     <string name="excluded_paths">Wykluczone ścieżki</string>
     <string name="no_excluded_paths">Brak wykluczonych ścieżek</string>
     <string name="add_paths_to_exclude_desc">Dodaj nową ścieżkę do wykluczenia ze skanera ostatnich plików</string>
+    <string name="about">O aplikacji</string>
 </resources>

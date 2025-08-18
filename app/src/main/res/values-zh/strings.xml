@@ -423,4 +423,5 @@
     <string name="excluded_paths">排除路径</string>
     <string name="no_excluded_paths">没有排除路径</string>
     <string name="add_paths_to_exclude_desc">添加新路径以从最近文件扫描器中排除</string>
+    <string name="about">关于</string>
 </resources>

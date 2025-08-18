@@ -65,14 +65,12 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
                 clear()
                 addAll(it)
             }
-            fileCount = it.size
-
             if (type != BOOKMARKS) fetchCategories()
         }
     } else contentList).filter {
         if (selectedCategory == null) return@filter true
         it.uniquePath == (selectedCategory!!.data as File).path + File.separator + it.displayName
-    }.toCollection(arrayListOf())
+    }.toCollection(arrayListOf()).also { fileCount = it.size }
 
     private fun fetchCategories() {
         categories.clear()

@@ -423,4 +423,5 @@
     <string name="excluded_paths">Excluded paths</string>
     <string name="no_excluded_paths">No excluded paths</string>
     <string name="add_paths_to_exclude_desc">Add new path to be excluded from the recent file scanner</string>
+    <string name="about">About</string>
 </resources>

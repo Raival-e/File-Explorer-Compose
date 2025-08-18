@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Label
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.Nightlight
+import androidx.compose.material.icons.rounded.VerticalAlignTop
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -84,6 +85,19 @@ fun AppearanceContainer() {
                     onSelect = { prefs.dateTimeFormat = commonDateFormat[it] }
                 )
             }
+        )
+
+        HorizontalDivider(
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            thickness = 3.dp
+        )
+
+        PreferenceItem(
+            label = "Hide main toolbar",
+            supportingText = emptyString,
+            icon = Icons.Rounded.VerticalAlignTop,
+            switchState = prefs.hideToolbar,
+            onSwitchChange = { prefs.hideToolbar = it }
         )
     }
 }

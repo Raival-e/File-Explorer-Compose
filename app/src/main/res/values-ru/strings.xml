@@ -423,4 +423,5 @@
     <string name="excluded_paths">Исключенные пути</string>
     <string name="no_excluded_paths">Нет исключенных путей</string>
     <string name="add_paths_to_exclude_desc">Добавить новый путь, который будет исключен из сканера недавних файлов</string>
+    <string name="about">О программе</string>
 </resources>

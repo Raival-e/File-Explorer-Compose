@@ -193,7 +193,7 @@ class FilesTab(
                 }
             }
 
-            if (filesCount > 0 && foldersCount > 0) append(" | ")
+            if (filesCount > 0 && foldersCount > 0) append(", ")
 
             if (filesCount > 0) {
                 append(activeFolder.getFormattedFileCount(filesCount, 0))

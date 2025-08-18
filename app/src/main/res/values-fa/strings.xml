@@ -423,4 +423,5 @@
     <string name="excluded_paths">مسیرهای مستثنی شده</string>
     <string name="no_excluded_paths">هیچ مسیر مستثنی شده‌ای وجود ندارد</string>
     <string name="add_paths_to_exclude_desc">مسیر جدیدی را برای مستثنی شدن از اسکنر فایل‌های اخیر اضافه کنید</string>
+    <string name="about">درباره</string>
 </resources>

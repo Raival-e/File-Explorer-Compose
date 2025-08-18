@@ -423,4 +423,5 @@
     <string name="excluded_paths">Chemins exclus</string>
     <string name="no_excluded_paths">Aucun chemin exclu</string>
     <string name="add_paths_to_exclude_desc">Ajouter un nouveau chemin à exclure de l\'analyse des fichiers récents</string>
+    <string name="about">À propos</string>
 </resources>

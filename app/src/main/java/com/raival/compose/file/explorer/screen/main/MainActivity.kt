@@ -129,12 +129,14 @@ class MainActivity : BaseActivity() {
                     }
 
                     Column(Modifier.fillMaxSize()) {
-                        Toolbar(
-                            title = mainActivityState.title,
-                            subtitle = mainActivityState.subtitle,
-                            hasNewUpdate = mainActivityState.hasNewUpdate,
-                            onToggleAppInfoDialog = { mainActivityManager.toggleAppInfoDialog(it) }
-                        )
+                        if (!globalClass.preferencesManager.hideToolbar) {
+                            Toolbar(
+                                title = mainActivityState.title,
+                                subtitle = mainActivityState.subtitle,
+                                hasNewUpdate = mainActivityState.hasNewUpdate,
+                                onToggleAppInfoDialog = { mainActivityManager.toggleAppInfoDialog(it) }
+                            )
+                        }
                         TabLayout(
                             tabLayoutState = mainActivityState.tabLayoutState,
                             tabs = mainActivityState.tabs,
@@ -179,9 +181,7 @@ class MainActivity : BaseActivity() {
                     if (page isNot state.selectedTabIndex) {
                         manager.selectTabAt(page, true)
                     }
-                    state.tabLayoutState.animateScrollToItem(
-                        state.selectedTabIndex
-                    )
+                    state.tabLayoutState.animateScrollToItem(page)
                 }
             }
 

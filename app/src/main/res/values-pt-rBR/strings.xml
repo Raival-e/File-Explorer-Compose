@@ -423,4 +423,5 @@
     <string name="excluded_paths">Caminhos excluídos</string>
     <string name="no_excluded_paths">Nenhum caminho excluído</string>
     <string name="add_paths_to_exclude_desc">Adicionar novo caminho a ser excluído do verificador de arquivos recentes</string>
+    <string name="about">Sobre</string>
 </resources>

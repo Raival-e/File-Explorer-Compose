@@ -54,6 +54,12 @@ class PreferencesManager {
         getPreferencesKey = { stringPreferencesKey(it) }
     )
 
+    var hideToolbar by prefMutableState(
+        keyName = "hideToolbar",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
 
     //---------- File List -------------//
     var itemSize by prefMutableState(
