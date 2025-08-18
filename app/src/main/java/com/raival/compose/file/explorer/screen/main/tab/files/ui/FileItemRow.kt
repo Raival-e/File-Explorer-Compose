@@ -33,11 +33,11 @@ import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.FontSize
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.IconSize
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListFontSize
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListIconSize
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListSpace
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.FontSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.IconSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListFontSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListIconSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListSpace
 
 @Composable
 fun FileItemRow(
@@ -45,7 +45,8 @@ fun FileItemRow(
     fileDetails: String,
     namePrefix: String = emptyString,
     ignoreSizePreferences: Boolean = false,
-    onFileIconClick: (() -> Unit)? = null
+    onFileIconClick: (() -> Unit)? = null,
+    onItemClick: (() -> Unit)? = null,
 ) {
     ItemRow(
         title = namePrefix + item.displayName,
@@ -57,7 +58,8 @@ fun FileItemRow(
                 onClickListener = onFileIconClick
             )
         },
-        ignoreSizePreferences = ignoreSizePreferences
+        ignoreSizePreferences = ignoreSizePreferences,
+        onItemClick = onItemClick
     )
 }
 
@@ -96,14 +98,16 @@ fun ItemRow(
                     lineHeight = (fontSize + 2).sp,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    modifier = Modifier.alpha(0.7f),
-                    text = subtitle,
-                    fontSize = (fontSize - 4).sp,
-                    maxLines = 1,
-                    lineHeight = (fontSize + 2).sp,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (subtitle.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier.alpha(0.7f),
+                        text = subtitle,
+                        fontSize = (fontSize - 4).sp,
+                        maxLines = 1,
+                        lineHeight = (fontSize + 2).sp,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
 

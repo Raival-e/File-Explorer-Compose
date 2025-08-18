@@ -18,6 +18,7 @@ import androidx.core.content.FileProvider.getUriForFile
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.getMimeType
 import com.raival.compose.file.explorer.common.isNot
@@ -68,11 +69,16 @@ class FilesTab(
     val contentListStates = hashMapOf<String, LazyGridState>()
     var activeListState by mutableStateOf(LazyGridState())
 
+    var viewConfig by mutableStateOf(
+        globalClass.preferencesManager.getViewConfigPrefsFor(activeFolder)
+    )
+
     val highlightedFiles = arrayListOf<String>()
     val selectedFiles = linkedMapOf<String, ContentHolder>()
     var lastSelectedFileIndex = -1
 
     var currentPathSegments by mutableStateOf(listOf<ContentHolder>())
+    var highlightedPathSegment by mutableStateOf(activeFolder)
     val currentPathSegmentsListState = LazyListState()
 
     // Holds the file that has been long-clicked
@@ -145,6 +151,8 @@ class FilesTab(
             requestHomeToolbarUpdate()
             // Detect any content changes
             detectFileChanges()
+            // Check for display mode change
+            updateDisplayConfig()
         }
     }
 
@@ -323,6 +331,9 @@ class FilesTab(
             // Update the active list state
             activeListState = contentListStates[item.uniquePath] ?: LazyGridState()
                 .also { contentListStates[item.uniquePath] = it }
+
+            // Get display config for this folder
+            updateDisplayConfig()
 
             // Call any posted events
             postEvent()
@@ -514,10 +525,20 @@ class FilesTab(
         // Filter those that accessible, reverse the list
         val newPathSegments = paths.filter { it.canRead }.toList().reversed()
 
-        // Update the state to reflect the new path
-        withContext(Dispatchers.Main) {
-            currentPathSegments = newPathSegments
+        if (!currentPathSegments.joinToString(emptyString) { it.displayName }.startsWith(
+                newPathSegments.joinToString(emptyString) { it.displayName })
+        ) {
+            // Update the state to reflect the new path
+            withContext(Dispatchers.Main) {
+                currentPathSegments = newPathSegments
+            }
         }
+
+        highlightedPathSegment = activeFolder
+    }
+
+    fun updateDisplayConfig() {
+        viewConfig = globalClass.preferencesManager.getViewConfigPrefsFor(activeFolder)
     }
 
     fun requestNewTab(tab: Tab) {
@@ -648,6 +669,10 @@ class FilesTab(
 
     fun toggleSortingMenu(show: Boolean) {
         _dialogsState.update { it.copy(showSortingMenu = show) }
+    }
+
+    fun toggleViewConfigDialog(show: Boolean) {
+        _dialogsState.update { it.copy(showViewConfigDialog = show) }
     }
 
     fun toggleSearchPenal(show: Boolean) {

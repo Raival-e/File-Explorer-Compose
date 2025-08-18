@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -63,15 +64,15 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewConfigs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewType
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListFontSize
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListIconSize
-import com.raival.compose.file.explorer.screen.preferences.constant.FilesTabFileListSizeMap.getFileListSpace
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListFontSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListIconSize
+import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListSpace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.max
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -168,9 +169,9 @@ private fun LoadingOverlay(tab: FilesTab) {
 
 @Composable
 private fun FilesListContent(tab: FilesTab) {
-    when (globalClass.preferencesManager.viewType) {
-        ViewType.COLUMNS.ordinal -> FilesListColumns(tab)
-        ViewType.GRID.ordinal -> FilesListGrid(tab)
+    when (tab.viewConfig.viewType) {
+        ViewType.COLUMNS -> FilesListColumns(tab)
+        ViewType.GRID -> FilesListGrid(tab)
     }
 }
 
@@ -178,15 +179,13 @@ private fun FilesListContent(tab: FilesTab) {
 @Composable
 fun FilesListColumns(tab: FilesTab) {
     val context = LocalContext.current
-    val preferencesManager = globalClass.preferencesManager
     val selectionHighlightColor = colorScheme.surfaceContainerHigh.copy(alpha = 1f)
     val highlightColor = colorScheme.primary.copy(alpha = 0.05f)
 
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
         state = tab.activeListState,
-        // Backward compatibility for "auto" preset (-1)
-        columns = GridCells.Fixed(max(1, preferencesManager.columnCount)),
+        columns = GridCells.Fixed(tab.viewConfig.columnCount),
     ) {
         itemsIndexed(
             tab.activeFolderContent,
@@ -202,6 +201,7 @@ fun FilesListColumns(tab: FilesTab) {
                 selectionHighlightColor = selectionHighlightColor,
                 highlightColor = highlightColor,
                 context = context,
+                viewConfigs = tab.viewConfig,
                 isSelectedItem = isSelectedItem,
                 onSelection = { isSelectedItem = it }
             )
@@ -213,15 +213,12 @@ fun FilesListColumns(tab: FilesTab) {
 @Composable
 fun FilesListGrid(tab: FilesTab) {
     val context = LocalContext.current
-    val preferencesManager = globalClass.preferencesManager
     val selectionHighlightColor = colorScheme.surfaceContainerHigh.copy(alpha = 1f)
     val highlightColor = colorScheme.primary.copy(alpha = 0.05f)
-    // Backward compatibility for "auto" preset (-1)
-    val columnCount = max(1, preferencesManager.columnCount)
 
     LazyVerticalGrid(
         state = tab.activeListState,
-        columns = GridCells.Fixed(columnCount),
+        columns = GridCells.Fixed(tab.viewConfig.columnCount),
         modifier = Modifier.fillMaxSize()
     ) {
         itemsIndexed(
@@ -240,6 +237,7 @@ fun FilesListGrid(tab: FilesTab) {
                 selectionHighlightColor = selectionHighlightColor,
                 highlightColor = highlightColor,
                 context = context,
+                viewConfigs = tab.viewConfig,
                 onSelection = { isSelectedItem = it }
             )
         }
@@ -257,7 +255,8 @@ private fun ColumnFileItem(
     context: Context,
     currentItemPath: String = item.uniquePath,
     isSelectedItem: Boolean,
-    onSelection: (Boolean) -> Unit
+    onSelection: (Boolean) -> Unit,
+    viewConfigs: ViewConfigs
 ) {
     fun toggleSelection() {
         if (tab.selectedFiles.containsKey(currentItemPath)) {
@@ -301,7 +300,7 @@ private fun ColumnFileItem(
                 }
             )
     ) {
-        Space(size = getFileListSpace().dp)
+        Space(size = getFileListSpace(tab.activeFolder).dp)
 
         Row(
             Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
@@ -309,7 +308,8 @@ private fun ColumnFileItem(
         ) {
             FileIcon(
                 item = item,
-                size = getFileListIconSize().dp,
+                size = getFileListIconSize(tab.activeFolder).dp,
+                viewConfigs = viewConfigs,
                 onClick = { toggleSelection() },
                 onLongClick = { handleLongClick(tab, currentItemPath, item, index) }
             )
@@ -317,7 +317,7 @@ private fun ColumnFileItem(
             Space(size = 8.dp)
 
             Column(Modifier.weight(1f)) {
-                val fontSize = getFileListFontSize()
+                val fontSize = getFileListFontSize(tab.activeFolder)
 
                 Text(
                     text = item.displayName,
@@ -341,7 +341,7 @@ private fun ColumnFileItem(
             }
         }
 
-        Space(size = getFileListSpace().dp)
+        Space(size = getFileListSpace(tab.activeFolder).dp)
 
         HorizontalDivider(
             modifier = Modifier.padding(start = 56.dp),
@@ -361,7 +361,8 @@ private fun GridFileItem(
     context: Context,
     itemPath: String,
     isSelected: Boolean,
-    onSelection: (Boolean) -> Unit
+    onSelection: (Boolean) -> Unit,
+    viewConfigs: ViewConfigs
 ) {
     fun toggleSelection() {
         if (tab.selectedFiles.containsKey(itemPath)) {
@@ -379,6 +380,7 @@ private fun GridFileItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .then(if (viewConfigs.cropThumbnails) Modifier.aspectRatio(0.75f) else Modifier)
             .combinedClickable(
                 onClick = {
                     if (tab.selectedFiles.isNotEmpty()) {
@@ -411,34 +413,42 @@ private fun GridFileItem(
                 .padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            FileIcon(
-                item = item,
-                size = (getFileListIconSize() * 1.5).dp,
-                onClick = {
-                    if (tab.selectedFiles.isNotEmpty()) {
-                        toggleSelection()
-                    } else {
-                        if (item.isFile()) {
-                            tab.openFile(context, item)
+            Box(
+                modifier = if (viewConfigs.cropThumbnails) Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                else Modifier
+            ) {
+                FileIcon(
+                    item = item,
+                    size = (getFileListIconSize(tab.activeFolder) * 1.5).dp,
+                    onClick = {
+                        if (tab.selectedFiles.isNotEmpty()) {
+                            toggleSelection()
                         } else {
-                            tab.openFolder(item, false)
+                            if (item.isFile()) {
+                                tab.openFile(context, item)
+                            } else {
+                                tab.openFolder(item, false)
+                            }
                         }
+                    },
+                    viewConfigs = viewConfigs,
+                    onLongClick = {
+                        handleLongClick(tab, itemPath, item, index)
                     }
-                },
-                onLongClick = {
-                    handleLongClick(tab, itemPath, item, index)
-                }
-            )
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            val fontSize = getFileListFontSize() * 0.8
+            val fontSize = getFileListFontSize(tab.activeFolder) * 0.8
 
             Text(
                 text = item.displayName,
                 fontSize = fontSize.sp,
                 fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                maxLines = 2,
+                maxLines = 1,
                 lineHeight = (fontSize + 2).sp,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
@@ -465,13 +475,20 @@ private fun GridFileItem(
 private fun FileIcon(
     item: ContentHolder,
     size: Dp,
+    viewConfigs: ViewConfigs,
     onClick: () -> Unit,
     onLongClick: () -> Unit = {}
 ) {
+    val sizeModifier = if (viewConfigs.viewType == ViewType.GRID && viewConfigs.cropThumbnails) {
+        Modifier.fillMaxSize()
+    } else {
+        Modifier.size(size)
+    }
+
     Isolate {
         Box(
             modifier = Modifier
-                .size(size)
+                .then(sizeModifier)
                 .clip(RoundedCornerShape(4.dp))
                 .combinedClickable(
                     onClick = onClick,
@@ -485,13 +502,13 @@ private fun FileIcon(
 
             if (useCoil) {
                 AsyncImage(
-                    modifier = Modifier.size(size),
+                    modifier = sizeModifier,
                     model = ImageRequest
                         .Builder(globalClass)
                         .data(item)
                         .build(),
                     filterQuality = FilterQuality.Low,
-                    contentScale = ContentScale.Fit,
+                    contentScale = if (viewConfigs.cropThumbnails) ContentScale.Crop else ContentScale.Fit,
                     contentDescription = null,
                     onError = { useCoil = false }
                 )

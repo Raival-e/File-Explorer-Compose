@@ -15,11 +15,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.RotateRight
 import androidx.compose.material.icons.filled.BorderOuter
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ErrorOutline
@@ -35,7 +39,6 @@ import androidx.compose.material.icons.filled.FitScreen
 import androidx.compose.material.icons.filled.Height
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.InvertColors
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.WidthFull
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,7 +60,6 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -76,8 +78,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.palette.graphics.Palette
 import coil3.Image
-import coil3.asDrawable
-import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 import coil3.toBitmap
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
@@ -88,9 +89,7 @@ import com.raival.compose.file.explorer.screen.viewer.ViewerActivity
 import com.raival.compose.file.explorer.screen.viewer.ViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.image.misc.ImageInfo
 import com.raival.compose.file.explorer.screen.viewer.image.misc.ImageInfo.Companion.extractImageInfo
-import kotlinx.coroutines.launch
-import net.engawapg.lib.zoomable.rememberZoomState
-import net.engawapg.lib.zoomable.zoomable
+import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -115,8 +114,6 @@ fun ImageViewerScreen(instance: ViewerInstance) {
     var imageDimensions by remember { mutableStateOf("" to "") }
     var contentScale by remember { mutableStateOf(ContentScale.Fit) }
     val context = LocalContext.current
-    val zoomState = rememberZoomState()
-    val scope = rememberCoroutineScope()
 
     // Load image data
     LaunchedEffect(instance.uri) {
@@ -152,41 +149,39 @@ fun ImageViewerScreen(instance: ViewerInstance) {
     ) {
         when {
             isLoading -> LoadingState()
-            isError -> ErrorState(onRetry = {
-                scope.launch {
-                    try {
-                        imageData = instance.uri.read()
-                        isLoading = false
-                    } catch (e: Exception) {
-                        logger.logError(e)
-                        isError = true
-                        isLoading = false
-                    }
-                }
+            isError -> ErrorState(onClose = {
+                (context as? ViewerActivity)?.finish()
             })
 
             else -> {
                 // Main image with zoom and rotation
                 var image by remember { mutableStateOf<Image?>(null) }
 
-                AsyncImage(
-                    model = imageData,
+                ZoomableAsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(instance.uri)
+                        .listener(
+                            onSuccess = { _, state ->
+                                image = state.image
+                                image?.let {
+                                    imageDimensions = "${it.width}" to "${it.height}"
+                                }
+                            },
+                            onError = { _, error ->
+                                logger.logError(error.throwable)
+                                isError = true
+                                isLoading = false
+                            }
+                        ).build(),
                     contentDescription = null,
                     contentScale = contentScale,
+                    onClick = {
+                        showControls = !showControls
+                    },
                     modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer { rotationZ = rotationAngle }
-                        .zoomable(
-                            zoomState = zoomState,
-                            onTap = { showControls = !showControls },
-                        )
-                        .background(imageBackgroundColors[currentImageBackgroundColorIndex]),
-                    onSuccess = { state ->
-                        image = state.result.image
-                        val drawable = state.result.image.asDrawable(context.resources)
-                        imageDimensions =
-                            "${drawable.intrinsicWidth}" to "${drawable.intrinsicHeight}"
-                    }
+                        .background(imageBackgroundColors[currentImageBackgroundColorIndex])
                 )
 
                 // Extract dominant color
@@ -199,7 +194,7 @@ fun ImageViewerScreen(instance: ViewerInstance) {
                     }
                 }
 
-                // Animated gradient overlay for controls
+                // Animated gradient overlay for top bar
                 AnimatedVisibility(
                     visible = showControls,
                     enter = fadeIn(spring(stiffness = Spring.StiffnessMedium)),
@@ -207,15 +202,45 @@ fun ImageViewerScreen(instance: ViewerInstance) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .height(
+                                TopAppBarDefaults.MediumAppBarCollapsedHeight
+                                        + WindowInsets.statusBars.asPaddingValues()
+                                    .calculateTopPadding()
+                                        + 8.dp
+                            )
                             .background(
                                 Brush.verticalGradient(
                                     colors = listOf(
-                                        defaultColor.copy(alpha = 0.9f),
+                                        defaultColor.copy(alpha = 0.8f),
+                                        defaultColor.copy(alpha = 0.4f)
+                                    )
+                                )
+                            )
+                    )
+                }
+
+                // Animated gradient overlay for controls
+                AnimatedVisibility(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    visible = showControls,
+                    enter = fadeIn(spring(stiffness = Spring.StiffnessMedium)),
+                    exit = fadeOut(spring(stiffness = Spring.StiffnessMedium))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(
+                                TopAppBarDefaults.MediumAppBarCollapsedHeight
+                                        + WindowInsets.statusBars.asPaddingValues()
+                                    .calculateTopPadding()
+                            )
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
                                         Color.Transparent,
-                                        Color.Transparent,
-                                        Color.Transparent,
-                                        defaultColor.copy(alpha = 0.9f)
+                                        defaultColor.copy(alpha = 0.4f),
+                                        defaultColor.copy(alpha = 0.8f)
                                     )
                                 )
                             )
@@ -351,7 +376,7 @@ private fun LoadingState() {
 }
 
 @Composable
-private fun ErrorState(onRetry: () -> Unit) {
+private fun ErrorState(onClose: () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -380,14 +405,14 @@ private fun ErrorState(onRetry: () -> Unit) {
             )
             Spacer(modifier = Modifier.height(24.dp))
             Button(
-                onClick = onRetry,
+                onClick = onClose,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
-                Icon(Icons.Default.Refresh, contentDescription = null)
+                Icon(Icons.Default.Close, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.retry))
+                Text(stringResource(R.string.close))
             }
         }
     }

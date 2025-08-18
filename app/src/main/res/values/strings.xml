@@ -435,4 +435,18 @@
     <string name="no_playlists">No playlists</string>
     <string name="song">Song</string>
 
+    <string name="view_type">Display mode</string>
+    <string name="view_configuration">View Configuration</string>
+    <string name="grid_view">Grid View</string>
+    <string name="list_view">List View</string>
+    <string name="cell_count">Cell Count: %1$d</string>
+    <string name="column_count">Column Count: %1$d</string>
+    <string name="font_size">Font Size</string>
+    <string name="item_size">Item Size</string>
+    <string name="display_options">Display Options</string>
+    <string name="gallery_mode">Gallery Mode</string>
+    <string name="crop_in_thumbnails">Crop-in Thumbnails</string>
+    <string name="pinned_files">Pinned Files</string>
+    <string name="pinned_files_desc">Quick access important files</string>
+    <string name="pin_to_home_tab">Pin to home tab</string>
 </resources>

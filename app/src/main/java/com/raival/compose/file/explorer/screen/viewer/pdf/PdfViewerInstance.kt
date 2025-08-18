@@ -5,7 +5,7 @@ import android.net.Uri
 import android.text.format.Formatter
 import android.util.Size
 import com.anggrayudi.storage.extension.toDocumentFile
-import com.raival.compose.file.explorer.App
+import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.isNot
@@ -25,7 +25,7 @@ class PdfViewerInstance(
     override val id: String
 ) : ViewerInstance {
     private val fileDescriptor = try {
-        App.Companion.globalClass.contentResolver.openFileDescriptor(uri, "r")
+        globalClass.contentResolver.openFileDescriptor(uri, "r")
     } catch (e: Exception) {
         logger.logError(e)
         null
@@ -49,10 +49,10 @@ class PdfViewerInstance(
 
     val metadata by lazy {
         PdfMetadata(
-            name = uri.name ?: App.Companion.globalClass.getString(R.string.unknown),
+            name = uri.name ?: globalClass.getString(R.string.unknown),
             path = uri.toString(),
             size = fileDescriptor?.statSize ?: 0L,
-            lastModified = uri.toDocumentFile(App.Companion.globalClass)?.lastModified() ?: 0L,
+            lastModified = uri.toDocumentFile(globalClass)?.lastModified() ?: 0L,
             pages = pdfRenderer?.pageCount ?: 0
         )
     }
@@ -88,14 +88,14 @@ class PdfViewerInstance(
     }
 
     fun getInfo(): List<Pair<String, String>> = listOf(
-        App.Companion.globalClass.getString(R.string.name) to metadata.name,
-        App.Companion.globalClass.getString(R.string.page_count) to metadata.pages.toString(),
-        App.Companion.globalClass.getString(R.string.size) to Formatter.formatFileSize(
-            App.Companion.globalClass,
+        globalClass.getString(R.string.name) to metadata.name,
+        globalClass.getString(R.string.page_count) to metadata.pages.toString(),
+        globalClass.getString(R.string.size) to Formatter.formatFileSize(
+            globalClass,
             metadata.size
         ),
-        App.Companion.globalClass.getString(R.string.path) to metadata.path,
-        App.Companion.globalClass.getString(R.string.last_modified) to metadata.lastModified.toFormattedDate()
+        globalClass.getString(R.string.path) to metadata.path,
+        globalClass.getString(R.string.last_modified) to metadata.lastModified.toFormattedDate()
     )
 
     fun renderPage(page: PdfPageHolder, scale: Float = 2f, onFinished: (PdfPageHolder) -> Unit) {

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.rounded.Numbers
 import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -35,9 +36,7 @@ fun StorageDeviceView(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-                onClick()
-            }
+            .clickable { onClick() }
             .padding(12.dp)
             .padding(end = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -54,7 +53,6 @@ fun StorageDeviceView(
         Space(size = 8.dp)
         Column {
             Text(text = storageDevice.title)
-            Space(size = 8.dp)
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -64,16 +62,26 @@ fun StorageDeviceView(
                         .weight(1f)
                         .height(8.dp),
                     progress = { storageDevice.usedSize.toFloat() / storageDevice.totalSize },
-                    strokeCap = StrokeCap.Round
+                    strokeCap = StrokeCap.Round,
+                    color = if ((storageDevice.usedSize.toFloat() / storageDevice.totalSize) > 0.85f) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
                 )
                 Space(size = 8.dp)
                 Text(
                     modifier = Modifier
-                        .alpha(0.6f)
+                        .alpha(0.8f)
                         .weight(1f),
                     text = "${storageDevice.usedSize.toFormattedSize()}/${storageDevice.totalSize.toFormattedSize()}",
                     fontSize = 12.sp,
-                    textAlign = TextAlign.End
+                    textAlign = TextAlign.End,
+                    color = if ((storageDevice.usedSize.toFloat() / storageDevice.totalSize) > 0.85f) {
+                        MaterialTheme.colorScheme.error
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    }
                 )
             }
         }

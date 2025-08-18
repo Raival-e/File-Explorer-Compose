@@ -30,10 +30,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.orIf
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.math.max
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -54,8 +56,12 @@ fun PathHistoryRow(tab: FilesTab) {
 
         val animationScope = rememberCoroutineScope()
 
-        LaunchedEffect(key1 = tab.currentPathSegments.size) {
-            animationScope.launch { tab.currentPathSegmentsListState.scrollToItem(tab.currentPathSegments.size) }
+        LaunchedEffect(key1 = tab.highlightedPathSegment) {
+            val index =
+                tab.currentPathSegments.getIndexIf { uniquePath == tab.highlightedPathSegment.uniquePath }
+            animationScope.launch {
+                tab.currentPathSegmentsListState.scrollToItem(max(index, 0))
+            }
         }
 
         LazyRow(
@@ -63,7 +69,7 @@ fun PathHistoryRow(tab: FilesTab) {
             tab.currentPathSegmentsListState,
         ) {
             itemsIndexed(tab.currentPathSegments, key = { _, it -> it.uid }) { index, item ->
-                val isHighlighted = index == tab.currentPathSegments.size - 1
+                val isHighlighted = item.uniquePath == tab.highlightedPathSegment.uniquePath
                 Row(
                     modifier = Modifier,
                     verticalAlignment = Alignment.CenterVertically

@@ -402,4 +402,18 @@
     <string name="download_new_update">دانلود به‌روزرسانی جدید</string>
     <string name="use_builtin_viewers">استفاده از نمایشگرهای داخلی</string>
     <string name="use_builtin_viewers_desc">باز کردن خودکار فایل‌های پشتیبانی شده با نمایشگرهای داخلی</string>
+    <string name="view_type">حالت نمایش</string>
+    <string name="view_configuration">پیکربندی نمایش</string>
+    <string name="grid_view">نمایش شبکه‌ای</string>
+    <string name="list_view">نمایش لیستی</string>
+    <string name="cell_count">تعداد سلول: %1$d</string>
+    <string name="column_count">تعداد ستون: %1$d</string>
+    <string name="font_size">اندازه فونت</string>
+    <string name="item_size">اندازه آیتم</string>
+    <string name="display_options">گزینه‌های نمایش</string>
+    <string name="gallery_mode">حالت گالری</string>
+    <string name="crop_in_thumbnails">برش در تصاویر کوچک</string>
+    <string name="pinned_files">فایل‌های سنجاق‌شده</string>
+    <string name="pinned_files_desc">دسترسی سریع به فایل‌های مهم</string>
+    <string name="pin_to_home_tab">سنجاق کردن به تب خانه</string>
 </resources>

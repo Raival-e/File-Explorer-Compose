@@ -16,6 +16,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileComp
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileOptionsMenuDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FilePropertiesDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileSortingMenuDialog
+import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileViewConfigDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.OpenWithAppListDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.RenameDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.SearchDialog
@@ -67,6 +68,15 @@ fun Dialogs(tab: FilesTab) {
         onDismissRequest = {
             tab.toggleSortingMenu(false)
             tab.reloadFiles()
+        }
+    )
+
+    FileViewConfigDialog(
+        show = dialogsState.value.showViewConfigDialog,
+        tab = tab,
+        onDismissRequest = {
+            tab.toggleViewConfigDialog(false)
+            tab.updateDisplayConfig()
         }
     )
 

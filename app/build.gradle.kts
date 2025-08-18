@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.coil.gif)
     implementation(libs.coil.svg)
     implementation(libs.coil.video)
+    implementation(libs.zoomable.image.coil3)
     implementation(libs.okio)
 
     // Third-Party UI/Compose Utilities

@@ -56,6 +56,8 @@ import com.google.gson.Gson
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.App.Companion.logger
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.icons.Pin
+import com.raival.compose.file.explorer.common.icons.PrismIcons
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeLayout
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionConfig
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionType
@@ -105,7 +107,7 @@ fun HomeLayoutSettingsScreen(
             } catch (e: Exception) {
                 logger.logError(e)
                 getDefaultHomeLayout()
-            }.sections.sortedBy { it.order }
+            }.getSections().sortedBy { it.order }
 
             sections.addAll(config)
         }
@@ -132,7 +134,7 @@ fun HomeLayoutSettingsScreen(
                         IconButton(
                             onClick = {
                                 sections.clear()
-                                sections.addAll(getDefaultHomeLayout().sections)
+                                sections.addAll(getDefaultHomeLayout().getSections())
                             }
                         ) {
                             Icon(
@@ -275,6 +277,7 @@ fun HomeSectionType.getIcon(): ImageVector {
         HomeSectionType.BOOKMARKS -> Icons.Rounded.Bookmarks
         HomeSectionType.RECYCLE_BIN -> Icons.Rounded.DeleteSweep
         HomeSectionType.JUMP_TO_PATH -> Icons.Rounded.ArrowOutward
+        HomeSectionType.PINNED_FILES -> PrismIcons.Pin
     }
 }
 
@@ -286,5 +289,6 @@ fun HomeSectionType.getDescription(): String {
         HomeSectionType.BOOKMARKS -> globalClass.getString(R.string.bookmarked_files_and_folders)
         HomeSectionType.RECYCLE_BIN -> globalClass.getString(R.string.deleted_files)
         HomeSectionType.JUMP_TO_PATH -> globalClass.getString(R.string.quick_path_navigation)
+        HomeSectionType.PINNED_FILES -> globalClass.getString(R.string.pinned_files_desc)
     }
 }

@@ -402,4 +402,18 @@
     <string name="download_new_update">Pobierz nową aktualizację</string>
     <string name="use_builtin_viewers">Użyj wbudowanych przeglądarek</string>
     <string name="use_builtin_viewers_desc">Automatycznie otwieraj obsługiwane pliki za pomocą wbudowanych przeglądarek</string>
+    <string name="view_type">Tryb wyświetlania</string>
+    <string name="view_configuration">Konfiguracja widoku</string>
+    <string name="grid_view">Widok siatki</string>
+    <string name="list_view">Widok listy</string>
+    <string name="cell_count">Liczba komórek: %1$d</string>
+    <string name="column_count">Liczba kolumn: %1$d</string>
+    <string name="font_size">Rozmiar czcionki</string>
+    <string name="item_size">Rozmiar elementu</string>
+    <string name="display_options">Opcje wyświetlania</string>
+    <string name="gallery_mode">Tryb galerii</string>
+    <string name="crop_in_thumbnails">Kadruj w miniaturach</string>
+    <string name="pinned_files">Przypięte pliki</string>
+    <string name="pinned_files_desc">Szybki dostęp do ważnych plików</string>
+    <string name="pin_to_home_tab">Przypnij do karty Start</string>
 </resources>
