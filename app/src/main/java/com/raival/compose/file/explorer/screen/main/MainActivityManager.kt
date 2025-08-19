@@ -91,11 +91,14 @@ class MainActivityManager {
             onTabRemoved()
         }
 
-        // If the tab to be removed is the selected tab, select the previous tab
-        val newSelectedTabIndex = if (index <= _state.value.selectedTabIndex) {
-            max(0, index - 1)
+        // handle selected tab index
+        val newSelectedTabIndex = if (index < _state.value.selectedTabIndex) {
+            _state.value.selectedTabIndex - 1
+        } else if (index > _state.value.selectedTabIndex) {
+            _state.value.selectedTabIndex
         } else {
-            index
+            // Removing the selected tab itself - choose the previous tab if available, otherwise the next one
+            max(0, index - 1)
         }.also {
             // Call the proper callbacks on the new selected tab (if it's not the already selected one)
             if (index isNot it) {

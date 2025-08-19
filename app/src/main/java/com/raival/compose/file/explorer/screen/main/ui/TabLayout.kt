@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.detectVerticalSwipe
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.common.isNot
@@ -191,7 +192,12 @@ fun TabLayout(
                                     }
                                 )
                                 .padding(horizontal = 20.dp)
-                                .longPressDraggableHandle(),
+                                .longPressDraggableHandle()
+                                .detectVerticalSwipe(
+                                    onSwipeDown = {
+                                        mainActivityManager.removeTabAt(index)
+                                    }
+                                ),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
