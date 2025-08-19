@@ -95,10 +95,9 @@ fun SongItem(
         )
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
-            // Song progress indicator for currently playing song
             if (isPlaying) {
                 LinearProgressIndicator(
-                    progress = { 0.7f }, // Simulate progress for UI demonstration
+                    progress = { 0.7f },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(2.dp)
@@ -115,12 +114,9 @@ fun SongItem(
                     .padding(vertical = 12.dp, horizontal = 16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Track number or play icon
                 SongNumberIndicator(index = index, isPlaying = isPlaying)
 
                 Spacer(modifier = Modifier.width(16.dp))
-
-                // Song info
                 Column(
                     modifier = Modifier.weight(1f),
                     verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -159,8 +155,6 @@ fun SongItem(
                         )
                     }
                 }
-
-                // Action buttons
                 SongItemActions(
                     isPlaying = isPlaying,
                     onPlayClick = onPlayClick,
@@ -173,7 +167,6 @@ fun SongItem(
         }
     }
 
-    // Remove confirmation dialog
     if (showRemoveConfirmation) {
         RemoveConfirmationDialog(
             songName = song.displayName,
@@ -240,7 +233,6 @@ private fun SongItemActions(
 ) {
     Box {
         Row {
-            // Play/Pause button
             AnimatedContent(
                 targetState = isPlaying,
                 label = "PlayButtonState",
@@ -279,7 +271,6 @@ private fun SongItemActions(
                 }
             }
 
-            // More options button
             IconButton(onClick = onMenuClick) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
@@ -289,7 +280,6 @@ private fun SongItemActions(
             }
         }
 
-        // Dropdown menu
         DropdownMenu(
             expanded = showMenu,
             onDismissRequest = onDismissMenu
