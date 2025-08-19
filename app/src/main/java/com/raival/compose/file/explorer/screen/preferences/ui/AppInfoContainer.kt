@@ -24,7 +24,6 @@ import java.io.File
 
 @Composable
 fun AppInfoContainer() {
-    val prefs = globalClass.preferencesManager
     var showAppInfoDialog by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
