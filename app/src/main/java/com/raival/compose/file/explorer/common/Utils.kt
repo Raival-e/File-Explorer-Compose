@@ -650,7 +650,7 @@ fun Long.toFormattedDate(
 
 fun Long.toFormattedSize(): String {
     if (this <= 0) return "0 B"
-    val units = arrayOf("B", "kB", "MB", "GB", "TB")
+    val units = arrayOf("B", "KiB", "MiB", "GiB", "TiB")
     val digitGroups = (log10(this.toDouble()) / log10(1024.0)).toInt()
     return DecimalFormat("#,##0.#").format(
         this / 1024.0.pow(digitGroups.toDouble())
