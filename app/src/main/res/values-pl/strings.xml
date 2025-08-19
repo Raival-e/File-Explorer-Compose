@@ -424,4 +424,12 @@
     <string name="no_excluded_paths">Brak wykluczonych ścieżek</string>
     <string name="add_paths_to_exclude_desc">Dodaj nową ścieżkę do wykluczenia ze skanera ostatnich plików</string>
     <string name="about">O aplikacji</string>
+    <string name="export_preferences">Eksportuj preferencje</string>
+    <string name="exported_prism_preferences">Wyeksportowano do /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">Aby zaimportować, zlokalizuj i otwórz wyeksportowany plik</string>
+    <string name="invalid_preferences_file">Nieprawidłowy plik preferencji</string>
+    <string name="preferences_imported_successfully">Preferencje pomyślnie zaimportowano</string>
+    <string name="import_preferences">Importuj preferencje</string>
+    <string name="import_prefs_desc">Czy chcesz zastąpić bieżące preferencje tymi zawartymi w wybranym pliku?</string>
+    <string name="other">Inne</string>
 </resources>

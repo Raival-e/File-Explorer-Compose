@@ -17,6 +17,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileOpti
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FilePropertiesDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileSortingMenuDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.FileViewConfigDialog
+import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.ImportPrefsDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.OpenWithAppListDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.RenameDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog.SearchDialog
@@ -121,6 +122,12 @@ fun Dialogs(tab: FilesTab) {
         show = dialogsState.value.showTasksPanel,
         tab = tab,
         onDismissRequest = { tab.toggleTasksPanel(false) }
+    )
+
+    ImportPrefsDialog(
+        show = dialogsState.value.showImportPrefsDialog,
+        tab = tab,
+        onDismissRequest = { tab.toggleImportPrefsDialog(null) }
     )
 
     TaskRunningDialog()

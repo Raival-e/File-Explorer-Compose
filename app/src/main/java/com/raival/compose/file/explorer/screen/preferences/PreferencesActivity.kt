@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.ui.SafeSurface
+import com.raival.compose.file.explorer.screen.preferences.ui.AppInfoContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.AppearanceContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.BehaviorContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.FileListContainer
@@ -91,6 +92,7 @@ class PreferencesActivity : BaseActivity() {
                         BehaviorContainer()
                         RecentFilesContainer()
                         TextEditorContainer()
+                        AppInfoContainer()
                     }
                 }
             }

@@ -705,4 +705,9 @@ class FilesTab(
     fun toggleFilePropertiesDialog(show: Boolean) {
         _dialogsState.update { it.copy(showFileProperties = show) }
     }
+
+    fun toggleImportPrefsDialog(file: LocalFileHolder?) {
+        targetFile = file
+        _dialogsState.update { it.copy(showImportPrefsDialog = file != null) }
+    }
 }

@@ -15,12 +15,14 @@ import com.raival.compose.file.explorer.common.fromJson
 import com.raival.compose.file.explorer.common.hasParent
 import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.toFormattedSize
+import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.DefaultOpeningMethods
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.anyFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.codeFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.editableFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.prismPrefsFileType
 import com.raival.compose.file.explorer.screen.viewer.audio.AudioPlayerActivity
 import com.raival.compose.file.explorer.screen.viewer.image.ImageViewerActivity
 import com.raival.compose.file.explorer.screen.viewer.pdf.PdfViewerActivity
@@ -113,7 +115,7 @@ class LocalFileHolder(val file: File) : ContentHolder() {
             }
         }
 
-        if (!skipSupportedExtensions && handleSupportedFiles(context)) {
+        if (handleSupportedFiles(skipSupportedExtensions, context)) {
             return
         }
 
@@ -259,17 +261,27 @@ class LocalFileHolder(val file: File) : ContentHolder() {
 
     fun readText() = file.readText()
 
-    private fun handleSupportedFiles(context: Context): Boolean {
+    private fun handleSupportedFiles(skipSupportedExtensions: Boolean, context: Context): Boolean {
+        if (prismPrefsFileType == extension) {
+            val activeTab = globalClass.mainActivityManager.getActiveTab()
+            if (activeTab is FilesTab) {
+                activeTab.toggleImportPrefsDialog(this)
+                return true
+            }
+        }
+
+        if (FileMimeType.supportedArchiveFileType.contains(extension)) {
+            globalClass.zipManager.openArchive(this)
+            return true
+        }
+
+        if (skipSupportedExtensions) return false
+
         if (codeFileType.contains(extension) || editableFileType.contains(extension)) {
             globalClass.textEditorManager.openTextEditor(
                 this,
                 context
             )
-            return true
-        }
-
-        if (FileMimeType.supportedArchiveFileType.contains(extension)) {
-            globalClass.zipManager.openArchive(this)
             return true
         }
 

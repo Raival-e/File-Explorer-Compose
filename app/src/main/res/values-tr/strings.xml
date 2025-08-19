@@ -425,4 +425,12 @@
     <string name="no_excluded_paths">Hariç tutulan yol yok</string>
     <string name="add_paths_to_exclude_desc">Son dosya tarayıcısından hariç tutulacak yeni yol ekle</string>
     <string name="about">Hakkında</string>
+    <string name="export_preferences">Tercihleri Dışa Aktar</string>
+    <string name="exported_prism_preferences">Dışa aktarıldı: /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">İçe aktarmak için, dışa aktarılan dosyayı bulun ve açın</string>
+    <string name="invalid_preferences_file">Geçersiz tercih dosyası</string>
+    <string name="preferences_imported_successfully">Tercihler başarıyla içe aktarıldı</string>
+    <string name="import_preferences">Tercihleri İçe Aktar</string>
+    <string name="import_prefs_desc">Geçerli tercihlerinizi seçilen dosyadaki tercihlerle değiştirmek istiyor musunuz?</string>
+    <string name="other">Diğer</string>
 </resources>

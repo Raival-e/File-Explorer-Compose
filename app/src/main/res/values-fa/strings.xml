@@ -424,4 +424,12 @@
     <string name="no_excluded_paths">هیچ مسیر مستثنی شده‌ای وجود ندارد</string>
     <string name="add_paths_to_exclude_desc">مسیر جدیدی را برای مستثنی شدن از اسکنر فایل‌های اخیر اضافه کنید</string>
     <string name="about">درباره</string>
+    <string name="export_preferences">Export preferences</string>
+    <string name="exported_prism_preferences">به /.prism/preferences.prismPrefs خروجی گرفته شد</string>
+    <string name="export_preferences_desc">برای وارد کردن، فایل خروجی گرفته شده را پیدا کرده و باز کنید</string>
+    <string name="invalid_preferences_file">فایل تنظیمات نامعتبر</string>
+    <string name="preferences_imported_successfully">تنظیمات با موفقیت وارد شد</string>
+    <string name="import_preferences">وارد کردن تنظیمات</string>
+    <string name="import_prefs_desc">آیا می خواهید تنظیمات فعلی خود را با تنظیمات موجود در فایل انتخاب شده جایگزین کنید؟</string>
+    <string name="other">دیگر</string>
 </resources>

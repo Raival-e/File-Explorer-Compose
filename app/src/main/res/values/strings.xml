@@ -424,4 +424,12 @@
     <string name="no_excluded_paths">No excluded paths</string>
     <string name="add_paths_to_exclude_desc">Add new path to be excluded from the recent file scanner</string>
     <string name="about">About</string>
+    <string name="export_preferences">Export preferences</string>
+    <string name="exported_prism_preferences">Exported to /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">To import, locate and open the exported file</string>
+    <string name="invalid_preferences_file">Invalid preferences file</string>
+    <string name="preferences_imported_successfully">Preferences imported successfully</string>
+    <string name="import_preferences">Import Preferences</string>
+    <string name="import_prefs_desc">Do you want to override your current preferences with the ones contained in the selected file?</string>
+    <string name="other">Other</string>
 </resources>

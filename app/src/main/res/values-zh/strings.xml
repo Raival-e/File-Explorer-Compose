@@ -424,4 +424,12 @@
     <string name="no_excluded_paths">没有排除路径</string>
     <string name="add_paths_to_exclude_desc">添加新路径以从最近文件扫描器中排除</string>
     <string name="about">关于</string>
+    <string name="export_preferences">导出偏好设置</string>
+    <string name="exported_prism_preferences">已导出到 /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">要导入，请找到并打开导出的文件</string>
+    <string name="invalid_preferences_file">无效的偏好设置文件</string>
+    <string name="preferences_imported_successfully">偏好设置已成功导入</string>
+    <string name="import_preferences">导入偏好设置</string>
+    <string name="import_prefs_desc">您想用所选文件中包含的偏好设置覆盖当前的偏好设置吗？</string>
+    <string name="other">其他</string>
 </resources>

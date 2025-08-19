@@ -424,4 +424,12 @@
     <string name="no_excluded_paths">Нет исключенных путей</string>
     <string name="add_paths_to_exclude_desc">Добавить новый путь, который будет исключен из сканера недавних файлов</string>
     <string name="about">О программе</string>
+    <string name="export_preferences">Экспорт настроек</string>
+    <string name="exported_prism_preferences">Экспортировано в /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">Для импорта найдите и откройте экспортированный файл</string>
+    <string name="invalid_preferences_file">Неверный файл настроек</string>
+    <string name="preferences_imported_successfully">Настройки успешно импортированы</string>
+    <string name="import_preferences">Импорт настроек</string>
+    <string name="import_prefs_desc">Вы хотите перезаписать текущие настройки теми, которые содержатся в выбранном файле?</string>
+    <string name="other">Другое</string>
 </resources>

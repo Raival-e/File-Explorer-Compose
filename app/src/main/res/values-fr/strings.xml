@@ -424,4 +424,12 @@
     <string name="no_excluded_paths">Aucun chemin exclu</string>
     <string name="add_paths_to_exclude_desc">Ajouter un nouveau chemin à exclure de l\'analyse des fichiers récents</string>
     <string name="about">À propos</string>
+    <string name="export_preferences">Export preferences</string>
+    <string name="exported_prism_preferences">Exporté vers /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">Pour importer, localisez et ouvrez le fichier exporté</string>
+    <string name="invalid_preferences_file">Fichier de préférences invalide</string>
+    <string name="preferences_imported_successfully">Préférences importées avec succès</string>
+    <string name="import_preferences">Importer les préférences</string>
+    <string name="import_prefs_desc">Voulez-vous remplacer vos préférences actuelles par celles contenues dans le fichier sélectionné ?</string>
+    <string name="other">Autre</string>
 </resources>
