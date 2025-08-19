@@ -151,6 +151,7 @@ class FilesTab(
 
     override fun onTabResumed() {
         scope.launch {
+            validateActiveFolder()
             // Important to clear any information from previous tabs (when switching tabs)
             requestHomeToolbarUpdate()
             // Detect any content changes
@@ -276,6 +277,9 @@ class FilesTab(
         // Block UI
         if (isLoading) return
 
+        // Prevent opening invalid files
+        if (!item.isValid()) return
+
         // For virtual folders, update the category
         if (item is VirtualFileHolder) {
             item.selectedCategory = selectedCategory
@@ -352,6 +356,32 @@ class FilesTab(
 
             // Call any posted events
             postEvent()
+        }
+    }
+
+    suspend fun validateActiveFolder() {
+        if (!activeFolder.isValid()) {
+            // Try to find a valid parent folder
+            var validParent: ContentHolder? = null
+            var current = activeFolder
+
+            while (current.hasParent()) {
+                current = current.getParent() ?: break
+                if (current.isValid()) {
+                    validParent = current
+                    break
+                }
+            }
+            validParent?.let {
+                openFolder(it)
+                return
+            }
+
+            if (homeDir.isValid()) {
+                openFolder(homeDir)
+            } else {
+                openFolder(StorageProvider.getPrimaryInternalStorage(globalClass).contentHolder)
+            }
         }
     }
 
@@ -538,7 +568,8 @@ class FilesTab(
         }
 
         // Filter those that accessible, reverse the list
-        val newPathSegments = paths.filter { it.canRead }.toList().reversed()
+        val newPathSegments =
+            paths.filter { it.canRead && runBlocking { it.isValid() } }.toList().reversed()
 
         if (!currentPathSegments.joinToString(emptyString) { it.displayName }.startsWith(
                 newPathSegments.joinToString(emptyString) { it.displayName })
