@@ -13,6 +13,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -198,7 +199,6 @@ fun PlaylistManagerScreen(
         }
     }
 
-    // Create Playlist Dialog
     if (showCreateDialog) {
         CreatePlaylistDialog(
             onDismiss = { showCreateDialog = false },
@@ -209,7 +209,6 @@ fun PlaylistManagerScreen(
         )
     }
 
-    // Playlist Detail Sheet
     showPlaylistDetail?.let { playlist ->
         PlaylistDetailSheet(
             playlist = playlist,
@@ -309,17 +308,24 @@ private fun PlaylistCard(
 
     Card(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(1.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = cardColor
+            containerColor = cardColor,
+            contentColor = MaterialTheme.colorScheme.onSurface
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 0.dp,
-            pressedElevation = 0.dp,
-            focusedElevation = 0.dp,
-            hoveredElevation = 0.dp,
-            draggedElevation = 0.dp,
+            defaultElevation = 4.dp,
+            pressedElevation = 2.dp,
+            focusedElevation = 6.dp,
+            hoveredElevation = 8.dp,
+            draggedElevation = 12.dp,
             disabledElevation = 0.dp
         )
     ) {
@@ -397,7 +403,6 @@ private fun PlaylistCard(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Play button
                 Surface(
                     onClick = onPlayClick,
                     enabled = playlist.songs.isNotEmpty(),
@@ -431,7 +436,6 @@ private fun PlaylistCard(
                     }
                 }
 
-                // Delete button
                 Surface(
                     onClick = { showDeleteConfirmation = true },
                     shape = CircleShape,

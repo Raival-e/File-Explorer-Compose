@@ -81,7 +81,7 @@ fun PlaylistDetailBottomSheet(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "${playlist.size()} música${if (playlist.size() != 1) "s" else ""}",
+                            text = "${playlist.size()} ${stringResource(R.string.song)}${if (playlist.size() != 1) "s" else ""}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -109,7 +109,7 @@ fun PlaylistDetailBottomSheet(
                         }
 
                         IconButton(onClick = onDismiss) {
-                            Icon(Icons.Default.Close, contentDescription = "Close")
+                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.close))
                         }
                     }
                 }

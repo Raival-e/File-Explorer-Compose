@@ -416,7 +416,7 @@
     <string name="current_playlist">Current playlist</string>
     <string name="shuffle_mode">Shuffle mode</string>
     <string name="now_playing">Now playing</string>
-    <string name="songs_count">%d songs</string>
+    <string name="songs_count">%d Songs</string>
     <string name="play_all">Play all</string>
     <string name="id">ID</string>
     <string name="empty_playlist">Empty playlist</string>

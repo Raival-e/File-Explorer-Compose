@@ -109,7 +109,6 @@ fun MusicPlayerScreen(
     val isVolumeVisible by audioPlayerInstance.isVolumeVisible.collectAsState()
     val customColorScheme by audioPlayerInstance.audioPlayerColorScheme.collectAsState()
     val playlistState by audioPlayerInstance.playlistState.collectAsState()
-    
     var showPlaylistDialog by remember { mutableStateOf(false) }
     var showPlaylistDetailDialog by remember { mutableStateOf(false) }
     var selectedPlaylist by remember { mutableStateOf<Playlist?>(null) }
