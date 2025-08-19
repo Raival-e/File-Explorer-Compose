@@ -433,4 +433,5 @@
     <string name="import_prefs_desc">آیا می خواهید تنظیمات فعلی خود را با تنظیمات موجود در فایل انتخاب شده جایگزین کنید؟</string>
     <string name="other">دیگر</string>
     <string name="path_copied_to_clipboard">مسیر در کلیپ‌بورد کپی شد</string>
+    <string name="hide_media_names">مخفی کردن نام‌ها از فایل‌های رسانه</string>
 </resources>

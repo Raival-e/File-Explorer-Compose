@@ -64,6 +64,8 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.coil.canUseCoil
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHolder
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.imageFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.videoFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewConfigs
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ViewType
 import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListFontSize
@@ -170,7 +172,7 @@ private fun LoadingOverlay(tab: FilesTab) {
 @Composable
 private fun FilesListContent(tab: FilesTab) {
     when (tab.viewConfig.viewType) {
-        ViewType.COLUMNS -> FilesListColumns(tab)
+        ViewType.LIST -> FilesListColumns(tab)
         ViewType.GRID -> FilesListGrid(tab)
     }
 }
@@ -380,7 +382,7 @@ private fun GridFileItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (viewConfigs.cropThumbnails) Modifier.aspectRatio(1f) else Modifier)
+            .then(if (viewConfigs.galleryMode) Modifier.aspectRatio(1f) else Modifier)
             .combinedClickable(
                 onClick = {
                     if (tab.selectedFiles.isNotEmpty()) {
@@ -410,11 +412,11 @@ private fun GridFileItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(if (viewConfigs.cropThumbnails) 1.dp else 8.dp),
+                .padding(if (viewConfigs.galleryMode) 1.dp else 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
-                modifier = if (viewConfigs.cropThumbnails) Modifier
+                modifier = if (viewConfigs.galleryMode) Modifier
                     .fillMaxWidth()
                     .weight(1f)
                 else Modifier
@@ -438,7 +440,10 @@ private fun GridFileItem(
                         handleLongClick(tab, itemPath, item, index)
                     }
                 )
-                if (viewConfigs.cropThumbnails) {
+                if (viewConfigs.galleryMode && (item.isFolder || (item.isFile() && ((!videoFileType.contains(
+                        item.extension
+                    ) && !imageFileType.contains(item.extension)) || !viewConfigs.hideMediaNames)))
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -467,14 +472,14 @@ private fun GridFileItem(
                     }
                 }
             }
-            if (!viewConfigs.cropThumbnails) {
+            if (!viewConfigs.galleryMode) {
                 Spacer(modifier = Modifier.height(4.dp))
                 val fontSize = getFileListFontSize(tab.activeFolder) * 0.8
                 Text(
                     text = item.displayName,
                     fontSize = fontSize.sp,
                     fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                    maxLines = 1,
+                    maxLines = 2,
                     lineHeight = (fontSize + 2).sp,
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
@@ -486,14 +491,6 @@ private fun GridFileItem(
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-
-            // Does not fit. Maybe find a better place later.
-            /*Spacer(modifier = Modifier.height(4.dp))
-            FileDetailsCompact(
-                item = item,
-                currentItemPath = itemPath,
-                isHighlighted = tab.highlightedFiles.contains(itemPath)
-            )*/
         }
     }
 }
@@ -506,7 +503,7 @@ private fun FileIcon(
     onClick: () -> Unit,
     onLongClick: () -> Unit = {}
 ) {
-    val sizeModifier = if (viewConfigs.viewType == ViewType.GRID && viewConfigs.cropThumbnails) {
+    val sizeModifier = if (viewConfigs.viewType == ViewType.GRID && viewConfigs.galleryMode) {
         Modifier.fillMaxSize()
     } else {
         Modifier.size(size)

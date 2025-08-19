@@ -433,4 +433,5 @@
     <string name="import_prefs_desc">Do you want to override your current preferences with the ones contained in the selected file?</string>
     <string name="other">Other</string>
     <string name="path_copied_to_clipboard">Path copied to clipboard</string>
+    <string name="hide_media_names">Hide names from media files</string>
 </resources>

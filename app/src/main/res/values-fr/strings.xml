@@ -433,4 +433,5 @@
     <string name="import_prefs_desc">Voulez-vous remplacer vos préférences actuelles par celles contenues dans le fichier sélectionné ?</string>
     <string name="other">Autre</string>
     <string name="path_copied_to_clipboard">Chemin copié dans le presse-papiers</string>
+    <string name="hide_media_names">Masquer les noms des fichiers multimédias</string>
 </resources>

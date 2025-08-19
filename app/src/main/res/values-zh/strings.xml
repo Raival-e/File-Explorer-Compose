@@ -433,4 +433,5 @@
     <string name="import_prefs_desc">您想用所选文件中包含的偏好设置覆盖当前的偏好设置吗？</string>
     <string name="other">其他</string>
     <string name="path_copied_to_clipboard">路径已复制到剪贴板</string>
+    <string name="hide_media_names">从媒体文件中隐藏名称</string>
 </resources>
