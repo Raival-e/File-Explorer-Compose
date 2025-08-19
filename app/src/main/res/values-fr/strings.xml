@@ -432,5 +432,5 @@
     <string name="import_preferences">Importer les préférences</string>
     <string name="import_prefs_desc">Voulez-vous remplacer vos préférences actuelles par celles contenues dans le fichier sélectionné ?</string>
     <string name="other">Autre</string>
-    <string name="path_copied_to_clipboard">Path copied to clipboard</string>
+    <string name="path_copied_to_clipboard">Chemin copié dans le presse-papiers</string>
 </resources>
