@@ -432,4 +432,5 @@
     <string name="import_preferences">导入偏好设置</string>
     <string name="import_prefs_desc">您想用所选文件中包含的偏好设置覆盖当前的偏好设置吗？</string>
     <string name="other">其他</string>
+    <string name="path_copied_to_clipboard">Path copied to clipboard</string>
 </resources>

@@ -349,7 +349,7 @@ class MainActivityManager {
                 if (isNewerVersion(latestVersion, currentVersion)) {
                     newUpdate = latestRelease
                     _state.update { it.copy(hasNewUpdate = true) }
-                    showMsg(globalClass.getString(R.string.new_update_available))
+                    showMsg(R.string.new_update_available)
                 }
             } catch (_: Exception) {
             }

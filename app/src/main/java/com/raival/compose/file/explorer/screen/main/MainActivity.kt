@@ -195,8 +195,7 @@ class MainActivity : BaseActivity() {
                     current + addition
                 } else {
                     val excess = current - threshold
-                    val decayFactor =
-                        exp(-excess / threshold * 2f) // Adjust multiplier for steepness
+                    val decayFactor = exp(-excess / threshold * 2f)
                     current + (addition * decayFactor)
                 }
             }
@@ -207,23 +206,18 @@ class MainActivity : BaseActivity() {
                         available: Offset,
                         source: NestedScrollSource
                     ): Offset {
-                        // Smoothly animate overscroll back to zero when scrolling in opposite direction
-                        if (available.x > 0 && overscrollAmount > 0 && !isAnimatingBack) {
-                            isAnimatingBack = true
-                            animationScope.launch {
-                                animate(
-                                    initialValue = overscrollAmount,
-                                    targetValue = 0f,
-                                    animationSpec = tween(
-                                        durationMillis = 150,
-                                        easing = FastOutSlowInEasing
-                                    )
-                                ) { value, _ ->
-                                    overscrollAmount = value
-                                }
-                                isAnimatingBack = false
-                            }
+                        val isLastPage = pagerState.currentPage == pagerState.pageCount - 1
+
+                        // If we're overscrolling and user drags back (positive x),
+                        // consume the scroll and reduce overscroll manually
+                        if (isLastPage && overscrollAmount > 0 && available.x > 0 && !isAnimatingBack) {
+                            val consumeAmount = minOf(available.x, overscrollAmount)
+                            overscrollAmount = maxOf(0f, overscrollAmount - consumeAmount)
+
+                            // Consume exactly what we used to reduce overscroll
+                            return Offset(consumeAmount, 0f)
                         }
+
                         return Offset.Zero
                     }
 
@@ -232,9 +226,10 @@ class MainActivity : BaseActivity() {
                         available: Offset,
                         source: NestedScrollSource
                     ): Offset {
-                        // Check if we're on the last page and there's leftover scroll
                         val isLastPage = pagerState.currentPage == pagerState.pageCount - 1
-                        if (isLastPage && available.x < 0 && source == NestedScrollSource.UserInput) {
+
+                        // Only handle overscroll if we're on last page and scrolling right (negative x)
+                        if (isLastPage && available.x < 0 && source == NestedScrollSource.UserInput && !isAnimatingBack) {
                             val availableAmount = abs(available.x)
 
                             overscrollAmount = applyExponentialTension(
@@ -242,8 +237,10 @@ class MainActivity : BaseActivity() {
                                 availableAmount,
                                 threshold
                             )
+
                             return Offset(available.x, 0f) // Consume the scroll
                         }
+
                         return Offset.Zero
                     }
 
@@ -256,9 +253,7 @@ class MainActivity : BaseActivity() {
                                 manager.addTabAndSelect(HomeTab())
                             }
 
-                            // Animate overscroll back to 0 to prevent page jumping
-                            // This helps avoid the pager shooting to previous page
-                            // Animate overscroll back to 0 to prevent page jumping
+                            // Animate overscroll back to 0
                             isAnimatingBack = true
                             animationScope.launch {
                                 animate(
@@ -274,19 +269,10 @@ class MainActivity : BaseActivity() {
                                 isAnimatingBack = false
                             }
 
-                            // Don't consume velocity if we're not overscrolling significantly
-                            // This prevents interfering with normal pager fling behavior
-                            return if (overscrollAmount > 10f) {
-                                Velocity(
-                                    available.x * 0.3f,
-                                    available.y
-                                ) // Reduce horizontal velocity
-                            } else {
-                                Velocity.Zero
-                            }
+                            // Consume all velocity to prevent pager interference
+                            return Velocity.Zero
                         }
 
-                        overscrollAmount = 0f
                         return Velocity.Zero
                     }
                 }

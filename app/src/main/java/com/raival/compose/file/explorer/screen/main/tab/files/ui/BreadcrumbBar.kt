@@ -19,19 +19,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.copyToClipboard
 import com.raival.compose.file.explorer.common.getIndexIf
 import com.raival.compose.file.explorer.common.orIf
+import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.VirtualFileHolder
 import kotlinx.coroutines.launch
@@ -40,7 +48,7 @@ import kotlin.math.max
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PathHistoryRow(tab: FilesTab) {
+fun BreadcrumbBar(tab: FilesTab) {
     val highlightedPathListItemColor = MaterialTheme.colorScheme.primary
     val showCategoriesRow = tab.activeFolder is VirtualFileHolder && tab.categories.isNotEmpty()
 
@@ -69,9 +77,30 @@ fun PathHistoryRow(tab: FilesTab) {
                 }
             }
 
+            val consumeLeftoverScroll = remember {
+                object : NestedScrollConnection {
+                    override fun onPostScroll(
+                        consumed: Offset,
+                        available: Offset,
+                        source: NestedScrollSource
+                    ): Offset {
+                        // Only consume the scroll that LazyRow couldn't handle (at boundaries)
+                        return Offset(available.x, 0f)
+                    }
+
+                    override suspend fun onPreFling(available: Velocity): Velocity {
+                        // Consume all horizontal velocity to prevent fling from propagating to parent
+                        return Velocity(available.x, 0f)
+                    }
+                }
+            }
+
+
             LazyRow(
-                Modifier.weight(1f),
-                tab.currentPathSegmentsListState,
+                modifier = Modifier
+                    .weight(1f)
+                    .nestedScroll(consumeLeftoverScroll),
+                state = tab.currentPathSegmentsListState,
             ) {
                 itemsIndexed(tab.currentPathSegments, key = { _, it -> it.uid }) { index, item ->
                     val isHighlighted = item.uniquePath == tab.highlightedPathSegment.uniquePath
@@ -93,6 +122,10 @@ fun PathHistoryRow(tab: FilesTab) {
                                             item = item,
                                             rememberSelectedFiles = true,
                                         )
+                                    },
+                                    onLongClick = {
+                                        item.uniquePath.copyToClipboard()
+                                        showMsg(R.string.path_copied_to_clipboard)
                                     }
                                 )
                                 .padding(8.dp)

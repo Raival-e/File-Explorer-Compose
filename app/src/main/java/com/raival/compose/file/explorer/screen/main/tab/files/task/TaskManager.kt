@@ -78,12 +78,12 @@ class TaskManager {
         val task = allTasks[id]
 
         if (task == null) {
-            showMsg(globalClass.getString(R.string.task_not_found))
+            showMsg(R.string.task_not_found)
             return
         }
 
         if (task.getCurrentStatus() isNot TaskStatus.PENDING) {
-            showMsg(globalClass.getString(R.string.task_is_not_in_pending_state))
+            showMsg(R.string.task_is_not_in_pending_state)
             return
         }
 
@@ -96,7 +96,7 @@ class TaskManager {
     fun continueTask(taskId: String) {
         val task = allTasks[taskId]
         if (task == null) {
-            showMsg(globalClass.getString(R.string.task_not_found))
+            showMsg(R.string.task_not_found)
             return
         }
 
@@ -142,19 +142,19 @@ class TaskManager {
             TaskStatus.SUCCESS -> {
                 runningTasks.removeIf { it.id == task.id }
                 completedTasks.add(task)
-                showMsg(globalClass.getString(R.string.task_completed))
+                showMsg(R.string.task_completed)
             }
 
             TaskStatus.FAILED -> {
                 runningTasks.removeIf { it.id == task.id }
                 failedTasks.add(task)
-                showMsg(globalClass.getString(R.string.task_failed))
+                showMsg(R.string.task_failed)
             }
 
             TaskStatus.PAUSED -> {
                 runningTasks.removeIf { it.id == task.id }
                 pausedTasks.add(task)
-                showMsg(globalClass.getString(R.string.task_paused))
+                showMsg(R.string.task_paused)
             }
 
             TaskStatus.CONFLICT -> {
