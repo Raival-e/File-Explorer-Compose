@@ -380,7 +380,7 @@ private fun GridFileItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (viewConfigs.cropThumbnails) Modifier.aspectRatio(0.75f) else Modifier)
+            .then(if (viewConfigs.cropThumbnails) Modifier.aspectRatio(1f) else Modifier)
             .combinedClickable(
                 onClick = {
                     if (tab.selectedFiles.isNotEmpty()) {
@@ -410,7 +410,7 @@ private fun GridFileItem(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(if (viewConfigs.cropThumbnails) 1.dp else 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -438,27 +438,54 @@ private fun GridFileItem(
                         handleLongClick(tab, itemPath, item, index)
                     }
                 )
+                if (viewConfigs.cropThumbnails) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter)
+                            .background(
+                                color = colorScheme.surface.copy(alpha = 0.6f)
+                            )
+                            .padding(4.dp)
+                    ) {
+                        val fontSize = getFileListFontSize(tab.activeFolder) * 0.8
+                        Text(
+                            text = item.displayName,
+                            fontSize = fontSize.sp,
+                            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                            maxLines = 2,
+                            lineHeight = (fontSize + 2).sp,
+                            overflow = TextOverflow.Ellipsis,
+                            textAlign = TextAlign.Center,
+                            color = if (tab.highlightedFiles.contains(itemPath)) {
+                                colorScheme.primary
+                            } else {
+                                colorScheme.onSurfaceVariant
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
             }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            val fontSize = getFileListFontSize(tab.activeFolder) * 0.8
-
-            Text(
-                text = item.displayName,
-                fontSize = fontSize.sp,
-                fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
-                maxLines = 1,
-                lineHeight = (fontSize + 2).sp,
-                overflow = TextOverflow.Ellipsis,
-                textAlign = TextAlign.Center,
-                color = if (tab.highlightedFiles.contains(itemPath)) {
-                    colorScheme.primary
-                } else {
-                    colorScheme.onSurfaceVariant
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+            if (!viewConfigs.cropThumbnails) {
+                Spacer(modifier = Modifier.height(4.dp))
+                val fontSize = getFileListFontSize(tab.activeFolder) * 0.8
+                Text(
+                    text = item.displayName,
+                    fontSize = fontSize.sp,
+                    fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal,
+                    maxLines = 1,
+                    lineHeight = (fontSize + 2).sp,
+                    overflow = TextOverflow.Ellipsis,
+                    textAlign = TextAlign.Center,
+                    color = if (tab.highlightedFiles.contains(itemPath)) {
+                        colorScheme.primary
+                    } else {
+                        colorScheme.onSurfaceVariant
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             // Does not fit. Maybe find a better place later.
             /*Spacer(modifier = Modifier.height(4.dp))

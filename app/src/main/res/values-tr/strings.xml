@@ -433,6 +433,5 @@
     <string name="import_preferences">Tercihleri İçe Aktar</string>
     <string name="import_prefs_desc">Geçerli tercihlerinizi seçilen dosyadaki tercihlerle değiştirmek istiyor musunuz?</string>
     <string name="other">Diğer</string>
-    <string name="path_copied_to_clipboard">Path copied to clipboard</string>
     <string name="path_copied_to_clipboard">Yol panoya kopyalandı</string>
 </resources>
