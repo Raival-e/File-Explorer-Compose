@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -36,12 +37,16 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
@@ -89,6 +94,7 @@ fun PlaylistManagerScreen(
 
     var showCreateDialog by remember { mutableStateOf(false) }
     var showPlaylistDetail by remember { mutableStateOf<Playlist?>(null) }
+    var showRenameDialog by remember { mutableStateOf<Playlist?>(null) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val lazyListState = rememberLazyListState()
@@ -191,6 +197,9 @@ fun PlaylistManagerScreen(
                                 .fillMaxWidth(),
                             onClick = { showPlaylistDetail = playlist },
                             onPlayClick = { onPlayPlaylist(playlist, 0) },
+                            onRenameClick = {
+                                showRenameDialog = playlist
+                            },
                             onDeleteClick = { playlistManager.deletePlaylist(playlist.id) }
                         )
                     }
@@ -205,6 +214,19 @@ fun PlaylistManagerScreen(
             onConfirm = { name ->
                 playlistManager.createPlaylist(name)
                 showCreateDialog = false
+            }
+        )
+    }
+
+    showRenameDialog?.let { playlist ->
+        PlaylistRenameDialog(
+            currentName = playlist.name,
+            onRename = { newName ->
+                playlistManager.updatePlaylistName(playlist.id, newName)
+                showRenameDialog = null
+            },
+            onDismiss = {
+                showRenameDialog = null
             }
         )
     }
@@ -296,6 +318,7 @@ private fun PlaylistCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     onPlayClick: () -> Unit,
+    onRenameClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
@@ -400,56 +423,73 @@ private fun PlaylistCard(
                 )
             }
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Surface(
-                    onClick = onPlayClick,
-                    enabled = playlist.songs.isNotEmpty(),
-                    shape = CircleShape,
-                    color = if (isCurrentlyPlaying) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.secondaryContainer
-                    },
-                    contentColor = if (isCurrentlyPlaying) {
-                        MaterialTheme.colorScheme.onPrimary
-                    } else {
-                        MaterialTheme.colorScheme.onSecondaryContainer
-                    },
-                    modifier = Modifier.size(40.dp)
+            var showMenu by remember { mutableStateOf(false) }
+
+            Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+                IconButton(
+                    onClick = { showMenu = true }
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = if (isCurrentlyPlaying) {
-                                Icons.Default.Pause
-                            } else {
-                                Icons.Default.PlayArrow
-                            },
-                            contentDescription = if (isCurrentlyPlaying) {
-                                stringResource(R.string.pause)
-                            } else {
-                                stringResource(R.string.play)
-                            },
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = stringResource(R.string.more),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
 
-                Surface(
-                    onClick = { showDeleteConfirmation = true },
-                    shape = CircleShape,
-                    color = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(40.dp)
+                DropdownMenu(
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
                 ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.delete),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    DropdownMenuItem(
+                        onClick = {
+                            onPlayClick()
+                            showMenu = false
+                        },
+                        text = { Text(stringResource(R.string.play_all)) },
+                        leadingIcon = {
+                            Icon(
+                                if (isCurrentlyPlaying) {
+                                    Icons.Default.Pause
+                                } else {
+                                    Icons.Default.PlayArrow
+                                },
+                                contentDescription = stringResource(R.string.play_all)
+                            )
+                        }
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            onRenameClick()
+                            showMenu = false
+                        },
+                        text = { Text(stringResource(R.string.rename)) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.rename)
+                            )
+                        }
+                    )
+                    
+                    DropdownMenuItem(
+                        onClick = {
+                            showDeleteConfirmation = true
+                            showMenu = false
+                        },
+                        text = { 
+                            Text(
+                                "Excluir",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "Excluir",
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    )
                 }
             }
         }
@@ -550,6 +590,67 @@ private fun CreatePlaylistDialog(
             TextButton(onClick = onDismiss) {
                 Text(
                     text = stringResource(R.string.cancel).uppercase(),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(28.dp)
+    )
+}
+
+@Composable
+private fun PlaylistRenameDialog(
+    currentName: String,
+    onRename: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var playlistName by remember { mutableStateOf(currentName) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = "Renomear Playlist",
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = "Digite o novo nome da playlist",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                OutlinedTextField(
+                    value = playlistName,
+                    onValueChange = { playlistName = it },
+                    label = { Text("Nome da playlist") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onRename(playlistName.trim()) },
+                enabled = playlistName.trim().isNotEmpty() && playlistName.trim() != currentName
+            ) {
+                Text(
+                    text = "RENOMEAR",
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = "CANCELAR",
                     fontWeight = FontWeight.Medium
                 )
             }
