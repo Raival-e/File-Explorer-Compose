@@ -47,6 +47,14 @@ class CompressTask(
         progressMonitor.apply {
             status = TaskStatus.FAILED
             summary = info
+            progress = 0f
+        }
+    }
+
+    private fun markAsAborted() {
+        progressMonitor.apply {
+            status = TaskStatus.PAUSED
+            summary = globalClass.getString(R.string.task_aborted)
         }
     }
 
@@ -63,12 +71,21 @@ class CompressTask(
         progressMonitor.status = TaskStatus.RUNNING
         protect = false
 
+        // Check abortion early
+        if (aborted) {
+            markAsAborted()
+            return
+        }
+
         if (sourceContent.isEmpty()) {
             markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
             return
         }
 
-        progressMonitor.processName = globalClass.resources.getString(R.string.preparing)
+        progressMonitor.apply {
+            processName = globalClass.resources.getString(R.string.preparing)
+            progress = 0.05f
+        }
 
         val basePath = sourceContent[0].getParent()?.uniquePath ?: emptyString
 
@@ -87,54 +104,80 @@ class CompressTask(
         progressMonitor.apply {
             totalContent = pendingContent.size
             processName = globalClass.getString(R.string.compressing)
+            progress = 0.1f
         }
 
-        ZipFile(parameters!!.destPath).use { zipFile ->
-            pendingContent.forEachIndexed { index, itemToCompress ->
-                if (aborted) {
-                    progressMonitor.status = TaskStatus.PAUSED
-                    return
-                }
+        try {
+            // Check abortion before starting compression
+            if (aborted) {
+                markAsAborted()
+                return
+            }
 
-                if (itemToCompress.status == TaskContentStatus.PENDING) {
-                    progressMonitor.apply {
-                        contentName = itemToCompress.content.displayName
-                        remainingContent = pendingContent.size - (index + 1)
-                        progress = -1f
+            ZipFile(parameters?.destPath).use { zipOut ->
+                pendingContent.forEachIndexed { index, itemToCompress ->
+                    if (aborted) {
+                        markAsAborted()
+                        return
                     }
 
-                    try {
-                        if (itemToCompress.content.isFolder) {
-                            zipFile.addFolder(File(itemToCompress.content.uniquePath))
-                        } else {
-                            zipFile.addFile(itemToCompress.content.uniquePath)
+                    if (itemToCompress.status == TaskContentStatus.PENDING) {
+                        val progressPercent =
+                            0.1f + (0.9f * (index.toFloat() / pendingContent.size))
+
+                        progressMonitor.apply {
+                            contentName = itemToCompress.content.displayName
+                            remainingContent = pendingContent.size - (index + 1)
+                            progress = progressPercent
                         }
-                        itemToCompress.status = TaskContentStatus.SUCCESS
-                    } catch (e: Exception) {
-                        logger.logError(e)
-                        markAsFailed(
-                            globalClass.resources.getString(
-                                R.string.task_summary_failed,
-                                e.message ?: emptyString
+
+                        try {
+                            if (itemToCompress.content.isFolder) {
+                                addFolderToZip(zipOut, itemToCompress.content)
+                            } else {
+                                addFileToZip(zipOut, itemToCompress.content)
+                            }
+                            itemToCompress.status = TaskContentStatus.SUCCESS
+                        } catch (e: Exception) {
+                            logger.logError(e)
+                            markAsFailed(
+                                globalClass.resources.getString(
+                                    R.string.task_summary_failed,
+                                    e.message ?: emptyString
+                                )
                             )
-                        )
-                        return
+                            return
+                        }
                     }
                 }
             }
+        } catch (e: Exception) {
+            logger.logError(e)
+            markAsFailed(
+                globalClass.resources.getString(
+                    R.string.task_summary_failed,
+                    e.message ?: emptyString
+                )
+            )
+            return
         }
 
         if (progressMonitor.status == TaskStatus.RUNNING) {
-            progressMonitor.status = TaskStatus.SUCCESS
-            progressMonitor.summary = buildString {
-                pendingContent.forEach { content ->
-                    append(content.content.displayName)
-                    append(" -> ")
-                    append(content.status.name)
-                    append("\n")
-                }
+            progressMonitor.apply {
+                status = TaskStatus.SUCCESS
+                progress = 1.0f
+                processName = globalClass.getString(R.string.completed)
+                summary = globalClass.getString(R.string.task_completed)
             }
         }
+    }
+
+    private fun addFileToZip(zipOut: ZipFile, fileToCompress: ContentHolder) {
+        zipOut.addFile(File(fileToCompress.uniquePath))
+    }
+
+    private fun addFolderToZip(zipOut: ZipFile, folderToCompress: ContentHolder) {
+        zipOut.addFolder(File(folderToCompress.uniquePath))
     }
 
     override fun setParameters(params: TaskParameters) {
@@ -148,5 +191,4 @@ class CompressTask(
         }
         run(parameters!!)
     }
-
 }

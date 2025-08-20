@@ -12,7 +12,6 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.
 import com.reandroid.archive.ZipAlign
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,6 +56,14 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
         progressMonitor.apply {
             status = TaskStatus.FAILED
             summary = info
+            progress = 0f
+        }
+    }
+
+    private fun markAsAborted() {
+        progressMonitor.apply {
+            status = TaskStatus.PAUSED
+            summary = globalClass.getString(R.string.task_aborted)
         }
     }
 
@@ -73,6 +80,12 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
         progressMonitor.status = TaskStatus.RUNNING
         protect = false
 
+        // Check abortion early
+        if (aborted) {
+            markAsAborted()
+            return
+        }
+
         if (sourceContent.isEmpty()) {
             markAsFailed(globalClass.resources.getString(R.string.task_summary_no_src))
             return
@@ -80,7 +93,9 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
 
         // Validate the regular expression
         try {
-            if (parameters!!.toFind.isNotEmpty() && parameters!!.useRegex) parameters!!.toFind.toRegex()
+            if (parameters!!.toFind.isNotEmpty() && parameters!!.useRegex) {
+                parameters!!.toFind.toRegex()
+            }
         } catch (e: Exception) {
             logger.logError(e)
             markAsFailed(
@@ -92,7 +107,10 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
             return
         }
 
-        progressMonitor.processName = globalClass.resources.getString(R.string.preparing)
+        progressMonitor.apply {
+            processName = globalClass.resources.getString(R.string.preparing)
+            progress = 0.05f
+        }
 
         if (pendingContent.isEmpty()) {
             sourceContent.forEachIndexed { index, content ->
@@ -113,51 +131,51 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
         progressMonitor.apply {
             totalContent = pendingContent.size
             processName = globalClass.getString(R.string.renaming)
+            progress = 0.1f
         }
 
-        // Check if we're dealing with zip files and handle them separately
-        val firstPendingItem = pendingContent.firstOrNull { it.status == TaskContentStatus.PENDING }
-        if (firstPendingItem?.source is ZipFileHolder) {
-            try {
-                handleZipFileRenaming()
-            } catch (e: Exception) {
-                logger.logError(e)
-                markAsFailed(
-                    globalClass.resources.getString(
-                        R.string.task_summary_failed,
-                        e.message ?: emptyString
-                    )
-                )
+        // Check source type only once using the first item
+        val sampleContent = sourceContent.first()
+        when (sampleContent) {
+            is ZipFileHolder -> handleZipFileRenaming()
+            is LocalFileHolder -> handleLocalFileRenaming()
+            else -> {
+                markAsFailed(globalClass.getString(R.string.unsupported_source_type))
                 return
             }
-        } else {
-            // Handle local files
-            handleLocalFileRenaming()
         }
 
-        if (progressMonitor.status == TaskStatus.RUNNING) {
-            val sample = sourceContent.first()
-            if (sample is ZipFileHolder) {
-                if (sample.zipTree.source.extension == apkFileType) {
-                    progressMonitor.apply {
-                        processName = globalClass.resources.getString(R.string.aligning_apk)
-                        progress = -1f
-                        contentName = emptyString
-                    }
-                    ZipAlign.alignApk(sample.zipTree.source.file)
+        // Handle APK alignment if needed
+        if (progressMonitor.status == TaskStatus.RUNNING && sampleContent is ZipFileHolder) {
+            if (sampleContent.zipTree.source.extension == apkFileType) {
+                // Check abortion before alignment
+                if (aborted) {
+                    markAsAborted()
+                    return
+                }
+
+                progressMonitor.apply {
+                    processName = globalClass.resources.getString(R.string.aligning_apk)
+                    progress = 0.95f
+                    contentName = emptyString
+                }
+
+                try {
+                    ZipAlign.alignApk(sampleContent.zipTree.source.file)
+                } catch (e: Exception) {
+                    logger.logError(e)
+                    // Don't fail the entire task for alignment issues
+                    logger.logWarning("APK alignment failed: ${e.message}")
                 }
             }
         }
 
         if (progressMonitor.status == TaskStatus.RUNNING) {
-            progressMonitor.status = TaskStatus.SUCCESS
-            progressMonitor.summary = buildString {
-                pendingContent.forEach { content ->
-                    append(content.source.displayName)
-                    append(" -> ")
-                    append(content.status.name)
-                    append("\n")
-                }
+            progressMonitor.apply {
+                status = TaskStatus.SUCCESS
+                progress = 1.0f
+                processName = globalClass.getString(R.string.completed)
+                summary = globalClass.getString(R.string.task_completed)
             }
         }
     }
@@ -165,21 +183,27 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
     private suspend fun handleLocalFileRenaming() {
         pendingContent.forEachIndexed { index, itemToRename ->
             if (aborted) {
-                progressMonitor.status = TaskStatus.PAUSED
+                markAsAborted()
                 return
             }
 
             if (itemToRename.status == TaskContentStatus.PENDING) {
+                val progressPercent = 0.1f + (0.8f * (index.toFloat() / pendingContent.size))
+
                 progressMonitor.apply {
                     contentName = itemToRename.source.displayName
                     remainingContent = pendingContent.size - (index + 1)
-                    progress = (index + 1f) / pendingContent.size
+                    progress = progressPercent
                 }
 
                 try {
-                    if (itemToRename.source is LocalFileHolder) {
-                        itemToRename.source.file.renameTo(File(itemToRename.newPath))
+                    val localFile = itemToRename.source as LocalFileHolder
+                    val newFile = File(itemToRename.newPath)
+
+                    if (localFile.file.renameTo(newFile)) {
                         itemToRename.status = TaskContentStatus.SUCCESS
+                    } else {
+                        throw Exception(globalClass.getString(R.string.failed_to_rename_file))
                     }
                 } catch (e: Exception) {
                     logger.logError(e)
@@ -196,11 +220,24 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
     }
 
     private suspend fun handleZipFileRenaming() {
-        val zipFileHolder = pendingContent.first().source as ZipFileHolder
+        val zipFileHolder = sourceContent.first() as ZipFileHolder
         val sourceZipFile = zipFileHolder.zipTree.source.file
-        val tempFile = File(sourceZipFile.parent, "${sourceZipFile.nameWithoutExtension}_temp.zip")
+        var tempFile: File? = null
 
         try {
+            // Check abortion before processing
+            if (aborted) {
+                markAsAborted()
+                return
+            }
+
+            progressMonitor.apply {
+                progress = 0.15f
+            }
+
+            // Create temp file for safe operations
+            tempFile = File(sourceZipFile.parent, "${sourceZipFile.nameWithoutExtension}_temp.zip")
+
             // Create a map of old paths to new paths for all items to rename
             val renameMap = mutableMapOf<String, String>()
             val foldersToRename = mutableSetOf<String>()
@@ -217,35 +254,38 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
                 renameMap[oldPath] = newPath
             }
 
+            progressMonitor.apply {
+                progress = 0.2f
+            }
+
             // Open the source zip file for reading
             ZipFile(sourceZipFile).use { sourceZip ->
                 // Create a new zip file
                 ZipOutputStream(FileOutputStream(tempFile)).use { zipOut ->
-
                     val entries = sourceZip.entries().toList()
                     var processedCount = 0
 
                     entries.forEach { entry ->
                         if (aborted) {
-                            progressMonitor.status = TaskStatus.PAUSED
+                            markAsAborted()
                             return
                         }
 
                         val entryName = entry.name.removeSuffix("/")
                         var newEntryName = entryName
-                        var shouldRename = false
+                        var wasRenamed = false
 
                         // Check direct rename
                         if (renameMap.containsKey(entryName)) {
                             newEntryName = renameMap[entryName]!!
-                            shouldRename = true
+                            wasRenamed = true
                         } else {
                             // Check if this entry is inside a folder being renamed
                             for (folderPath in foldersToRename) {
                                 if (entryName.startsWith("$folderPath/")) {
                                     val relativePath = entryName.substring(folderPath.length + 1)
                                     newEntryName = "${renameMap[folderPath]}/$relativePath"
-                                    shouldRename = true
+                                    wasRenamed = true
                                     break
                                 }
                             }
@@ -279,31 +319,46 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
 
                         zipOut.closeEntry()
 
-                        // Update progress
-                        processedCount++
-                        progressMonitor.apply {
-                            contentName = entry.name
-                            progress = processedCount.toFloat() / entries.size
-                        }
-
                         // Mark corresponding pending items as successful
-                        if (shouldRename) {
+                        if (wasRenamed) {
                             pendingContent.find {
                                 (it.source as ZipFileHolder).uniquePath == entryName
                             }?.status = TaskContentStatus.SUCCESS
+                        }
+
+                        processedCount++
+                        val progressPercent =
+                            0.2f + (0.7f * (processedCount.toFloat() / entries.size))
+
+                        progressMonitor.apply {
+                            contentName = if (wasRenamed) newEntryName else entry.name
+                            progress = progressPercent
                         }
                     }
                 }
             }
 
-            // Replace the original file with the new one
-            if (sourceZipFile.delete()) {
-                if (!tempFile.renameTo(sourceZipFile)) {
-                    throw IOException(globalClass.getString(R.string.failed_to_replace_original_zip_file))
-                }
-            } else {
-                throw IOException(globalClass.getString(R.string.failed_to_delete_original_zip_file))
+            // Check abortion before finalizing
+            if (aborted) {
+                markAsAborted()
+                return
             }
+
+            progressMonitor.apply {
+                progress = 0.9f
+                processName = globalClass.getString(R.string.finalizing)
+            }
+
+            // Replace the original file with the new one
+            if (!sourceZipFile.delete()) {
+                throw Exception(globalClass.getString(R.string.failed_to_delete_original_zip_file))
+            }
+
+            if (!tempFile.renameTo(sourceZipFile)) {
+                throw Exception(globalClass.getString(R.string.failed_to_replace_original_zip_file))
+            }
+
+            tempFile = null // Successfully renamed, don't delete in finally
 
             // Mark any remaining pending items as successful (for folders without zip entries)
             pendingContent.filter { it.status == TaskContentStatus.PENDING }.forEach { item ->
@@ -322,11 +377,16 @@ class RenameTask(val sourceContent: List<ContentHolder>) : Task() {
             }
 
         } catch (e: Exception) {
-            // Clean up temp file if it exists
-            if (tempFile.exists()) {
-                tempFile.delete()
-            }
-            throw e
+            logger.logError(e)
+            markAsFailed(
+                globalClass.resources.getString(
+                    R.string.task_summary_failed,
+                    e.message ?: emptyString
+                )
+            )
+        } finally {
+            // Clean up temp file if it still exists
+            tempFile?.delete()
         }
     }
 

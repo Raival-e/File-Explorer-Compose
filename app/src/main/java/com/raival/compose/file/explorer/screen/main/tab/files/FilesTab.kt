@@ -409,8 +409,11 @@ class FilesTab(
                 return true
             }
         } else if (activeFolder is ZipFileHolder) {
-            // Check if the source any of the files that have been extracted has changed
-            if (globalClass.zipManager.checkForSourceChanges()) {
+            val invalidZipTrees = globalClass.zipManager.validateArchiveTrees()
+            if (invalidZipTrees.contains((activeFolder as ZipFileHolder).zipTree.source.uniquePath)) {
+                validateActiveFolder()
+            } else if (globalClass.zipManager.checkForSourceChanges()) {
+                // Check if the source any of the files that have been extracted has changed
                 val zipTree = (activeFolder as ZipFileHolder).zipTree
                 val changedFiles = zipTree.checkExtractedFiles()
                 if (changedFiles.isNotEmpty()) {
@@ -578,6 +581,9 @@ class FilesTab(
             withContext(Dispatchers.Main) {
                 currentPathSegments = newPathSegments
             }
+        } else {
+            // validate path segments if not changed
+            currentPathSegments = currentPathSegments.filter { it.isValid() }
         }
 
         highlightedPathSegment = activeFolder

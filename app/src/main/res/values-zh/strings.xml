@@ -434,4 +434,12 @@
     <string name="other">其他</string>
     <string name="path_copied_to_clipboard">路径已复制到剪贴板</string>
     <string name="hide_media_names">从媒体文件中隐藏名称</string>
+    <string name="task_aborted">Task aborted</string>
+    <string name="completed">Completed</string>
+    <string name="failed_to_create_final_archive">Failed to create final archive</string>
+    <string name="unsupported_source_type">unsupported source file</string>
+    <string name="failed_to_delete_file">Failed to delete file</string>
+    <string name="finalizing">Finalizing</string>
+    <string name="failed_to_rename_file">Failed to rename file</string>
+    <string name="updating">Updating</string>
 </resources>

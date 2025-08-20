@@ -34,7 +34,7 @@ class ApksMergeTask(
                 append("\n")
                 append(time)
             },
-            isCancellable = false,
+            isCancellable = true,
             canMoveToBackground = false
         )
     }
@@ -52,6 +52,14 @@ class ApksMergeTask(
         progressMonitor.apply {
             status = TaskStatus.FAILED
             summary = info
+            progress = 0f
+        }
+    }
+
+    private fun markAsAborted() {
+        progressMonitor.apply {
+            status = TaskStatus.PAUSED
+            summary = globalClass.getString(R.string.task_aborted)
         }
     }
 
@@ -68,25 +76,62 @@ class ApksMergeTask(
         progressMonitor.status = TaskStatus.RUNNING
         protect = false
 
+        // Check abortion before validation
+        if (aborted) {
+            markAsAborted()
+            return
+        }
+
         if (!sourceContent.isValid() || sourceContent !is LocalFileHolder) {
             markAsFailed(globalClass.resources.getString(R.string.invalid_bundle_file))
             return
         }
 
-        progressMonitor.processName = globalClass.resources.getString(R.string.merging)
+        progressMonitor.apply {
+            processName = globalClass.resources.getString(R.string.merging)
+            progress = 0.1f
+        }
+
+        // Check abortion before merging
+        if (aborted) {
+            markAsAborted()
+            return
+        }
 
         val mergedFile = mergeBundleFile(sourceContent)
 
+        // Check abortion after merging
+        if (aborted) {
+            // Clean up merged file if created
+            mergedFile?.file?.delete()
+            markAsAborted()
+            return
+        }
+
         // mergeBundleFile function will handle failed task
         if (mergedFile != null && parameters!!.autoSign) {
-            progressMonitor.processName = globalClass.resources.getString(R.string.signing)
+            progressMonitor.apply {
+                processName = globalClass.resources.getString(R.string.signing)
+                progress = 0.7f
+            }
+
+            // Check abortion before signing
+            if (aborted) {
+                mergedFile.file.delete()
+                markAsAborted()
+                return
+            }
+
             signApkFile(mergedFile)
         }
 
         if (progressMonitor.status == TaskStatus.RUNNING) {
-            progressMonitor.status = TaskStatus.SUCCESS
-            progressMonitor.summary =
-                globalClass.resources.getString(R.string.apk_bundle_merge_success)
+            progressMonitor.apply {
+                status = TaskStatus.SUCCESS
+                progress = 1.0f
+                summary = globalClass.resources.getString(R.string.apk_bundle_merge_success)
+                processName = globalClass.getString(R.string.completed)
+            }
         }
     }
 
@@ -104,15 +149,30 @@ class ApksMergeTask(
             File(inputFile.parentFile, inputFile.nameWithoutExtension + "-unsigned.apk")
         }
 
+        progressMonitor.apply {
+            progress = 0.3f
+        }
+
         val options = MergerOptions().apply {
             this.inputFile = inputFile
             this.outputFile = outputFile
         }
 
         try {
+            // Check abortion before starting merge
+            if (aborted) {
+                outputFile.delete()
+                return null
+            }
+
             Merger(options).runCommand()
+
+            progressMonitor.apply {
+                progress = 0.6f
+            }
         } catch (e: Exception) {
             logger.logError(e)
+            outputFile.delete()
             markAsFailed(
                 globalClass.resources.getString(
                     R.string.task_summary_failed,
@@ -126,16 +186,17 @@ class ApksMergeTask(
             return LocalFileHolder(outputFile)
         }
 
+        outputFile.delete()
         markAsFailed(globalClass.resources.getString(R.string.apk_bundle_merge_failed))
         return null
     }
 
     fun signApkFile(mergedFile: LocalFileHolder) {
         val sourceFile = sourceContent as LocalFileHolder
-
         val inputFile = mergedFile.file
 
         if (sourceFile.file.parent == null) {
+            inputFile.delete()
             markAsFailed(globalClass.resources.getString(R.string.invalid_bundle_file))
             return
         }
@@ -145,7 +206,17 @@ class ApksMergeTask(
             sourceFile.file.nameWithoutExtension + "-signed.apk"
         )
 
+        progressMonitor.apply {
+            progress = 0.8f
+        }
+
         try {
+            // Check abortion before loading certificates
+            if (aborted) {
+                inputFile.delete()
+                return
+            }
+
             val testKeyInputStream = globalClass.assets.open("keystore/testkey.pk8")
             val certificateInputStream = globalClass.assets.open("keystore/testkey.x509.pem")
 
@@ -158,6 +229,17 @@ class ApksMergeTask(
             val certificate = certificateInputStream.use { inputStream ->
                 val certificateFactory = CertificateFactory.getInstance("X.509")
                 certificateFactory.generateCertificate(inputStream) as X509Certificate
+            }
+
+            progressMonitor.apply {
+                processName = globalClass.getString(R.string.signing)
+                progress = 0.9f
+            }
+
+            // Check abortion before signing
+            if (aborted) {
+                inputFile.delete()
+                return
             }
 
             val keyConfig = KeyConfig.Jca(testKey)
@@ -177,13 +259,19 @@ class ApksMergeTask(
                 .sign()
 
             if (!outputFile.exists() || outputFile.length() == 0L) {
+                inputFile.delete()
+                outputFile.delete()
                 markAsFailed(globalClass.resources.getString(R.string.apk_bundle_sign_failed))
                 return
             }
 
+            // Clean up temp file after successful signing
             inputFile.delete()
+
         } catch (e: Exception) {
             logger.logError(e)
+            inputFile.delete()
+            outputFile.delete()
             markAsFailed(
                 globalClass.resources.getString(
                     R.string.task_summary_failed,
