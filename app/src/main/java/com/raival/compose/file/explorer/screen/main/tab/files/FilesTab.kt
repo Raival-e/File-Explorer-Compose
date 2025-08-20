@@ -205,7 +205,10 @@ class FilesTab(
         }
     }
 
-    private suspend fun createTitle() = globalClass.getString(R.string.files_tab_title)
+    private suspend fun createTitle() = when (activeFolder) {
+        is VirtualFileHolder -> activeFolder.displayName
+        else -> globalClass.getString(R.string.files_tab_title)
+    }
 
     override fun onBackPressed(): Boolean {
         if (unselectAnySelectedFiles()) {
