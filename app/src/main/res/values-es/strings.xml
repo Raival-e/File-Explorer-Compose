@@ -434,4 +434,13 @@
     <string name="other">Otro</string>
     <string name="path_copied_to_clipboard">Ruta copiada al portapapeles</string>
     <string name="hide_media_names">Ocultar nombres de archivos multimedia</string>
+    <string name="task_aborted">Tarea abortada</string>
+    <string name="completed">Completado</string>
+    <string name="failed_to_create_final_archive">Error al crear el archivo final</string>
+    <string name="unsupported_source_type">Archivo de origen no compatible</string>
+    <string name="failed_to_delete_file">Error al eliminar el archivo</string>
+    <string name="finalizing">Finalizando</string>
+    <string name="failed_to_rename_file">Error al renombrar el archivo</string>
+    <string name="updating">Actualizando</string>
+    <string name="minimize">Minimizar</string>
 </resources>
