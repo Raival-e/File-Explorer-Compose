@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.annotation.OptIn
-import androidx.compose.ui.res.stringResource
 import androidx.media3.common.C.TIME_UNSET
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -63,7 +62,7 @@ class AudioPlayerInstance(
     private var positionTrackingJob: Job? = null
 
     @OptIn(UnstableApi::class)
-    suspend fun initializePlayer(context: Context, uri: Uri) {
+    suspend fun initializePlayer(context: Context, uri: Uri, autoPlay: Boolean = false) {
         withContext(Dispatchers.Main) {
             // Release previous player if it exists
             exoPlayer?.let { player ->
@@ -121,10 +120,19 @@ class AudioPlayerInstance(
 
         extractMetadata(context, uri)
         startPositionTracking()
+        
+        // Auto-play if enabled in preferences or explicitly requested
+        if (autoPlay || globalClass.preferencesManager.autoPlayMusic) {
+            withContext(Dispatchers.Main) {
+                // Small delay to ensure player is ready
+                delay(100)
+                exoPlayer?.play()
+            }
+        }
     }
 
     // Overloaded method for better metadata extraction from LocalFileHolder
-    suspend fun initializePlayer(context: Context, uri: Uri, fileHolder: LocalFileHolder? = null) {
+    suspend fun initializePlayer(context: Context, uri: Uri, fileHolder: LocalFileHolder? = null, autoPlay: Boolean = false) {
         withContext(Dispatchers.Main) {
             // Release previous player if it exists
             exoPlayer?.let { player ->
@@ -182,6 +190,15 @@ class AudioPlayerInstance(
 
         extractMetadata(context, uri, fileHolder)
         startPositionTracking()
+        
+        // Auto-play if enabled in preferences or explicitly requested
+        if (autoPlay || globalClass.preferencesManager.autoPlayMusic) {
+            withContext(Dispatchers.Main) {
+                // Small delay to ensure player is ready
+                delay(100)
+                exoPlayer?.play()
+            }
+        }
     }
 
     fun setDefaultColorScheme(colorScheme: AudioPlayerColorScheme) {
@@ -392,6 +409,13 @@ class AudioPlayerInstance(
             CoroutineScope(Dispatchers.Main).launch {
                 val songUri = Uri.fromFile(song.file)
                 initializePlayer(globalClass, songUri, song)
+                
+                // Auto-play if enabled in preferences
+                if (globalClass.preferencesManager.autoPlayMusic) {
+                    // Small delay to ensure player is ready
+                    delay(100)
+                    exoPlayer?.play()
+                }
             }
         }
     }

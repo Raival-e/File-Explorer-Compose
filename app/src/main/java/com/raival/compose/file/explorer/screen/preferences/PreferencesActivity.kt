@@ -30,6 +30,7 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.preferences.ui.AppearanceContainer
+import com.raival.compose.file.explorer.screen.preferences.ui.AudioPlayerContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.BehaviorContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.FileListContainer
 import com.raival.compose.file.explorer.screen.preferences.ui.FileOperationContainer
@@ -89,6 +90,7 @@ class PreferencesActivity : BaseActivity() {
                         FileListContainer()
                         FileOperationContainer()
                         BehaviorContainer()
+                        AudioPlayerContainer()
                         RecentFilesContainer()
                         TextEditorContainer()
                     }

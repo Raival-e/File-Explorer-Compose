@@ -94,11 +94,7 @@ fun HeaderRow(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        PlaylistInfo(
-            playlist = playlist,
-            isScrolled = isScrolled,
-            modifier = Modifier.weight(1f)
-        )
+        PlaylistInfo(playlist, isScrolled)
 
         if (playlist.songs.isNotEmpty()) {
             PlayAllButton(onPlayAllClick)
@@ -122,7 +118,9 @@ fun PlaylistInfo(playlist: Playlist, isScrolled: Boolean, modifier: Modifier = M
                 fadeIn(tween(300)) togetherWith fadeOut(tween(150))
             }
         ) { scrolled ->
-            Column {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
                     text = playlist.name,
                     style = if (scrolled) {

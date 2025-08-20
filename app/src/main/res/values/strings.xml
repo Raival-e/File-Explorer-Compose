@@ -276,6 +276,8 @@
     <string name="dimensions">Dimensions</string>
     <string name="no_information_available">No information available</string>
     <string name="title_activity_audio_player">Audio Player</string>
+    <string name="auto_play_music">Auto-play music</string>
+    <string name="auto_play_music_desc">Automatically start playing music when opened</string>
     <string name="unknown_title">Unknown Title</string>
     <string name="unknown_album">Unknown Album</string>
     <string name="volume">Volume</string>
