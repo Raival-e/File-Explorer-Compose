@@ -442,4 +442,5 @@
     <string name="finalizing">Finalizing</string>
     <string name="failed_to_rename_file">Failed to rename file</string>
     <string name="updating">Updating</string>
+    <string name="minimize">Minimize</string>
 </resources>
