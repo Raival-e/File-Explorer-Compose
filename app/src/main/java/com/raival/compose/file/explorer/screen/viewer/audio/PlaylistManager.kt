@@ -104,10 +104,11 @@ class PlaylistManager private constructor() {
         return playlist
     }
 
-    fun addSongToPlaylist(playlistId: String, song: LocalFileHolder) {
+    fun addSongToPlaylist(playlistId: String, song: LocalFileHolder): Boolean {
+        var wasAdded = false
         _playlists.value = _playlists.value.map { playlist ->
             if (playlist.id == playlistId) {
-                playlist.copy().apply { addSong(song) }
+                playlist.copy().apply { wasAdded = addSong(song) }
             } else {
                 playlist
             }
@@ -116,6 +117,31 @@ class PlaylistManager private constructor() {
             _currentPlaylist.value = _playlists.value.find { it.id == playlistId }
         }
         savePlaylists()
+        return wasAdded
+    }
+
+    fun addMultipleSongsToPlaylist(playlistId: String, songs: List<LocalFileHolder>): Int {
+        if (songs.isEmpty()) return 0
+        
+        var addedCount = 0
+        _playlists.value = _playlists.value.map { playlist ->
+            if (playlist.id == playlistId) {
+                playlist.copy().apply { 
+                    songs.forEach { song -> 
+                        if (addSong(song)) {
+                            addedCount++
+                        }
+                    }
+                }
+            } else {
+                playlist
+            }
+        }
+        if (_currentPlaylist.value?.id == playlistId) {
+            _currentPlaylist.value = _playlists.value.find { it.id == playlistId }
+        }
+        savePlaylists()
+        return addedCount
     }
 
     fun removeSongFromPlaylistAt(playlistId: String, index: Int) {

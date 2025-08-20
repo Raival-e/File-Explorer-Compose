@@ -11,9 +11,12 @@ data class Playlist(
     val createdAt: Long = System.currentTimeMillis(),
     val currentSongIndex: Int = 0
 ) {
-    fun addSong(song: LocalFileHolder) {
-        if (!songs.contains(song)) {
+    fun addSong(song: LocalFileHolder): Boolean {
+        return if (!songs.contains(song)) {
             songs.add(song)
+            true
+        } else {
+            false
         }
     }
 

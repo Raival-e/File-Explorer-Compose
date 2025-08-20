@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
@@ -49,12 +50,20 @@ fun PlaylistBottomSheet(
     isVisible: Boolean,
     onDismiss: () -> Unit,
     onPlaylistSelected: (Playlist) -> Unit,
-    selectedSong: LocalFileHolder? = null
+    selectedSong: LocalFileHolder? = null,
+    selectedSongs: List<LocalFileHolder> = emptyList()
 ) {
     if (isVisible) {
         val playlistManager = remember { PlaylistManager.getInstance() }
         val playlists by playlistManager.playlists.collectAsState()
         var showCreateDialog by remember { mutableStateOf(false) }
+        
+        val songsToAdd = when {
+            selectedSongs.isNotEmpty() -> selectedSongs
+            selectedSong != null -> listOf(selectedSong)
+            else -> emptyList()
+        }
+        val isMultipleSongs = songsToAdd.size > 1
 
         BottomSheetDialog(onDismissRequest = onDismiss) {
             Column(
@@ -68,7 +77,11 @@ fun PlaylistBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = stringResource(R.string.playlists),
+                        text = if (isMultipleSongs) {
+                            "${stringResource(R.string.add_multiple_to_playlist)} (${songsToAdd.size})"
+                        } else {
+                            stringResource(R.string.playlists)
+                        },
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
@@ -120,8 +133,28 @@ fun PlaylistBottomSheet(
                             PlaylistItem(
                                 playlist = playlist,
                                 onPlaylistClick = {
-                                    selectedSong?.let { song ->
-                                        playlistManager.addSongToPlaylist(playlist.id, song)
+                                    if (songsToAdd.isNotEmpty()) {
+                                        if (isMultipleSongs) {
+                                            val addedCount = playlistManager.addMultipleSongsToPlaylist(playlist.id, songsToAdd)
+                                            val duplicateCount = songsToAdd.size - addedCount
+                                            
+                                            if (duplicateCount > 0) {
+                                                globalClass.showMsg(
+                                                    globalClass.getString(R.string.songs_added_with_duplicates, addedCount, duplicateCount)
+                                                )
+                                            } else {
+                                                globalClass.showMsg(
+                                                    globalClass.getString(R.string.songs_added_to_playlist, addedCount)
+                                                )
+                                            }
+                                        } else {
+                                            val wasAdded = playlistManager.addSongToPlaylist(playlist.id, songsToAdd.first())
+                                            if (wasAdded) {
+                                                globalClass.showMsg(R.string.song_added_to_playlist)
+                                            } else {
+                                                globalClass.showMsg(R.string.song_already_in_playlist)
+                                            }
+                                        }
                                     }
                                     onPlaylistSelected(playlist)
                                 },
@@ -139,8 +172,27 @@ fun PlaylistBottomSheet(
             CreatePlaylistDialog(
                 onDismiss = { showCreateDialog = false },
                 onPlaylistCreated = { name ->
-                    val newPlaylist = if (selectedSong != null) {
-                        playlistManager.createPlaylistWithSong(name, selectedSong)
+                    val newPlaylist = if (songsToAdd.isNotEmpty()) {
+                        if (isMultipleSongs) {
+                            val playlist = playlistManager.createPlaylist(name)
+                            val addedCount = playlistManager.addMultipleSongsToPlaylist(playlist.id, songsToAdd)
+                            val duplicateCount = songsToAdd.size - addedCount
+                            
+                            if (duplicateCount > 0) {
+                                globalClass.showMsg(
+                                    globalClass.getString(R.string.songs_added_with_duplicates, addedCount, duplicateCount)
+                                )
+                            } else {
+                                globalClass.showMsg(
+                                    globalClass.getString(R.string.songs_added_to_playlist, addedCount)
+                                )
+                            }
+                            playlist
+                        } else {
+                            val playlist = playlistManager.createPlaylistWithSong(name, songsToAdd.first())
+                            globalClass.showMsg(R.string.song_added_to_playlist)
+                            playlist
+                        }
                     } else {
                         playlistManager.createPlaylist(name)
                     }

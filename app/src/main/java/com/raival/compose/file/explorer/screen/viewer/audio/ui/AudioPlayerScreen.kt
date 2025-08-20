@@ -939,7 +939,7 @@ fun CurrentPlaylistInfo(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "${currentSongIndex + 1} de ${playlist.size()}${if (isShuffled) " • Aleatório" else ""}",
+                    text = "${currentSongIndex + 1} ${playlist.size()}${if (isShuffled) " • ${stringResource(R.string.random)}" else ""}",
                     style = MaterialTheme.typography.bodySmall,
                     color = colorScheme.tintColor.copy(alpha = 0.7f)
                 )

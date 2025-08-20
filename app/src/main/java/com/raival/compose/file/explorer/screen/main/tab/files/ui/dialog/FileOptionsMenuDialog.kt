@@ -85,6 +85,13 @@ fun FileOptionsMenuDialog(
         val isSingleFolder = !isMultipleSelection && targetContentHolder.isFolder
         val isAudioFile = isSingleFile && targetContentHolder is LocalFileHolder && 
                          audioFileType.contains(targetContentHolder.file.extension)
+        
+        // Check for multiple audio files
+        val audioFiles = targetFiles.filter { file ->
+            file is LocalFileHolder && file.isFile() && audioFileType.contains(file.file.extension)
+        }.map { it as LocalFileHolder }
+        val hasMultipleAudioFiles = audioFiles.size > 1
+        val hasAnyAudioFiles = audioFiles.isNotEmpty()
 
         var showPlaylistDialog by remember { mutableStateOf(false) }
 
@@ -275,7 +282,6 @@ fun FileOptionsMenuDialog(
                     tab.unselectAllFiles()
                 }
 
-                // Add to playlist option for audio files
                 if (isAudioFile) {
                     FileOption(Icons.AutoMirrored.Rounded.PlaylistAdd, stringResource(R.string.add_to_playlist)) {
                         showPlaylistDialog = true
@@ -293,6 +299,12 @@ fun FileOptionsMenuDialog(
                         )
                         tab.unselectAllFiles()
                     }
+                }
+            }
+
+            if (hasMultipleAudioFiles) {
+                FileOption(Icons.AutoMirrored.Rounded.PlaylistAdd, stringResource(R.string.add_multiple_to_playlist)) {
+                    showPlaylistDialog = true
                 }
             }
 
@@ -323,7 +335,7 @@ fun FileOptionsMenuDialog(
         }
 
         // Playlist dialog for audio files
-        if (isAudioFile) {
+        if (isAudioFile || hasAnyAudioFiles) {
             PlaylistBottomSheet(
                 isVisible = showPlaylistDialog,
                 onDismiss = { 
@@ -335,7 +347,8 @@ fun FileOptionsMenuDialog(
                     onDismissRequest()
                     tab.unselectAllFiles()
                 },
-                selectedSong = if (targetContentHolder is LocalFileHolder) targetContentHolder else null
+                selectedSong = if (isAudioFile && targetContentHolder is LocalFileHolder) targetContentHolder else null,
+                selectedSongs = if (hasMultipleAudioFiles) audioFiles else emptyList()
             )
         }
     }
