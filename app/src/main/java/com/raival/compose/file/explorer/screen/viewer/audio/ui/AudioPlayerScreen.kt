@@ -187,7 +187,8 @@ fun MusicPlayerScreen(
                     currentPosition = playerState.currentPosition,
                     duration = playerState.duration,
                     onSeek = { audioPlayerInstance.seekTo(it) },
-                    colorScheme = customColorScheme
+                    colorScheme = customColorScheme,
+                    songId = "${metadata.title}-${metadata.artist}-${playerState.duration}" // Unique identifier per song
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -461,17 +462,26 @@ fun ProgressBar(
     currentPosition: Long,
     duration: Long,
     onSeek: (Long) -> Unit,
-    colorScheme: AudioPlayerColorScheme
+    colorScheme: AudioPlayerColorScheme,
+    songId: String = ""
 ) {
-    var manualPosition by remember { mutableLongStateOf(0L) }
-    var manualSeek by remember { mutableFloatStateOf(0f) }
-    var isDragging by remember { mutableStateOf(false) }
+    // Reset state when song changes
+    var manualPosition by remember(songId) { mutableLongStateOf(0L) }
+    var manualSeek by remember(songId) { mutableFloatStateOf(0f) }
+    var isDragging by remember(songId) { mutableStateOf(false) }
+    
     val progress = if (duration > 0) {
-        if (abs(currentPosition - manualPosition) < 1000) {
+        if (isDragging) {
+            manualSeek
+        } else if (abs(currentPosition - manualPosition) > 2000) {
             (currentPosition.toFloat() / duration.toFloat()).also {
                 manualPosition = currentPosition
             }
-        } else manualSeek
+        } else {
+            (currentPosition.toFloat() / duration.toFloat()).also {
+                manualPosition = currentPosition
+            }
+        }
     } else 0f
 
     Column {
@@ -501,7 +511,7 @@ fun ProgressBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = (if (isDragging) (manualSeek * duration).toLong() else manualPosition).toFormattedTime(),
+                text = (if (isDragging) (manualSeek * duration).toLong() else currentPosition).toFormattedTime(),
                 color = colorScheme.tintColor.copy(alpha = 0.8f),
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.bodySmall
