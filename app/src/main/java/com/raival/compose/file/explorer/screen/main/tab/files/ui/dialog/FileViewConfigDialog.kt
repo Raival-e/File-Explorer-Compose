@@ -18,6 +18,8 @@ import androidx.compose.material.icons.automirrored.rounded.ViewList
 import androidx.compose.material.icons.rounded.CropFree
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.GridView
+import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.ViewModule
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -93,11 +95,21 @@ fun FileViewConfigDialog(
             mutableStateOf(tab.viewConfig.cropThumbnails)
         }
 
+        var galleryMode by remember {
+            mutableStateOf(tab.viewConfig.galleryMode)
+        }
+
+        var hideMediaNames by remember {
+            mutableStateOf(tab.viewConfig.hideMediaNames)
+        }
+
         fun saveConfigs() {
             val configs = ViewConfigs(
-                viewType = if (viewType == ViewType.GRID.ordinal) ViewType.GRID else ViewType.COLUMNS,
+                viewType = if (viewType == ViewType.GRID.ordinal) ViewType.GRID else ViewType.LIST,
                 columnCount = columnCount.roundToInt(),
                 cropThumbnails = cropThumbnails,
+                galleryMode = galleryMode,
+                hideMediaNames = hideMediaNames,
                 itemSize = itemSize
             )
 
@@ -170,45 +182,39 @@ fun FileViewConfigDialog(
                     modifier = Modifier.padding(bottom = 12.dp)
                 )
 
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .selectableGroup()
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .selectableGroup()
-                            .padding(8.dp)
-                    ) {
-                        RadioButtonItem(
-                            icon = Icons.Rounded.GridView,
-                            text = stringResource(R.string.grid_view),
-                            selected = viewType == ViewType.GRID.ordinal,
-                            onClick = {
-                                viewType = ViewType.GRID.ordinal
-                                // Reset column count for grid view
-                                columnCount = 4f
-                            }
-                        )
+                    RadioButtonItem(
+                        icon = Icons.Rounded.GridView,
+                        text = stringResource(R.string.grid_view),
+                        selected = viewType == ViewType.GRID.ordinal,
+                        onClick = {
+                            viewType = ViewType.GRID.ordinal
+                            // Reset column count for grid view
+                            columnCount = 4f
+                        }
+                    )
 
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.12f)
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp
                         )
+                    )
 
-                        RadioButtonItem(
-                            icon = Icons.AutoMirrored.Rounded.ViewList,
-                            text = stringResource(R.string.list_view),
-                            selected = viewType == ViewType.COLUMNS.ordinal,
-                            onClick = {
-                                viewType = ViewType.COLUMNS.ordinal
-                                // Reset column count for column view
-                                columnCount = 1f
-                            }
-                        )
-                    }
+                    RadioButtonItem(
+                        icon = Icons.AutoMirrored.Rounded.ViewList,
+                        text = stringResource(R.string.list_view),
+                        selected = viewType == ViewType.LIST.ordinal,
+                        onClick = {
+                            viewType = ViewType.LIST.ordinal
+                            // Reset column count for column view
+                            columnCount = 1f
+                        }
+                    )
                 }
 
                 Space(size = 24.dp)
@@ -376,12 +382,58 @@ fun FileViewConfigDialog(
                 ) {
                     SwitchSettingItem(
                         icon = Icons.Rounded.CropFree,
-                        title = if (viewType == ViewType.GRID.ordinal) stringResource(R.string.gallery_mode) else stringResource(
+                        title = stringResource(
                             R.string.crop_in_thumbnails
                         ),
                         checked = cropThumbnails,
                         onCheckedChange = { cropThumbnails = it }
                     )
+                }
+
+                if (viewType == ViewType.GRID.ordinal) {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp
+                        )
+                    )
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        SwitchSettingItem(
+                            icon = Icons.Rounded.Image,
+                            title = stringResource(R.string.gallery_mode),
+                            checked = galleryMode,
+                            onCheckedChange = { galleryMode = it }
+                        )
+                    }
+
+                    HorizontalDivider(
+                        modifier = Modifier.padding(
+                            horizontal = 8.dp,
+                            vertical = 4.dp
+                        )
+                    )
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                    ) {
+                        SwitchSettingItem(
+                            icon = Icons.Rounded.TextFields,
+                            title = stringResource(R.string.hide_media_names),
+                            checked = hideMediaNames,
+                            onCheckedChange = { hideMediaNames = it }
+                        )
+                    }
                 }
             }
         }

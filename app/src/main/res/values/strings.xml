@@ -464,4 +464,23 @@
     <string name="no_excluded_paths">No excluded paths</string>
     <string name="add_paths_to_exclude_desc">Add new path to be excluded from the recent file scanner</string>
     <string name="about">About</string>
+    <string name="export_preferences">Export preferences</string>
+    <string name="exported_prism_preferences">Exported to /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">To import, locate and open the exported file</string>
+    <string name="invalid_preferences_file">Invalid preferences file</string>
+    <string name="preferences_imported_successfully">Preferences imported successfully</string>
+    <string name="import_preferences">Import Preferences</string>
+    <string name="import_prefs_desc">Do you want to override your current preferences with the ones contained in the selected file?</string>
+    <string name="other">Other</string>
+    <string name="path_copied_to_clipboard">Path copied to clipboard</string>
+    <string name="hide_media_names">Hide names from media files</string>
+    <string name="task_aborted">Task aborted</string>
+    <string name="completed">Completed</string>
+    <string name="failed_to_create_final_archive">Failed to create final archive</string>
+    <string name="unsupported_source_type">unsupported source file</string>
+    <string name="failed_to_delete_file">Failed to delete file</string>
+    <string name="finalizing">Finalizing</string>
+    <string name="failed_to_rename_file">Failed to rename file</string>
+    <string name="updating">Updating</string>
+    <string name="minimize">Minimize</string>
 </resources>

@@ -424,4 +424,23 @@
     <string name="no_excluded_paths">Brak wykluczonych ścieżek</string>
     <string name="add_paths_to_exclude_desc">Dodaj nową ścieżkę do wykluczenia ze skanera ostatnich plików</string>
     <string name="about">O aplikacji</string>
+    <string name="export_preferences">Eksportuj preferencje</string>
+    <string name="exported_prism_preferences">Wyeksportowano do /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">Aby zaimportować, zlokalizuj i otwórz wyeksportowany plik</string>
+    <string name="invalid_preferences_file">Nieprawidłowy plik preferencji</string>
+    <string name="preferences_imported_successfully">Preferencje pomyślnie zaimportowano</string>
+    <string name="import_preferences">Importuj preferencje</string>
+    <string name="import_prefs_desc">Czy chcesz zastąpić bieżące preferencje tymi zawartymi w wybranym pliku?</string>
+    <string name="other">Inne</string>
+    <string name="path_copied_to_clipboard">Ścieżka skopiowana do schowka</string>
+    <string name="hide_media_names">Ukryj nazwy plików multimedialnych</string>
+    <string name="task_aborted">Task aborted</string>
+    <string name="completed">Completed</string>
+    <string name="failed_to_create_final_archive">Failed to create final archive</string>
+    <string name="unsupported_source_type">unsupported source file</string>
+    <string name="failed_to_delete_file">Failed to delete file</string>
+    <string name="finalizing">Finalizing</string>
+    <string name="failed_to_rename_file">Failed to rename file</string>
+    <string name="updating">Updating</string>
+    <string name="minimize">Minimize</string>
 </resources>

@@ -205,7 +205,7 @@
     <string name="number_increment">افزایش عددی</string>
     <string name="zero_number_increment">افزایش عددی با صفر</string>
     <string name="find_n_replace">یافتن و جایگزین کردن</string>
-    <string name="batch_rename_info"><![CDATA[{p} -> نام فایل بدون پسوند (به عنوان مثال، \" سند\" از \"سند.txt\")\n\n{s} -> پسوند فایل (به عنوان مثال، \"txt\" از \"سند.txt\")\n\n{e} -> پسوند فایل با یک نقطه (به عنوان مثال، \".txt\" از \"سند.txt\")\n\n{t} -> آخرین زمان اصلاح شده فایل (با فرمت \"yyyyMMdd_HHmmss\")\n\n{n} -> افزایش شماره (به عنوان مثال، {0} -> 0، 1، 2...؛ {1} -> 1، 2، 3...)\n\n{zn} -> افزایش عدد با صفر (به عنوان مثال، {z0} -> 0، 1...؛ {zz0} -> 00، 01...؛ {zzz1} -> 001، 002...)]]></string>
+    <string name="batch_rename_info"><![CDATA[{p} -> نام فایل بدون پسوند (به عنوان مثال، \" سند\" از \"سند.txt\")\n\n{s} -> پسوند فایل (به عنوان مثال، \"txt\" از \"سند.txt\")\n\n{e} -> پسوند فایل با یک نقطه (به عنوان مثال، \".txt\" از \"سند.txt\")\n\n{t} -> آخرین زمان اصلاح شده فایل (با فرمت \"yyyyMMdd_HHmmss\")\n\n{n} -> افزایش شماره (به عنوان مثال، {0} -> 0، 1، 2…؛ {1} -> 1، 2، 3…)\n\n{zn} -> افزایش عدد با صفر (به عنوان مثال، {z0} -> 0، 1…؛ {zz0} -> 00، 01…؛ {zzz1} -> 001، 002…)]]></string>
     <string name="syntax">نحو</string>
     <string name="extension_with_dot">پسوند با نقطه</string>
     <string name="unable_to_move_to_recycle_bin">خطا در ایجاد پوشه سطل بازیافت</string>
@@ -424,4 +424,23 @@
     <string name="no_excluded_paths">هیچ مسیر مستثنی شده‌ای وجود ندارد</string>
     <string name="add_paths_to_exclude_desc">مسیر جدیدی را برای مستثنی شدن از اسکنر فایل‌های اخیر اضافه کنید</string>
     <string name="about">درباره</string>
+    <string name="export_preferences">Export preferences</string>
+    <string name="exported_prism_preferences">به /.prism/preferences.prismPrefs خروجی گرفته شد</string>
+    <string name="export_preferences_desc">برای وارد کردن، فایل خروجی گرفته شده را پیدا کرده و باز کنید</string>
+    <string name="invalid_preferences_file">فایل تنظیمات نامعتبر</string>
+    <string name="preferences_imported_successfully">تنظیمات با موفقیت وارد شد</string>
+    <string name="import_preferences">وارد کردن تنظیمات</string>
+    <string name="import_prefs_desc">آیا می خواهید تنظیمات فعلی خود را با تنظیمات موجود در فایل انتخاب شده جایگزین کنید؟</string>
+    <string name="other">دیگر</string>
+    <string name="path_copied_to_clipboard">مسیر در کلیپ‌بورد کپی شد</string>
+    <string name="hide_media_names">مخفی کردن نام‌ها از فایل‌های رسانه</string>
+    <string name="task_aborted">Task aborted</string>
+    <string name="completed">Completed</string>
+    <string name="failed_to_create_final_archive">Failed to create final archive</string>
+    <string name="unsupported_source_type">unsupported source file</string>
+    <string name="failed_to_delete_file">Failed to delete file</string>
+    <string name="finalizing">Finalizing</string>
+    <string name="failed_to_rename_file">Failed to rename file</string>
+    <string name="updating">Updating</string>
+    <string name="minimize">Minimize</string>
 </resources>

@@ -151,6 +151,7 @@ class FilesTab(
 
     override fun onTabResumed() {
         scope.launch {
+            validateActiveFolder()
             // Important to clear any information from previous tabs (when switching tabs)
             requestHomeToolbarUpdate()
             // Detect any content changes
@@ -204,7 +205,10 @@ class FilesTab(
         }
     }
 
-    private suspend fun createTitle() = globalClass.getString(R.string.files_tab_title)
+    private suspend fun createTitle() = when (activeFolder) {
+        is VirtualFileHolder -> activeFolder.displayName
+        else -> globalClass.getString(R.string.files_tab_title)
+    }
 
     override fun onBackPressed(): Boolean {
         if (unselectAnySelectedFiles()) {
@@ -275,6 +279,9 @@ class FilesTab(
     ) {
         // Block UI
         if (isLoading) return
+
+        // Prevent opening invalid files
+        if (!item.isValid()) return
 
         // For virtual folders, update the category
         if (item is VirtualFileHolder) {
@@ -355,6 +362,32 @@ class FilesTab(
         }
     }
 
+    suspend fun validateActiveFolder() {
+        if (!activeFolder.isValid()) {
+            // Try to find a valid parent folder
+            var validParent: ContentHolder? = null
+            var current = activeFolder
+
+            while (current.hasParent()) {
+                current = current.getParent() ?: break
+                if (current.isValid()) {
+                    validParent = current
+                    break
+                }
+            }
+            validParent?.let {
+                openFolder(it)
+                return
+            }
+
+            if (homeDir.isValid()) {
+                openFolder(homeDir)
+            } else {
+                openFolder(StorageProvider.getPrimaryInternalStorage(globalClass).contentHolder)
+            }
+        }
+    }
+
     suspend fun detectFileChanges(): Boolean {
         // terminate the check if the tab is busy
         if (isLoading) return false
@@ -379,8 +412,11 @@ class FilesTab(
                 return true
             }
         } else if (activeFolder is ZipFileHolder) {
-            // Check if the source any of the files that have been extracted has changed
-            if (globalClass.zipManager.checkForSourceChanges()) {
+            val invalidZipTrees = globalClass.zipManager.validateArchiveTrees()
+            if (invalidZipTrees.contains((activeFolder as ZipFileHolder).zipTree.source.uniquePath)) {
+                validateActiveFolder()
+            } else if (globalClass.zipManager.checkForSourceChanges()) {
+                // Check if the source any of the files that have been extracted has changed
                 val zipTree = (activeFolder as ZipFileHolder).zipTree
                 val changedFiles = zipTree.checkExtractedFiles()
                 if (changedFiles.isNotEmpty()) {
@@ -538,7 +574,8 @@ class FilesTab(
         }
 
         // Filter those that accessible, reverse the list
-        val newPathSegments = paths.filter { it.canRead }.toList().reversed()
+        val newPathSegments =
+            paths.filter { it.canRead && runBlocking { it.isValid() } }.toList().reversed()
 
         if (!currentPathSegments.joinToString(emptyString) { it.displayName }.startsWith(
                 newPathSegments.joinToString(emptyString) { it.displayName })
@@ -547,6 +584,9 @@ class FilesTab(
             withContext(Dispatchers.Main) {
                 currentPathSegments = newPathSegments
             }
+        } else {
+            // validate path segments if not changed
+            currentPathSegments = currentPathSegments.filter { it.isValid() }
         }
 
         highlightedPathSegment = activeFolder
@@ -704,5 +744,10 @@ class FilesTab(
 
     fun toggleFilePropertiesDialog(show: Boolean) {
         _dialogsState.update { it.copy(showFileProperties = show) }
+    }
+
+    fun toggleImportPrefsDialog(file: LocalFileHolder?) {
+        targetFile = file
+        _dialogsState.update { it.copy(showImportPrefsDialog = file != null) }
     }
 }

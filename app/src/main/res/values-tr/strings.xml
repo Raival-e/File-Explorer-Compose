@@ -425,4 +425,23 @@
     <string name="no_excluded_paths">Hariç tutulan yol yok</string>
     <string name="add_paths_to_exclude_desc">Son dosya tarayıcısından hariç tutulacak yeni yol ekle</string>
     <string name="about">Hakkında</string>
+    <string name="export_preferences">Tercihleri Dışa Aktar</string>
+    <string name="exported_prism_preferences">Dışa aktarıldı: /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">İçe aktarmak için, dışa aktarılan dosyayı bulun ve açın</string>
+    <string name="invalid_preferences_file">Geçersiz tercih dosyası</string>
+    <string name="preferences_imported_successfully">Tercihler başarıyla içe aktarıldı</string>
+    <string name="import_preferences">Tercihleri İçe Aktar</string>
+    <string name="import_prefs_desc">Geçerli tercihlerinizi seçilen dosyadaki tercihlerle değiştirmek istiyor musunuz?</string>
+    <string name="other">Diğer</string>
+    <string name="path_copied_to_clipboard">Yol panoya kopyalandı</string>
+    <string name="hide_media_names">Medya dosyalarındaki adları gizle</string>
+    <string name="task_aborted">Task aborted</string>
+    <string name="completed">Completed</string>
+    <string name="failed_to_create_final_archive">Failed to create final archive</string>
+    <string name="unsupported_source_type">unsupported source file</string>
+    <string name="failed_to_delete_file">Failed to delete file</string>
+    <string name="finalizing">Finalizing</string>
+    <string name="failed_to_rename_file">Failed to rename file</string>
+    <string name="updating">Updating</string>
+    <string name="minimize">Minimize</string>
 </resources>

@@ -310,9 +310,10 @@ fun FileOptionsMenuDialog(
 
             if (tab.activeFolder !is ZipFileHolder) {
                 FileOption(Icons.Rounded.Compress, stringResource(R.string.compress)) {
-                    globalClass.taskManager.addTask(
-                        CompressTask(targetFiles)
-                    )
+                    CompressTask(targetFiles).let { task ->
+                        globalClass.taskManager.addTask(task, false)
+                        tab.toggleCompressTaskDialog(task)
+                    }
                     onDismissRequest()
                     tab.unselectAllFiles()
                 }

@@ -65,14 +65,15 @@ class App : Application(), coil3.SingletonImageLoader.Factory {
 
     val appFiles: LocalFileHolder
         get() = LocalFileHolder(
-            File(globalClass.cacheDir, "files").apply { if (!exists()) mkdirs() }
+            File(Environment.getExternalStorageDirectory(), ".prism")
+                .apply { if (!exists()) mkdirs() }
         )
 
     val recycleBinDir: LocalFileHolder
         get() = LocalFileHolder(
             File(
-                Environment.getExternalStorageDirectory(),
-                ".prism/bin"
+                appFiles.file,
+                "bin"
             ).apply { mkdirs() })
 
     private var uid = AtomicInteger(0)

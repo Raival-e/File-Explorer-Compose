@@ -135,7 +135,15 @@ class ZipFileHolder(
         ZipFileHolder(zipTree, it)
     }
 
-    override suspend fun isValid() = true
+    override suspend fun isValid() = if (zipTree.isReady) {
+        (zipTree.source.isValid() && zipTree.findNodeByPath(uniquePath) != null).also { isValid ->
+            if (!isValid) globalClass.zipManager.validateArchiveTrees()
+        }
+    } else {
+        zipTree.source.isValid().also { isValid ->
+            if (!isValid) globalClass.zipManager.validateArchiveTrees()
+        }
+    }
 
     override fun open(
         context: Context,

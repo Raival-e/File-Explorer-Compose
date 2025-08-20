@@ -2,7 +2,6 @@ package com.raival.compose.file.explorer.screen.main.tab.files.ui.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -116,25 +115,12 @@ fun FileCompressionDialog(
                         } else null
                     )
 
-                    Row(
+                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        OutlinedButton(
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                onDismissRequest()
-                            },
-                            shape = RoundedCornerShape(6.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.cancel),
-                                style = MaterialTheme.typography.labelLarge
-                            )
-                        }
-
                         Button(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.fillMaxWidth(),
                             onClick = {
                                 if (newNameInput.isValidAsFileName() && !listContent.contains(
                                         newNameInput
@@ -162,6 +148,20 @@ fun FileCompressionDialog(
                                 style = MaterialTheme.typography.labelLarge
                             )
                         }
+
+                        OutlinedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                onDismissRequest()
+                            },
+                            shape = RoundedCornerShape(6.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.minimize),
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+
                     }
                 }
             }

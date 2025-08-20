@@ -424,4 +424,23 @@
     <string name="no_excluded_paths">没有排除路径</string>
     <string name="add_paths_to_exclude_desc">添加新路径以从最近文件扫描器中排除</string>
     <string name="about">关于</string>
+    <string name="export_preferences">导出偏好设置</string>
+    <string name="exported_prism_preferences">已导出到 /.prism/preferences.prismPrefs</string>
+    <string name="export_preferences_desc">要导入，请找到并打开导出的文件</string>
+    <string name="invalid_preferences_file">无效的偏好设置文件</string>
+    <string name="preferences_imported_successfully">偏好设置已成功导入</string>
+    <string name="import_preferences">导入偏好设置</string>
+    <string name="import_prefs_desc">您想用所选文件中包含的偏好设置覆盖当前的偏好设置吗？</string>
+    <string name="other">其他</string>
+    <string name="path_copied_to_clipboard">路径已复制到剪贴板</string>
+    <string name="hide_media_names">从媒体文件中隐藏名称</string>
+    <string name="task_aborted">Task aborted</string>
+    <string name="completed">Completed</string>
+    <string name="failed_to_create_final_archive">Failed to create final archive</string>
+    <string name="unsupported_source_type">unsupported source file</string>
+    <string name="failed_to_delete_file">Failed to delete file</string>
+    <string name="finalizing">Finalizing</string>
+    <string name="failed_to_rename_file">Failed to rename file</string>
+    <string name="updating">Updating</string>
+    <string name="minimize">Minimize</string>
 </resources>

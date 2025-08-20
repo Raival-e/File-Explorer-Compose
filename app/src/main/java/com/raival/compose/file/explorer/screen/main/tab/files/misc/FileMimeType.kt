@@ -11,6 +11,7 @@ object FileMimeType {
     const val jsonFileType = "json"
     const val markdownFileType = "md"
     const val xmlFileType = "xml"
+    const val prismPrefsFileType = "prismprefs"
     const val anyFileType = "*/*"
 
     @JvmField

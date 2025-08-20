@@ -13,5 +13,6 @@ data class DialogsState(
     val showFileProperties: Boolean = false,
     val showTasksPanel: Boolean = false,
     val showSearchPenal: Boolean = false,
-    val showBookmarkDialog: Boolean = false
+    val showBookmarkDialog: Boolean = false,
+    val showImportPrefsDialog: Boolean = false,
 )
