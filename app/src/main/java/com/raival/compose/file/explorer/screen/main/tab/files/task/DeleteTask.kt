@@ -145,9 +145,6 @@ class DeleteTask(
         }
 
         if (progressMonitor.status == TaskStatus.RUNNING) {
-            val successCount = pendingContent.count { it.status == TaskContentStatus.SUCCESS }
-            val skipCount = pendingContent.count { it.status == TaskContentStatus.SKIP }
-
             progressMonitor.apply {
                 status = TaskStatus.SUCCESS
                 progress = 1.0f
