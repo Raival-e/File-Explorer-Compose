@@ -435,13 +435,13 @@
     <string name="other">Diğer</string>
     <string name="path_copied_to_clipboard">Yol panoya kopyalandı</string>
     <string name="hide_media_names">Medya dosyalarındaki adları gizle</string>
-    <string name="task_aborted">Task aborted</string>
-    <string name="completed">Completed</string>
-    <string name="failed_to_create_final_archive">Failed to create final archive</string>
-    <string name="unsupported_source_type">unsupported source file</string>
-    <string name="failed_to_delete_file">Failed to delete file</string>
-    <string name="finalizing">Finalizing</string>
-    <string name="failed_to_rename_file">Failed to rename file</string>
-    <string name="updating">Updating</string>
-    <string name="minimize">Minimize</string>
+    <string name="task_aborted">Görev iptal edildi</string>
+    <string name="completed">Tamamlandı</string>
+    <string name="failed_to_create_final_archive">Son arşiv oluşturulamadı</string>
+    <string name="unsupported_source_type">desteklenmeyen kaynak dosyası</string>
+    <string name="failed_to_delete_file">Dosya silinemedi</string>
+    <string name="finalizing">Sonlandırılıyor</string>
+    <string name="failed_to_rename_file">Dosya yeniden adlandırılamadı</string>
+    <string name="updating">Güncelleniyor</string>
+    <string name="minimize">Küçült</string>
 </resources>

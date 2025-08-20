@@ -434,13 +434,13 @@
     <string name="other">Inne</string>
     <string name="path_copied_to_clipboard">Ścieżka skopiowana do schowka</string>
     <string name="hide_media_names">Ukryj nazwy plików multimedialnych</string>
-    <string name="task_aborted">Task aborted</string>
-    <string name="completed">Completed</string>
-    <string name="failed_to_create_final_archive">Failed to create final archive</string>
-    <string name="unsupported_source_type">unsupported source file</string>
-    <string name="failed_to_delete_file">Failed to delete file</string>
-    <string name="finalizing">Finalizing</string>
-    <string name="failed_to_rename_file">Failed to rename file</string>
-    <string name="updating">Updating</string>
-    <string name="minimize">Minimize</string>
+    <string name="task_aborted">Zadanie przerwane</string>
+    <string name="completed">Ukończono</string>
+    <string name="failed_to_create_final_archive">Nie udało się utworzyć ostatecznego archiwum</string>
+    <string name="unsupported_source_type">nieobsługiwany plik źródłowy</string>
+    <string name="failed_to_delete_file">Nie udało się usunąć pliku</string>
+    <string name="finalizing">Finalizowanie</string>
+    <string name="failed_to_rename_file">Nie udało się zmienić nazwy pliku</string>
+    <string name="updating">Aktualizowanie</string>
+    <string name="minimize">Minimalizuj</string>
 </resources>

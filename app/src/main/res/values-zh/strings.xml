@@ -434,13 +434,13 @@
     <string name="other">其他</string>
     <string name="path_copied_to_clipboard">路径已复制到剪贴板</string>
     <string name="hide_media_names">从媒体文件中隐藏名称</string>
-    <string name="task_aborted">Task aborted</string>
-    <string name="completed">Completed</string>
-    <string name="failed_to_create_final_archive">Failed to create final archive</string>
-    <string name="unsupported_source_type">unsupported source file</string>
-    <string name="failed_to_delete_file">Failed to delete file</string>
-    <string name="finalizing">Finalizing</string>
-    <string name="failed_to_rename_file">Failed to rename file</string>
-    <string name="updating">Updating</string>
-    <string name="minimize">Minimize</string>
+    <string name="task_aborted">任务已中止</string>
+    <string name="completed">已完成</string>
+    <string name="failed_to_create_final_archive">创建最终存档失败</string>
+    <string name="unsupported_source_type">不支持的源文件</string>
+    <string name="failed_to_delete_file">删除文件失败</string>
+    <string name="finalizing">正在完成</string>
+    <string name="failed_to_rename_file">重命名文件失败</string>
+    <string name="updating">正在更新</string>
+    <string name="minimize">最小化</string>
 </resources>
