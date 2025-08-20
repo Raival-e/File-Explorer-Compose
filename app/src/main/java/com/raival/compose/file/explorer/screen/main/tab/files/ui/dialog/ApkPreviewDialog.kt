@@ -327,7 +327,7 @@ fun ApkPreviewDialog(
                                         context,
                                         anonymous = false,
                                         skipSupportedExtensions = true,
-                                        customMimeType = null
+                                        customMimeType = "application/vnd.android.package-archive"
                                     )
                                     onDismissRequest()
                                 },
