@@ -177,7 +177,9 @@ fun TaskPanel(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
-                        items(runningTasks, key = { "running-${it.id}" }) { task ->
+                        items(
+                            runningTasks.sortedBy { it.metadata.creationTime }.reversed(),
+                            key = { "running-${it.id}" }) { task ->
                             RunningTaskItem(
                                 task = task,
                                 onClick = {
@@ -198,7 +200,9 @@ fun TaskPanel(
                                 color = MaterialTheme.colorScheme.tertiary
                             )
                         }
-                        items(pausedTasks, key = { "paused-${it.id}" }) { task ->
+                        items(
+                            pausedTasks.sortedBy { it.metadata.creationTime }.reversed(),
+                            key = { "paused-${it.id}" }) { task ->
                             SwipeableTaskItem(
                                 task = task,
                                 icon = Icons.Default.Pause,
@@ -226,7 +230,9 @@ fun TaskPanel(
                                 color = MaterialTheme.colorScheme.error
                             )
                         }
-                        items(failedTasks, key = { "failed-${it.id}" }) { task ->
+                        items(
+                            failedTasks.sortedBy { it.metadata.creationTime }.reversed(),
+                            key = { "failed-${it.id}" }) { task ->
                             SwipeableTaskItem(
                                 task = task,
                                 icon = Icons.Default.ErrorOutline,
@@ -254,7 +260,9 @@ fun TaskPanel(
                                 color = MaterialTheme.colorScheme.secondary
                             )
                         }
-                        items(pendingTasks, key = { "pending-${it.id}" }) { task ->
+                        items(
+                            pendingTasks.sortedBy { it.metadata.creationTime }.reversed(),
+                            key = { "pending-${it.id}" }) { task ->
                             SwipeableTaskItem(
                                 task = task,
                                 icon = Icons.Default.HourglassEmpty,
@@ -294,7 +302,9 @@ fun TaskPanel(
                                 color = MaterialTheme.colorScheme.outline
                             )
                         }
-                        items(invalidTasks, key = { "invalid-${it.id}" }) { task ->
+                        items(
+                            invalidTasks.sortedBy { it.metadata.creationTime }.reversed(),
+                            key = { "invalid-${it.id}" }) { task ->
                             SwipeableTaskItem(
                                 task = task,
                                 icon = Icons.Default.Warning,
