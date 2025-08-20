@@ -239,13 +239,15 @@ class PreferencesManager {
         return runBlocking {
             fromJson(
                 globalClass.prefDataStore.data.first()[stringPreferencesKey("fileSortingPrefs_${content.uniquePath}")]
-            ) ?: FileSortingPrefs(
-                sortMethod = defaultSortMethod,
-                showFoldersFirst = showFoldersFirst,
-                reverseSorting = reverse
-            )
+            ) ?: getDefaultSortingPrefs()
         }
     }
+
+    fun getDefaultSortingPrefs() = FileSortingPrefs(
+        sortMethod = defaultSortMethod,
+        showFoldersFirst = showFoldersFirst,
+        reverseSorting = reverse
+    )
 
     fun getDefaultViewConfigPrefs(): ViewConfigs {
         return runBlocking {

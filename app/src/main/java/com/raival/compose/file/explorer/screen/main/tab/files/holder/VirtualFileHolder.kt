@@ -5,6 +5,8 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileListCategory
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortFoldersFirst
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortNewerFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getArchiveFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getAudioFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getBookmarks
@@ -48,6 +50,26 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
     override suspend fun isValid() = true
 
     override suspend fun getParent() = null
+
+    override suspend fun listSortedContent(): ArrayList<out ContentHolder> {
+        if (type != RECENT) {
+            return super.listSortedContent()
+        }
+
+        val sortingPrefs = globalClass.preferencesManager.getSortingPrefsFor(this)
+
+        if (sortingPrefs == globalClass.preferencesManager.getDefaultSortingPrefs()) {
+            return listContent().apply {
+                sortWith(sortNewerFirst)
+                if (sortingPrefs.showFoldersFirst) sortWith(sortFoldersFirst)
+                if (!globalClass.preferencesManager.showHiddenFiles) {
+                    removeIf { it.isHidden() }
+                }
+            }
+        }
+
+        return super.listSortedContent()
+    }
 
     override suspend fun listContent() = (if (contentList.isEmpty()) {
         when (type) {
