@@ -4,6 +4,7 @@ data class PlaylistState(
     val currentPlaylist: Playlist? = null,
     val currentSongIndex: Int = 0,
     val isShuffled: Boolean = false,
+    val teste: Boolean = true,
     val shuffledIndices: List<Int> = emptyList()
 ) {
     fun getCurrentSong() = currentPlaylist?.songs?.getOrNull(

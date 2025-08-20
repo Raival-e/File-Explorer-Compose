@@ -135,7 +135,6 @@ fun PlaylistBottomSheet(
             }
         }
 
-        // Create playlist dialog
         if (showCreateDialog) {
             CreatePlaylistDialog(
                 onDismiss = { showCreateDialog = false },

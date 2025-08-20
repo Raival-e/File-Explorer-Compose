@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.compose.ui.res.stringResource
 import androidx.media3.common.C.TIME_UNSET
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
@@ -54,6 +55,7 @@ class AudioPlayerInstance(
 
     private val _playlistState = MutableStateFlow(PlaylistState())
     val playlistState: StateFlow<PlaylistState> = _playlistState.asStateFlow()
+
 
     private val playlistManager = PlaylistManager.getInstance()
 
@@ -190,7 +192,7 @@ class AudioPlayerInstance(
         withContext(Dispatchers.IO) {
             try {
                 val retriever = MediaMetadataRetriever()
-                
+
                 // Try to use file path first if available, then URI
                 if (fileHolder != null) {
                     retriever.setDataSource(fileHolder.file.absolutePath)
@@ -199,16 +201,16 @@ class AudioPlayerInstance(
                 }
 
                 val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)
-                    ?: (fileHolder?.displayName?.substringBeforeLast('.') 
+                    ?: (fileHolder?.displayName?.substringBeforeLast('.')
                         ?: uri.lastPathSegment?.substringBeforeLast('.')
                         ?: globalClass.getString(R.string.unknown_title))
-                        
+
                 val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)
                     ?: globalClass.getString(R.string.unknown_artist)
-                    
+
                 val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)
                     ?: globalClass.getString(R.string.unknown_album)
-                    
+
                 val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
                 val duration = durationStr?.toLongOrNull() ?: 0L
 
@@ -238,9 +240,9 @@ class AudioPlayerInstance(
             } catch (e: Exception) {
                 logger.logError(e)
                 // Fallback metadata using file name from LocalFileHolder or URI
-                val fileName = fileHolder?.displayName ?: uri.lastPathSegment ?: "Unknown" //TODO: change to string resource
+                val fileName = fileHolder?.displayName ?: uri.lastPathSegment ?: "Unknown"
                 val title = fileName.substringBeforeLast('.').ifEmpty { fileName }
-                
+
                 _metadata.value = AudioMetadata(
                     title = title,
                     artist = globalClass.getString(R.string.unknown_artist),
@@ -396,7 +398,7 @@ class AudioPlayerInstance(
 
     fun skipToNext() {
         val currentState = _playlistState.value
-        currentState.currentPlaylist?.let { playlist ->
+        currentState.currentPlaylist?.let { _ ->
             if (currentState.hasNextSong()) {
                 // Stop current playback first
                 stopCurrentPlayer()
@@ -417,7 +419,7 @@ class AudioPlayerInstance(
 
     fun skipToPrevious() {
         val currentState = _playlistState.value
-        currentState.currentPlaylist?.let { playlist ->
+        currentState.currentPlaylist?.let { _ ->
             if (currentState.hasPreviousSong()) {
                 // Stop current playback first
                 stopCurrentPlayer()

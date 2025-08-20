@@ -16,17 +16,14 @@ class AudioPlayerActivity : ViewerActivity() {
     }
 
     override fun onReady(instance: ViewerInstance) {
-        // Verifica se veio de uma playlist
         val fromPlaylist = intent.getBooleanExtra("fromPlaylist", false)
         val startIndex = intent.getIntExtra("startIndex", 0)
         
         if (fromPlaylist) {
-            // Inicializa com playlist
             val playlistManager = PlaylistManager.getInstance()
             playlistManager.currentPlaylist.value?.let { playlist ->
                 if (playlist.songs.isNotEmpty() && startIndex < playlist.songs.size) {
                     val audioInstance = instance as AudioPlayerInstance
-                    // Usar loadPlaylist em vez de initializePlaylistMode
                     audioInstance.loadPlaylist(playlist, startIndex)
                 }
             }

@@ -69,98 +69,7 @@ fun PlaylistHeader(
             .fillMaxWidth()
             .padding(bottom = if (isScrolled) 0.dp else 16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.weight(1f)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(if (isScrolled) 40.dp else 56.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.tertiary
-                                )
-                            )
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(if (isScrolled) 24.dp else 32.dp)
-                    )
-                }
-
-                AnimatedContent(
-                    targetState = isScrolled,
-                    label = "HeaderTextAnimation",
-                    transitionSpec = {
-                        fadeIn(tween(300)) togetherWith fadeOut(tween(150))
-                    }
-                ) { scrolled ->
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            text = playlist.name,
-                            style = if (scrolled) {
-                                MaterialTheme.typography.titleMedium
-                            } else {
-                                MaterialTheme.typography.headlineSmall
-                            },
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Text(
-                            text = stringResource(
-                                R.string.songs_count,
-                                playlist.songs.size
-                            ),
-                            style = if (scrolled) {
-                                MaterialTheme.typography.bodySmall
-                            } else {
-                                MaterialTheme.typography.bodyMedium
-                            },
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-
-            if (playlist.songs.isNotEmpty()) {
-                FilledTonalButton(
-                    onClick = onPlayAllClick,
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.height(40.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(R.string.play_all),
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
-            }
-        }
-
+        HeaderRow(playlist, isScrolled, onPlayAllClick)
         HorizontalDivider(
             thickness = if (isScrolled) 1.dp else 0.5.dp,
             color = if (isScrolled) {
@@ -168,6 +77,117 @@ fun PlaylistHeader(
             } else {
                 MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
             }
+        )
+    }
+}
+
+@Composable
+fun HeaderRow(
+    playlist: Playlist,
+    isScrolled: Boolean,
+    onPlayAllClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PlaylistInfo(playlist, isScrolled)
+
+        if (playlist.songs.isNotEmpty()) {
+            PlayAllButton(onPlayAllClick)
+        }
+    }
+}
+
+@Composable
+fun PlaylistInfo(playlist: Playlist, isScrolled: Boolean, modifier: Modifier = Modifier) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+    ) {
+        PlaylistIcon(isScrolled)
+
+        AnimatedContent(
+            targetState = isScrolled,
+            label = "HeaderTextAnimation",
+            transitionSpec = {
+                fadeIn(tween(300)) togetherWith fadeOut(tween(150))
+            }
+        ) { scrolled ->
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = playlist.name,
+                    style = if (scrolled) {
+                        MaterialTheme.typography.titleMedium
+                    } else {
+                        MaterialTheme.typography.headlineSmall
+                    },
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = stringResource(R.string.songs_count, playlist.songs.size),
+                    style = if (scrolled) {
+                        MaterialTheme.typography.bodySmall
+                    } else {
+                        MaterialTheme.typography.bodyMedium
+                    },
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PlaylistIcon(isScrolled: Boolean) {
+    Box(
+        modifier = Modifier
+            .size(if (isScrolled) 40.dp else 56.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.primary,
+                        MaterialTheme.colorScheme.tertiary
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = Icons.AutoMirrored.Filled.PlaylistPlay,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.size(if (isScrolled) 24.dp else 32.dp)
+        )
+    }
+}
+
+@Composable
+fun PlayAllButton(onPlayAllClick: () -> Unit) {
+    FilledTonalButton(
+        onClick = onPlayAllClick,
+        shape = RoundedCornerShape(20.dp),
+        modifier = Modifier.height(40.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.PlayArrow,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(6.dp))
+        Text(
+            text = stringResource(R.string.play_all),
+            style = MaterialTheme.typography.labelLarge
         )
     }
 }

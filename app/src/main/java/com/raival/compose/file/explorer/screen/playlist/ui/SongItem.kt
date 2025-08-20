@@ -41,6 +41,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -73,6 +74,7 @@ fun SongItem(
     var showRemoveConfirmation by remember { mutableStateOf(false) }
     var showDropdownMenu by remember { mutableStateOf(false) }
 
+    // A animação da elevação do card
     val elevation by animateDpAsState(
         targetValue = if (isPlaying) 6.dp else 1.dp,
         animationSpec = spring(
@@ -94,79 +96,19 @@ fun SongItem(
             }
         )
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            if (isPlaying) {
-                LinearProgressIndicator(
-                    progress = { 0.7f },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .align(Alignment.TopCenter),
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                )
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onPlayClick() }
-                    .padding(vertical = 12.dp, horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SongNumberIndicator(index = index, isPlaying = isPlaying)
-
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    Text(
-                        text = song.displayName,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = if (isPlaying) FontWeight.Bold else FontWeight.Medium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        color = if (isPlaying) {
-                            MaterialTheme.colorScheme.onSecondaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        }
-                    )
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Album,
-                            contentDescription = null,
-                            modifier = Modifier.size(14.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                        )
-
-                        Text(
-                            text = song.basePath,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            fontStyle = FontStyle.Italic
-                        )
-                    }
-                }
-                SongItemActions(
-                    isPlaying = isPlaying,
-                    onPlayClick = onPlayClick,
-                    onMenuClick = { showDropdownMenu = true },
-                    showMenu = showDropdownMenu,
-                    onDismissMenu = { showDropdownMenu = false },
-                    onRemoveClick = { showRemoveConfirmation = true }
-                )
-            }
-        }
+        SongContent(
+            song = song,
+            index = index,
+            isPlaying = isPlaying,
+            onPlayClick = onPlayClick,
+            onShowDropdownMenu = { showDropdownMenu = true },
+            showDropdownMenu = showDropdownMenu,
+            onDismissMenu = { showDropdownMenu = false },
+            onRemoveClick = { showRemoveConfirmation = true }
+        )
     }
 
+    // Diálogo de confirmação para remoção
     if (showRemoveConfirmation) {
         RemoveConfirmationDialog(
             songName = song.displayName,
@@ -176,6 +118,94 @@ fun SongItem(
             },
             onDismiss = { showRemoveConfirmation = false }
         )
+    }
+}
+
+@Composable
+private fun SongContent(
+    song: LocalFileHolder,
+    index: Int,
+    isPlaying: Boolean,
+    onPlayClick: () -> Unit,
+    onShowDropdownMenu: () -> Unit,
+    showDropdownMenu: Boolean,
+    onDismissMenu: () -> Unit,
+    onRemoveClick: () -> Unit
+) {
+    Box(modifier = Modifier.fillMaxWidth()) {
+        if (isPlaying) {
+            LinearProgressIndicator(
+            progress = { 0.7f },
+            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(2.dp)
+                                .align(Alignment.TopCenter),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onPlayClick() }
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SongNumberIndicator(index = index, isPlaying = isPlaying)
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            SongDetails(song)
+
+            SongItemActions(
+                isPlaying = isPlaying,
+                onPlayClick = onPlayClick,
+                onMenuClick = onShowDropdownMenu,
+                showMenu = showDropdownMenu,
+                onDismissMenu = onDismissMenu,
+                onRemoveClick = onRemoveClick
+            )
+        }
+    }
+}
+
+@Composable
+private fun SongDetails(song: LocalFileHolder, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = song.displayName,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Album,
+                contentDescription = null,
+                modifier = Modifier.size(14.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+
+            Text(
+                text = song.basePath,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                fontStyle = FontStyle.Italic
+            )
+        }
     }
 }
 
@@ -232,76 +262,96 @@ private fun SongItemActions(
     onRemoveClick: () -> Unit
 ) {
     Box {
-        Row {
-            AnimatedContent(
-                targetState = isPlaying,
-                label = "PlayButtonState",
-                transitionSpec = {
-                    fadeIn(tween(300)) togetherWith fadeOut(tween(150))
-                }
-            ) { playing ->
-                IconButton(
-                    onClick = onPlayClick,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(
-                            if (playing) {
-                                MaterialTheme.colorScheme.primary
-                            } else {
-                                Color.Transparent
-                            }
-                        )
-                ) {
-                    Icon(
-                        imageVector = if (playing) {
-                            Icons.Default.Pause
-                        } else {
-                            Icons.Default.PlayArrow
-                        },
-                        contentDescription = stringResource(
-                            if (playing) R.string.pause else R.string.play
-                        ),
-                        tint = if (playing) {
-                            MaterialTheme.colorScheme.onPrimary
-                        } else {
-                            MaterialTheme.colorScheme.primary
-                        }
-                    )
-                }
-            }
+        ActionButtons(isPlaying, onPlayClick, onMenuClick)
 
-            IconButton(onClick = onMenuClick) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = stringResource(R.string.more),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
+        // Dropdown Menu
         DropdownMenu(
             expanded = showMenu,
             onDismissRequest = onDismissMenu
         ) {
-            DropdownMenuItem(
-                text = {
-                    Text(stringResource(R.string.remove_from_playlist))
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.PlaylistRemove,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.error
-                    )
-                },
-                onClick = {
-                    onDismissMenu()
-                    onRemoveClick()
-                }
+            RemoveFromPlaylistMenuItem(onDismissMenu, onRemoveClick)
+        }
+    }
+}
+
+@Composable
+private fun ActionButtons(
+    isPlaying: Boolean,
+    onPlayClick: () -> Unit,
+    onMenuClick: () -> Unit
+) {
+    Row {
+        AnimatedContent(
+            targetState = isPlaying,
+            label = "PlayButtonState",
+            transitionSpec = {
+                fadeIn(tween(300)) togetherWith fadeOut(tween(150))
+            }
+        ) { playing ->
+            PlayPauseButton(playing, onPlayClick)
+        }
+
+        IconButton(onClick = onMenuClick) {
+            Icon(
+                imageVector = Icons.Default.MoreVert,
+                contentDescription = stringResource(R.string.more),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
+}
+
+@Composable
+private fun PlayPauseButton(isPlaying: Boolean, onPlayClick: () -> Unit) {
+    IconButton(
+        onClick = onPlayClick,
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .background(
+                if (isPlaying) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    Color.Transparent
+                }
+            )
+    ) {
+        Icon(
+            imageVector = if (isPlaying) {
+                Icons.Default.Pause
+            } else {
+                Icons.Default.PlayArrow
+            },
+            contentDescription = stringResource(
+                if (isPlaying) R.string.pause else R.string.play
+            ),
+            tint = if (isPlaying) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.primary
+            }
+        )
+    }
+}
+
+@Composable
+private fun RemoveFromPlaylistMenuItem(onDismissMenu: () -> Unit, onRemoveClick: () -> Unit) {
+    DropdownMenuItem(
+        text = {
+            Text(stringResource(R.string.remove_from_playlist))
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.PlaylistRemove,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.error
+            )
+        },
+        onClick = {
+            onDismissMenu()
+            onRemoveClick()
+        }
+    )
 }
 
 @Composable

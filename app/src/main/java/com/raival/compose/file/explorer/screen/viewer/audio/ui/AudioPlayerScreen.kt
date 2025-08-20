@@ -273,7 +273,7 @@ fun MusicPlayerScreen(
                 isVisible = showPlaylistDetailDialog,
                 playlist = playlist,
                 onDismiss = { showPlaylistDetailDialog = false },
-                onPlaySong = { index -> },
+                onPlaySong = { _ -> },
                 audioPlayerInstance = audioPlayerInstance
             )
         }
