@@ -49,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.raival.compose.file.explorer.App.Companion.globalClass
 import com.raival.compose.file.explorer.R
+import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.common.ui.BottomSheetDialog
 import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
@@ -76,7 +77,7 @@ fun FileViewConfigDialog(
             mutableIntStateOf(tab.viewConfig.viewType.ordinal)
         }
 
-        var columnCount by remember(viewType) {
+        var columnCount by remember {
             mutableFloatStateOf(
                 value = when {
                     viewType == ViewType.GRID.ordinal -> tab.viewConfig.columnCount.coerceIn(3, 8)
@@ -112,7 +113,7 @@ fun FileViewConfigDialog(
                 hideMediaNames = hideMediaNames,
                 itemSize = itemSize
             )
-
+            showMsg(columnCount.toString())
             if (applyToThisPathOnly) {
                 prefs.setViewConfigPrefsFor(tab.activeFolder, configs)
             } else {
