@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,27 +58,32 @@ fun PlaylistDetailBottomSheet(
 ) {
     if (isVisible) {
         val playlistManager = remember { PlaylistManager.getInstance() }
+        val playlists by playlistManager.playlists.collectAsStateWithLifecycle(initialValue = emptyList())
         val playlistState by audioPlayerInstance.playlistState.collectAsState()
-        val currentPlaylist = playlistState.currentPlaylist
-        val isCurrentPlaylist = currentPlaylist?.id == playlist.id
+        
+        val currentPlaylist = remember(playlists, playlist.id) {
+            playlists.find { it.id == playlist.id } ?: playlist
+        }
+        
+        val isCurrentPlaylist = playlistState.currentPlaylist?.id == currentPlaylist.id
         BottomSheetDialog(onDismissRequest = onDismiss) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                PlaylistHeader(playlist, isCurrentPlaylist, audioPlayerInstance, playlistState, onDismiss)
+                PlaylistHeader(currentPlaylist, isCurrentPlaylist, audioPlayerInstance, playlistState, onDismiss)
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (playlist.songs.isNotEmpty()) {
-                    PlayAllButton(playlist, audioPlayerInstance, onDismiss)
+                if (currentPlaylist.songs.isNotEmpty()) {
+                    PlayAllButton(currentPlaylist, audioPlayerInstance, onDismiss)
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
-                if (playlist.songs.isEmpty()) {
+                if (currentPlaylist.songs.isEmpty()) {
                     EmptyPlaylistCard()
                 } else {
-                    PlaylistSongsList(playlist, playlistManager, onPlaySong, isCurrentPlaylist, playlistState)
+                    PlaylistSongsList(currentPlaylist, playlistManager, onPlaySong, isCurrentPlaylist, playlistState)
                 }
             }
         }
@@ -232,7 +238,10 @@ fun PlaylistSongsList(
     playlistState: PlaylistState
 ) {
     LazyColumn {
-        itemsIndexed(playlist.songs) { index, song ->
+        itemsIndexed(
+            items = playlist.songs,
+            key = { index, song -> "${song.uid}_$index" }
+        ) { index, song ->
             PlaylistSongItem(
                 song = song,
                 index = index,
@@ -241,7 +250,9 @@ fun PlaylistSongsList(
                     onPlaySong(index)
                 },
                 onRemoveClick = {
-                    playlistManager.removeSongFromPlaylistAt(playlist.id, index)
+                    if (index >= 0 && index < playlist.songs.size) {
+                        playlistManager.removeSongFromPlaylistAt(playlist.id, index)
+                    }
                 }
             )
         }
@@ -280,7 +291,11 @@ fun PlaylistSongItem(
 
             Spacer(modifier = Modifier.width(12.dp))
 
-            SongDetails(song = song, isCurrentSong = isCurrentSong)
+            SongDetails(
+                song = song, 
+                isCurrentSong = isCurrentSong, 
+                modifier = Modifier.weight(1f)
+            )
 
             RemoveButton(onRemoveClick)
         }
@@ -349,7 +364,10 @@ fun SongDetails(song: LocalFileHolder, isCurrentSong: Boolean, modifier: Modifie
 
 @Composable
 fun RemoveButton(onRemoveClick: () -> Unit) {
-    IconButton(onClick = onRemoveClick) {
+    IconButton(
+        onClick = onRemoveClick,
+        modifier = Modifier.size(40.dp)
+    ) {
         Icon(
             Icons.Default.Delete,
             contentDescription = stringResource(R.string.remove_from_playlist),

@@ -404,8 +404,6 @@
     <string name="download_new_update">Baixar nova atualização</string>
     <string name="use_builtin_viewers">Usar visualizadores integrados</string>
     <string name="use_builtin_viewers_desc">Abrir automaticamente arquivos suportados com visualizadores integrados</string>
-
-<!--    playList-->
     <string name="playlists">Playlists</string>
     <string name="create_playlist">Criar playlist</string>
     <string name="add_to_playlist">Adicionar à playlist</string>
@@ -438,11 +436,13 @@
     <string name="pause">Pausar</string>
     <string name="delete_playlist">Excluir playlist</string>
     <string name="delete_playlist_confirmation">Deseja excluir esta playlist?</string>
+    <string name="edit_playlist">Editar playlist</string>
+    <string name="more_options">Mais opçoes</string>
+    <string name="edit">Editar</string>
     <string name="back">Voltar</string>
     <string name="manage_playlists">Gerenciar playlists</string>
     <string name="no_playlists">Nenhuma playlist</string>
     <string name="song">Música</string>
-
     <string name="view_type">Modo de exibição</string>
     <string name="view_configuration">Configuração de Visualização</string>
     <string name="grid_view">Visualização em Grade</string>

@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
+
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SongItem(
@@ -74,7 +75,6 @@ fun SongItem(
     var showRemoveConfirmation by remember { mutableStateOf(false) }
     var showDropdownMenu by remember { mutableStateOf(false) }
 
-    // A animação da elevação do card
     val elevation by animateDpAsState(
         targetValue = if (isPlaying) 6.dp else 1.dp,
         animationSpec = spring(
@@ -108,7 +108,6 @@ fun SongItem(
         )
     }
 
-    // Diálogo de confirmação para remoção
     if (showRemoveConfirmation) {
         RemoveConfirmationDialog(
             songName = song.displayName,
@@ -135,14 +134,14 @@ private fun SongContent(
     Box(modifier = Modifier.fillMaxWidth()) {
         if (isPlaying) {
             LinearProgressIndicator(
-            progress = { 0.7f },
-            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(2.dp)
-                                .align(Alignment.TopCenter),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-            strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+                progress = { 0.7f },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(2.dp)
+                    .align(Alignment.TopCenter),
+                color = MaterialTheme.colorScheme.primary,
+                trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
             )
         }
 
@@ -151,13 +150,19 @@ private fun SongContent(
                 .fillMaxWidth()
                 .clickable { onPlayClick() }
                 .padding(vertical = 12.dp, horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            SongNumberIndicator(index = index, isPlaying = isPlaying)
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SongNumberIndicator(index = index, isPlaying = isPlaying)
 
-            Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(16.dp))
 
-            SongDetails(song)
+                SongDetails(song, Modifier.weight(1f))
+            }
 
             SongItemActions(
                 isPlaying = isPlaying,
@@ -262,41 +267,39 @@ private fun SongItemActions(
     onRemoveClick: () -> Unit
 ) {
     Box {
-        ActionButtons(isPlaying, onPlayClick, onMenuClick)
+        Row {
+            AnimatedContent(
+                targetState = isPlaying,
+                label = "PlayButtonState",
+                transitionSpec = {
+                    fadeIn(tween(300)) togetherWith fadeOut(tween(150))
+                }
+            ) { playing ->
+                PlayPauseButton(playing, onPlayClick)
+            }
 
-        // Dropdown Menu
+            IconButton(
+                onClick = onMenuClick,
+                modifier = Modifier
+                    .size(48.dp)
+                    .padding(4.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = stringResource(R.string.more),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
         DropdownMenu(
             expanded = showMenu,
-            onDismissRequest = onDismissMenu
+            onDismissRequest = onDismissMenu,
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .padding(vertical = 4.dp)
         ) {
             RemoveFromPlaylistMenuItem(onDismissMenu, onRemoveClick)
-        }
-    }
-}
-
-@Composable
-private fun ActionButtons(
-    isPlaying: Boolean,
-    onPlayClick: () -> Unit,
-    onMenuClick: () -> Unit
-) {
-    Row {
-        AnimatedContent(
-            targetState = isPlaying,
-            label = "PlayButtonState",
-            transitionSpec = {
-                fadeIn(tween(300)) togetherWith fadeOut(tween(150))
-            }
-        ) { playing ->
-            PlayPauseButton(playing, onPlayClick)
-        }
-
-        IconButton(onClick = onMenuClick) {
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                contentDescription = stringResource(R.string.more),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }
@@ -338,19 +341,25 @@ private fun PlayPauseButton(isPlaying: Boolean, onPlayClick: () -> Unit) {
 private fun RemoveFromPlaylistMenuItem(onDismissMenu: () -> Unit, onRemoveClick: () -> Unit) {
     DropdownMenuItem(
         text = {
-            Text(stringResource(R.string.remove_from_playlist))
+            Text(
+                text = stringResource(R.string.remove_from_playlist),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.PlaylistRemove,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.error
+                tint = MaterialTheme.colorScheme.error,
+                modifier = Modifier.size(20.dp)
             )
         },
         onClick = {
             onDismissMenu()
             onRemoveClick()
-        }
+        },
+        modifier = Modifier.padding(horizontal = 8.dp)
     )
 }
 
@@ -400,4 +409,3 @@ fun RemoveConfirmationDialog(
         modifier = Modifier.fillMaxWidth(0.9f)
     )
 }
-

@@ -145,15 +145,19 @@ class PlaylistManager private constructor() {
     }
 
     fun removeSongFromPlaylistAt(playlistId: String, index: Int) {
-        _playlists.value = _playlists.value.map { playlist ->
-            if (playlist.id == playlistId) {
-                playlist.copy().apply { removeSongAt(index) }
+        val updatedPlaylists = _playlists.value.map { playlist ->
+            if (playlist.id == playlistId && index >= 0 && index < playlist.songs.size) {
+                val newSongs = playlist.songs.toMutableList()
+                newSongs.removeAt(index)
+                playlist.copy(songs = newSongs)
             } else {
                 playlist
             }
         }
+        _playlists.value = updatedPlaylists
+        
         if (_currentPlaylist.value?.id == playlistId) {
-            _currentPlaylist.value = _playlists.value.find { it.id == playlistId }
+            _currentPlaylist.value = updatedPlaylists.find { it.id == playlistId }
         }
         savePlaylists()
     }

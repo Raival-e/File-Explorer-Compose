@@ -64,75 +64,8 @@ class AudioPlayerInstance(
     @OptIn(UnstableApi::class)
     suspend fun initializePlayer(context: Context, uri: Uri, autoPlay: Boolean = false) {
         withContext(Dispatchers.Main) {
-            // Reset state before any operations
             resetPlayerState()
             
-            // Release previous player if it exists
-            exoPlayer?.let { player ->
-                player.stop()
-                player.release()
-            }
-            
-            exoPlayer = ExoPlayer.Builder(context).build().apply {
-                val mediaItem = MediaItem.Builder()
-                    .setUri(uri)
-                    .build()
-
-                setMediaItem(mediaItem)
-                prepare()
-
-                addListener(object : Player.Listener {
-                    override fun onIsPlayingChanged(isPlaying: Boolean) {
-                        _playerState.update {
-                            it.copy(isPlaying = isPlaying)
-                        }
-                    }
-
-                    override fun onPlaybackStateChanged(playbackState: Int) {
-                        _playerState.update {
-                            it.copy(
-                                isLoading = playbackState == Player.STATE_BUFFERING
-                            )
-                        }
-
-                        if (playbackState == Player.STATE_READY) {
-                            _playerState.update {
-                                it.copy(
-                                    duration = if (duration != TIME_UNSET) duration else 0L,
-                                    currentPosition = 0L // Ensure position starts at 0
-                                )
-                            }
-                        }
-
-                        // Handle automatic progression to next song
-                        if (playbackState == Player.STATE_ENDED) {
-                            handleSongEnded()
-                        }
-                    }
-                })
-            }
-        }
-
-        extractMetadata(context, uri)
-        startPositionTracking()
-        
-        // Auto-play if enabled in preferences or explicitly requested
-        if (autoPlay || globalClass.preferencesManager.autoPlayMusic) {
-            withContext(Dispatchers.Main) {
-                // Small delay to ensure player is ready
-                delay(100)
-                exoPlayer?.play()
-            }
-        }
-    }
-
-    // Overloaded method for better metadata extraction from LocalFileHolder
-    suspend fun initializePlayer(context: Context, uri: Uri, fileHolder: LocalFileHolder? = null, autoPlay: Boolean = false) {
-        withContext(Dispatchers.Main) {
-            // Reset state before any operations
-            resetPlayerState()
-            
-            // Release previous player if it exists
             exoPlayer?.let { player ->
                 player.stop()
                 player.release()
@@ -169,7 +102,64 @@ class AudioPlayerInstance(
                             }
                         }
 
-                        // Handle automatic progression to next song
+                        if (playbackState == Player.STATE_ENDED) {
+                            handleSongEnded()
+                        }
+                    }
+                })
+            }
+        }
+
+        extractMetadata(context, uri)
+        startPositionTracking()
+        
+        if (autoPlay || globalClass.preferencesManager.autoPlayMusic) {
+            withContext(Dispatchers.Main) {
+                delay(100)
+                exoPlayer?.play()
+            }
+        }
+    }
+
+    suspend fun initializePlayer(context: Context, uri: Uri, fileHolder: LocalFileHolder? = null, autoPlay: Boolean = false) {
+        withContext(Dispatchers.Main) {
+            resetPlayerState()
+            exoPlayer?.let { player ->
+                player.stop()
+                player.release()
+            }
+            
+            exoPlayer = ExoPlayer.Builder(context).build().apply {
+                val mediaItem = MediaItem.Builder()
+                    .setUri(uri)
+                    .build()
+
+                setMediaItem(mediaItem)
+                prepare()
+
+                addListener(object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        _playerState.update {
+                            it.copy(isPlaying = isPlaying)
+                        }
+                    }
+
+                    override fun onPlaybackStateChanged(playbackState: Int) {
+                        _playerState.update {
+                            it.copy(
+                                isLoading = playbackState == Player.STATE_BUFFERING
+                            )
+                        }
+
+                        if (playbackState == Player.STATE_READY) {
+                            _playerState.update {
+                                it.copy(
+                                    duration = if (duration != TIME_UNSET) duration else 0L,
+                                    currentPosition = 0L
+                                )
+                            }
+                        }
+
                         if (playbackState == Player.STATE_ENDED) {
                             handleSongEnded()
                         }
@@ -181,7 +171,6 @@ class AudioPlayerInstance(
         extractMetadata(context, uri, fileHolder)
         startPositionTracking()
         
-        // Auto-play if enabled in preferences or explicitly requested
         if (autoPlay || globalClass.preferencesManager.autoPlayMusic) {
             withContext(Dispatchers.Main) {
                 delay(100)
@@ -199,7 +188,6 @@ class AudioPlayerInstance(
             try {
                 val retriever = MediaMetadataRetriever()
 
-                // Try to use file path first if available, then URI
                 if (fileHolder != null) {
                     retriever.setDataSource(fileHolder.file.absolutePath)
                 } else {
@@ -245,7 +233,6 @@ class AudioPlayerInstance(
                 retriever.release()
             } catch (e: Exception) {
                 logger.logError(e)
-                // Fallback metadata using file name from LocalFileHolder or URI
                 val fileName = fileHolder?.displayName ?: uri.lastPathSegment ?: "Unknown"
                 val title = fileName.substringBeforeLast('.').ifEmpty { fileName }
 
@@ -262,7 +249,6 @@ class AudioPlayerInstance(
         val currentState = _playlistState.value
         when (_playerState.value.repeatMode) {
             Player.REPEAT_MODE_ONE -> {
-                // Repeat current song
                 exoPlayer?.seekTo(0)
                 exoPlayer?.play()
             }
@@ -270,7 +256,6 @@ class AudioPlayerInstance(
                 if (currentState.hasNextSong()) {
                     skipToNext()
                 } else {
-                    // Go back to first song if we've reached the end
                     stopCurrentPlayer()
                     _playlistState.update { it.copy(currentSongIndex = 0) }
                     val firstSong = _playlistState.value.getCurrentSong()
@@ -283,7 +268,6 @@ class AudioPlayerInstance(
                 }
             }
             else -> {
-                // Play next song if available
                 if (currentState.hasNextSong()) {
                     skipToNext()
                 }
@@ -292,11 +276,8 @@ class AudioPlayerInstance(
     }
 
     private fun startPositionTracking() {
-        // Cancel any existing tracking job
         positionTrackingJob?.cancel()
-        
         var lastPosition = 0L
-        
         positionTrackingJob = CoroutineScope(Dispatchers.Main).launch {
             while (true) {
                 exoPlayer?.let { player ->
@@ -306,9 +287,7 @@ class AudioPlayerInstance(
                         val currentPos = player.currentPosition.coerceAtLeast(0L)
                         val currentDuration = if (player.duration != TIME_UNSET) player.duration else 0L
                         
-                        // If position jumped backwards significantly, it's likely a new song
                         if (currentPos < lastPosition - 5000) {
-                            // Reset position state for new song
                             _playerState.update {
                                 it.copy(
                                     currentPosition = 0L,
@@ -345,7 +324,6 @@ class AudioPlayerInstance(
     fun seekTo(position: Long) {
         exoPlayer?.let { player ->
             player.seekTo(position)
-            // Update state immediately to provide better user feedback
             _playerState.update {
                 it.copy(currentPosition = position)
             }
@@ -353,21 +331,17 @@ class AudioPlayerInstance(
     }
 
     fun skipNext() {
-        // If we have a playlist loaded, use playlist navigation
         if (_playlistState.value.currentPlaylist != null) {
             skipToNext()
         } else {
-            // Fallback to original ExoPlayer navigation
             exoPlayer?.seekToNext()
         }
     }
 
     fun skipPrevious() {
-        // If we have a playlist loaded, use playlist navigation
         if (_playlistState.value.currentPlaylist != null) {
             skipToPrevious()
         } else {
-            // Fallback to original ExoPlayer navigation
             exoPlayer?.seekToPrevious()
         }
     }
@@ -399,11 +373,9 @@ class AudioPlayerInstance(
         _isVolumeVisible.value = !_isVolumeVisible.value
     }
 
-    // Playlist management methods
     fun loadPlaylist(playlist: Playlist, startIndex: Int = 0) {
         if (playlist.isEmpty()) return
 
-        // Stop current playback first
         stopCurrentPlayer()
 
         val shuffledIndices = if (_playlistState.value.isShuffled) {
@@ -422,16 +394,13 @@ class AudioPlayerInstance(
 
         playlistManager.setCurrentPlaylist(playlist)
 
-        // Load the first song
         val songToPlay = _playlistState.value.getCurrentSong()
         songToPlay?.let { song ->
             CoroutineScope(Dispatchers.Main).launch {
                 val songUri = Uri.fromFile(song.file)
                 initializePlayer(globalClass, songUri, song)
                 
-                // Auto-play if enabled in preferences
                 if (globalClass.preferencesManager.autoPlayMusic) {
-                    // Small delay to ensure player is ready
                     delay(100)
                     exoPlayer?.play()
                 }
@@ -443,7 +412,6 @@ class AudioPlayerInstance(
         val currentState = _playlistState.value
         currentState.currentPlaylist?.let { _ ->
             if (currentState.hasNextSong()) {
-                // Stop current playback first
                 stopCurrentPlayer()
                 
                 val nextIndex = currentState.currentSongIndex + 1
@@ -453,7 +421,6 @@ class AudioPlayerInstance(
                 nextSong?.let { song ->
                     CoroutineScope(Dispatchers.Main).launch {
                         val songUri = Uri.fromFile(song.file)
-                        // Auto-play when skipping to next song
                         initializePlayer(globalClass, songUri, song, autoPlay = true)
                     }
                 }
@@ -465,7 +432,6 @@ class AudioPlayerInstance(
         val currentState = _playlistState.value
         currentState.currentPlaylist?.let { _ ->
             if (currentState.hasPreviousSong()) {
-                // Stop current playback first
                 stopCurrentPlayer()
                 
                 val previousIndex = currentState.currentSongIndex - 1
@@ -475,7 +441,6 @@ class AudioPlayerInstance(
                 previousSong?.let { song ->
                     CoroutineScope(Dispatchers.Main).launch {
                         val songUri = Uri.fromFile(song.file)
-                        // Auto-play when skipping to previous song
                         initializePlayer(globalClass, songUri, song, autoPlay = true)
                     }
                 }
@@ -493,7 +458,6 @@ class AudioPlayerInstance(
             }
 
             if (actualIndex in 0 until playlist.songs.size) {
-                // Stop current playback first
                 stopCurrentPlayer()
                 
                 _playlistState.update { it.copy(currentSongIndex = index) }
@@ -501,7 +465,6 @@ class AudioPlayerInstance(
                 val song = playlist.songs[actualIndex]
                 CoroutineScope(Dispatchers.Main).launch {
                     val songUri = Uri.fromFile(song.file)
-                    // Auto-play when jumping to specific song
                     initializePlayer(globalClass, songUri, song, autoPlay = true)
                 }
             }
@@ -522,7 +485,7 @@ class AudioPlayerInstance(
                 it.copy(
                     isShuffled = newShuffledState,
                     shuffledIndices = shuffledIndices,
-                    currentSongIndex = 0 // Reset to first song when toggling shuffle
+                    currentSongIndex = 0
                 )
             }
         }
@@ -534,11 +497,9 @@ class AudioPlayerInstance(
     }
 
     private suspend fun resetPlayerState() {
-        // Cancel position tracking to prevent race conditions
         positionTrackingJob?.cancel()
         
-        // Reset player state immediately
-        _playerState.update { 
+        _playerState.update {
             it.copy(
                 currentPosition = 0L,
                 duration = 0L,
@@ -547,7 +508,6 @@ class AudioPlayerInstance(
             )
         }
         
-        // Small delay to ensure UI processes the reset
         delay(50)
     }
 
@@ -557,27 +517,21 @@ class AudioPlayerInstance(
                 player.stop()
             }
         }
-        // Cancel position tracking to prevent updates from old player
         positionTrackingJob?.cancel()
     }
 
     override fun onClose() {
-        // Cancel position tracking
         positionTrackingJob?.cancel()
-        
-        // Release ExoPlayer resources
         exoPlayer?.let { player ->
             player.stop()
             player.release()
         }
         exoPlayer = null
         
-        // Reset player state
-        _playerState.update { 
+        _playerState.update {
             PlayerState()
         }
         
-        // Clear playlist state
         clearPlaylist()
     }
 

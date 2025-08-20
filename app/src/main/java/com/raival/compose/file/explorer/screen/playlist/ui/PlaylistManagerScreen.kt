@@ -37,11 +37,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.GraphicEq
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
@@ -88,6 +91,7 @@ fun PlaylistManagerScreen(
     val currentPlaylist by playlistManager.currentPlaylist.collectAsStateWithLifecycle(initialValue = null)
 
     var showCreateDialog by remember { mutableStateOf(false) }
+    var showEditDialog by remember { mutableStateOf<Playlist?>(null) }
     var showPlaylistDetail by remember { mutableStateOf<Playlist?>(null) }
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -191,6 +195,7 @@ fun PlaylistManagerScreen(
                                 .fillMaxWidth(),
                             onClick = { showPlaylistDetail = playlist },
                             onPlayClick = { onPlayPlaylist(playlist, 0) },
+                            onEditClick = { showEditDialog = playlist },
                             onDeleteClick = { playlistManager.deletePlaylist(playlist.id) }
                         )
                     }
@@ -199,7 +204,6 @@ fun PlaylistManagerScreen(
         }
     }
 
-    // Create Playlist Dialog
     if (showCreateDialog) {
         CreatePlaylistDialog(
             onDismiss = { showCreateDialog = false },
@@ -210,7 +214,17 @@ fun PlaylistManagerScreen(
         )
     }
 
-    // Playlist Detail Sheet
+    showEditDialog?.let { playlist ->
+        EditPlaylistDialog(
+            playlist = playlist,
+            onDismiss = { showEditDialog = null },
+            onConfirm = { newName ->
+                playlistManager.updatePlaylistName(playlist.id, newName)
+                showEditDialog = null
+            }
+        )
+    }
+
     showPlaylistDetail?.let { playlist ->
         PlaylistDetailSheet(
             playlist = playlist,
@@ -298,9 +312,11 @@ private fun PlaylistCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     onPlayClick: () -> Unit,
+    onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var showOptionsMenu by remember { mutableStateOf(false) }
 
     val cardColor = if (isCurrentlyPlaying) {
         MaterialTheme.colorScheme.primaryContainer
@@ -398,7 +414,6 @@ private fun PlaylistCard(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Play button
                 Surface(
                     onClick = onPlayClick,
                     enabled = playlist.songs.isNotEmpty(),
@@ -432,19 +447,71 @@ private fun PlaylistCard(
                     }
                 }
 
-                // Delete button
-                Surface(
-                    onClick = { showDeleteConfirmation = true },
-                    shape = CircleShape,
-                    color = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.size(40.dp)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = stringResource(R.string.delete),
-                            modifier = Modifier.size(24.dp)
+                Box {
+                    Surface(
+                        onClick = { showOptionsMenu = true },
+                        shape = CircleShape,
+                        color = Color.Transparent,
+                        contentColor = if (isCurrentlyPlaying) {
+                            MaterialTheme.colorScheme.onPrimaryContainer
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = stringResource(R.string.more_options),
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+
+                    DropdownMenu(
+                        expanded = showOptionsMenu,
+                        onDismissRequest = { showOptionsMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.edit),
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            },
+                            onClick = {
+                                showOptionsMenu = false
+                                onEditClick()
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Edit,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.delete),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            },
+                            onClick = {
+                                showOptionsMenu = false
+                                showDeleteConfirmation = true
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                            }
                         )
                     }
                 }
@@ -539,6 +606,68 @@ private fun CreatePlaylistDialog(
             ) {
                 Text(
                     text = stringResource(R.string.create).uppercase(),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(
+                    text = stringResource(R.string.cancel).uppercase(),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(28.dp)
+    )
+}
+
+@Composable
+private fun EditPlaylistDialog(
+    playlist: Playlist,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var playlistName by remember { mutableStateOf(playlist.name) }
+    val density = LocalDensity.current
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.edit_playlist),
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.enter_playlist_name),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                OutlinedTextField(
+                    value = playlistName,
+                    onValueChange = { playlistName = it },
+                    label = { Text(stringResource(R.string.playlist_name)) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(playlistName.trim()) },
+                enabled = playlistName.trim().isNotEmpty() && playlistName.trim() != playlist.name
+            ) {
+                Text(
+                    text = stringResource(R.string.save).uppercase(),
                     fontWeight = FontWeight.Bold
                 )
             }
