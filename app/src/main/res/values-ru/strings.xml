@@ -443,5 +443,5 @@
     <string name="failed_to_rename_file">Не удалось переименовать файл</string>
     <string name="updating">Обновление</string>
     <string name="minimize">Свернуть</string>
-    <string name="remove_from_bookmarks">Remove from bookmarks</string>
+    <string name="remove_from_bookmarks">Удалить из закладок</string>
 </resources>

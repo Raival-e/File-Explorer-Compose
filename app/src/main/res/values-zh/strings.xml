@@ -443,5 +443,5 @@
     <string name="failed_to_rename_file">重命名文件失败</string>
     <string name="updating">正在更新</string>
     <string name="minimize">最小化</string>
-    <string name="remove_from_bookmarks">Remove from bookmarks</string>
+    <string name="remove_from_bookmarks">从书签中移除</string>
 </resources>
