@@ -577,6 +577,7 @@ private fun FileDetails(
     fontSize: Int,
     isHighlighted: Boolean
 ) {
+    val scope = rememberCoroutineScope()
     Isolate {
         var details by remember(
             key1 = currentItemPath,
@@ -587,9 +588,11 @@ private fun FileDetails(
             key1 = currentItemPath,
             key2 = item.lastModified
         ) {
-            if (details.isEmpty()) {
-                val det = item.getDetails()
-                withContext(Dispatchers.Main) { details = det }
+            scope.launch(Dispatchers.IO) {
+                if (details.isEmpty()) {
+                    val det = item.getDetails()
+                    details = det
+                }
             }
         }
 

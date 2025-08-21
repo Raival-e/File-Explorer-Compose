@@ -42,6 +42,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +63,8 @@ import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeLayout
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionConfig
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionType
 import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -91,6 +94,7 @@ fun HomeLayoutSettingsScreen(
             usePlatformDefaultWidth = false
         )
     ) {
+        val scope = rememberCoroutineScope()
         val color = MaterialTheme.colorScheme.surfaceContainerHigh
         val systemUiController = rememberSystemUiController()
         DisposableEffect(systemUiController, useDarkIcons) {
@@ -99,17 +103,19 @@ fun HomeLayoutSettingsScreen(
         }
 
         LaunchedEffect(Unit) {
-            val config = try {
-                Gson().fromJson(
-                    globalClass.preferencesManager.homeTabLayout,
-                    HomeLayout::class.java
-                )
-            } catch (e: Exception) {
-                logger.logError(e)
-                getDefaultHomeLayout()
-            }.getSections().sortedBy { it.order }
+            scope.launch(Dispatchers.IO) {
+                val config = try {
+                    Gson().fromJson(
+                        globalClass.preferencesManager.homeTabLayout,
+                        HomeLayout::class.java
+                    )
+                } catch (e: Exception) {
+                    logger.logError(e)
+                    getDefaultHomeLayout()
+                }.getSections().sortedBy { it.order }
 
-            sections.addAll(config)
+                sections.addAll(config)
+            }
         }
 
         Scaffold(

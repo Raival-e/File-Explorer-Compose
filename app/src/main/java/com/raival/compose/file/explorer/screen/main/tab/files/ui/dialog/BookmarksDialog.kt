@@ -45,6 +45,7 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.main.tab.files.FilesTab
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.ui.FileItemRow
+import kotlinx.coroutines.launch
 import java.io.File
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -61,13 +62,16 @@ fun BookmarksDialog(
         }
 
         LaunchedEffect(Unit) {
-            val originalList = globalClass.preferencesManager.bookmarks
-            bookmarks.addAll(
-                originalList.map { LocalFileHolder(File(it)) }.filter { it.isValid() }
-            )
+            tab.scope.launch {
+                val originalList = globalClass.preferencesManager.bookmarks
+                bookmarks.addAll(
+                    originalList.map { LocalFileHolder(File(it)) }.filter { it.isValid() }
+                )
 
-            if (bookmarks.size isNot originalList.size) {
-                globalClass.preferencesManager.bookmarks = bookmarks.map { it.uniquePath }.toSet()
+                if (bookmarks.size isNot originalList.size) {
+                    globalClass.preferencesManager.bookmarks =
+                        bookmarks.map { it.uniquePath }.toSet()
+                }
             }
         }
 

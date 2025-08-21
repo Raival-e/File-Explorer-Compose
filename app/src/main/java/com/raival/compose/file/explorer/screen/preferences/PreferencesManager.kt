@@ -131,7 +131,7 @@ class PreferencesManager {
 
     var removeHiddenPathsFromRecentFiles by prefMutableState(
         keyName = "removeHiddenPathsFromRecentFiles",
-        defaultValue = true,
+        defaultValue = false,
         getPreferencesKey = { booleanPreferencesKey(it) }
     )
 

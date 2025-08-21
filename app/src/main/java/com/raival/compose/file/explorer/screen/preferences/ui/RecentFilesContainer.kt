@@ -243,7 +243,7 @@ fun RecentFilesContainer() {
             supportingText = stringResource(R.string.scan_hidden_files_and_folders),
             icon = Icons.AutoMirrored.Rounded.ManageSearch,
             switchState = !prefs.removeHiddenPathsFromRecentFiles,
-            onSwitchChange = { prefs.useBuiltInViewer = !it }
+            onSwitchChange = { prefs.removeHiddenPathsFromRecentFiles = !it }
         )
 
         HorizontalDivider(

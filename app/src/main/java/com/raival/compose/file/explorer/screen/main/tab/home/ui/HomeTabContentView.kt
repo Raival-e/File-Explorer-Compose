@@ -79,6 +79,8 @@ import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionTyp
 import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
 import com.raival.compose.file.explorer.screen.main.ui.SimpleNewTabViewItem
 import com.raival.compose.file.explorer.screen.main.ui.StorageDeviceView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -89,19 +91,27 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
     val enabledSections = remember { mutableStateListOf<HomeSectionConfig>() }
 
     LaunchedEffect(tab.id) {
-        tab.fetchRecentFiles()
-        tab.getPinnedFiles()
-        val config = try {
-            Gson().fromJson(
-                globalClass.preferencesManager.homeTabLayout,
-                HomeLayout::class.java
-            )
-        } catch (e: Exception) {
-            logger.logError(e)
-            getDefaultHomeLayout()
-        }.getSections().filter { it.isEnabled }.sortedBy { it.order }
+        scope.launch(Dispatchers.IO) {
+            async {
+                tab.fetchRecentFiles()
+            }
+            async {
+                tab.getPinnedFiles()
+            }
+            async {
+                val config = try {
+                    Gson().fromJson(
+                        globalClass.preferencesManager.homeTabLayout,
+                        HomeLayout::class.java
+                    )
+                } catch (e: Exception) {
+                    logger.logError(e)
+                    getDefaultHomeLayout()
+                }.getSections().filter { it.isEnabled }.sortedBy { it.order }
 
-        enabledSections.addAll(config)
+                enabledSections.addAll(config)
+            }
+        }
     }
 
     if (tab.showCustomizeHomeTabDialog) {

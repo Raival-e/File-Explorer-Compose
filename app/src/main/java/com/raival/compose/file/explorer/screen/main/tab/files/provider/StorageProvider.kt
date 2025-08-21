@@ -19,6 +19,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPr
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_DATE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_SIZE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_TYPE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.EXTERNAL_STORAGE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.INTERNAL_STORAGE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.ROOT
@@ -186,92 +187,148 @@ object StorageProvider {
         return storageList
     }
 
+    /**
+     * Generic helper function to fetch files based on a list of MIME types.
+     */
+    private fun getFilesByMimeTypes(
+        mimeTypes: Array<String>,
+        sortingPrefs: FileSortingPrefs?
+    ): ArrayList<LocalFileHolder> {
+        if (mimeTypes.isEmpty()) {
+            return ArrayList()
+        }
+
+        val files = ArrayList<LocalFileHolder>()
+        val contentResolver: ContentResolver = globalClass.contentResolver
+
+        val uri: Uri = MediaStore.Files.getContentUri("external")
+
+        val projection = arrayOf(
+            MediaStore.Files.FileColumns.DATA,
+            MediaStore.Files.FileColumns.DISPLAY_NAME, // Required for SORT_BY_NAME
+            MediaStore.Files.FileColumns.DATE_MODIFIED, // Required for SORT_BY_DATE
+            MediaStore.Files.FileColumns.SIZE         // Required for SORT_BY_SIZE
+        )
+
+        // Build the selection clause to match any of the provided MIME types.
+        // Creates a clause like: "MIME_TYPE = ? OR MIME_TYPE = ? OR ..."
+        val selection =
+            mimeTypes.joinToString(" OR ") { "${MediaStore.Files.FileColumns.MIME_TYPE} = ?" }
+        val selectionArgs = mimeTypes
+
+        // EFFICIENT SORTING: Build the SQL ORDER BY clause to handle sorting and reversal.
+        val sortOrder = when (sortingPrefs?.sortMethod) {
+            SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ${if (sortingPrefs.reverseSorting) "DESC" else "ASC"}"
+            SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} ${if (sortingPrefs.reverseSorting) "ASC" else "DESC"}"
+            SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} ${if (sortingPrefs.reverseSorting) "ASC" else "DESC"}"
+            else -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
+        }
+
+        val cursor: Cursor? = contentResolver.query(
+            uri,
+            projection,
+            selection,
+            selectionArgs,
+            sortOrder
+        )
+
+        cursor?.use {
+            val pathColumn = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA)
+
+            while (it.moveToNext()) {
+                val path = it.getString(pathColumn)
+                if (!path.isNullOrEmpty()) {
+                    files.add(LocalFileHolder(File(path)))
+                }
+            }
+        }
+
+        return files
+    }
+
+    /**
+     * Gets all document files.
+     */
     fun getDocumentFiles(
         sortingPrefs: FileSortingPrefs?
     ): ArrayList<LocalFileHolder> {
-        val documentFiles = ArrayList<LocalFileHolder>()
-        val contentResolver: ContentResolver = globalClass.contentResolver
-
-        val uri: Uri = MediaStore.Files.getContentUri("external")
-
-        val projection = arrayOf(
-            MediaStore.Files.FileColumns.DATA
-        )
-
         val documentMimeTypes = arrayOf(
-            "application/pdf", // PDF
-            "application/msword", // DOC
+            "application/pdf",
+            "application/msword",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
-            "application/vnd.ms-excel", // XLS
+            "application/vnd.ms-excel",
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLSX
-            "application/vnd.ms-powerpoint", // PPT
+            "application/vnd.ms-powerpoint",
             "application/vnd.openxmlformats-officedocument.presentationml.presentation" // PPTX
         )
-
-        val selection =
-            documentMimeTypes.joinToString(" OR ") { "${MediaStore.Files.FileColumns.MIME_TYPE} = ?" }
-        val selectionArgs = documentMimeTypes.toCollection(ArrayList()).toTypedArray()
-
-        val cursor: Cursor? = contentResolver.query(
-            uri,
-            projection,
-            selection,
-            selectionArgs,
-            when (sortingPrefs?.sortMethod) {
-                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
-                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
-                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
-                else -> null
-            }
-        )
-
-        cursor?.use {
-            val pathColumn = it.getColumnIndexOrThrow(MediaStore.Files.FileColumns.DATA)
-
-            while (it.moveToNext()) {
-                val path = it.getString(pathColumn)
-                documentFiles.add(LocalFileHolder(File(path)))
-            }
-        }
-
-        return documentFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
+        return getFilesByMimeTypes(documentMimeTypes, sortingPrefs)
     }
 
+    /**
+     * Gets all archive files.
+     */
     fun getArchiveFiles(
         sortingPrefs: FileSortingPrefs?
     ): ArrayList<LocalFileHolder> {
-        val archiveFiles = ArrayList<LocalFileHolder>()
+        val archiveMimeTypes = arrayOf(
+            "application/zip",
+            "application/x-rar-compressed",
+            "application/x-tar",
+            "application/gzip",
+            "application/x-7z-compressed"
+        )
+        return getFilesByMimeTypes(archiveMimeTypes, sortingPrefs)
+    }
+
+    /**
+     * Generic helper function to fetch media files of a specific type.
+     */
+    private fun getMediaFiles(
+        mediaType: Int,
+        sortingPrefs: FileSortingPrefs?
+    ): ArrayList<LocalFileHolder> {
+        val files = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
         val uri: Uri = MediaStore.Files.getContentUri("external")
 
         val projection = arrayOf(
-            MediaStore.Files.FileColumns.DATA
+            MediaStore.Files.FileColumns.DATA,
+            MediaStore.Files.FileColumns.DISPLAY_NAME, // Required for SORT_BY_NAME
+            MediaStore.Files.FileColumns.DATE_MODIFIED, // Required for SORT_BY_DATE
+            MediaStore.Files.FileColumns.SIZE         // Required for SORT_BY_SIZE
         )
 
-        val archiveMimeTypes = arrayOf(
-            "application/zip", // ZIP
-            "application/x-rar-compressed", // RAR
-            "application/x-tar", // TAR
-            "application/gzip", // GZIP
-            "application/x-7z-compressed" // 7Z
-        )
+        // Filter the results to only the media type we want (images, video, etc.).
+        val selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} = ?"
+        val selectionArgs = arrayOf(mediaType.toString())
 
-        val selection =
-            archiveMimeTypes.joinToString(" OR ") { "${MediaStore.Files.FileColumns.MIME_TYPE} = ?" }
-        val selectionArgs = archiveMimeTypes.toList().toTypedArray()
+        val sortOrder = when (sortingPrefs?.sortMethod) {
+            SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ${if (sortingPrefs.reverseSorting) "DESC" else "ASC"}"
+            SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} ${if (sortingPrefs.reverseSorting) "ASC" else "DESC"}"
+            SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} ${if (sortingPrefs.reverseSorting) "ASC" else "DESC"}"
+            SORT_BY_TYPE -> {
+                val direction = if (sortingPrefs.reverseSorting) "DESC" else "ASC"
+                // This SQL expression extracts the file extension and uses it for sorting.
+                // It sorts files without an extension first, then sorts by extension alphabetically.
+                """
+            CASE
+                WHEN INSTR(${MediaStore.Files.FileColumns.DISPLAY_NAME}, '.') = 0 THEN 1
+                ELSE 0
+            END,
+            SUBSTR(${MediaStore.Files.FileColumns.DISPLAY_NAME}, INSTR(${MediaStore.Files.FileColumns.DISPLAY_NAME}, '.') + 1) $direction
+            """.trimIndent()
+            }
+
+            else -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
+        }
 
         val cursor: Cursor? = contentResolver.query(
             uri,
             projection,
             selection,
             selectionArgs,
-            when (sortingPrefs?.sortMethod) {
-                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
-                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
-                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
-                else -> null
-            }
+            sortOrder
         )
 
         cursor?.use {
@@ -279,122 +336,40 @@ object StorageProvider {
 
             while (it.moveToNext()) {
                 val path = it.getString(pathColumn)
-                archiveFiles.add(LocalFileHolder(File(path)))
+                if (!path.isNullOrEmpty()) {
+                    files.add(LocalFileHolder(File(path)))
+                }
             }
         }
 
-        return archiveFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
+        return files
     }
 
+    /**
+     * Gets all image files.
+     */
     fun getImageFiles(
         sortingPrefs: FileSortingPrefs?
     ): ArrayList<LocalFileHolder> {
-        val imageFiles = ArrayList<LocalFileHolder>()
-        val contentResolver: ContentResolver = globalClass.contentResolver
-
-        val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-
-        val projection = arrayOf(
-            MediaStore.Images.Media.DATA,
-        )
-
-        val cursor: Cursor? = contentResolver.query(
-            uri,
-            projection,
-            null,
-            null,
-            when (sortingPrefs?.sortMethod) {
-                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
-                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
-                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
-                else -> null
-            }
-        )
-
-        cursor?.use {
-            val pathColumn = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-
-            while (it.moveToNext()) {
-                val path = it.getString(pathColumn)
-                imageFiles.add(LocalFileHolder(File(path)))
-            }
-        }
-
-        return imageFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
+        return getMediaFiles(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE, sortingPrefs)
     }
 
+    /**
+     * Gets all video files.
+     */
     fun getVideoFiles(
         sortingPrefs: FileSortingPrefs?
     ): ArrayList<LocalFileHolder> {
-        val videoFiles = ArrayList<LocalFileHolder>()
-        val contentResolver: ContentResolver = globalClass.contentResolver
-
-        val uri: Uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
-
-        val projection = arrayOf(
-            MediaStore.Video.Media.DATA,
-        )
-
-        val cursor: Cursor? = contentResolver.query(
-            uri,
-            projection,
-            null,
-            null,
-            when (sortingPrefs?.sortMethod) {
-                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
-                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
-                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
-                else -> null
-            }
-        )
-
-        cursor?.use {
-            val pathColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
-
-            while (it.moveToNext()) {
-                val path = it.getString(pathColumn)
-                videoFiles.add(LocalFileHolder(File(path)))
-            }
-        }
-
-        return videoFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
+        return getMediaFiles(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO, sortingPrefs)
     }
 
+    /**
+     * Gets all audio files.
+     */
     fun getAudioFiles(
         sortingPrefs: FileSortingPrefs?
     ): ArrayList<LocalFileHolder> {
-        val audioFiles = ArrayList<LocalFileHolder>()
-        val contentResolver: ContentResolver = globalClass.contentResolver
-
-        val uri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-
-        val projection = arrayOf(
-            MediaStore.Audio.Media.DATA,
-        )
-
-        val cursor: Cursor? = contentResolver.query(
-            uri,
-            projection,
-            null,
-            null,
-            when (sortingPrefs?.sortMethod) {
-                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
-                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
-                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
-                else -> null
-            }
-        )
-
-        cursor?.use {
-            val pathColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
-
-            while (it.moveToNext()) {
-                val path = it.getString(pathColumn)
-                audioFiles.add(LocalFileHolder(File(path)))
-            }
-        }
-
-        return audioFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
+        return getMediaFiles(MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO, sortingPrefs)
     }
 
     fun getBookmarks() = globalClass.preferencesManager.bookmarks
@@ -404,7 +379,7 @@ object StorageProvider {
         recentHours: Int = 24 * 5,
         limit: Int = 100
     ): ArrayList<RecentFile> {
-        val recentFiles = ArrayList<RecentFile>()
+        val recentFiles = ArrayList<RecentFile>(limit)
         val contentResolver: ContentResolver = globalClass.contentResolver
         val showHiddenFiles = globalClass.preferencesManager.showHiddenFiles
 
@@ -416,15 +391,51 @@ object StorageProvider {
             MediaStore.Files.FileColumns.DISPLAY_NAME
         )
 
-        val time = (System.currentTimeMillis() / 1000) - (recentHours * 60 * 60)
+        // Build the selection clause and arguments dynamically.
+        val selectionClauses = mutableListOf<String>()
+        val selectionArgsList = mutableListOf<String>()
 
-        val selection = "${MediaStore.Files.FileColumns.DATE_MODIFIED} >= ?"
-        val selectionArgs = arrayOf(time.toString())
+        // Filter by modification time.
+        val time = (System.currentTimeMillis() / 1000) - (recentHours * 60 * 60)
+        selectionClauses.add("${MediaStore.Files.FileColumns.DATE_MODIFIED} >= ?")
+        selectionArgsList.add(time.toString())
+
+        // Exclude directories directly in the query.
+        // This avoids the expensive file.isFile check inside the loop.
+        selectionClauses.add("${MediaStore.MediaColumns.MIME_TYPE} IS NOT NULL")
+
+        // Handle hidden files
+        if (!showHiddenFiles) {
+            selectionClauses.add("${MediaStore.Files.FileColumns.DISPLAY_NAME} NOT LIKE '.%'")
+        }
+
+        // Exclude specified paths at the database level.
+        val excludedPaths = globalClass.preferencesManager.excludedPathsFromRecentFiles
+        excludedPaths.forEach { excludedPath ->
+            selectionClauses.add("${MediaStore.Files.FileColumns.DATA} NOT LIKE ?")
+            selectionArgsList.add("$excludedPath%")
+        }
+
+        // Exclude files within hidden directories (e.g., /storage/emulated/0/SomeApp/.cache/file.txt)
+        val excludeHiddenPaths = globalClass.preferencesManager.removeHiddenPathsFromRecentFiles
+        if (excludeHiddenPaths) {
+            selectionClauses.add("${MediaStore.Files.FileColumns.DATA} NOT LIKE '%/.%'")
+        }
+
+        // Combine all selection clauses.
+        val selection = selectionClauses.joinToString(" AND ")
+        val selectionArgs = selectionArgsList.toTypedArray()
+
+        // Apply the limit directly to the query URI for Android Q (API 29) and above.
+        // This is the most efficient way to limit results.
+        val queryUri = uri.buildUpon().apply {
+            appendQueryParameter("limit", limit.toString())
+        }.build()
 
         val sortOrder = "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
 
         val cursor: Cursor? = contentResolver.query(
-            uri,
+            queryUri,
             projection,
             selection,
             selectionArgs,
@@ -439,27 +450,10 @@ object StorageProvider {
 
             while (it.moveToNext() && recentFiles.size < limit) {
                 val filePath = it.getString(columnIndexPath)
-                val lastModified = it.getLong(columnLastModified)
                 val name = it.getString(columnName)
-                val excludedPaths = globalClass.preferencesManager.excludedPathsFromRecentFiles
-                val excludeHiddenPaths =
-                    globalClass.preferencesManager.removeHiddenPathsFromRecentFiles
+                val lastModified = it.getLong(columnLastModified)
 
-                val file = File(filePath)
-
-                // Check if file should be excluded based on path
-                val isPathExcluded = excludedPaths.any { excludedPath ->
-                    filePath.startsWith(excludedPath)
-                }
-
-                // Check if hidden files should be excluded
-                val isHiddenExcluded =
-                    excludeHiddenPaths && filePath.split(File.separator).any { it.startsWith(".") }
-
-                if (file.isFile && filePath != null && name != null &&
-                    !isPathExcluded && !isHiddenExcluded &&
-                    (showHiddenFiles || !file.name.startsWith("."))
-                ) {
+                if (filePath != null && name != null) {
                     recentFiles.add(
                         RecentFile(
                             name,

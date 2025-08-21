@@ -5,7 +5,6 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileListCategory
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortNewerFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getArchiveFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getAudioFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getBookmarks
@@ -59,7 +58,6 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
 
         if (type == RECENT && sortingPrefs == globalClass.preferencesManager.getDefaultSortingPrefs()) {
             return listContent().apply {
-                sortWith(sortNewerFirst)
                 if (!globalClass.preferencesManager.showHiddenFiles) {
                     removeIf { it.isHidden() }
                 }
