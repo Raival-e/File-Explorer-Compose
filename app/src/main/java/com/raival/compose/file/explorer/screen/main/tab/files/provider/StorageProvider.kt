@@ -15,6 +15,10 @@ import com.raival.compose.file.explorer.screen.main.tab.files.holder.ContentHold
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.LocalFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.RootFileHolder
 import com.raival.compose.file.explorer.screen.main.tab.files.holder.StorageDevice
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileSortingPrefs
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_DATE
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_NAME
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.SortingMethod.SORT_BY_SIZE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.EXTERNAL_STORAGE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.INTERNAL_STORAGE
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.StorageDeviceType.ROOT
@@ -182,7 +186,9 @@ object StorageProvider {
         return storageList
     }
 
-    fun getDocumentFiles(): ArrayList<LocalFileHolder> {
+    fun getDocumentFiles(
+        sortingPrefs: FileSortingPrefs?
+    ): ArrayList<LocalFileHolder> {
         val documentFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
@@ -211,7 +217,12 @@ object StorageProvider {
             projection,
             selection,
             selectionArgs,
-            null
+            when (sortingPrefs?.sortMethod) {
+                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
+                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
+                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
+                else -> null
+            }
         )
 
         cursor?.use {
@@ -223,10 +234,12 @@ object StorageProvider {
             }
         }
 
-        return documentFiles
+        return documentFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
     }
 
-    fun getArchiveFiles(): ArrayList<LocalFileHolder> {
+    fun getArchiveFiles(
+        sortingPrefs: FileSortingPrefs?
+    ): ArrayList<LocalFileHolder> {
         val archiveFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
@@ -253,7 +266,12 @@ object StorageProvider {
             projection,
             selection,
             selectionArgs,
-            null
+            when (sortingPrefs?.sortMethod) {
+                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
+                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
+                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
+                else -> null
+            }
         )
 
         cursor?.use {
@@ -265,10 +283,12 @@ object StorageProvider {
             }
         }
 
-        return archiveFiles
+        return archiveFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
     }
 
-    fun getImageFiles(): ArrayList<LocalFileHolder> {
+    fun getImageFiles(
+        sortingPrefs: FileSortingPrefs?
+    ): ArrayList<LocalFileHolder> {
         val imageFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
@@ -283,11 +303,16 @@ object StorageProvider {
             projection,
             null,
             null,
-            null
+            when (sortingPrefs?.sortMethod) {
+                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
+                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
+                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
+                else -> null
+            }
         )
 
         cursor?.use {
-            val pathColumn = it.getColumnIndexOrThrow(MediaStore.Audio.Media.DATA)
+            val pathColumn = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
 
             while (it.moveToNext()) {
                 val path = it.getString(pathColumn)
@@ -295,10 +320,12 @@ object StorageProvider {
             }
         }
 
-        return imageFiles
+        return imageFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
     }
 
-    fun getVideoFiles(): ArrayList<LocalFileHolder> {
+    fun getVideoFiles(
+        sortingPrefs: FileSortingPrefs?
+    ): ArrayList<LocalFileHolder> {
         val videoFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
@@ -313,7 +340,12 @@ object StorageProvider {
             projection,
             null,
             null,
-            null
+            when (sortingPrefs?.sortMethod) {
+                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
+                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
+                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
+                else -> null
+            }
         )
 
         cursor?.use {
@@ -325,13 +357,12 @@ object StorageProvider {
             }
         }
 
-        return videoFiles
+        return videoFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
     }
 
-    fun getBookmarks() = globalClass.preferencesManager.bookmarks
-        .map { LocalFileHolder(File(it)) } as ArrayList<LocalFileHolder>
-
-    fun getAudioFiles(): ArrayList<LocalFileHolder> {
+    fun getAudioFiles(
+        sortingPrefs: FileSortingPrefs?
+    ): ArrayList<LocalFileHolder> {
         val audioFiles = ArrayList<LocalFileHolder>()
         val contentResolver: ContentResolver = globalClass.contentResolver
 
@@ -346,7 +377,12 @@ object StorageProvider {
             projection,
             null,
             null,
-            null
+            when (sortingPrefs?.sortMethod) {
+                SORT_BY_NAME -> "${MediaStore.Files.FileColumns.DISPLAY_NAME} ASC"
+                SORT_BY_DATE -> "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC"
+                SORT_BY_SIZE -> "${MediaStore.Files.FileColumns.SIZE} DESC"
+                else -> null
+            }
         )
 
         cursor?.use {
@@ -358,8 +394,11 @@ object StorageProvider {
             }
         }
 
-        return audioFiles
+        return audioFiles.also { if (sortingPrefs?.reverseSorting == true) it.reverse() }
     }
+
+    fun getBookmarks() = globalClass.preferencesManager.bookmarks
+        .map { LocalFileHolder(File(it)) } as ArrayList<LocalFileHolder>
 
     fun getRawRecentFiles(
         recentHours: Int = 24 * 5,

@@ -393,7 +393,21 @@ class FilesTab(
         if (isLoading) return false
 
         // check if any file has been changed
-        if (activeFolder is LocalFileHolder) {
+        if (activeFolder is VirtualFileHolder) {
+            validateBookmarks()
+            validateSearchResult()
+            val newContent = (activeFolder as VirtualFileHolder).listContent()
+            // Check if the content size has changed
+            if (newContent.size != activeFolderContent.size) {
+                reloadFiles()
+                return true
+            }
+            // Check each file to see if the source has changed
+            if (activeFolderContent.any { (it as LocalFileHolder).hasSourceChanged() }) {
+                reloadFiles()
+                return true
+            }
+        } else if (activeFolder is LocalFileHolder) {
             val newContent =
                 (activeFolder as LocalFileHolder).file.listFiles()?.toCollection(arrayListOf())
                     ?.apply {
@@ -453,6 +467,16 @@ class FilesTab(
             }
         }
         return false
+    }
+
+    private fun validateBookmarks() {
+        globalClass.preferencesManager.bookmarks = globalClass.preferencesManager.bookmarks.filter {
+            File(it).exists()
+        }.toSet()
+    }
+
+    private fun validateSearchResult() {
+        globalClass.searchManager.searchResults.removeIf { !File(it.file.uniquePath).exists() }
     }
 
     fun quickReloadFiles() {

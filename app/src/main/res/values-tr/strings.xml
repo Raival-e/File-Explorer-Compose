@@ -444,4 +444,5 @@
     <string name="failed_to_rename_file">Dosya yeniden adlandırılamadı</string>
     <string name="updating">Güncelleniyor</string>
     <string name="minimize">Küçült</string>
+    <string name="remove_from_bookmarks">Remove from bookmarks</string>
 </resources>

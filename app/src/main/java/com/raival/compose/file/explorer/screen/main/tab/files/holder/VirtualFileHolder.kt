@@ -5,7 +5,6 @@ import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.common.emptyString
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.ContentCount
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileListCategory
-import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortFoldersFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.sortNewerFirst
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getArchiveFiles
 import com.raival.compose.file.explorer.screen.main.tab.files.provider.StorageProvider.getAudioFiles
@@ -52,33 +51,35 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
     override suspend fun getParent() = null
 
     override suspend fun listSortedContent(): ArrayList<out ContentHolder> {
-        if (type != RECENT) {
+        if (type == SEARCH || type == BOOKMARKS) {
             return super.listSortedContent()
         }
 
         val sortingPrefs = globalClass.preferencesManager.getSortingPrefsFor(this)
 
-        if (sortingPrefs == globalClass.preferencesManager.getDefaultSortingPrefs()) {
+        if (type == RECENT && sortingPrefs == globalClass.preferencesManager.getDefaultSortingPrefs()) {
             return listContent().apply {
                 sortWith(sortNewerFirst)
-                if (sortingPrefs.showFoldersFirst) sortWith(sortFoldersFirst)
                 if (!globalClass.preferencesManager.showHiddenFiles) {
                     removeIf { it.isHidden() }
                 }
             }
+        } else return listContent().apply {
+            if (!globalClass.preferencesManager.showHiddenFiles) {
+                removeIf { it.isHidden() }
+            }
         }
-
-        return super.listSortedContent()
     }
 
-    override suspend fun listContent() = (if (contentList.isEmpty()) {
+    override suspend fun listContent(): ArrayList<out ContentHolder> {
+        val sortingPrefs = globalClass.preferencesManager.getSortingPrefsFor(this)
         when (type) {
             BOOKMARKS -> getBookmarks()
-            AUDIO -> getAudioFiles()
-            VIDEO -> getVideoFiles()
-            IMAGE -> getImageFiles()
-            ARCHIVE -> getArchiveFiles()
-            DOCUMENT -> getDocumentFiles()
+            AUDIO -> getAudioFiles(sortingPrefs)
+            VIDEO -> getVideoFiles(sortingPrefs)
+            IMAGE -> getImageFiles(sortingPrefs)
+            ARCHIVE -> getArchiveFiles(sortingPrefs)
+            DOCUMENT -> getDocumentFiles(sortingPrefs)
             RECENT -> getRecentFiles()
             SEARCH -> getSearchResult()
             else -> arrayListOf()
@@ -89,10 +90,12 @@ class VirtualFileHolder(val type: Int) : ContentHolder() {
             }
             if (type != BOOKMARKS) fetchCategories()
         }
-    } else contentList).filter {
-        if (selectedCategory == null) return@filter true
-        it.uniquePath == (selectedCategory!!.data as File).path + File.separator + it.displayName
-    }.toCollection(arrayListOf()).also { fileCount = it.size }
+
+        return contentList.filter {
+            if (selectedCategory == null) return@filter true
+            it.uniquePath == (selectedCategory!!.data as File).path + File.separator + it.displayName
+        }.toCollection(arrayListOf()).also { fileCount = it.size }
+    }
 
     private fun fetchCategories() {
         categories.clear()

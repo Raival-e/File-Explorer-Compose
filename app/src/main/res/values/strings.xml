@@ -443,4 +443,5 @@
     <string name="failed_to_rename_file">Failed to rename file</string>
     <string name="updating">Updating</string>
     <string name="minimize">Minimize</string>
+    <string name="remove_from_bookmarks">Remove from bookmarks</string>
 </resources>

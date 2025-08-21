@@ -443,4 +443,5 @@
     <string name="failed_to_rename_file">Error al renombrar el archivo</string>
     <string name="updating">Actualizando</string>
     <string name="minimize">Minimizar</string>
+    <string name="remove_from_bookmarks">Remove from bookmarks</string>
 </resources>

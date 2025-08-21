@@ -232,13 +232,28 @@ fun FileOptionsMenuDialog(
                 }
             }
 
+            if (tab.activeFolder is VirtualFileHolder && (tab.activeFolder as VirtualFileHolder).type == VirtualFileHolder.BOOKMARKS) {
+                FileOption(
+                    Icons.Rounded.BookmarkAdd,
+                    stringResource(R.string.remove_from_bookmarks)
+                ) {
+                    onDismissRequest()
+                    val toRemove = targetFiles.map { it.uniquePath }
+                    val newBookmarks = globalClass.preferencesManager.bookmarks.filter {
+                        !toRemove.contains(it)
+                    }
+                    globalClass.preferencesManager.bookmarks = newBookmarks.toSet()
+                    tab.unselectAllFiles()
+                    tab.reloadFiles()
+                }
+            }
+
             if (tab.activeFolder is LocalFileHolder ||
                 (tab.activeFolder is VirtualFileHolder && (tab.activeFolder as VirtualFileHolder).type isNot VirtualFileHolder.BOOKMARKS)
             ) {
                 FileOption(Icons.Rounded.BookmarkAdd, stringResource(R.string.add_to_bookmarks)) {
                     onDismissRequest()
                     globalClass.preferencesManager.bookmarks += targetFiles.map { it.uniquePath }
-                        .distinct()
                     globalClass.showMsg(R.string.added_to_bookmarks)
                     tab.unselectAllFiles()
                 }

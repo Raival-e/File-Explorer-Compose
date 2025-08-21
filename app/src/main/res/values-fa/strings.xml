@@ -443,4 +443,5 @@
     <string name="failed_to_rename_file">تغییر نام فایل ناموفق بود</string>
     <string name="updating">در حال به‌روزرسانی</string>
     <string name="minimize">کمینه کردن</string>
+    <string name="remove_from_bookmarks">Remove from bookmarks</string>
 </resources>
