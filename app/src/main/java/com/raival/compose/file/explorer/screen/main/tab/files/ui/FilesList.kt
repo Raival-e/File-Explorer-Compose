@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -440,6 +441,20 @@ private fun GridFileItem(
                         handleLongClick(tab, itemPath, item, index)
                     }
                 )
+                if (isSelected) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = colorScheme.surface.copy(alpha = 0.5f))
+                    ) {
+                        Icon(
+                            modifier = Modifier.align(Alignment.Center),
+                            imageVector = Icons.Rounded.CheckCircle,
+                            tint = colorScheme.primary,
+                            contentDescription = null
+                        )
+                    }
+                }
                 if (viewConfigs.galleryMode && (item.isFolder || (item.isFile() && ((!videoFileType.contains(
                         item.extension
                     ) && !imageFileType.contains(item.extension)) || !viewConfigs.hideMediaNames)))
