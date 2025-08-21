@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Audiotrack
+import androidx.compose.material.icons.filled.BuildCircle
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.QuestionMark
@@ -47,6 +48,7 @@ import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.markdownFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.pdfFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.pptFileType
+import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.prismPrefsFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.sqlFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.vectorFileType
 import com.raival.compose.file.explorer.screen.main.tab.files.misc.FileMimeType.videoFileType
@@ -67,6 +69,7 @@ private fun getContentIcon(content: ContentHolder): FileContentIcon {
 
     val extension = content.extension
 
+    if (extension == prismPrefsFileType) return FileContentIcon(Icons.Default.BuildCircle)
     if (extension == javaFileType) return FileContentIcon(PrismIcons.Java)
     if (extension == kotlinFileType) return FileContentIcon(PrismIcons.Kotlin)
     if (extension == markdownFileType) return FileContentIcon(PrismIcons.Markdown)
