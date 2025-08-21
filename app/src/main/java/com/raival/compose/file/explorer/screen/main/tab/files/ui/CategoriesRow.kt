@@ -22,7 +22,7 @@ fun CategoriesRow(tab: FilesTab) {
     var selectedIndex by remember {
         mutableIntStateOf(
             tab.selectedCategory?.let {
-                tab.categories.indexOf(it)
+                tab.categories.indexOf(it) + 1
             } ?: 0
         )
     }
