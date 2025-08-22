@@ -444,4 +444,6 @@
     <string name="updating">Mise à jour</string>
     <string name="minimize">Réduire</string>
     <string name="remove_from_bookmarks">Retirer des favoris</string>
+    <string name="unsaved_changes">Do you want to save the file?</string>
+    <string name="permission_denied">Permission denied</string>
 </resources>

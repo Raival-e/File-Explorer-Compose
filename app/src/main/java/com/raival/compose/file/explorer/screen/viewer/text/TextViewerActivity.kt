@@ -72,6 +72,27 @@ class TextViewerActivity : ViewerActivity() {
                         val symbols = remember { mutableStateListOf<SymbolHolder>() }
                         val activityScope = rememberCoroutineScope()
 
+                        BackHandler(
+                            textViewerInstance.requireSave
+                                    || textViewerInstance.showSearchPanel
+                        ) {
+                            if (textViewerInstance.showSearchPanel) {
+                                textViewerInstance.hideSearchPanel(codeEditor)
+                            } else {
+                                textViewerInstance.showUnsavedChangesWarningDialog(
+                                    onSaved = { finish() },
+                                    onFailed = {
+                                        if (it is SecurityException) {
+                                            globalClass.showMsg(getString(R.string.permission_denied))
+                                        } else {
+                                            globalClass.showMsg(getString(R.string.failed_to_save))
+                                        }
+                                    },
+                                    onIgnore = { finish() }
+                                )
+                            }
+                        }
+
                         LaunchedEffect(Unit) {
                             // Temporary solution to prevent OOM exception. Text Editor needs to be refactored to handle large files.
                             val maxFileSizeBytes = 15 * 1024 * 1024 // 15 MB limit
@@ -131,10 +152,6 @@ class TextViewerActivity : ViewerActivity() {
                             }
 
                             symbols.addAll(textViewerInstance.updateSymbols())
-                        }
-
-                        BackHandler(enabled = textViewerInstance.showSearchPanel) {
-                            textViewerInstance.hideSearchPanel(codeEditor)
                         }
 
                         LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {

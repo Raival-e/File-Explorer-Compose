@@ -81,7 +81,13 @@ fun ToolbarView(
                         globalClass.showMsg(R.string.saved)
                         textViewerInstance.requireSave = false
                     },
-                    onFailed = { globalClass.showMsg(R.string.failed_to_save) }
+                    onFailed = {
+                        if (it is SecurityException) {
+                            globalClass.showMsg(R.string.permission_denied)
+                        } else {
+                            globalClass.showMsg(R.string.failed_to_save)
+                        }
+                    }
                 )
             }
         ) {

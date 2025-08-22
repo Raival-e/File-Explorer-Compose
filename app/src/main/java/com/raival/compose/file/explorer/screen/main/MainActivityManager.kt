@@ -278,6 +278,10 @@ class MainActivityManager {
         return true
     }
 
+    fun ignoreTextEditorFiles() {
+        globalClass.textEditorManager.fileInstanceList.clear()
+    }
+
     fun saveTextEditorFiles(onFinish: () -> Unit) {
         _state.update {
             it.copy(
@@ -286,10 +290,13 @@ class MainActivityManager {
         }
 
         managerScope.launch {
-            globalClass.textEditorManager.fileInstanceList.forEach {
-                if (it.requireSave) {
-                    it.file.writeText(it.content.toString())
+            globalClass.textEditorManager.fileInstanceList.apply {
+                forEach {
+                    if (it.requireSave) {
+                        it.file.writeText(it.content.toString())
+                    }
                 }
+                clear()
             }
 
             _state.update {

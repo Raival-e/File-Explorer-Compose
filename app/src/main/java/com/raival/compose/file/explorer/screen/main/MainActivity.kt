@@ -119,7 +119,10 @@ class MainActivity : BaseActivity() {
                         show = mainActivityState.showSaveEditorFilesDialog,
                         isSaving = mainActivityState.isSavingFiles,
                         onDismiss = { mainActivityManager.toggleSaveEditorFilesDialog(false) },
-                        onRequestFinish = { finish() },
+                        onIgnore = {
+                            mainActivityManager.ignoreTextEditorFiles()
+                            finish()
+                        },
                         onSave = { mainActivityManager.saveTextEditorFiles { finish() } }
                     )
 

@@ -246,6 +246,32 @@ class TextViewerInstance(
         }
     }
 
+    fun showUnsavedChangesWarningDialog(
+        onSaved: () -> Unit,
+        onFailed: (error: Exception) -> Unit,
+        onIgnore: () -> Unit
+    ) {
+        warningDialogProperties.apply {
+            title = globalClass.getString(R.string.warning)
+            message = globalClass.getString(R.string.unsaved_changes)
+            confirmText = globalClass.getString(R.string.save)
+            dismissText = globalClass.getString(R.string.ignore_changes)
+            onDismiss = {
+                onIgnore()
+                showWarningDialog = false
+            }
+            warningDialogProperties.onConfirm = {
+                save(
+                    onSaved = onSaved,
+                    onFailed = onFailed
+                )
+                requireSave = false
+                showWarningDialog = false
+            }
+            showWarningDialog = true
+        }
+    }
+
     fun updateSymbols(): List<SymbolHolder> {
         if (!customSymbolsFile.exists()) {
             customSymbolsFile.writeText(
@@ -266,15 +292,20 @@ class TextViewerInstance(
         return customSymbolHolders.ifEmpty { defaultSymbolHolders }
     }
 
-    fun save(onSaved: () -> Unit, onFailed: () -> Unit) {
+    fun save(onSaved: () -> Unit, onFailed: (error: Exception) -> Unit) {
         isSaving = true
         scope.launch {
-            globalClass.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
-                BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
-                    writer.write(content)
+            try {
+                globalClass.contentResolver.openOutputStream(uri, "wt").use { outputStream ->
+                    BufferedWriter(OutputStreamWriter(outputStream)).use { writer ->
+                        writer.write(content)
+                    }
+                    withContext(Dispatchers.Main) { onSaved().also { isSaving = false } }
                 }
-                withContext(Dispatchers.Main) { onSaved().also { isSaving = false } }
-            } ?: withContext(Dispatchers.Main) { onFailed().also { isSaving = false } }
+            } catch (e: Exception) {
+                logger.logError(e)
+                withContext(Dispatchers.Main) { onFailed(e).also { isSaving = false } }
+            }
         }
     }
 

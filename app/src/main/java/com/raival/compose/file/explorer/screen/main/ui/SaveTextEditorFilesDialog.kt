@@ -11,7 +11,7 @@ import com.raival.compose.file.explorer.R
 fun SaveTextEditorFilesDialog(
     show: Boolean,
     onDismiss: () -> Unit,
-    onRequestFinish: () -> Unit,
+    onIgnore: () -> Unit,
     onSave: () -> Unit,
     isSaving: Boolean
 ) {
@@ -31,7 +31,7 @@ fun SaveTextEditorFilesDialog(
                 TextButton(
                     onClick = {
                         onDismiss()
-                        onRequestFinish()
+                        onIgnore()
                     }
                 ) { Text(text = stringResource(R.string.ignore)) }
             },
