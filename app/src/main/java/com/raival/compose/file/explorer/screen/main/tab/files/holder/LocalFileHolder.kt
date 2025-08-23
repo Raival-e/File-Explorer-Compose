@@ -342,4 +342,14 @@ class LocalFileHolder(val file: File) : ContentHolder() {
             contentCount.folders
         )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LocalFileHolder) return false
+        return file.absolutePath == other.file.absolutePath
+    }
+
+    override fun hashCode(): Int {
+        return file.absolutePath.hashCode()
+    }
 }

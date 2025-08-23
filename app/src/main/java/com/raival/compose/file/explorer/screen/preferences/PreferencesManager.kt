@@ -215,6 +215,13 @@ class PreferencesManager {
         getPreferencesKey = { booleanPreferencesKey(it) }
     )
 
+    //---------- Audio Player -------------//
+    var autoPlayMusic by prefMutableState(
+        keyName = "autoPlayMusic",
+        defaultValue = false,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
 
     // //---------- File Sorting -------------//
     var defaultSortMethod by prefMutableState(
