@@ -82,6 +82,7 @@ import com.raival.compose.file.explorer.screen.main.ui.StorageDeviceView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -91,7 +92,7 @@ fun ColumnScope.HomeTabContentView(tab: HomeTab) {
     val enabledSections = remember { mutableStateListOf<HomeSectionConfig>() }
 
     LaunchedEffect(tab.id) {
-        scope.launch(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             async {
                 tab.fetchRecentFiles()
             }

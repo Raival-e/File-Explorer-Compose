@@ -64,7 +64,7 @@ import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionCon
 import com.raival.compose.file.explorer.screen.main.tab.home.data.HomeSectionType
 import com.raival.compose.file.explorer.screen.main.tab.home.data.getDefaultHomeLayout
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -103,7 +103,7 @@ fun HomeLayoutSettingsScreen(
         }
 
         LaunchedEffect(Unit) {
-            scope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 val config = try {
                     Gson().fromJson(
                         globalClass.preferencesManager.homeTabLayout,

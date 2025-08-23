@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +30,7 @@ import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.screen.viewer.pdf.PdfViewerInstance
 import com.raival.compose.file.explorer.screen.viewer.pdf.misc.PdfPageHolder
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import my.nanihadesuka.compose.InternalLazyColumnScrollbar
 import my.nanihadesuka.compose.ScrollbarLayoutSide
 import my.nanihadesuka.compose.ScrollbarSettings
@@ -61,7 +60,6 @@ fun PdfViewerContent(instance: PdfViewerInstance, onBackPress: () -> Unit) {
                 listState.firstVisibleItemIndex == 0
             }
         }
-        val scope = rememberCoroutineScope()
 
         val visiblePageNumbers by remember {
             derivedStateOf {
@@ -83,7 +81,7 @@ fun PdfViewerContent(instance: PdfViewerInstance, onBackPress: () -> Unit) {
         }
 
         LaunchedEffect(Unit) {
-            scope.launch(IO) {
+            withContext(IO) {
                 instance.prepare { success ->
                     if (success) {
                         defaultPageSize = Size(

@@ -73,6 +73,7 @@ import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSize
 import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListIconSize
 import com.raival.compose.file.explorer.screen.preferences.constant.FileItemSizeMap.getFileListSpace
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -577,39 +578,36 @@ private fun FileDetails(
     fontSize: Int,
     isHighlighted: Boolean
 ) {
-    val scope = rememberCoroutineScope()
-    Isolate {
-        var details by remember(
-            key1 = currentItemPath,
-            key2 = item.lastModified
-        ) { mutableStateOf(emptyString) }
+    var details by remember(
+        key1 = currentItemPath,
+        key2 = item.lastModified
+    ) { mutableStateOf(emptyString) }
 
-        LaunchedEffect(
-            key1 = currentItemPath,
-            key2 = item.lastModified
-        ) {
-            scope.launch(Dispatchers.IO) {
-                if (details.isEmpty()) {
-                    val det = item.getDetails()
-                    details = det
-                }
+    LaunchedEffect(
+        key1 = currentItemPath,
+        key2 = item.lastModified
+    ) {
+        if (details.isEmpty()) {
+            val det = withContext(IO) {
+                item.getDetails()
             }
+            details = det
         }
-
-        Text(
-            modifier = Modifier.alpha(0.7f),
-            text = details,
-            fontSize = (fontSize - 4).sp,
-            maxLines = 1,
-            lineHeight = (fontSize + 2).sp,
-            overflow = TextOverflow.Ellipsis,
-            color = if (isHighlighted) {
-                colorScheme.primary
-            } else {
-                Color.Unspecified
-            }
-        )
     }
+
+    Text(
+        modifier = Modifier.alpha(0.7f),
+        text = details,
+        fontSize = (fontSize - 4).sp,
+        maxLines = 1,
+        lineHeight = (fontSize + 2).sp,
+        overflow = TextOverflow.Ellipsis,
+        color = if (isHighlighted) {
+            colorScheme.primary
+        } else {
+            Color.Unspecified
+        }
+    )
 }
 
 @Composable
