@@ -444,6 +444,6 @@
     <string name="updating">正在更新</string>
     <string name="minimize">最小化</string>
     <string name="remove_from_bookmarks">从书签中移除</string>
-    <string name="unsaved_changes">Do you want to save the file?</string>
-    <string name="permission_denied">Permission denied</string>
+    <string name="unsaved_changes">您想保存文件吗？</string>
+    <string name="permission_denied">权限被拒绝</string>
 </resources>

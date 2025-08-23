@@ -444,6 +444,6 @@
     <string name="updating">Actualizando</string>
     <string name="minimize">Minimizar</string>
     <string name="remove_from_bookmarks">Eliminar de marcadores</string>
-    <string name="unsaved_changes">Do you want to save the file?</string>
-    <string name="permission_denied">Permission denied</string>
+    <string name="unsaved_changes">¿Desea guardar el archivo?</string>
+    <string name="permission_denied">Permiso denegado</string>
 </resources>

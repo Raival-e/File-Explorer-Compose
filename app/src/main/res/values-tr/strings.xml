@@ -445,6 +445,6 @@
     <string name="updating">Güncelleniyor</string>
     <string name="minimize">Küçült</string>
     <string name="remove_from_bookmarks">Yer imlerinden kaldır</string>
-    <string name="unsaved_changes">Do you want to save the file?</string>
-    <string name="permission_denied">Permission denied</string>
+    <string name="unsaved_changes">Dosyayı kaydetmek istiyor musunuz?</string>
+    <string name="permission_denied">İzin reddedildi</string>
 </resources>

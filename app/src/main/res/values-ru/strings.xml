@@ -444,6 +444,6 @@
     <string name="updating">Обновление</string>
     <string name="minimize">Свернуть</string>
     <string name="remove_from_bookmarks">Удалить из закладок</string>
-    <string name="unsaved_changes">Do you want to save the file?</string>
-    <string name="permission_denied">Permission denied</string>
+    <string name="unsaved_changes">Сохранить файл?</string>
+    <string name="permission_denied">Доступ запрещен</string>
 </resources>
