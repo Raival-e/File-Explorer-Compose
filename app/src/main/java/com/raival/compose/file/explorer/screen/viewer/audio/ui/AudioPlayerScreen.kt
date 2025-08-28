@@ -28,8 +28,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeDown
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
@@ -42,6 +44,8 @@ import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Shuffle
+import androidx.compose.material.icons.filled.ShuffleOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -90,6 +94,7 @@ import com.raival.compose.file.explorer.common.ui.Space
 import com.raival.compose.file.explorer.screen.viewer.audio.AudioPlayerInstance
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioMetadata
 import com.raival.compose.file.explorer.screen.viewer.audio.model.AudioPlayerColorScheme
+import com.raival.compose.file.explorer.screen.viewer.audio.model.Playlist
 import kotlin.math.abs
 
 @Composable
@@ -103,6 +108,11 @@ fun MusicPlayerScreen(
     val isEqualizerVisible by audioPlayerInstance.isEqualizerVisible.collectAsState()
     val isVolumeVisible by audioPlayerInstance.isVolumeVisible.collectAsState()
     val customColorScheme by audioPlayerInstance.audioPlayerColorScheme.collectAsState()
+    val playlistState by audioPlayerInstance.playlistState.collectAsState()
+    var showPlaylistDialog by remember { mutableStateOf(false) }
+    var showPlaylistDetailDialog by remember { mutableStateOf(false) }
+    var selectedPlaylist by remember { mutableStateOf<Playlist?>(null) }
+    
     val defaultScheme = AudioPlayerColorScheme(
         primary = MaterialTheme.colorScheme.primary,
         secondary = MaterialTheme.colorScheme.secondary,
@@ -151,6 +161,7 @@ fun MusicPlayerScreen(
                 TopControls(
                     onEqualizerClick = { audioPlayerInstance.toggleEqualizer() },
                     onVolumeClick = { audioPlayerInstance.toggleVolume() },
+                    onPlaylistClick = { showPlaylistDialog = true },
                     onCloseClick = onClosed,
                     audioPlayerColorScheme = customColorScheme
                 )
@@ -176,7 +187,8 @@ fun MusicPlayerScreen(
                     currentPosition = playerState.currentPosition,
                     duration = playerState.duration,
                     onSeek = { audioPlayerInstance.seekTo(it) },
-                    colorScheme = customColorScheme
+                    colorScheme = customColorScheme,
+                    songId = "${metadata.title}-${metadata.artist}-${playerState.duration}" // Unique identifier per song
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
@@ -201,6 +213,22 @@ fun MusicPlayerScreen(
                     onRepeatToggle = { audioPlayerInstance.toggleRepeatMode() },
                     colorScheme = customColorScheme
                 )
+
+                // Current playlist info
+                playlistState.currentPlaylist?.let { playlist ->
+                    Spacer(modifier = Modifier.height(16.dp))
+                    CurrentPlaylistInfo(
+                        playlist = playlist,
+                        currentSongIndex = playlistState.currentSongIndex,
+                        isShuffled = playlistState.isShuffled,
+                        onShuffleToggle = { audioPlayerInstance.toggleShuffle() },
+                        onPlaylistClick = {
+                            selectedPlaylist = playlist
+                            showPlaylistDetailDialog = true
+                        },
+                        colorScheme = customColorScheme
+                    )
+                }
             }
 
             // Volume overlay
@@ -229,6 +257,27 @@ fun MusicPlayerScreen(
                 )
             }
         }
+
+        // Playlist dialogs
+        PlaylistBottomSheet(
+            isVisible = showPlaylistDialog,
+            onDismiss = { showPlaylistDialog = false },
+            onPlaylistSelected = { playlist ->
+                selectedPlaylist = playlist
+                showPlaylistDialog = false
+                showPlaylistDetailDialog = true
+            }
+        )
+
+        selectedPlaylist?.let { playlist ->
+            PlaylistDetailBottomSheet(
+                isVisible = showPlaylistDetailDialog,
+                playlist = playlist,
+                onDismiss = { showPlaylistDetailDialog = false },
+                onPlaySong = { _ -> },
+                audioPlayerInstance = audioPlayerInstance
+            )
+        }
     }
 }
 
@@ -236,6 +285,7 @@ fun MusicPlayerScreen(
 fun TopControls(
     onEqualizerClick: () -> Unit,
     onVolumeClick: () -> Unit,
+    onPlaylistClick: () -> Unit,
     onCloseClick: () -> Unit,
     audioPlayerColorScheme: AudioPlayerColorScheme,
 ) {
@@ -255,6 +305,14 @@ fun TopControls(
         Spacer(Modifier.weight(1f))
 
         Row {
+            IconButton(onClick = onPlaylistClick) {
+                Icon(
+                    Icons.Default.MusicNote,
+                    contentDescription = "Playlists",
+                    tint = audioPlayerColorScheme.tintColor
+                )
+            }
+
             IconButton(onClick = onVolumeClick) {
                 Icon(
                     Icons.AutoMirrored.Filled.VolumeUp,
@@ -404,17 +462,26 @@ fun ProgressBar(
     currentPosition: Long,
     duration: Long,
     onSeek: (Long) -> Unit,
-    colorScheme: AudioPlayerColorScheme
+    colorScheme: AudioPlayerColorScheme,
+    songId: String = ""
 ) {
-    var manualPosition by remember { mutableLongStateOf(0L) }
-    var manualSeek by remember { mutableFloatStateOf(0f) }
-    var isDragging by remember { mutableStateOf(false) }
+    // Reset state when song changes
+    var manualPosition by remember(songId) { mutableLongStateOf(0L) }
+    var manualSeek by remember(songId) { mutableFloatStateOf(0f) }
+    var isDragging by remember(songId) { mutableStateOf(false) }
+    
     val progress = if (duration > 0) {
-        if (abs(currentPosition - manualPosition) < 1000) {
+        if (isDragging) {
+            manualSeek
+        } else if (abs(currentPosition - manualPosition) > 2000) {
             (currentPosition.toFloat() / duration.toFloat()).also {
                 manualPosition = currentPosition
             }
-        } else manualSeek
+        } else {
+            (currentPosition.toFloat() / duration.toFloat()).also {
+                manualPosition = currentPosition
+            }
+        }
     } else 0f
 
     Column {
@@ -444,7 +511,7 @@ fun ProgressBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = (if (isDragging) (manualSeek * duration).toLong() else manualPosition).toFormattedTime(),
+                text = (if (isDragging) (manualSeek * duration).toLong() else currentPosition).toFormattedTime(),
                 color = colorScheme.tintColor.copy(alpha = 0.8f),
                 fontSize = 12.sp,
                 style = MaterialTheme.typography.bodySmall
@@ -826,5 +893,69 @@ fun extractColorsFromBitmap(
         )
     } catch (_: Exception) {
         defaultScheme // Fallback to default colors
+    }
+}
+
+@Composable
+fun CurrentPlaylistInfo(
+    playlist: Playlist,
+    currentSongIndex: Int,
+    isShuffled: Boolean,
+    onShuffleToggle: () -> Unit,
+    onPlaylistClick: () -> Unit,
+    colorScheme: AudioPlayerColorScheme
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onPlaylistClick() },
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.surface.copy(alpha = 0.7f)
+        ),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                Icons.Default.MusicNote,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = colorScheme.primary
+            )
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = playlist.name,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = colorScheme.tintColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "${currentSongIndex + 1} ${playlist.size()}${if (isShuffled) " • ${stringResource(R.string.random)}" else ""}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colorScheme.tintColor.copy(alpha = 0.7f)
+                )
+            }
+
+            IconButton(
+                onClick = onShuffleToggle,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    if (isShuffled) Icons.Default.ShuffleOn else Icons.Default.Shuffle,
+                    contentDescription = "Toggle Shuffle",
+                    tint = if (isShuffled) colorScheme.primary else colorScheme.tintColor.copy(alpha = 0.7f),
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
     }
 }

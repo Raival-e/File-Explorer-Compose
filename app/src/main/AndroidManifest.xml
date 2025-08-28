@@ -151,6 +151,13 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".screen.playlist.PlaylistActivity"
+            android:exported="false"
+            android:label="@string/manage_playlists"
+            android:theme="@style/Theme.FileExplorer"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".screen.main.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.FileExplorer"

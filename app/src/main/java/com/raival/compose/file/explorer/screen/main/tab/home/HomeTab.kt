@@ -1,11 +1,17 @@
 package com.raival.compose.file.explorer.screen.main.tab.home
 
+import android.content.ContentResolver
+import android.content.Intent
+import android.database.Cursor
+import android.net.Uri
+import android.provider.MediaStore
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Archive
 import androidx.compose.material.icons.rounded.AudioFile
 import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.VideoFile
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -104,6 +110,24 @@ class HomeTab : Tab() {
                     mainActivityManager.replaceCurrentTabWith(
                         FilesTab(VirtualFileHolder(AUDIO))
                     )
+                }
+            )
+        )
+
+        add(
+            HomeCategory(
+                name = globalClass.getString(R.string.playlists),
+                icon = Icons.Rounded.QueueMusic,
+                onClick = {
+                    try {
+                        val context = globalClass.applicationContext
+                        val intent = Intent(context, com.raival.compose.file.explorer.screen.playlist.PlaylistActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        // Log the error or handle it gracefully
+                        e.printStackTrace()
+                    }
                 }
             )
         )
