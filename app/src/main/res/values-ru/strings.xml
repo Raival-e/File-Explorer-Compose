@@ -447,4 +447,5 @@
     <string name="unsaved_changes">Сохранить файл?</string>
     <string name="permission_denied">Доступ запрещен</string>
     <string name="unpin_from_home_tab">Unpin from home tab</string>
+    <string name="hide_hidden_files">Hide hidden files</string>
 </resources>

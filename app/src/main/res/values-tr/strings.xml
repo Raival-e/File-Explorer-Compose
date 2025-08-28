@@ -448,4 +448,5 @@
     <string name="unsaved_changes">Dosyayı kaydetmek istiyor musunuz?</string>
     <string name="permission_denied">İzin reddedildi</string>
     <string name="unpin_from_home_tab">Unpin from home tab</string>
+    <string name="hide_hidden_files">Hide hidden files</string>
 </resources>

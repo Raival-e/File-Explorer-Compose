@@ -15,6 +15,8 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.ToggleOff
+import androidx.compose.material.icons.rounded.ToggleOn
 import androidx.compose.material.icons.rounded.ViewComfy
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -141,19 +143,26 @@ fun MoreOptionsButton() {
             }
 
             if (mainActivityManager.getActiveTab() is FilesTab) {
+                val showHiddenFiles = globalClass.preferencesManager.showHiddenFiles
                 DropdownMenuItem(
                     text = {
-                        Text(text = stringResource(R.string.toggle_hidden_files))
+                        Text(
+                            text = stringResource(
+                                if (showHiddenFiles)
+                                    R.string.hide_hidden_files else R.string.show_hidden_files
+                            )
+                        )
                     },
                     onClick = {
                         globalClass.preferencesManager.showHiddenFiles =
-                            !globalClass.preferencesManager.showHiddenFiles
+                            !showHiddenFiles
                         (mainActivityManager.getActiveTab() as FilesTab).onTabResumed()
                         showOptionsMenu = false
                     },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Rounded.EditAttributes,
+                            imageVector = if (showHiddenFiles)
+                                Icons.Rounded.ToggleOff else Icons.Rounded.ToggleOn,
                             contentDescription = null
                         )
                     }

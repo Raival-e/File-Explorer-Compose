@@ -447,4 +447,5 @@
     <string name="unsaved_changes">您想保存文件吗？</string>
     <string name="permission_denied">权限被拒绝</string>
     <string name="unpin_from_home_tab">Unpin from home tab</string>
+    <string name="hide_hidden_files">Hide hidden files</string>
 </resources>
