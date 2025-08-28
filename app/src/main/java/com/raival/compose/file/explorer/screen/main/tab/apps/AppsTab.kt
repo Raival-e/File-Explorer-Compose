@@ -89,7 +89,7 @@ class AppsTab : Tab() {
         }
 
         val sortedApps = when (sortOption) {
-            SortOption.NAME -> filteredApps.sortedBy { it.name.lowercase() }
+            SortOption.NAME -> filteredApps.sortedBy { it.name }
             SortOption.SIZE -> filteredApps.sortedByDescending { it.size }
             SortOption.INSTALL_DATE -> filteredApps.sortedByDescending { it.installDate }
             SortOption.UPDATE_DATE -> filteredApps.sortedByDescending { it.lastUpdateDate }
@@ -120,7 +120,7 @@ class AppsTab : Tab() {
                 }
 
                 val sortedApps = when (sortOption) {
-                    SortOption.NAME -> filteredApps.sortedBy { it.name.lowercase() }
+                    SortOption.NAME -> filteredApps.sortedBy { it.name }
                     SortOption.SIZE -> filteredApps.sortedByDescending { it.size }
                     SortOption.INSTALL_DATE -> filteredApps.sortedByDescending { it.installDate }
                     SortOption.UPDATE_DATE -> filteredApps.sortedByDescending { it.lastUpdateDate }
