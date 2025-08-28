@@ -105,6 +105,7 @@ fun FileContentIcon(item: ContentHolder) {
         val fileIcon = fileContentIcon.icon
         if (fileIcon is ImageVector) {
             Icon(
+                modifier = Modifier.fillMaxSize(0.7f),
                 imageVector = fileIcon,
                 contentDescription = null,
                 tint = fileContentIcon.iconColor ?: Color.Unspecified
