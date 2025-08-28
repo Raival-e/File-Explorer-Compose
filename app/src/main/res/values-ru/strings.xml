@@ -446,4 +446,5 @@
     <string name="remove_from_bookmarks">Удалить из закладок</string>
     <string name="unsaved_changes">Сохранить файл?</string>
     <string name="permission_denied">Доступ запрещен</string>
+    <string name="unpin_from_home_tab">Unpin from home tab</string>
 </resources>

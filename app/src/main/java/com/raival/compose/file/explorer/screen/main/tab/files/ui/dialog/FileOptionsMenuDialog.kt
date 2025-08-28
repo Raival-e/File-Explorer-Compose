@@ -257,13 +257,31 @@ fun FileOptionsMenuDialog(
                     globalClass.showMsg(R.string.added_to_bookmarks)
                     tab.unselectAllFiles()
                 }
-                FileOption(Icons.Rounded.PushPin, stringResource(R.string.pin_to_home_tab)) {
-                    onDismissRequest()
-                    val oldSet = globalClass.preferencesManager.pinnedFiles
-                    globalClass.preferencesManager.pinnedFiles =
-                        oldSet + targetFiles.map { it.uniquePath }
-                    globalClass.showMsg(R.string.done)
-                    tab.unselectAllFiles()
+                val pinnedFiles by remember {
+                    mutableStateOf(
+                        globalClass.preferencesManager.pinnedFiles
+                    )
+                }
+                if (targetFiles.map { it.uniquePath }.toSet() == pinnedFiles) {
+                    FileOption(
+                        Icons.Rounded.PushPin,
+                        stringResource(R.string.unpin_from_home_tab)
+                    ) {
+                        onDismissRequest()
+                        val oldSet = globalClass.preferencesManager.pinnedFiles
+                        globalClass.preferencesManager.pinnedFiles = oldSet - pinnedFiles
+                        globalClass.showMsg(R.string.done)
+                        tab.unselectAllFiles()
+                    }
+                } else {
+                    FileOption(Icons.Rounded.PushPin, stringResource(R.string.pin_to_home_tab)) {
+                        onDismissRequest()
+                        val oldSet = globalClass.preferencesManager.pinnedFiles
+                        globalClass.preferencesManager.pinnedFiles =
+                            oldSet + targetFiles.map { it.uniquePath }
+                        globalClass.showMsg(R.string.done)
+                        tab.unselectAllFiles()
+                    }
                 }
             }
 

@@ -446,4 +446,5 @@
     <string name="remove_from_bookmarks">Eliminar de marcadores</string>
     <string name="unsaved_changes">¿Desea guardar el archivo?</string>
     <string name="permission_denied">Permiso denegado</string>
+    <string name="unpin_from_home_tab">Unpin from home tab</string>
 </resources>

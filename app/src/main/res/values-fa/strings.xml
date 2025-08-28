@@ -446,4 +446,5 @@
     <string name="remove_from_bookmarks">حذف از نشانک‌ها</string>
     <string name="unsaved_changes">آیا می‌خواهید فایل را ذخیره کنید؟</string>
     <string name="permission_denied">دسترسی رد شد</string>
+    <string name="unpin_from_home_tab">Unpin from home tab</string>
 </resources>
