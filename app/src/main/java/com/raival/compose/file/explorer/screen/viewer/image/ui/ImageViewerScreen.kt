@@ -258,7 +258,7 @@ fun ImageViewerScreen(instance: ViewerInstance) {
                             Column {
                                 Text(
                                     text = imageInfo?.name ?: stringResource(R.string.unknown),
-                                    color = Color.White,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontWeight = FontWeight.Medium,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
@@ -266,7 +266,7 @@ fun ImageViewerScreen(instance: ViewerInstance) {
                                 imageInfo?.let { info ->
                                     Text(
                                         text = "${info.size} • ${info.dimensions}",
-                                        color = Color.White.copy(alpha = 0.7f),
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                                         fontSize = 12.sp
                                     )
                                 }
@@ -279,7 +279,7 @@ fun ImageViewerScreen(instance: ViewerInstance) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.ArrowBack,
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         },
@@ -288,7 +288,7 @@ fun ImageViewerScreen(instance: ViewerInstance) {
                                 Icon(
                                     Icons.Default.Info,
                                     contentDescription = null,
-                                    tint = Color.White
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         },
@@ -447,7 +447,7 @@ private fun BottomControls(
         ActionButton(
             icon = Icons.Default.InvertColors,
             onClick = onInvertBackgroundColors,
-            backgroundColor = Color.White.copy(alpha = 0.15f)
+            backgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
         )
 
         // Fit to screen
@@ -468,21 +468,21 @@ private fun BottomControls(
                 ]
                 onContentScale(selectedContentScale)
             },
-            backgroundColor = Color.White.copy(alpha = 0.15f)
+            backgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
         )
 
         // Rotate
         ActionButton(
             icon = Icons.AutoMirrored.Filled.RotateRight,
             onClick = onRotate,
-            backgroundColor = Color.White.copy(alpha = 0.15f)
+            backgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
         )
 
         // Edit
         ActionButton(
             icon = Icons.Default.Edit,
             onClick = onEdit,
-            backgroundColor = Color.White.copy(alpha = 0.15f)
+            backgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
         )
     }
 }
@@ -491,8 +491,8 @@ private fun BottomControls(
 private fun ActionButton(
     icon: ImageVector,
     onClick: () -> Unit,
-    tint: Color = Color.White,
-    backgroundColor: Color = Color.White.copy(alpha = 0.1f)
+    tint: Color = MaterialTheme.colorScheme.onSurface,
+    backgroundColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f)
 ) {
     IconButton(
         onClick = onClick,
