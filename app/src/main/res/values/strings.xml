@@ -448,4 +448,9 @@
     <string name="permission_denied">Permission denied</string>
     <string name="unpin_from_home_tab">Unpin from home tab</string>
     <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="press_back_again">Press again to exit</string>
+    <string name="remember_last_session_desc">if enabled, startup tabs will be ignored</string>
+    <string name="close_tab_on_back_nav">Back navigation to close tabs</string>
+    <string name="remember_last_session">Remember last session</string>
+    <string name="confirm_before_exit">Confirm before exit the app</string>
 </resources>

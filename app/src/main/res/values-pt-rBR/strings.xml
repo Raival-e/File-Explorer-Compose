@@ -446,6 +446,11 @@
     <string name="remove_from_bookmarks">Remover dos favoritos</string>
     <string name="unsaved_changes">Deseja salvar o arquivo?</string>
     <string name="permission_denied">Permissão negada</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">Desafixar da guia inicial</string>
+    <string name="hide_hidden_files">Ocultar arquivos ocultos</string>
+    <string name="press_back_again">Pressione novamente para sair</string>
+    <string name="remember_last_session_desc">se ativado, as guias de inicialização serão ignoradas</string>
+    <string name="close_tab_on_back_nav">Navegação para trás para fechar guias</string>
+    <string name="remember_last_session">Lembrar última sessão</string>
+    <string name="confirm_before_exit">Confirmar antes de sair do aplicativo</string>
 </resources>

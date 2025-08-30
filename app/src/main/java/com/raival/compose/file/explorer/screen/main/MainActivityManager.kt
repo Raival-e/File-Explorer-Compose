@@ -12,7 +12,9 @@ import com.raival.compose.file.explorer.common.isNot
 import com.raival.compose.file.explorer.common.padEnd
 import com.raival.compose.file.explorer.common.printFullStackTrace
 import com.raival.compose.file.explorer.common.showMsg
+import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.screen.main.model.GithubRelease
+import com.raival.compose.file.explorer.screen.main.startup.StartupTab
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabType
 import com.raival.compose.file.explorer.screen.main.startup.StartupTabs
 import com.raival.compose.file.explorer.screen.main.tab.Tab
@@ -69,13 +71,15 @@ class MainActivityManager {
         if (tabIndex isNot _state.value.selectedTabIndex) return
 
         val tabToKeep = _state.value.tabs[tabIndex]
+        val tabsToRemove = _state.value.tabs.filter { it != tabToKeep }
+
+        // Call onTabRemoved on tabs being removed BEFORE state update
+        tabsToRemove.forEach { it.onTabRemoved() }
+
+        // Update the state
         _state.update {
             it.copy(
-                tabs = _state.value.tabs.filter { item ->
-                    val toKeep = item == tabToKeep
-                    if (!toKeep) item.onTabRemoved()
-                    toKeep
-                },
+                tabs = listOf(tabToKeep),
                 selectedTabIndex = 0
             )
         }
@@ -85,26 +89,23 @@ class MainActivityManager {
         // There must be at least one tab
         if (_state.value.tabs.size <= 1) return
 
-        // Call the proper callbacks on the tab to be removed
-        _state.value.tabs[index].apply {
-            if (_state.value.selectedTabIndex == index) onTabStopped()
-            onTabRemoved()
-        }
+        val tabToRemove = _state.value.tabs[index]
+        val currentSelectedIndex = _state.value.selectedTabIndex
 
-        // handle selected tab index
-        val newSelectedTabIndex = if (index < _state.value.selectedTabIndex) {
-            _state.value.selectedTabIndex - 1
-        } else if (index > _state.value.selectedTabIndex) {
-            _state.value.selectedTabIndex
+        // Call callbacks on the tab to be removed BEFORE state update
+        if (currentSelectedIndex == index) {
+            tabToRemove.onTabStopped()
+        }
+        tabToRemove.onTabRemoved()
+
+        // Calculate new selected tab index
+        val newSelectedTabIndex = if (index < currentSelectedIndex) {
+            currentSelectedIndex - 1
+        } else if (index > currentSelectedIndex) {
+            currentSelectedIndex
         } else {
             // Removing the selected tab itself - choose the previous tab if available, otherwise the next one
             max(0, index - 1)
-        }.also {
-            // Call the proper callbacks on the new selected tab (if it's not the already selected one)
-            if (index isNot it) {
-                val newSelectedTab = _state.value.tabs[it]
-                if (newSelectedTab.isCreated) newSelectedTab.onTabResumed() else newSelectedTab.onTabStarted()
-            }
         }
 
         // Update the state
@@ -116,14 +117,23 @@ class MainActivityManager {
                 selectedTabIndex = newSelectedTabIndex
             )
         }
+
+        // Call callbacks on the new selected tab AFTER state update (if it's different from before)
+        if (index == currentSelectedIndex) {
+            val newSelectedTab = _state.value.tabs[newSelectedTabIndex]
+            if (newSelectedTab.isCreated) {
+                newSelectedTab.onTabResumed()
+            } else {
+                newSelectedTab.onTabStarted()
+            }
+        }
     }
 
     fun addTabAndSelect(tab: Tab, index: Int = -1) {
-        // Stop the active tab
-        getActiveTab()?.onTabStopped()
+        val currentActiveTab = getActiveTab()
 
-        // Start the new tab
-        if (tab.isCreated) tab.onTabResumed() else tab.onTabStarted()
+        // Stop the active tab BEFORE state update
+        currentActiveTab?.onTabStopped()
 
         // Validate the index
         val validatedIndex = if (index isNot -1) {
@@ -139,6 +149,13 @@ class MainActivityManager {
                 selectedTabIndex = validatedIndex
             )
         }
+
+        // Start the new tab AFTER state update
+        if (tab.isCreated) {
+            tab.onTabResumed()
+        } else {
+            tab.onTabStarted()
+        }
     }
 
     fun selectTabAt(index: Int, skipTabRefresh: Boolean = false) {
@@ -149,41 +166,56 @@ class MainActivityManager {
             _state.value.tabs.lastIndex
         }
 
-        // If the tab is already selected, resume that tab (kind of refreshing the tab)
-        if (validatedIndex == _state.value.selectedTabIndex) {
-            if (!skipTabRefresh) getActiveTab()?.onTabResumed()
-        } else {
-            // Stop the active tab
-            getActiveTab()?.onTabStopped()
+        val currentSelectedIndex = _state.value.selectedTabIndex
+        val currentActiveTab = getActiveTab()
 
-            // Start the new tab
-            val newSelectedTab = _state.value.tabs[validatedIndex]
-            if (newSelectedTab.isCreated) newSelectedTab.onTabResumed() else newSelectedTab.onTabStarted()
+        // If the tab is already selected, resume that tab (kind of refreshing the tab)
+        if (validatedIndex == currentSelectedIndex) {
+            if (!skipTabRefresh) {
+                currentActiveTab?.onTabResumed()
+            }
+        } else {
+            // Stop the active tab BEFORE state update
+            currentActiveTab?.onTabStopped()
 
             // Update the state
             _state.update {
                 it.copy(selectedTabIndex = validatedIndex)
             }
+
+            // Start the new tab AFTER state update
+            val newSelectedTab = _state.value.tabs[validatedIndex]
+            if (newSelectedTab.isCreated) {
+                newSelectedTab.onTabResumed()
+            } else {
+                newSelectedTab.onTabStarted()
+            }
         }
     }
 
     fun replaceCurrentTabWith(tab: Tab) {
-        // Stop the active tab
-        getActiveTab()?.apply {
+        val currentActiveTab = getActiveTab()
+
+        // Stop and remove the active tab BEFORE state update
+        currentActiveTab?.apply {
             onTabStopped()
             onTabRemoved()
         }
 
-        // Start the new tab
-        if (tab.isCreated) tab.onTabResumed() else tab.onTabStarted()
-
-        // update the state
+        // Update the state
         _state.update {
             it.copy(
                 tabs = _state.value.tabs.mapIndexed { index, oldTab ->
                     if (index == _state.value.selectedTabIndex) tab else oldTab
                 }
             )
+        }
+
+        // Start the new tab AFTER state update
+        if (tab.isCreated) {
+            tab.onTabResumed()
+        } else {
+            tab.onTabStarted()
         }
     }
 
@@ -253,7 +285,7 @@ class MainActivityManager {
         }
 
         // Remove the active tab
-        if (tabs.size > 1 && selectedTabIndex isNot 0) {
+        if (tabs.size > 1 && selectedTabIndex isNot 0 && globalClass.preferencesManager.closeTabOnBackPress) {
             removeTabAt(selectedTabIndex)
             return false
         }
@@ -309,32 +341,78 @@ class MainActivityManager {
         }
     }
 
+    fun saveSession() {
+        val startupTabs = arrayListOf<StartupTab>()
+        _state.value.tabs.forEach { tab ->
+            when (tab) {
+                is FilesTab -> {
+                    startupTabs.add(
+                        StartupTab(
+                            type = StartupTabType.FILES,
+                            extra = tab.activeFolder.uniquePath
+                        )
+                    )
+                }
+
+                is AppsTab -> {
+                    startupTabs.add(
+                        StartupTab(
+                            type = StartupTabType.APPS
+                        )
+                    )
+                }
+
+                else -> {
+                    startupTabs.add(
+                        StartupTab(
+                            type = StartupTabType.HOME
+                        )
+                    )
+                }
+            }
+        }
+        globalClass.preferencesManager.lastSessionTabs = StartupTabs(startupTabs).toJson()
+    }
+
     fun loadStartupTabs() {
         managerScope.launch {
             val startupTabs: StartupTabs =
-                fromJson(globalClass.preferencesManager.startupTabs)
+                if (globalClass.preferencesManager.rememberLastSession)
+                    fromJson(globalClass.preferencesManager.lastSessionTabs)
+                        ?: StartupTabs.default()
+                else fromJson(globalClass.preferencesManager.startupTabs)
                     ?: StartupTabs.default()
 
             val tabs = arrayListOf<Tab>()
             val index = 0
 
-            startupTabs.tabs.forEachIndexed { index, tab ->
+            startupTabs.tabs.forEachIndexed { _, tab ->
                 val newTab = when (tab.type) {
                     StartupTabType.FILES -> FilesTab(LocalFileHolder(File(tab.extra)))
                     StartupTabType.APPS -> AppsTab()
                     else -> HomeTab()
-                }.apply {
-                    if (isCreated) onTabResumed() else onTabStarted()
                 }
-
                 tabs.add(newTab)
             }
 
+            // Update the state first
             _state.update {
                 it.copy(
                     tabs = tabs,
                     selectedTabIndex = index
                 )
+            }
+
+            // Call callbacks on tabs AFTER state update
+            tabs.forEachIndexed { tabIndex, tab ->
+                if (tabIndex == index) {
+                    // This is the selected tab
+                    if (tab.isCreated) {
+                        tab.onTabResumed()
+                    } else {
+                        tab.onTabStarted()
+                    }
+                }
             }
         }
     }

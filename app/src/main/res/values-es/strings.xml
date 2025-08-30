@@ -446,6 +446,11 @@
     <string name="remove_from_bookmarks">Eliminar de marcadores</string>
     <string name="unsaved_changes">¿Desea guardar el archivo?</string>
     <string name="permission_denied">Permiso denegado</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">Desfijar de la pestaña de inicio</string>
+    <string name="hide_hidden_files">Ocultar archivos ocultos</string>
+    <string name="press_back_again">Presione de nuevo para salir</string>
+    <string name="remember_last_session_desc">si está habilitado, las pestañas de inicio serán ignoradas</string>
+    <string name="close_tab_on_back_nav">Navegación hacia atrás para cerrar pestañas</string>
+    <string name="remember_last_session">Recordar última sesión</string>
+    <string name="confirm_before_exit">Confirmar antes de salir de la aplicación</string>
 </resources>

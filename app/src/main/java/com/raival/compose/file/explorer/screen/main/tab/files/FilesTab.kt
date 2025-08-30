@@ -99,7 +99,7 @@ class FilesTab(
     val bottomOptionsBarState = _bottomOptionsBarState.asStateFlow()
 
     var handleBackGesture by mutableStateOf(true)
-    var tabViewLabel by mutableStateOf(homeDir.displayName)
+    var tabViewLabel by mutableStateOf(createTabLabel())
 
     var isLoading by mutableStateOf(false)
 
@@ -293,7 +293,7 @@ class FilesTab(
 
         // Update header label
         withContext(Dispatchers.Main) {
-            updateTabViewLabel()
+            tabViewLabel = createTabLabel()
         }
 
         // Clear selection if not needed
@@ -583,12 +583,12 @@ class FilesTab(
         contentListStates[activeFolder.uniquePath] = it
     }
 
-    private fun updateTabViewLabel() {
+    private fun createTabLabel(): String {
         val fullName =
             activeFolder.displayName.orIf(globalClass.getString(R.string.internal_storage)) {
                 activeFolder.uniquePath == Environment.getExternalStorageDirectory().absolutePath
             }
-        tabViewLabel = if (fullName.length > 18) fullName.substring(0, 15) + "..." else fullName
+        return if (fullName.length > 18) fullName.substring(0, 15) + "..." else fullName
     }
 
     private suspend fun updatePathList() {

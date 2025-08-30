@@ -99,6 +99,30 @@ class PreferencesManager {
         getPreferencesKey = { booleanPreferencesKey(it) }
     )
 
+    var closeTabOnBackPress by prefMutableState(
+        keyName = "closeTabOnBackPress",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
+    var confirmBeforeAppClose by prefMutableState(
+        keyName = "confirmBeforeAppClose",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
+    var rememberLastSession by prefMutableState(
+        keyName = "rememberLastSession",
+        defaultValue = true,
+        getPreferencesKey = { booleanPreferencesKey(it) }
+    )
+
+    var lastSessionTabs by prefMutableState(
+        keyName = "lastSessionTabs",
+        defaultValue = StartupTabs.default().toJson(),
+        getPreferencesKey = { stringPreferencesKey(it) }
+    )
+
     var useBuiltInViewer by prefMutableState(
         keyName = "useBuiltInViewer",
         defaultValue = true,

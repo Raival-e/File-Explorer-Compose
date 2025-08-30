@@ -446,6 +446,11 @@
     <string name="remove_from_bookmarks">Usuń z zakładek</string>
     <string name="unsaved_changes">Czy chcesz zapisać plik?</string>
     <string name="permission_denied">Odmowa dostępu</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">Odepnij z karty Start</string>
+    <string name="hide_hidden_files">Ukryj ukryte pliki</string>
+    <string name="press_back_again">Naciśnij ponownie, aby wyjść</string>
+    <string name="remember_last_session_desc">jeśli włączone, karty startowe będą ignorowane</string>
+    <string name="close_tab_on_back_nav">Nawigacja wsteczna do zamykania kart</string>
+    <string name="remember_last_session">Zapamiętaj ostatnią sesję</string>
+    <string name="confirm_before_exit">Potwierdź przed wyjściem z aplikacji</string>
 </resources>

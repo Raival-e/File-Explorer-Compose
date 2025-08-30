@@ -424,7 +424,7 @@
     <string name="no_excluded_paths">هیچ مسیر مستثنی شده‌ای وجود ندارد</string>
     <string name="add_paths_to_exclude_desc">مسیر جدیدی را برای مستثنی شدن از اسکنر فایل‌های اخیر اضافه کنید</string>
     <string name="about">درباره</string>
-    <string name="export_preferences">Export preferences</string>
+    <string name="export_preferences">صادر کردن تنظیمات</string>
     <string name="exported_prism_preferences">به /.prism/preferences.prismPrefs خروجی گرفته شد</string>
     <string name="export_preferences_desc">برای وارد کردن، فایل خروجی گرفته شده را پیدا کرده و باز کنید</string>
     <string name="invalid_preferences_file">فایل تنظیمات نامعتبر</string>
@@ -446,6 +446,11 @@
     <string name="remove_from_bookmarks">حذف از نشانک‌ها</string>
     <string name="unsaved_changes">آیا می‌خواهید فایل را ذخیره کنید؟</string>
     <string name="permission_denied">دسترسی رد شد</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">برداشتن سنجاق از تب خانه</string>
+    <string name="hide_hidden_files">پنهان کردن فایل‌های مخفی</string>
+    <string name="press_back_again">برای خروج دوباره فشار دهید</string>
+    <string name="remember_last_session_desc">در صورت فعال بودن، تب‌های راه‌اندازی نادیده گرفته می‌شوند</string>
+    <string name="close_tab_on_back_nav">ناوبری بازگشت برای بستن تب‌ها</string>
+    <string name="remember_last_session">به خاطر سپردن آخرین جلسه</string>
+    <string name="confirm_before_exit">تأیید قبل از خروج از برنامه</string>
 </resources>

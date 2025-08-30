@@ -446,6 +446,11 @@
     <string name="remove_from_bookmarks">Удалить из закладок</string>
     <string name="unsaved_changes">Сохранить файл?</string>
     <string name="permission_denied">Доступ запрещен</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">Открепить от главной вкладки</string>
+    <string name="hide_hidden_files">Скрыть скрытые файлы</string>
+    <string name="press_back_again">Нажмите еще раз для выхода</string>
+    <string name="remember_last_session_desc">если включено, стартовые вкладки будут игнорироваться</string>
+    <string name="close_tab_on_back_nav">Навигация назад для закрытия вкладок</string>
+    <string name="remember_last_session">Запомнить последнюю сессию</string>
+    <string name="confirm_before_exit">Подтвердить перед выходом из приложения</string>
 </resources>

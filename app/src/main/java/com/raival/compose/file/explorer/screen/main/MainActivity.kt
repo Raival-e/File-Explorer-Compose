@@ -37,8 +37,10 @@ import androidx.compose.ui.unit.Velocity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.raival.compose.file.explorer.App.Companion.globalClass
+import com.raival.compose.file.explorer.R
 import com.raival.compose.file.explorer.base.BaseActivity
 import com.raival.compose.file.explorer.common.isNot
+import com.raival.compose.file.explorer.common.showMsg
 import com.raival.compose.file.explorer.common.toJson
 import com.raival.compose.file.explorer.common.ui.SafeSurface
 import com.raival.compose.file.explorer.screen.main.tab.apps.AppsTab
@@ -55,6 +57,7 @@ import com.raival.compose.file.explorer.screen.main.ui.StartupTabsSettingsScreen
 import com.raival.compose.file.explorer.screen.main.ui.TabLayout
 import com.raival.compose.file.explorer.screen.main.ui.Toolbar
 import com.raival.compose.file.explorer.theme.FileExplorerTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.math.abs
@@ -76,11 +79,21 @@ class MainActivity : BaseActivity() {
                     val coroutineScope = rememberCoroutineScope()
                     val mainActivityManager = globalClass.mainActivityManager
                     val mainActivityState by mainActivityManager.state.collectAsState()
+                    var backPressedOnce by remember { mutableStateOf(false) }
 
                     BackHandler {
                         coroutineScope.launch {
                             if (mainActivityManager.canExit()) {
-                                finish()
+                                if (!globalClass.preferencesManager.confirmBeforeAppClose || backPressedOnce) {
+                                    finish()
+                                } else {
+                                    backPressedOnce = true
+                                    showMsg(R.string.press_back_again)
+                                    launch {
+                                        delay(2000)
+                                        backPressedOnce = false
+                                    }
+                                }
                             }
                         }
                     }
@@ -91,6 +104,11 @@ class MainActivity : BaseActivity() {
 
                     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
                         mainActivityManager.onStop()
+                    }
+
+                    LifecycleEventEffect(Lifecycle.Event.ON_PAUSE) {
+                        if (globalClass.preferencesManager.rememberLastSession)
+                            mainActivityManager.saveSession()
                     }
 
                     LaunchedEffect(Unit) {

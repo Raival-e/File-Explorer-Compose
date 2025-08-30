@@ -413,7 +413,7 @@
     <string name="display_options">显示选项</string>
     <string name="gallery_mode">画廊模式</string>
     <string name="crop_in_thumbnails">裁剪缩略图</string>
-    <string name="pinned_files">Pinned Files</string>
+    <string name="pinned_files">已固定的文件</string>
     <string name="pinned_files_desc">快速访问重要文件</string>
     <string name="pin_to_home_tab">固定到主页标签</string>
     <string name="extensive_recent_files_scan">广泛扫描最近文件</string>
@@ -446,6 +446,11 @@
     <string name="remove_from_bookmarks">从书签中移除</string>
     <string name="unsaved_changes">您想保存文件吗？</string>
     <string name="permission_denied">权限被拒绝</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">从主页标签取消固定</string>
+    <string name="hide_hidden_files">隐藏隐藏文件</string>
+    <string name="press_back_again">再按一次退出</string>
+    <string name="remember_last_session_desc">如果启用，启动标签页将被忽略</string>
+    <string name="close_tab_on_back_nav">返回导航以关闭标签页</string>
+    <string name="remember_last_session">记住上次会话</string>
+    <string name="confirm_before_exit">退出应用前确认</string>
 </resources>

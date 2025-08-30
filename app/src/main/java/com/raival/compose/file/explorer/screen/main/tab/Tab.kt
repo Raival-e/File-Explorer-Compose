@@ -24,11 +24,13 @@ abstract class Tab {
     open fun onBackPressed(): Boolean = false
 
     fun requestHomeToolbarUpdate() {
-        CoroutineScope(Dispatchers.IO).launch {
-            globalClass.mainActivityManager.updateHomeToolbar(
-                title = getTitle(),
-                subtitle = getSubtitle()
-            )
+        if (globalClass.mainActivityManager.getActiveTab() == this) {
+            CoroutineScope(Dispatchers.IO).launch {
+                globalClass.mainActivityManager.updateHomeToolbar(
+                    title = getTitle(),
+                    subtitle = getSubtitle()
+                )
+            }
         }
     }
 }

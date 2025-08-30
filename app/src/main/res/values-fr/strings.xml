@@ -424,7 +424,7 @@
     <string name="no_excluded_paths">Aucun chemin exclu</string>
     <string name="add_paths_to_exclude_desc">Ajouter un nouveau chemin à exclure de l\'analyse des fichiers récents</string>
     <string name="about">À propos</string>
-    <string name="export_preferences">Export preferences</string>
+    <string name="export_preferences">Exporter les préférences</string>
     <string name="exported_prism_preferences">Exporté vers /.prism/preferences.prismPrefs</string>
     <string name="export_preferences_desc">Pour importer, localisez et ouvrez le fichier exporté</string>
     <string name="invalid_preferences_file">Fichier de préférences invalide</string>
@@ -446,6 +446,11 @@
     <string name="remove_from_bookmarks">Retirer des favoris</string>
     <string name="unsaved_changes">Voulez-vous enregistrer le fichier ?</string>
     <string name="permission_denied">Autorisation refusée</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">Désépingler de l\'onglet d\'accueil</string>
+    <string name="hide_hidden_files">Masquer les fichiers cachés</string>
+    <string name="press_back_again">Appuyez à nouveau pour quitter</string>
+    <string name="remember_last_session_desc">si activé, les onglets de démarrage seront ignorés</string>
+    <string name="close_tab_on_back_nav">Navigation arrière pour fermer les onglets</string>
+    <string name="remember_last_session">Se souvenir de la dernière session</string>
+    <string name="confirm_before_exit">Confirmer avant de quitter l\'application</string>
 </resources>

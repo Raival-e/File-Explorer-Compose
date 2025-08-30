@@ -414,7 +414,7 @@
     <string name="display_options">Görüntüleme Seçenekleri</string>
     <string name="gallery_mode">Galeri Modu</string>
     <string name="crop_in_thumbnails">Küçük Resimleri Kırp</string>
-    <string name="pinned_files">Pinned Files</string>
+    <string name="pinned_files">Sabitlenmiş Dosyalar</string>
     <string name="pinned_files_desc">Önemli dosyalara hızlı erişim</string>
     <string name="pin_to_home_tab">Ana ekrana sabitle</string>
     <string name="extensive_recent_files_scan">Kapsamlı son dosyalar taraması</string>
@@ -447,6 +447,11 @@
     <string name="remove_from_bookmarks">Yer imlerinden kaldır</string>
     <string name="unsaved_changes">Dosyayı kaydetmek istiyor musunuz?</string>
     <string name="permission_denied">İzin reddedildi</string>
-    <string name="unpin_from_home_tab">Unpin from home tab</string>
-    <string name="hide_hidden_files">Hide hidden files</string>
+    <string name="unpin_from_home_tab">Ana ekrandan sabitlemeyi kaldır</string>
+    <string name="hide_hidden_files">Gizli dosyaları gizle</string>
+    <string name="press_back_again">Çıkmak için tekrar basın</string>
+    <string name="remember_last_session_desc">etkinleştirilirse, başlangıç sekmeleri yoksayılır</string>
+    <string name="close_tab_on_back_nav">Sekmeleri kapatmak için geri gitme</string>
+    <string name="remember_last_session">Son oturumu hatırla</string>
+    <string name="confirm_before_exit">Uygulamadan çıkmadan önce onayla</string>
 </resources>
