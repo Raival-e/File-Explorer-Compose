@@ -89,7 +89,7 @@ class PreferencesManager {
 
     var disablePullDownToRefresh by prefMutableState(
         keyName = "disablePullDownToRefresh",
-        defaultValue = true,
+        defaultValue = false,
         getPreferencesKey = { booleanPreferencesKey(it) }
     )
 
@@ -113,7 +113,7 @@ class PreferencesManager {
 
     var rememberLastSession by prefMutableState(
         keyName = "rememberLastSession",
-        defaultValue = true,
+        defaultValue = false,
         getPreferencesKey = { booleanPreferencesKey(it) }
     )
 
